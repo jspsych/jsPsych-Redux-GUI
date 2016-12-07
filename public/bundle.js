@@ -85,19 +85,41 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var setMuiTheme = (0, _getMuiTheme2.default)(_lightBaseTheme2.default);
+	//import {actionSelectTrial, actionAddTrial, actionRemoveTrial} from 'actions';
+	
+	var setMuiTheme = (0, _getMuiTheme2.default)(_lightBaseTheme2.default); // src/app.js
+	
+	var actionSelectTrial = function actionSelectTrial() {
+	    store.dispatch({
+	        type: 'SELECT_TRIAL',
+	        index: 0
+	    });
+	};
+	var actionAddTrial = function actionAddTrial() {
+	    // Dispatch the action calling for a new trial to be added
+	    store.dispatch({
+	        type: 'ADD_TRIAL'
+	    });
+	};
+	var actionRemoveTrial = function actionRemoveTrial() {
+	    var state = store.getState();
+	    store.dispatch({
+	        type: 'REMOVE_TRIAL',
+	        index: state.selected
+	    });
+	};
 	
 	// A "dump" component. It contains no logic
 	// It defines how the current state of the application is to be rendered
-	// src/app.js
-	
 	var App = function App(_ref) {
-	    var trialList = _ref.trialList,
+	    var store = _ref.store,
+	        trialList = _ref.trialList,
 	        selected = _ref.selected,
 	        selectTrial = _ref.selectTrial,
 	        addTrial = _ref.addTrial,
 	        removeTrial = _ref.removeTrial;
 	    return _react2.default.createElement(_Timeline2.default, {
+	        store: store,
 	        trialList: trialList,
 	        selected: selected,
 	        onSelect: selectTrial,
@@ -128,26 +150,12 @@
 	                _reactRedux.Provider,
 	                { store: store },
 	                _react2.default.createElement(App, {
-	                    trialList: store.trials,
-	                    selected: store.selected,
-	                    selectTrial: function selectTrial() {
-	                        return store.dispatch({
-	                            type: 'SELECT_TRIAL'
-	                        });
-	                    },
-	                    addTrial: function addTrial() {
-	                        return (// Dispatch the action calling for a new trial to be added
-	                            store.dispatch({
-	                                type: 'ADD_TRIAL'
-	                            })
-	                        );
-	                    },
-	                    removeTrial: function removeTrial(index) {
-	                        return store.dispatch({
-	                            type: 'REMOVE_TRIAL',
-	                            id: index
-	                        });
-	                    }
+	                    store: store,
+	                    trialList: state.trials,
+	                    selected: state.selected,
+	                    selectTrial: actionSelectTrial,
+	                    addTrial: actionAddTrial,
+	                    removeTrial: actionRemoveTrial
 	                })
 	            )
 	        )
@@ -31979,7 +31987,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	// Initialize the T.E.P. necerssay for using "onTouchTap"
+	// Initialize the T.E.P. necessay for using "onTouchTap"
 	(0, _reactTapEventPlugin2.default)();
 	
 	var paperStyle = { height: window.innerHeight * 0.9 };
@@ -32000,7 +32008,8 @@
 	
 	// The "dump" Component for the Timeline of experimental trials
 	var Timeline = function Timeline(_ref) {
-	    var trialList = _ref.trialList,
+	    var store = _ref.store,
+	        trialList = _ref.trialList,
 	        selected = _ref.selected,
 	        onSelect = _ref.onSelect,
 	        onAdd = _ref.onAdd,
@@ -32013,29 +32022,16 @@
 	            null,
 	            '  Experimental Timeline '
 	        ),
+	        _react2.default.createElement(_SelectableList2.default, { store: store, list: trialList, selected: selected, onTap: onSelect }),
 	        _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(_SelectableList2.default, { list: trialList, selected: selected, onTap: onSelect })
+	            _FloatingActionButton2.default,
+	            { style: addStyleFAB, onTouchTap: onAdd },
+	            _react2.default.createElement(_add2.default, null)
 	        ),
 	        _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(
-	                _FloatingActionButton2.default,
-	                { style: addStyleFAB, onTouchTap: onAdd },
-	                _react2.default.createElement(_add2.default, null)
-	            )
-	        ),
-	        _react2.default.createElement('br', null),
-	        _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(
-	                _FloatingActionButton2.default,
-	                { style: removeStyleFAB, onTouchTap: onRemove },
-	                _react2.default.createElement(_remove2.default, null)
-	            )
+	            _FloatingActionButton2.default,
+	            { style: removeStyleFAB, onTouchTap: onRemove },
+	            _react2.default.createElement(_remove2.default, null)
 	        )
 	    );
 	};
@@ -43946,7 +43942,7 @@
 	*/
 	
 	// Key for indexing list items
-	var key = 0;
+	var key = -1;
 	
 	var SelectableTrialList = function SelectableTrialList(_ref) {
 	    var list = _ref.list,
@@ -43990,7 +43986,7 @@
   \**************************/
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -43999,20 +43995,22 @@
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	var timeline = exports.timeline = function timeline() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	    var action = arguments[1];
 	
 	
 	    // If the state is undefined return the initial state
-	    if (typeof state === 'undefined') {
+	    if (typeof state === null) {
 	        return {};
 	    }
 	    // Perform an operation on the state specified by the action type
 	    switch (action.type) {
+	
+	        // Reducer for the initial state
 	        case 'INITIAL_STATE':
 	            return {
 	                selected: 0,
-	                trials: [].concat(_toConsumableArray(state.trials), [{
+	                trials: [{
 	                    id: 0,
 	                    name: "Trial_0",
 	                    children: [],
@@ -44020,11 +44018,15 @@
 	                    pluginType: "pluginType",
 	                    pluginData: [],
 	                    errors: null
-	                }])
+	                }]
+	            };
+	        case 'SELECT_TRIAL':
+	            return {
+	                selected: action.index,
+	                trials: state.trials
 	            };
 	        case 'ADD_TRIAL':
-	            console.log("In reduce ", state);
-	            var index = state.length;
+	            var index = state.trials.length;
 	            var name = "Trial_" + index.toString();
 	            return {
 	                selected: index,
@@ -44038,18 +44040,25 @@
 	                    errors: null
 	                }])
 	            };
-	        case 'REMOVE_TRAIL':
-	            return [].concat(_toConsumableArray(state.trials.slice(0, action.index)), _toConsumableArray(state.trials.slice(action.index + 1)));
+	        case 'REMOVE_TRIAL':
+	            var index;
+	            if (action.index === 0) {
+	                index = 0;
+	            } else {
+	                index = action.index - 1;
+	            }
+	            return {
+	                selected: index,
+	                trials: [].concat(_toConsumableArray(state.trials.slice(0, action.index)), _toConsumableArray(state.trials.slice(action.index + 1)))
+	            };
 	        default:
 	            return state;
 	    }
 	};
 	
-	var trial = exports.trial = function trial() {
-	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	    var action = arguments[1];
-	
-	    if (typeof state === 'undefined') {
+	// Reducer for handling changes of an individual trial
+	var trial = exports.trial = function trial(state, action) {
+	    if (typeof state === null) {
 	        return 0;
 	    }
 	

@@ -1,16 +1,17 @@
-export const timeline = (state = [], action) => {
+export const timeline = (state = {}, action) => {
 
     // If the state is undefined return the initial state
-    if (typeof state === 'undefined') {
+    if (typeof state === null) {
         return {};
     }
     // Perform an operation on the state specified by the action type
     switch (action.type) {
+
+        // Reducer for the initial state
         case 'INITIAL_STATE':
             return {
-                selected: 0,
+                selected: 0,  
                 trials: [
-                    ...state.trials,
                     {
                         id: 0,
                         name: "Trial_0",
@@ -22,9 +23,13 @@ export const timeline = (state = [], action) => {
                     }
                 ]
             };
+        case 'SELECT_TRIAL':
+            return {
+                selected: action.index,
+                trials: state.trials
+            };
         case 'ADD_TRIAL':
-            console.log("In reduce ", state);
-            var index = state.length;
+            var index = state.trials.length;
             var name = "Trial_" + index.toString()
             return {
                 selected: index,
@@ -41,18 +46,28 @@ export const timeline = (state = [], action) => {
                     }
                 ]
             };
-        case 'REMOVE_TRAIL':
-            return [
-                ...state.trials.slice(0, action.index),
-                ...state.trials.slice(action.index + 1)
-            ];
+        case 'REMOVE_TRIAL':
+            var index;
+            if (action.index === 0) {
+                index = 0;
+            } else {
+                index = action.index - 1;
+            }
+            return {
+                selected: index,
+                trials: [
+                    ...state.trials.slice(0, action.index),
+                    ...state.trials.slice(action.index + 1)
+                ]
+            };
         default:
             return state;
     }
 }
 
-export const trial = (state = 0, action) => {
-    if (typeof state === 'undefined') {
+// Reducer for handling changes of an individual trial
+export const trial = (state, action) => {
+    if (typeof state === null) {
         return 0;
     }
 

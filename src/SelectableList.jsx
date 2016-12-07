@@ -55,7 +55,7 @@ SelectableList = wrapState(SelectableList);
 */
 
 // Key for indexing list items
-var key = 0;
+var key = -1;
 
 const SelectableTrialList = ({
     list,

@@ -7,6 +7,7 @@ module.exports = {
     resolve: {
         root: __dirname,
         alias: {
+            app: 'src/app.jsx',
             components: 'src/components.jsx',
             reducers: 'src/reducers.jsx',
             actions: 'src/actions.jsx',

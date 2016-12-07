@@ -13,12 +13,35 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Timeline from 'Timeline';
 import { timeline } from 'reducers';
+//import {actionSelectTrial, actionAddTrial, actionRemoveTrial} from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
+
+
+const actionSelectTrial = () => {
+    store.dispatch({
+        type: 'SELECT_TRIAL',
+        index: 0
+    });
+}
+const actionAddTrial = () => {// Dispatch the action calling for a new trial to be added
+    store.dispatch({
+        type: 'ADD_TRIAL'
+    });
+}
+const actionRemoveTrial = () => {
+    var state = store.getState();
+    store.dispatch({
+        type: 'REMOVE_TRIAL',
+        index: state.selected
+    })
+}
+
 
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
 const App = ({
+    store,
     trialList,
     selected,
     selectTrial,
@@ -26,6 +49,7 @@ const App = ({
     removeTrial
 }) => (
         <Timeline
+            store={store}
             trialList={trialList}
             selected={selected}
             onSelect={selectTrial}
@@ -51,24 +75,12 @@ const renderApp = () => {
             <MuiThemeProvider muiTheme={setMuiTheme}>
                 <Provider store={store}>
                     <App
-                        trialList={store.trials}
-                        selected={store.selected}
-                        selectTrial={ () =>
-                            store.dispatch({
-                                type: 'SELECT_TRIAL'
-                            })
-                        }
-                        addTrial={() => // Dispatch the action calling for a new trial to be added
-                            store.dispatch({
-                                type: 'ADD_TRIAL'
-                            })
-                        }
-                        removeTrial={(index) =>
-                            store.dispatch({
-                                type: 'REMOVE_TRIAL',
-                                id: index
-                            })
-                        }
+                        store={store}
+                        trialList={state.trials}
+                        selected={state.selected}
+                        selectTrial={actionSelectTrial}
+                        addTrial={actionAddTrial}
+                        removeTrial={actionRemoveTrial}
                         />
                 </Provider>
             </MuiThemeProvider>
