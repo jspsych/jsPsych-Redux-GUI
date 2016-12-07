@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { render } from 'react-dom';
-import { TodoList } from 'components';
+import { deepFreeze } from 'deepFreeze';
 import { createStore } from 'Redux';
 import { timeline } from 'reducers';
 
@@ -20,8 +20,6 @@ const Timeline = ({
         </div>
     );
 
-
-
 // Create the Redux store with timeline as the reducer that
 // manages the state updates
 const store = createStore(timeline);
@@ -30,9 +28,22 @@ const store = createStore(timeline);
 console.log(store.getState());
 
 // The application to be rendered
+// A Timeline object, the state of which is determined by the state of the store
 const render = () => {
     render(
-        < TodoList todos={dummyTodos} />,
+        < Timeline
+            value={store.getState()}
+            addTrial={() => // Dispatch the action calling for a new trial to be added
+                store.dispatch({
+                    type: 'ADD_TRIAL'
+                })
+            }
+            removeTrial={() =>
+                store.dispatch({
+                    type: 'REMOVE_TRIAL'
+                })
+            }
+            />,
         document.getElementById('app')
     );
 };

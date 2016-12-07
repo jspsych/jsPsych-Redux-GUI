@@ -1,4 +1,4 @@
-export const timeline = (state = 0, action) => {
+export const timeline = (state = 0, action) => { 
     
     // If the state is undefined return the initial state
     if (typeof state === 'undefined') {
