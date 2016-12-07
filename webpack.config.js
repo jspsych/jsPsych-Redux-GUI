@@ -9,7 +9,9 @@ module.exports = {
         alias: {
             components: 'src/components.jsx',
             reducers: 'src/reducers.jsx',
-            actions: 'src/actions.jsx'
+            actions: 'src/actions.jsx',
+            Timeline: 'src/Timeline.jsx',
+            Trial: 'src/Trial.jsx'
         }
     },
     module: {
