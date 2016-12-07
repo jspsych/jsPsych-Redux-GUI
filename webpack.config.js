@@ -11,8 +11,10 @@ module.exports = {
             reducers: 'src/reducers.jsx',
             actions: 'src/actions.jsx',
             Timeline: 'src/Timeline.jsx',
-            Trial: 'src/Trial.jsx'
-        }
+            Trial: 'src/Trial.jsx',
+            SelectableList: 'src/SelectableList.jsx'
+        },
+        extensions: ['', '.js', '.jsx', '.scss']
     },
     module: {
         loaders: [{

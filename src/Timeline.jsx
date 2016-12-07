@@ -12,7 +12,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
-
+import SelectableTrialList from 'SelectableList';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Initialize the T.E.P. necerssay for using "onTouchTap"
@@ -34,22 +34,27 @@ const removeStyleFAB = {
     right: window.innerWidth * 0.1
 }
 
+// The "dump" Component for the Timeline of experimental trials
 const Timeline = ({
-    trialList,
-    addTrial,
-    removeTrial
+    trialList,          // List: The list containing each trial in the current experiment
+    selected,           // Integer: The curently selected trial in the list. Default=1
+    onSelect,           // Action: Sets the value of selected
+    onAdd,              // Action: Adds a trial
+    onRemove            // Action: Removes the trial whose index === selected
 }) => (
         <div>
-            <title>  What's Up? </title>
-            <div> {trialList} </div>
+            <title>  Experimental Timeline </title>
             <div>
-                <FloatingActionButton style={addStyleFAB} onTouchTap={addTrial}>
+                <SelectableTrialList list={trialList} selected={selected} onTap={onSelect} />
+            </div>
+            <div>
+                <FloatingActionButton style={addStyleFAB} onTouchTap={onAdd}>
                     <ContentAdd />
                 </FloatingActionButton>
             </div>
             <br />
             <div>
-                <FloatingActionButton style={removeStyleFAB} onTouchTap={removeTrial}>
+                <FloatingActionButton style={removeStyleFAB} onTouchTap={onRemove}>
                     <ContentRemove />
                 </FloatingActionButton>
             </div>
