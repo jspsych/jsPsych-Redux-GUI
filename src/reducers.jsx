@@ -23,12 +23,19 @@ export const timeline = (state = {}, action) => {
                     }
                 ]
             };
-        case 'SELECT_TRIAL':
+    case 'SELECT_TRIAL':
+	if (action.index > state.trials.length) {
+	    return {
+		selected: state.trials.length,
+		trials: state.trials
+	    }
+	} else {
             return {
                 selected: action.index,
                 trials: state.trials
             };
-        case 'ADD_TRIAL':
+	}        
+    case 'ADD_TRIAL':
             var index = state.trials.length;
             var name = "Trial_" + index.toString()
             return {
