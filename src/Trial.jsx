@@ -1,7 +1,21 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { List, ListItem, MakeSelectable } from 'material-ui/List';
 
-const Trial = ({
+
+
+// Class for each trial component
+class Trial extends React.Component {
+    render() {
+        var curTrialID = nextTrialID++;
+        return (
+            <div>
+                Hi
+            </div>
+        );
+    }
+}
+/*
     name,
     children,
     type,
@@ -9,7 +23,5 @@ const Trial = ({
     pluginData,
     errors
 }) => {
-<div>
-<title>{name}</title>
-</div>
-}
+
+}*/

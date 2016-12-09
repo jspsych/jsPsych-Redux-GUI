@@ -17,10 +17,10 @@ import { timeline } from 'reducers';
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
 // ----- Actions ----- //
-const actionSelectTrial = () => {
+const actionSelectTrial = ({key}) => {
     store.dispatch({
         type: 'SELECT_TRIAL',
-        index: 0
+        index: key
     });
 }
 const actionAddTrial = () => {// Dispatch the action calling for a new trial to be added

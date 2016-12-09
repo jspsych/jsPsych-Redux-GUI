@@ -79,7 +79,7 @@
 	
 	var _Timeline2 = _interopRequireDefault(_Timeline);
 	
-	var _reducers = __webpack_require__(/*! reducers */ 456);
+	var _reducers = __webpack_require__(/*! reducers */ 455);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -90,10 +90,12 @@
 	var setMuiTheme = (0, _getMuiTheme2.default)(_lightBaseTheme2.default);
 	
 	// ----- Actions ----- //
-	var actionSelectTrial = function actionSelectTrial() {
+	var actionSelectTrial = function actionSelectTrial(_ref) {
+	    var key = _ref.key;
+	
 	    store.dispatch({
 	        type: 'SELECT_TRIAL',
-	        index: 0
+	        index: key
 	    });
 	};
 	var actionAddTrial = function actionAddTrial() {
@@ -112,13 +114,13 @@
 	
 	// A "dump" component. It contains no logic
 	// It defines how the current state of the application is to be rendered
-	var App = function App(_ref) {
-	    var store = _ref.store,
-	        trialList = _ref.trialList,
-	        selected = _ref.selected,
-	        selectTrial = _ref.selectTrial,
-	        addTrial = _ref.addTrial,
-	        removeTrial = _ref.removeTrial;
+	var App = function App(_ref2) {
+	    var store = _ref2.store,
+	        trialList = _ref2.trialList,
+	        selected = _ref2.selected,
+	        selectTrial = _ref2.selectTrial,
+	        addTrial = _ref2.addTrial,
+	        removeTrial = _ref2.removeTrial;
 	    return _react2.default.createElement(_Timeline2.default, {
 	        store: store,
 	        trialList: trialList,
@@ -31959,7 +31961,7 @@
 	
 	var _SelectableList2 = _interopRequireDefault(_SelectableList);
 	
-	var _reactTapEventPlugin = __webpack_require__(/*! react-tap-event-plugin */ 451);
+	var _reactTapEventPlugin = __webpack_require__(/*! react-tap-event-plugin */ 450);
 	
 	var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
 	
@@ -31968,6 +31970,7 @@
 	// Initialize the T.E.P. necessay for using "onTouchTap"
 	(0, _reactTapEventPlugin2.default)();
 	
+	// Style Variables
 	var paperStyle = { height: window.innerHeight * 0.9 };
 	
 	var addStyleFAB = {
@@ -32000,7 +32003,7 @@
 	            null,
 	            '  Experimental Timeline '
 	        ),
-	        _react2.default.createElement(_SelectableList2.default, { store: store, list: trialList, selected: selected, onTap: onSelect }),
+	        _react2.default.createElement(_SelectableList2.default, { storeState: store, list: trialList, selected: selected, onTap: onSelect }),
 	        _react2.default.createElement(
 	            _FloatingActionButton2.default,
 	            { style: addStyleFAB, onTouchTap: onAdd },
@@ -43527,6 +43530,8 @@
 	    value: true
 	});
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _List = __webpack_require__(/*! material-ui/List */ 358);
@@ -43539,17 +43544,87 @@
 	
 	var _Subheader2 = _interopRequireDefault(_Subheader);
 	
-	var _Trial = __webpack_require__(/*! Trial */ 450);
+	var _Trial = __webpack_require__(/*! Trial */ 456);
 	
 	var _Trial2 = _interopRequireDefault(_Trial);
 	
+	var _actions = __webpack_require__(/*! actions */ 457);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var React = __webpack_require__(/*! react */ 1);
 	
 	
+	// Key for indexing list items
+	var key = -1;
+	
+	var SelectableTrialList = function (_React$Component) {
+	    _inherits(SelectableTrialList, _React$Component);
+	
+	    function SelectableTrialList() {
+	        _classCallCheck(this, SelectableTrialList);
+	
+	        return _possibleConstructorReturn(this, (SelectableTrialList.__proto__ || Object.getPrototypeOf(SelectableTrialList)).apply(this, arguments));
+	    }
+	
+	    _createClass(SelectableTrialList, [{
+	        key: 'handleTouchTap',
+	
+	
+	        // Dispatch an action to change the value of 'selected'
+	        value: function handleTouchTap(id) {
+	            //console.log("Tapped", actionSelectTrial, this);
+	            var store = this.props.storeState;
+	            (0, _actions.actionSelectTrial)(store, id);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            return React.createElement(
+	                'div',
+	                null,
+	                React.createElement(
+	                    _List.List,
+	                    { defaultValue: this.props.selected },
+	                    React.createElement(
+	                        _Subheader2.default,
+	                        null,
+	                        'Current Trials'
+	                    ),
+	                    this.props.list.map(function (trial) {
+	                        // Each trial gets a unique key
+	                        console.log(trial);
+	                        return React.createElement(_List.ListItem, {
+	                            key: trial.id,
+	                            primaryText: trial.name,
+	                            leftAvatar: React.createElement(
+	                                _Avatar2.default,
+	                                null,
+	                                trial.id
+	                            ),
+	                            onTouchTap: _this2.handleTouchTap.bind(_this2, trial.id)
+	                        });
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return SelectableTrialList;
+	}(React.Component);
+	
+	exports.default = SelectableTrialList;
+	
 	/*TrialItem.defaultValue = {
-	    name: "Trial",
+	                        name: "Trial",
 	    children: [],
 	    type: "type",
 	    pluginType: "pluginType",
@@ -43561,124 +43636,50 @@
 	/*
 	function wrapState(ComposedComponent) {
 	    return class SelectableList extends Component {
-	        static propTypes = {
-	            children: PropTypes.node.isRequired,
+	                        static propTypes = {
+	                        children: PropTypes.node.isRequired,
 	            defaultValue: PropTypes.number.isRequired,
 	        };
-	
-	        componentWillMount() { this.setState({ selectedIndex: this.props.defaultValue, }); };
-	
-	        handleRequestChange = (event, index) => { this.setState({ selectedIndex: index, }); };
-	
+
+	        componentWillMount() {this.setState({ selectedIndex: this.props.defaultValue, }); };
+
+	        handleRequestChange = (event, index) => {this.setState({ selectedIndex: index, }); };
+
 	        render() {
 	            return (
 	                <ComposedComponent
-	                    value={this.state.selectedIndex}
-	                    onChange={this.handleRequestChange}
-	                    >
-	                    {this.props.children}
-	                </ComposedComponent>
-	            );
+	                        value={this.state.selectedIndex}
+	                        onChange={this.handleRequestChange}
+	                        >
+	                        {this.props.children}
+	                    </ComposedComponent>
+	                    );
 	        }
 	    };
 	}
-	
-	
+
+
 	                                <Trial
-	                                    name={trial.name}
-	                                    children={trial.children}
-	                                    type={trial.type}
-	                                    pluginType={trial.pluginType}
-	                                    pluginData={trial.pluginData}
-	                                    errors={trial.errors}
-	                                    />
-	
-	SelectableList = wrapState(SelectableList);
+	                        name={trial.name}
+	                        children={trial.children}
+	                        type={trial.type}
+	                        pluginType={trial.pluginType}
+	                        pluginData={trial.pluginData}
+	                        errors={trial.errors}
+	                        />
+
+	                    SelectableList = wrapState(SelectableList);
 	*/
-	
-	// Key for indexing list items
-	var key = -1;
-	
-	var SelectableTrialList = function SelectableTrialList(_ref) {
-	    var list = _ref.list,
-	        selected = _ref.selected,
-	        onTap = _ref.onTap;
-	    return React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	            _List.List,
-	            { defaultValue: selected },
-	            React.createElement(
-	                _Subheader2.default,
-	                null,
-	                'Current Trials'
-	            ),
-	            list.map(function (trial) {
-	                key = key + 1;
-	                return React.createElement(_List.ListItem, {
-	                    primaryText: trial.name,
-	                    value: key,
-	                    leftAvatar: React.createElement(
-	                        _Avatar2.default,
-	                        null,
-	                        'T'
-	                    ),
-	                    onTouchTap: onTap,
-	                    key: key
-	                });
-	            })
-	        )
-	    );
-	};
-	
-	exports.default = SelectableTrialList;
 
 /***/ },
 /* 450 */
-/*!***********************!*\
-  !*** ./src/Trial.jsx ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _react = __webpack_require__(/*! react */ 1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactDom = __webpack_require__(/*! react-dom */ 32);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var Trial = function Trial(_ref) {
-	    var name = _ref.name,
-	        children = _ref.children,
-	        type = _ref.type,
-	        pluginType = _ref.pluginType,
-	        pluginData = _ref.pluginData,
-	        errors = _ref.errors;
-	
-	    _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	            'title',
-	            null,
-	            name
-	        )
-	    );
-	};
-
-/***/ },
-/* 451 */
 /*!**************************************************************!*\
   !*** ./~/react-tap-event-plugin/src/injectTapEventPlugin.js ***!
   \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {var invariant = __webpack_require__(/*! fbjs/lib/invariant */ 8);
-	var defaultClickRejectionStrategy = __webpack_require__(/*! ./defaultClickRejectionStrategy */ 452);
+	var defaultClickRejectionStrategy = __webpack_require__(/*! ./defaultClickRejectionStrategy */ 451);
 	
 	var alreadyInjected = false;
 	
@@ -43700,14 +43701,14 @@
 	  alreadyInjected = true;
 	
 	  __webpack_require__(/*! react-dom/lib/EventPluginHub */ 42).injection.injectEventPluginsByName({
-	    'TapEventPlugin':       __webpack_require__(/*! ./TapEventPlugin.js */ 453)(shouldRejectClick)
+	    'TapEventPlugin':       __webpack_require__(/*! ./TapEventPlugin.js */ 452)(shouldRejectClick)
 	  });
 	};
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 452 */
+/* 451 */
 /*!***********************************************************************!*\
   !*** ./~/react-tap-event-plugin/src/defaultClickRejectionStrategy.js ***!
   \***********************************************************************/
@@ -43721,7 +43722,7 @@
 
 
 /***/ },
-/* 453 */
+/* 452 */
 /*!********************************************************!*\
   !*** ./~/react-tap-event-plugin/src/TapEventPlugin.js ***!
   \********************************************************/
@@ -43752,10 +43753,10 @@
 	var EventPluginUtils = __webpack_require__(/*! react-dom/lib/EventPluginUtils */ 44);
 	var EventPropagators = __webpack_require__(/*! react-dom/lib/EventPropagators */ 41);
 	var SyntheticUIEvent = __webpack_require__(/*! react-dom/lib/SyntheticUIEvent */ 75);
-	var TouchEventUtils = __webpack_require__(/*! ./TouchEventUtils */ 454);
+	var TouchEventUtils = __webpack_require__(/*! ./TouchEventUtils */ 453);
 	var ViewportMetrics = __webpack_require__(/*! react-dom/lib/ViewportMetrics */ 76);
 	
-	var keyOf = __webpack_require__(/*! fbjs/lib/keyOf */ 455);
+	var keyOf = __webpack_require__(/*! fbjs/lib/keyOf */ 454);
 	var topLevelTypes = EventConstants.topLevelTypes;
 	
 	var isStartish = EventPluginUtils.isStartish;
@@ -43901,7 +43902,7 @@
 
 
 /***/ },
-/* 454 */
+/* 453 */
 /*!*********************************************************!*\
   !*** ./~/react-tap-event-plugin/src/TouchEventUtils.js ***!
   \*********************************************************/
@@ -43952,7 +43953,7 @@
 
 
 /***/ },
-/* 455 */
+/* 454 */
 /*!*****************************!*\
   !*** ./~/fbjs/lib/keyOf.js ***!
   \*****************************/
@@ -43994,7 +43995,7 @@
 	module.exports = keyOf;
 
 /***/ },
-/* 456 */
+/* 455 */
 /*!**************************!*\
   !*** ./src/reducers.jsx ***!
   \**************************/
@@ -44088,6 +44089,141 @@
 	            return state;
 	    }
 	};
+
+/***/ },
+/* 456 */
+/*!***********************!*\
+  !*** ./src/Trial.jsx ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(/*! react-dom */ 32);
+	
+	var _List = __webpack_require__(/*! material-ui/List */ 358);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// Class for each trial component
+	var Trial = function (_React$Component) {
+	    _inherits(Trial, _React$Component);
+	
+	    function Trial() {
+	        _classCallCheck(this, Trial);
+	
+	        return _possibleConstructorReturn(this, (Trial.__proto__ || Object.getPrototypeOf(Trial)).apply(this, arguments));
+	    }
+	
+	    _createClass(Trial, [{
+	        key: 'render',
+	        value: function render() {
+	            var curTrialID = nextTrialID++;
+	            return _react2.default.createElement(
+	                'div',
+	                null,
+	                'Hi'
+	            );
+	        }
+	    }]);
+	
+	    return Trial;
+	}(_react2.default.Component);
+	/*
+	    name,
+	    children,
+	    type,
+	    pluginType,
+	    pluginData,
+	    errors
+	}) => {
+
+	}*/
+
+/***/ },
+/* 457 */
+/*!*************************!*\
+  !*** ./src/actions.jsx ***!
+  \*************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.actionRemoveTrial = exports.actionAddTrial = exports.actionSelectTrial = undefined;
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(/*! react-dom */ 32);
+	
+	var _deepFreeze = __webpack_require__(/*! deep-freeze */ 458);
+	
+	var _reactRedux = __webpack_require__(/*! react-redux */ 178);
+	
+	var _redux = __webpack_require__(/*! redux */ 185);
+	
+	var _reducers = __webpack_require__(/*! reducers */ 455);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var actionSelectTrial = exports.actionSelectTrial = function actionSelectTrial(store, key) {
+	    store.dispatch({
+	        type: 'SELECT_TRIAL',
+	        index: key
+	    });
+	};
+	var actionAddTrial = exports.actionAddTrial = function actionAddTrial(store) {
+	    // Dispatch the action calling for a new trial to be added
+	    store.dispatch({
+	        type: 'ADD_TRIAL'
+	    });
+	};
+	var actionRemoveTrial = exports.actionRemoveTrial = function actionRemoveTrial(store) {
+	    var state = store.getState();
+	    store.dispatch({
+	        type: 'REMOVE_TRIAL',
+	        index: state.selected
+	    });
+	};
+
+/***/ },
+/* 458 */
+/*!********************************!*\
+  !*** ./~/deep-freeze/index.js ***!
+  \********************************/
+/***/ function(module, exports) {
+
+	module.exports = function deepFreeze (o) {
+	  Object.freeze(o);
+	
+	  Object.getOwnPropertyNames(o).forEach(function (prop) {
+	    if (o.hasOwnProperty(prop)
+	    && o[prop] !== null
+	    && (typeof o[prop] === "object" || typeof o[prop] === "function")
+	    && !Object.isFrozen(o[prop])) {
+	      deepFreeze(o[prop]);
+	    }
+	  });
+	  
+	  return o;
+	};
+
 
 /***/ }
 /******/ ]);
