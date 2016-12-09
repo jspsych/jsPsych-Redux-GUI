@@ -1,8 +1,7 @@
-// src/app.js
+// src/app.jsx
 
 import React from 'react';
 import { render } from 'react-dom';
-import { deepFreeze } from 'deep-freeze';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -17,7 +16,7 @@ import { timeline } from 'reducers';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
-
+// ----- Actions ----- //
 const actionSelectTrial = () => {
     store.dispatch({
         type: 'SELECT_TRIAL',
