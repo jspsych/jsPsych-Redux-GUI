@@ -4,13 +4,14 @@ export const timeline = (state = {}, action) => {
     if (typeof state === null) {
         return {};
     }
+
     // Perform an operation on the state specified by the action type
     switch (action.type) {
 
         // Reducer for the initial state
         case 'INITIAL_STATE':
             return {
-                selected: 0,  
+                selected: 0,
                 trials: [
                     {
                         id: 0,
@@ -23,26 +24,28 @@ export const timeline = (state = {}, action) => {
                     }
                 ]
             };
-    case 'SELECT_TRIAL':
-	if (action.index > state.trials.length) {
-	    return {
-		selected: state.trials.length,
-		trials: state.trials
-	    }
-	} else {
-            return {
-                selected: action.index,
-                trials: state.trials
-            };
-	}        
-    case 'ADD_TRIAL':
+        case 'SELECT_TRIAL':
+            // If the provided index is greater than the number of trials
+            // set selected to be the last trial in the list.
+            if (action.index > state.trials.length) {
+                return {
+                    selected: state.trials.length,
+                    trials: state.trials
+                }
+            } else {
+                return {
+                    selected: action.index,
+                    trials: state.trials
+                };
+            }
+        case 'ADD_TRIAL':
             var index = state.trials.length;
             var name = "Trial_" + index.toString()
             return {
                 selected: index,
-                trials: [
-                    ...state.trials,
-                    {
+                trials: [               /// Return a new list of trials made from appending...
+                    ...state.trials,    /// The old list of trials
+                    {                   /// The new trial to be added 
                         id: index,
                         name: name,
                         children: [],
@@ -54,19 +57,45 @@ export const timeline = (state = {}, action) => {
                 ]
             };
         case 'REMOVE_TRIAL':
-            var index;
+
+            var index;          /// Used to set the new state.selected value.
+            var new_trials = [];/// Used to store the updated trial list 
+            
+            /// Fancy syntax for removing a list item without mutation
+            var old_trials = [
+                ...state.trials.slice(0, action.index),
+                ...state.trials.slice(action.index + 1)
+            ]
+            
+            /// Rebuild the trial list to ensure that every trial has the correct key
+            for (var t = 0; t < old_trials.length; t++) {
+                new_trials = [
+                    ...new_trials,
+                    {
+                        id: t,
+                        name: old_trials[t].name,
+                        children: old_trials[t].children,
+                        type: old_trials[t].type,
+                        pluginType: old_trials[t].pluginType,
+                        pluginData: old_trials[t].pluginData,
+                        errors: old_trials[t].errors
+                    }
+                ]
+            }
+            
+            /// Set the value of index to be one less than the 
+            /// trial removed unless that trial had index 0
             if (action.index === 0) {
                 index = 0;
             } else {
                 index = action.index - 1;
             }
+            
             return {
                 selected: index,
-                trials: [
-                    ...state.trials.slice(0, action.index),
-                    ...state.trials.slice(action.index + 1)
-                ]
+                trials: new_trials
             };
+
         default:
             return state;
     }

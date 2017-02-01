@@ -12,22 +12,17 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Timeline from 'Timeline';
 import { timeline } from 'reducers';
-//import {actionSelectTrial, actionAddTrial, actionRemoveTrial} from 'actions';
+//import {actionAddTrial, actionRemoveTrial} from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
 // ----- Actions ----- //
-const actionSelectTrial = ({key}) => {
-    store.dispatch({
-        type: 'SELECT_TRIAL',
-        index: key
-    });
-}
 const actionAddTrial = () => {// Dispatch the action calling for a new trial to be added
     store.dispatch({
         type: 'ADD_TRIAL'
     });
 }
+
 const actionRemoveTrial = () => {
     var state = store.getState();
     store.dispatch({
@@ -73,11 +68,10 @@ const renderApp = () => {
         <div >
             <MuiThemeProvider muiTheme={setMuiTheme}>
                 <Provider store={store}>
-                    <App
+                    <App 
                         store={store}
                         trialList={state.trials}
                         selected={state.selected}
-                        selectTrial={actionSelectTrial}
                         addTrial={actionAddTrial}
                         removeTrial={actionRemoveTrial}
                         />
@@ -86,6 +80,7 @@ const renderApp = () => {
         </div>,
         document.getElementById('app')
     );
+    console.log() // Add some whitespace 
 };
 
 // Callback that Redux store will call every time an action is dispatched
@@ -96,7 +91,6 @@ store.subscribe(renderApp)
 store.dispatch({
     type: 'INITIAL_STATE'
 })
-
 
 // Render the application
 renderApp();

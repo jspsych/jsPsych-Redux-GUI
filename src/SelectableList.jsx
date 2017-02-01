@@ -25,8 +25,8 @@ class SelectableTrialList extends React.Component {
                     <Subheader>Current Trials</Subheader>
                     {
                         this.props.list.map(trial => {
+
                             // Each trial gets a unique key
-                            console.log(trial);
                             return (
                                 <ListItem
                                     key={trial.id}
@@ -35,8 +35,7 @@ class SelectableTrialList extends React.Component {
                                     onTouchTap={this.handleTouchTap.bind(this, trial.id)}
                                     />
                             )
-                        }
-                        )
+                        })
                     }
                 </List>
             </div>

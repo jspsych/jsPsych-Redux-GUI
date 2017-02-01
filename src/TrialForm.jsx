@@ -15,6 +15,7 @@ const toggleStylesToggle = { marginBottom: 16 };
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
+///// NOT CURRENTLY IN USE ///////  
 
 const asyncValidate = (values/*, dispatch */) => {
   return sleep(1000) // simulate server latency
