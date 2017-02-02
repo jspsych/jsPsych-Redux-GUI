@@ -1,0 +1,18 @@
+For timeline
+
+To Do:
+- Change selected to a list, usually of one element. 
+- Drag to reoroder trials in the Timeline.
+- A couple trials in a certain order should be able to be repeaterd.
+	- In jsPsych is can be defined as a procedure, the stimulus parameter is a timeline variable.
+	- hsPsych should perform the proceedure for each variable 
+- Some sets of trials and a set of trials underneath them. 
+	- Maybe can toggle between trial and processure
+	- under the procedure setting the timeline becomes a lsit of variables you can define.
+- Select individual or sets of trials. 
+- Should be be able to play only the selected trials.
+= Mabe checkboxes maybe highlight an area.
+- Follow the material floating action design model.
+
+- When you select some trials the delete button would appear. 
+- other buttons could appear.   

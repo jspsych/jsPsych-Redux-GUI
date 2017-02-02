@@ -3,7 +3,7 @@ import { Component, PropTypes } from 'react';
 import { List, ListItem, MakeSelectable } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
-import Trial from 'Trial';
+//import Trial from 'Trial';
 import { actionSelectTrial } from 'actions';
 
 
