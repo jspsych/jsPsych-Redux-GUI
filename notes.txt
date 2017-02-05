@@ -16,3 +16,15 @@ To Do:
 
 - When you select some trials the delete button would appear. 
 - other buttons could appear.   
+
+A text value can be text or a function that returns text. 
+Form field can be altered to enter text. 
+Be sure to sanatize input.
+
+
+For Form input;
+
+Top component:
+Use MaterialUI AppBar
+
+0 Experiment settings page 

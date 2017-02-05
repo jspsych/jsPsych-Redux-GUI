@@ -11,7 +11,7 @@ export const timeline = (state = {}, action) => {
         // Reducer for the initial state
         case 'INITIAL_STATE':
             return {
-                selected: 0,
+                selected: [0],
                 trials: [
                     {
                         id: 0,
@@ -29,12 +29,12 @@ export const timeline = (state = {}, action) => {
             // set selected to be the last trial in the list.
             if (action.index > state.trials.length) {
                 return {
-                    selected: state.trials.length,
+                    selected: [...state.selected, state.trials.length],
                     trials: state.trials
                 }
             } else {
                 return {
-                    selected: action.index,
+                    selected: [...state.selected, action.index],
                     trials: state.trials
                 };
             }
@@ -60,29 +60,29 @@ export const timeline = (state = {}, action) => {
 
             var index;          /// Used to set the new state.selected value.
             var new_trials = [];/// Used to store the updated trial list 
-            
+            var i = 0;          /// Used to create the new trial indices
             /// Fancy syntax for removing a list item without mutation
-            var old_trials = [
-                ...state.trials.slice(0, action.index),
-                ...state.trials.slice(action.index + 1)
-            ]
-            
+            var old_trials = state.trials;
+
             /// Rebuild the trial list to ensure that every trial has the correct key
             for (var t = 0; t < old_trials.length; t++) {
-                new_trials = [
-                    ...new_trials,
-                    {
-                        id: t,
-                        name: old_trials[t].name,
-                        children: old_trials[t].children,
-                        type: old_trials[t].type,
-                        pluginType: old_trials[t].pluginType,
-                        pluginData: old_trials[t].pluginData,
-                        errors: old_trials[t].errors
-                    }
-                ]
+                if (!state.selected.includes(t)) {
+                    new_trials = [
+                        ...new_trials,
+                        {
+                            id: i,
+                            name: old_trials[t].name,
+                            children: old_trials[t].children,
+                            type: old_trials[t].type,
+                            pluginType: old_trials[t].pluginType,
+                            pluginData: old_trials[t].pluginData,
+                            errors: old_trials[t].errors
+                        }
+                    ]
+                    i++;
+                }
             }
-            
+
             /// Set the value of index to be one less than the 
             /// trial removed unless that trial had index 0
             if (action.index === 0) {
@@ -90,9 +90,9 @@ export const timeline = (state = {}, action) => {
             } else {
                 index = action.index - 1;
             }
-            
+
             return {
-                selected: index,
+                selected: [index],
                 trials: new_trials
             };
 
