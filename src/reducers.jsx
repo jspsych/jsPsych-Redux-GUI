@@ -29,20 +29,48 @@ export const timeline = (state = {}, action) => {
             // set selected to be the last trial in the list.
             if (action.index > state.trials.length) {
                 return {
-                    selected: [...state.selected, state.trials.length],
+                    selected: [state.trials.length],
                     trials: state.trials
                 }
             } else {
                 return {
-                    selected: [...state.selected, action.index],
+                    selected: [action.index],
                     trials: state.trials
                 };
+            }
+        case 'SELECT_ADDITIONAL_TRIAL':
+            // If the provided index is greater than the number of trials
+            // set selected to be the last trial in the list.
+            if (action.index > state.trials.length) {
+                return {
+                    selected: [...state.selected, state.trials.length],
+                    trials: state.trials
+                }
+            } else {
+                // If the trial is already in the list of selected trials,
+                // remove the trial from the list
+                if (state.selected.includes(action.index)) {
+                    var slicePoint = state.selected.indexOf(action.index);
+                    return {
+                        selected: [
+                            ...state.selected.slice(0,slicePoint),
+                            ...state.selected.slice(slicePoint+1)
+                            ],
+                        trials: state.trials
+                    };
+                // Otherwise add the trial to the list of selected trials
+                } else {
+                    return {
+                        selected: [...state.selected, action.index],
+                        trials: state.trials
+                    };
+                }
             }
         case 'ADD_TRIAL':
             var index = state.trials.length;
             var name = "Trial_" + index.toString()
             return {
-                selected: index,
+                selected: [index],
                 trials: [               /// Return a new list of trials made from appending...
                     ...state.trials,    /// The old list of trials
                     {                   /// The new trial to be added 

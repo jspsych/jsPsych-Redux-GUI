@@ -14,7 +14,12 @@ export const actionSelectTrial = (store, key) =>{
         index: key
     });
 }
-
+export const actionSelectAdditionalTrial = (store, key) =>{
+    store.dispatch({
+        type: 'SELECT_ADDITIONAL_TRIAL',
+        index: key
+    });
+}
 // Dispatch the action calling for a new trial to be added
 export const actionAddTrial = (store) => {
     //console.log ("Add", store)
