@@ -37,18 +37,22 @@ const actionRemoveTrial = () => {
 const App = ({
     store,
     trialList,
+    openDrawers,
     selected,
     selectTrial,
     addTrial,
     removeTrial
+
 }) => (
         <Timeline
             store={store}
             trialList={trialList}
+            openDrawers={openDrawers}
             selected={selected}
             onSelect={selectTrial}
             onAdd={addTrial}
             onRemove={removeTrial}
+
             />
     );
 
@@ -71,6 +75,7 @@ const renderApp = () => {
                     <App 
                         store={store}
                         trialList={state.trials}
+                        openDrawers={state.openDrawers}
                         selected={state.selected}
                         addTrial={actionAddTrial}
                         removeTrial={actionRemoveTrial}

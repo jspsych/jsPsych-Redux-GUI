@@ -6,15 +6,17 @@ import { createStore, combineReducers } from 'redux';
 
 import { timeline } from 'reducers';
 
-
-export const actionSelectTrial = (store, key) =>{
+// Dispatch the action calling for a trial to be selected
+export const actionSelectTrial = (store, key) => {
     //console.log("Select", store)
     store.dispatch({
         type: 'SELECT_TRIAL',
         index: key
     });
 }
-export const actionSelectAdditionalTrial = (store, key) =>{
+
+// Dispatch the action calling for an additional trial to be selected
+export const actionSelectAdditionalTrial = (store, key) => {
     store.dispatch({
         type: 'SELECT_ADDITIONAL_TRIAL',
         index: key
@@ -28,6 +30,7 @@ export const actionAddTrial = (store) => {
     });
 }
 
+// Dispatch action calling for a trial to be removed from trialList
 export const actionRemoveTrial = (store) => {
     //console.log("Remove", store)
     var state = store.getState();
@@ -35,4 +38,26 @@ export const actionRemoveTrial = (store) => {
         type: 'REMOVE_TRIAL',
         index: state.selected
     })
+}
+
+// Dispatch an action calling for a Drawer to be opened
+export const actionHandleDrawer = (store, drawerName) => {
+    var state = store.getState();
+
+    // If a trial is selected open the drawer
+    if (state.selected.length > 0) 
+    {
+        store.dispatch({
+            type: 'OPEN_DRAWER',
+            name: drawerName
+        })
+    } 
+    else // If no trial is selected close the plugin drawer
+    {
+        store.dispatch({
+            type: 'CLOSE_DRAWER',
+            name: drawerName
+        })
+    }
+
 }

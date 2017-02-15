@@ -8,7 +8,7 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 //import Trial from 'Trial';
-import { actionSelectTrial, actionSelectAdditionalTrial } from 'actions';
+import { actionSelectTrial, actionSelectAdditionalTrial, actionHandleDrawer } from 'actions';
 
 
 // Key for indexing list items
@@ -28,12 +28,14 @@ class SelectableTrialList extends React.Component {
         //console.log("Tapped", actionSelectTrial, this);
         var store = this.props.storeState;
         actionSelectTrial(store, id);
+        actionHandleDrawer(store, "pluginDrawer");
     }
     // Dispatch an action the add the clicked trial to the 
     // list of selected trials 
     handleTouchAdd(id) {
         var store = this.props.storeState;
         actionSelectAdditionalTrial(store, id);
+        actionHandleDrawer(store, "pluginDrawer");
     }
     // Determines if the trial is selected/checked
     isChecked(id) {

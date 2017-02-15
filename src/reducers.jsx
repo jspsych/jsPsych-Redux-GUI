@@ -22,7 +22,8 @@ export const timeline = (state = {}, action) => {
                         pluginData: [],
                         errors: null
                     }
-                ]
+                ],
+                openDrawers: ['pluginDrawer']
             };
         case 'SELECT_TRIAL':
             // If the provided index is greater than the number of trials
@@ -30,12 +31,14 @@ export const timeline = (state = {}, action) => {
             if (action.index > state.trials.length) {
                 return {
                     selected: [state.trials.length],
-                    trials: state.trials
+                    trials: state.trials,
+                    openDrawers: state.openDrawers
                 }
             } else {
                 return {
                     selected: [action.index],
-                    trials: state.trials
+                    trials: state.trials,
+                    openDrawers: state.openDrawers
                 };
             }
         case 'SELECT_ADDITIONAL_TRIAL':
@@ -44,7 +47,8 @@ export const timeline = (state = {}, action) => {
             if (action.index > state.trials.length) {
                 return {
                     selected: [...state.selected, state.trials.length],
-                    trials: state.trials
+                    trials: state.trials,
+                    openDrawers: state.openDrawers
                 }
             } else {
                 // If the trial is already in the list of selected trials,
@@ -53,16 +57,18 @@ export const timeline = (state = {}, action) => {
                     var slicePoint = state.selected.indexOf(action.index);
                     return {
                         selected: [
-                            ...state.selected.slice(0,slicePoint),
-                            ...state.selected.slice(slicePoint+1)
-                            ],
-                        trials: state.trials
+                            ...state.selected.slice(0, slicePoint),
+                            ...state.selected.slice(slicePoint + 1)
+                        ],
+                        trials: state.trials,
+                        openDrawers: state.openDrawers
                     };
-                // Otherwise add the trial to the list of selected trials
+                    // Otherwise add the trial to the list of selected trials
                 } else {
                     return {
                         selected: [...state.selected, action.index],
-                        trials: state.trials
+                        trials: state.trials,
+                        openDrawers: state.openDrawers
                     };
                 }
             }
@@ -82,7 +88,8 @@ export const timeline = (state = {}, action) => {
                         pluginData: [],
                         errors: null
                     }
-                ]
+                ],
+                openDrawers: state.openDrawers
             };
         case 'REMOVE_TRIAL':
 
@@ -121,9 +128,51 @@ export const timeline = (state = {}, action) => {
 
             return {
                 selected: [index],
-                trials: new_trials
+                trials: new_trials,
+                openDrawers: state.openDrawers
             };
-
+        case 'OPEN_DRAWER':
+            // If the provided drawer is already open do nothing
+            if (state.openDrawers.includes(action.name)) {
+                return {
+                    selected: state.selected,
+                    trials: state.trials,
+                    openDrawers: state.openDrawers
+                }
+            }
+            // Otherwise add the drawer to the list of drawers that are open
+            else {
+                return {
+                    selected: state.selected,
+                    trials: state.trials,
+                    openDrawers: [
+                        ...state.openDrawers,
+                        action.name // The newly opened drawer
+                    ]
+                }
+            }
+        case 'CLOSE_DRAWER':
+            // If the provided drawer is open, close it by removing it from the list
+            if (state.openDrawers.includes(action.name)) {
+                // Get the index of the drawer to be closed
+                var index = state.openDrawers.indexOf(action.name);
+                return {
+                    selected: state.selected,
+                    trials: state.trials,
+                    openDrawers: [ // Remove it from the list
+                        ...state.openDrawers.slice(0, index),
+                        ...state.openDrawers.slice(index + 1)
+                    ]
+                }
+            }
+            // Otherwise do nothing
+            else {
+                return {
+                    selected: state.selected,
+                    trials: state.trials,
+                    openDrawers: state.openDrawers
+                }
+            }
         default:
             return state;
     }

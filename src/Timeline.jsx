@@ -13,6 +13,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import SelectableTrialList from 'SelectableList';
+import PluginDrawer from 'PluginDrawer';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Initialize the T.E.P. necessay for using "onTouchTap"
@@ -35,10 +36,17 @@ const removeStyleFAB = {
     right: window.innerWidth * 0.1
 }
 
+// Check if the given drawer should be open
+const checkDrawerStatus = (store, name) => {
+    var state = store.getState();
+    return
+}
+
 // The "dump" Component for the Timeline of experimental trials
 const Timeline = ({
     store,              // Object: The current state of the store
     trialList,          // List: The list containing each trial in the current experiment
+    openDrawers,        // List: The names of all the drawers that are currently open
     selected,           // Integer: The curently selected trial in the list. Default=1
     onSelect,           // Action: Sets the value of selected
     onAdd,              // Action: Adds a trial
@@ -46,11 +54,23 @@ const Timeline = ({
 }) => (
         <div>
             <title>  Experimental Timeline </title>
-            <SelectableTrialList storeState={store} list={trialList} selected={selected} onTap={onSelect} />
-            <FloatingActionButton style={addStyleFAB} onTouchTap={onAdd}>
+            <SelectableTrialList
+                storeState={store}
+                list={trialList}
+                selected={selected}
+                onTap={onSelect} />
+            <PluginDrawer
+                storeState={store}
+                openDrawers={openDrawers}
+            />
+            <FloatingActionButton
+                style={addStyleFAB}
+                onTouchTap={onAdd}>
                 <ContentAdd />
             </FloatingActionButton>
-            <FloatingActionButton style={removeStyleFAB} onTouchTap={onRemove}>
+            <FloatingActionButton
+                style={removeStyleFAB}
+                onTouchTap={onRemove}>
                 <ContentRemove />
             </FloatingActionButton>
         </div>
