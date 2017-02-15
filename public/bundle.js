@@ -81,20 +81,21 @@
 	
 	var _reducers = __webpack_require__(/*! reducers */ 457);
 	
+	var _actions = __webpack_require__(/*! actions */ 455);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	//import {actionAddTrial, actionRemoveTrial} from 'actions';
-	
-	// src/app.jsx
 	
 	var setMuiTheme = (0, _getMuiTheme2.default)(_lightBaseTheme2.default);
 	
 	// ----- Actions ----- //
+	// src/app.jsx
+	
 	var actionAddTrial = function actionAddTrial() {
 	    // Dispatch the action calling for a new trial to be added
 	    store.dispatch({
 	        type: 'ADD_TRIAL'
 	    });
+	    (0, _actions.actionHandleDrawer)(store, "pluginDrawer");
 	};
 	
 	var actionRemoveTrial = function actionRemoveTrial() {
@@ -103,6 +104,7 @@
 	        type: 'REMOVE_TRIAL',
 	        index: state.selected
 	    });
+	    (0, _actions.actionHandleDrawer)(store, "pluginDrawer");
 	};
 	
 	// A "dump" component. It contains no logic
