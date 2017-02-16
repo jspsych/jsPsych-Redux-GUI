@@ -45,25 +45,31 @@ const checkDrawerStatus = (store, name) => {
 // The "dump" Component for the Timeline of experimental trials
 const Timeline = ({
     store,              // Object: The current state of the store
-    trialList,          // List: The list containing each trial in the current experiment
-    openDrawers,        // List: The names of all the drawers that are currently open
-    selected,           // Integer: The curently selected trial in the list. Default=1
-    onSelect,           // Action: Sets the value of selected
-    onAdd,              // Action: Adds a trial
-    onRemove            // Action: Removes the trial whose index === selected
+    state
+    //trialList,          // List: The list containing each trial in the current experiment
+    //trialOrder,
+    //openDrawer        // List: The names of all the drawers that are currently open
+    //    selected,           // Integer: The curently selected trial in the list. Default=1
+    //    onSelect,           // Action: Sets the value of selected
+    //    onAdd,              // Action: Adds a trial
+    //    onRemove            // Action: Removes the trial whose index === selected
 }) => (
-        <div>
-            <title>  Experimental Timeline </title>
-            <SelectableTrialList
-                storeState={store}
-                list={trialList}
-                selected={selected}
-                onTap={onSelect} />
-            <PluginDrawer
-                storeState={store}
-                openDrawers={openDrawers}
-            />
-            <FloatingActionButton
+    <div>
+    <title>  Experimental Timeline </title>
+    <SelectableTrialList
+    store={store}
+    state={state}
+    />
+    <PluginDrawer
+    storeState={store}
+    openDrawers={state.openDrawer}
+    />
+    </div>
+);
+
+export default Timeline;
+/*
+ *             <FloatingActionButton
                 style={addStyleFAB}
                 onTouchTap={onAdd}>
                 <ContentAdd />
@@ -73,7 +79,4 @@ const Timeline = ({
                 onTouchTap={onRemove}>
                 <ContentRemove />
             </FloatingActionButton>
-        </div>
-    );
-
-export default Timeline;
+            */
