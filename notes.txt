@@ -2,7 +2,7 @@ For timeline
 
 To Do:
 - Change selected to a list, usually of one element. 
-- Drag to reoroder trials in the Timeline.
+- Drag to reoroder trials in the Timeline. <------
 - A couple trials in a certain order should be able to be repeaterd.
 	- In jsPsych is can be defined as a procedure, the stimulus parameter is a timeline variable.
 	- hsPsych should perform the proceedure for each variable 
@@ -28,3 +28,32 @@ Top component:
 Use MaterialUI AppBar
 
 0 Experiment settings page 
+
+In addition to the add key there should be a copy option.
+To copy all the currently selected trials. Make it so the 
+trial selected for the drawer stays highlighted. Also reorder
+the trials.
+
+Have an array that represents Each trial needs
+
+- Name: String
+- IsTimeline: <boolean>
+- Timeline:  Populated if the type is timeline.
+-	TrialType: Arrary [<Integer> Children IDs]
+- TrialType: <String>
+- Parent: <Integer> representing ID.
+- Selected: <boolean> 
+
+- Have additional property for keeping track of the ordering of the trials 
+
+Add tracking of the state history back 50 steps
+also redo
+
+When implementing a new feature, generate a new branch on the repository
+
+Prepend the branch name with "feature"
+add only one feature per new branch. 
+once everything is working merge it back into the master branch.  
+
+
+

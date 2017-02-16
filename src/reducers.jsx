@@ -31,14 +31,12 @@ export const timeline = (state = {}, action) => {
             if (action.index > state.trials.length) {
                 return {
                     selected: [state.trials.length],
-                    trials: state.trials,
-                    openDrawers: state.openDrawers
+			...state,
                 }
             } else {
                 return {
                     selected: [action.index],
-                    trials: state.trials,
-                    openDrawers: state.openDrawers
+			...state
                 };
             }
         case 'SELECT_ADDITIONAL_TRIAL':
@@ -60,15 +58,13 @@ export const timeline = (state = {}, action) => {
                             ...state.selected.slice(0, slicePoint),
                             ...state.selected.slice(slicePoint + 1)
                         ],
-                        trials: state.trials,
-                        openDrawers: state.openDrawers
+			    ...state
                     };
                     // Otherwise add the trial to the list of selected trials
                 } else {
                     return {
                         selected: [...state.selected, action.index],
-                        trials: state.trials,
-                        openDrawers: state.openDrawers
+			    ...state
                     };
                 }
             }
@@ -89,62 +85,62 @@ export const timeline = (state = {}, action) => {
                         errors: null
                     }
                 ],
-                openDrawers: state.openDrawers
+		    ...state
             };
         case 'REMOVE_TRIAL':
 
-            var index;          /// Used to set the new state.selected value.
-            var new_trials = [];/// Used to store the updated trial list 
-            var i = 0;          /// Used to create the new trial indices
-            /// Fancy syntax for removing a list item without mutation
-            var old_trials = state.trials;
+		    var index;          /// Used to set the new state.selected value.
+		    var new_trials = [];/// Used to store the updated trial list 
+		    var i = 0;          /// Used to create the new trial indices
+		    /// Fancy syntax for removing a list item without mutation
+		    var old_trials = state.trials;
+		    var new_openDrawers = [];
+		    /// Rebuild the trial list to ensure that every trial has the correct key
+		    for (var t = 0; t < old_trials.length; t++) {
+			    if (!state.selected.includes(t)) {
+				    new_trials = [
+					    ...new_trials,
+					    {
+						    id: i,
+						    name: old_trials[t].name,
+						    children: old_trials[t].children,
+						    type: old_trials[t].type,
+						    pluginType: old_trials[t].pluginType,
+						    pluginData: old_trials[t].pluginData,
+						    errors: old_trials[t].errors
+					    }
+				    ]
+				    i++;
+			    }
+		    }
 
-            /// Rebuild the trial list to ensure that every trial has the correct key
-            for (var t = 0; t < old_trials.length; t++) {
-                if (!state.selected.includes(t)) {
-                    new_trials = [
-                        ...new_trials,
-                        {
-                            id: i,
-                            name: old_trials[t].name,
-                            children: old_trials[t].children,
-                            type: old_trials[t].type,
-                            pluginType: old_trials[t].pluginType,
-                            pluginData: old_trials[t].pluginData,
-                            errors: old_trials[t].errors
-                        }
-                    ]
-                    i++;
-                }
-            }
-
-            /// Set the value of index to be one less than the 
-            /// trial removed unless that trial had index 0
-            if (action.index === 0) {
-                index = 0;
-            } else {
-                index = action.index - 1;
-            }
-
-            return {
-                selected: [index],
-                trials: new_trials,
-                openDrawers: state.openDrawers
+		    /// Set the value of index to be one less than the 
+		    /// trial removed unless that trial had index 0
+		    if (action.index === 0) {
+			    index = 0;
+		    } else {
+			    index = action.index - 1;
+		    }
+		    if (new_trials.length > 0){
+			    new_openDrawers = state.openDrawers;
+		    }
+		    return {
+			    ...state,
+			    selected: [index],
+			    trials: new_trials,
+			    openDrawers: new_openDrawers
             };
         case 'OPEN_DRAWER':
             // If the provided drawer is already open do nothing
             if (state.openDrawers.includes(action.name)) {
                 return {
-                    selected: state.selected,
-                    trials: state.trials,
-                    openDrawers: state.openDrawers
+			...state
                 }
             }
             // Otherwise add the drawer to the list of drawers that are open
             else {
                 return {
-                    selected: state.selected,
-                    trials: state.trials,
+		...state,
                     openDrawers: [
                         ...state.openDrawers,
                         action.name // The newly opened drawer
@@ -157,8 +153,7 @@ export const timeline = (state = {}, action) => {
                 // Get the index of the drawer to be closed
                 var index = state.openDrawers.indexOf(action.name);
                 return {
-                    selected: state.selected,
-                    trials: state.trials,
+			...state,
                     openDrawers: [ // Remove it from the list
                         ...state.openDrawers.slice(0, index),
                         ...state.openDrawers.slice(index + 1)
@@ -168,10 +163,9 @@ export const timeline = (state = {}, action) => {
             // Otherwise do nothing
             else {
                 return {
-                    selected: state.selected,
-                    trials: state.trials,
-                    openDrawers: state.openDrawers
+			...state
                 }
+		    
             }
         default:
             return state;

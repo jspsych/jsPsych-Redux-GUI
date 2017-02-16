@@ -13,6 +13,7 @@ export const actionSelectTrial = (store, key) => {
         type: 'SELECT_TRIAL',
         index: key
     });
+	actionHandleDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch the action calling for an additional trial to be selected
@@ -28,6 +29,7 @@ export const actionAddTrial = (store) => {
     store.dispatch({
         type: 'ADD_TRIAL'
     });
+actionHandleDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch action calling for a trial to be removed from trialList
@@ -37,7 +39,8 @@ export const actionRemoveTrial = (store) => {
     store.dispatch({
         type: 'REMOVE_TRIAL',
         index: state.selected
-    })
+    });
+	actionHandleDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch an action calling for a Drawer to be opened

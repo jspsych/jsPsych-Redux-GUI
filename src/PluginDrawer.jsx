@@ -10,7 +10,7 @@ import Drawer from 'material-ui/Drawer';
 
 // Class for handling the pluginDrawer and its contents
 class PluginDrawer extends React.Component {
-    render() {
+    render() { // Could depend on if there are any trials in the selected list
         return (
             <Drawer
                 width={500}

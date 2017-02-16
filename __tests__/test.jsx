@@ -6,16 +6,21 @@ import deepFreeze from 'deep-freeze';
 
 // Define the initial state
 const initialState = {
-    selected: 0,
-    trials: []
+    selected: [],
+    trials: [],
+    openDrawers: []
 };
-
+const emptyState = {
+	selected: [-1],
+	trials: [],
+	openDrawers: []
+};
 // Ensure that the store is not mutated
 deepFreeze(initialState);
 
 // Define the desired state after calling 'ADD_TRIAL'
 const desired1 = {
-    selected: 0,
+    selected: [0],
     trials: [
 	{
 	    id: 0,
@@ -26,12 +31,13 @@ const desired1 = {
 	    pluginData: [],
 	    errors: null
 	}
-    ]
+    ],
+	openDrawers: ['pluginDrawer']
 };
 deepFreeze(desired1);
 
 const desired2 = {
-    selected: 1,
+    selected: [1],
     trials: [
 	{
 	    id: 0,
@@ -51,12 +57,13 @@ const desired2 = {
 	    pluginData: [],
 	    errors: null
 	}
-    ]
+    ],
+	openDrawers: ['pluginDrawer']
 };
 deepFreeze(desired2);
 
 const desired3 = {
-    selected: 2,
+    selected: [2],
     trials: [
 	{
 	    id: 0,
@@ -85,12 +92,13 @@ const desired3 = {
 	    pluginData: [],
 	    errors: null
 	}
-    ]
+    ],
+	openDrawers: ['pluginDrawer']
 };
 deepFreeze(desired3);
 
 const desired3selected1 = {
-    selected: 1,
+    selected: [1],
     trials: [
 	{
 	    id: 0,
@@ -119,12 +127,13 @@ const desired3selected1 = {
 	    pluginData: [],
 	    errors: null
 	}
-    ]
+    ],
+	openDrawers: ['pluginDrawer']
 };
 deepFreeze(desired3selected1);
 
 const desired3removed1 = {
-    selected: 0,
+    selected: [0],
     trials: [
 	{
 	    id: 0,
@@ -144,7 +153,8 @@ const desired3removed1 = {
 	    pluginData: [],
 	    errors: null
 	}
-    ]
+    ],
+	openDrawers: ['pluginDrawer']
 };
 deepFreeze(desired3removed1);
 
@@ -185,8 +195,8 @@ describe('timeline Reducer', () => {
     it('REMOVE_TRIAL', () => {
 	// Remove trial from populated timeline
 	expect(removeTrial1).toEqual(desired1);
-	// Remoe trial from empty timeline
-	expect(removeTrial2).toEqual(initialState);
+	// Remove trial from empty timeline
+	expect(removeTrial2).toEqual(emptyState);
 	// Remove internal trial
 	expect(removeTrial3).toEqual(desired3removed1);
     });
@@ -202,7 +212,9 @@ describe('timeline Reducer', () => {
 	// Select trial within range
 	expect(selectTrial1).toEqual(desired3selected1);
 	// Select trial output of trial range
-	expect(selectTrial2).toEqual(initialState);
+	expect(selectTrial2).toEqual(emptyState);
     });
-       
+      it('OPEN_DRAWER', () => {
+
+      });
 });
