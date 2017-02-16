@@ -16,6 +16,9 @@ import SelectableTrialList from 'SelectableList';
 import PluginDrawer from 'PluginDrawer';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+import {actionAddTrial} from 'actions';
+
+
 // Initialize the T.E.P. necessay for using "onTouchTap"
 injectTapEventPlugin();
 
@@ -64,19 +67,20 @@ const Timeline = ({
     storeState={store}
     openDrawers={state.openDrawer}
     />
+
+    <FloatingActionButton
+    style={addStyleFAB}
+    onTouchTap={actionAddTrial(store)}>
+    <ContentAdd />
+    </FloatingActionButton>
     </div>
 );
 
 export default Timeline;
-/*
- *             <FloatingActionButton
-                style={addStyleFAB}
-                onTouchTap={onAdd}>
-                <ContentAdd />
-            </FloatingActionButton>
-            <FloatingActionButton
+
+/*            <FloatingActionButton
                 style={removeStyleFAB}
                 onTouchTap={onRemove}>
                 <ContentRemove />
             </FloatingActionButton>
-            */
+*/

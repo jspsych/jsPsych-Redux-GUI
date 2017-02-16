@@ -21,6 +21,7 @@ const addSelectedFAB = {
     position: 'auto'
 }
 
+
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
@@ -66,14 +67,7 @@ class SelectableTrialList extends React.Component {
                             onTouchTap={this.handleTouchTap.bind(this, trial)}>
                             {this.props.state.trialList[trial].id}
                             </Avatar>}
-                        rightAvatar = {
-                            <CheckBox
-                            checked={false}
-                            labelPosition='left'
-                            style={addSelectedFAB}
-                            onCheck={this.handleTouchTap.bind(this,trial)}
-                            />
-                        }
+
                         />
 
                     )
@@ -86,7 +80,16 @@ class SelectableTrialList extends React.Component {
 }
 export default SelectableTrialList;
 
-
+/*
+ *
+ *                        rightAvatar = {
+                            <CheckBox
+                            checked={trial.selected}
+                            labelPosition='left'
+                            style={addSelectedFAB}
+                            onCheck={this.handleTouchTap.bind(this,trial)}
+                            />
+                        }
 /*TrialItem.defaultValue = {
                         name: "Trial",
     children: [],

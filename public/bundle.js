@@ -32568,6 +32568,8 @@
 	
 	var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
 	
+	var _actions = __webpack_require__(/*! actions */ 472);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// Initialize the T.E.P. necessay for using "onTouchTap"
@@ -32615,23 +32617,25 @@
 	        _react2.default.createElement(_PluginDrawer2.default, {
 	            storeState: store,
 	            openDrawers: state.openDrawer
-	        })
+	        }),
+	        _react2.default.createElement(
+	            _FloatingActionButton2.default,
+	            {
+	                style: addStyleFAB,
+	                onTouchTap: (0, _actions.actionAddTrial)(store) },
+	            _react2.default.createElement(_add2.default, null)
+	        )
 	    );
 	};
 	
 	exports.default = Timeline;
-	/*
-	 *             <FloatingActionButton
-	                style={addStyleFAB}
-	                onTouchTap={onAdd}>
-	                <ContentAdd />
-	            </FloatingActionButton>
-	            <FloatingActionButton
+	
+	/*            <FloatingActionButton
 	                style={removeStyleFAB}
 	                onTouchTap={onRemove}>
 	                <ContentRemove />
 	            </FloatingActionButton>
-	            */
+	*/
 
 /***/ },
 /* 373 */
@@ -44411,13 +44415,8 @@
 	                                {
 	                                    onTouchTap: _this2.handleTouchTap.bind(_this2, trial) },
 	                                _this2.props.state.trialList[trial].id
-	                            ),
-	                            rightAvatar: React.createElement(_Checkbox2.default, {
-	                                checked: false,
-	                                labelPosition: 'left',
-	                                style: addSelectedFAB,
-	                                onCheck: _this2.handleTouchTap.bind(_this2, trial)
-	                            })
+	                            )
+	
 	                        });
 	                    })
 	                )
@@ -44430,6 +44429,16 @@
 	
 	exports.default = SelectableTrialList;
 	
+	/*
+	 *
+	 *                        rightAvatar = {
+	                            <CheckBox
+	                            checked={trial.selected}
+	                            labelPosition='left'
+	                            style={addSelectedFAB}
+	                            onCheck={this.handleTouchTap.bind(this,trial)}
+	                            />
+	                        }
 	/*TrialItem.defaultValue = {
 	                        name: "Trial",
 	    children: [],
@@ -45351,7 +45360,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.actionHandleDrawer = exports.actionRemoveTrial = exports.actionAddTrial = exports.actionSelectAdditionalTrial = exports.actionSelectTrial = undefined;
+	exports.actionCloseDrawer = exports.actionOpenDrawer = exports.actionRemoveTrial = exports.actionAddTrial = exports.actionSelectAdditionalTrial = exports.actionSelectTrial = undefined;
 	
 	var _react = __webpack_require__(/*! react */ 1);
 	
@@ -45376,7 +45385,7 @@
 	        type: 'SELECT_TRIAL',
 	        index: key
 	    });
-	    actionHandleDrawer(store, 'pluginDrawer');
+	    actionOpenDrawer(store, 'pluginDrawer');
 	};
 	
 	// Dispatch the action calling for an additional trial to be selected
@@ -45407,22 +45416,17 @@
 	};
 	
 	// Dispatch an action calling for a Drawer to be opened
-	var actionHandleDrawer = exports.actionHandleDrawer = function actionHandleDrawer(store, drawerName) {
+	var actionOpenDrawer = exports.actionOpenDrawer = function actionOpenDrawer(store, drawerName) {
 	    var state = store.getState();
-	
-	    // If a trial is selected open the drawer
-	    if (state.selected.length > 0) {
-	        store.dispatch({
-	            type: 'OPEN_DRAWER',
-	            name: drawerName
-	        });
-	    } else // If no trial is selected close the plugin drawer
-	        {
-	            store.dispatch({
-	                type: 'CLOSE_DRAWER',
-	                name: drawerName
-	            });
-	        }
+	    store.dispatch({
+	        type: 'OPEN_DRAWER',
+	        name: drawerName
+	    });
+	};
+	var actionCloseDrawer = exports.actionCloseDrawer = function actionCloseDrawer(store) {
+	    store.dispatch({
+	        type: 'CLOSE_DRAWER'
+	    });
 	};
 
 /***/ },
@@ -45470,6 +45474,10 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
 	// Any new features of the state should be added here
 	
 	var guiState = exports.guiState = function guiState() {
@@ -45479,7 +45487,7 @@
 	
 	    // If the state is undefined return the initial state
 	    if (typeof state === null) {
-	        return { Trial: Trial };
+	        return { InitialState: _State2.default };
 	    }
 	
 	    // Perform an operation on the state specified by the action type
@@ -45497,77 +45505,34 @@
 	            var new_trial = _extends({
 	                selected: true
 	            }, old_trial);
+	            var newTrialList = state.trialList;
+	            delete newTrialList[action.name];
 	            return _extends({
-	                trials: _extends({}, state.trialList.slice(0, action.name), {
+	                trials: _extends({
 	                    new_trial: new_trial
-	                }, state.trialList.slice(action.name))
+	                }, newTrialList)
 	            }, state);
 	        case 'ADD_TRIAL':
-	            var index = state.trialList.length;
+	            var index = Object.keys(state.trialList).length;
 	            var name = "Trial_" + index.toString();
 	            return _extends({
-	                trials: _extends({}, state.trialList, { /// The old list of trials
-	                    name: _extends({}, Trial, {
-	                        name: name
-	                    })
-	                })
+	                trialList: _extends(_defineProperty({}, name, _extends({
+	                    name: name
+	                }, _State2.default['default'])), state.trialList)
 	            }, state);
 	        case 'REMOVE_TRIAL':
-	            return _extends({}, state);
-	        /*
-	        		    var index;          /// Used to set the new state.selected value.
-	        		    var new_trials = [];/// Used to store the updated trial list 
-	        		    var i = 0;          /// Used to create the new trial indices
-	        		    /// Fancy syntax for removing a list item without mutation
-	        		    var old_trials = state.trialList;
-	                    let { [action.]}
-	                    return {
-	                    ...state,
-	                        state.trialList: {
-	                        ...state.trialList.slice()
-	                        }
-	                    }
-	        
-	        
-	        		    /*var new_openDrawers = [];
-	        		    /// Rebuild the trial list to ensure that every trial has the correct key
-	        		    for (var t = 0; t < old_trials.length; t++) {
-	        			    if (!state.selected.includes(t)) {
-	        				    new_trials = [
-	        					    ...new_trials,
-	        					    {
-	        						    id: i,
-	        						    name: old_trials[t].name,
-	        						    children: old_trials[t].children,
-	        						    type: old_trials[t].type,
-	        						    pluginType: old_trials[t].pluginType,
-	        						    pluginData: old_trials[t].pluginData,
-	        						    errors: old_trials[t].errors
-	        					    }
-	        				    ]
-	        				    i++;
-	        			    }
-	        		    }
-	        
-	        		    /// Set the value of index to be one less than the 
-	        		    /// trial removed unless that trial had index 0
-	        		    if (action.index === 0) {
-	        			    index = 0;
-	        		    } else {
-	        			    index = action.index - 1;
-	        		    }
-	        		    if (new_trials.length > 0){
-	        			    new_openDrawers = state.openDrawers;
-	        		    }
-	        		    return {
-	        			    ...state,
-	        			    selected: [index],
-	        			    trials: new_trials,
-	        			    openDrawers: new_openDrawers
-	                    }; */
+	            // Remove the trial without mutation
+	            var _state$trialList = state.trialList,
+	                deletedItem = _state$trialList[action.name],
+	                rest = _objectWithoutProperties(_state$trialList, [action.name]);
+	
+	            return _extends({
+	                trialList: rest
+	            }, state);
+	
 	        case 'OPEN_DRAWER':
 	            // If the provided drawer is already open do nothing
-	            if (state.openDrawer.equals(action.name)) {
+	            if (state.openDrawer == action.name) {
 	                return _extends({}, state);
 	            }
 	            // Otherwise add the drawer to the list of drawers that are open
@@ -45577,18 +45542,9 @@
 	                    });
 	                }
 	        case 'CLOSE_DRAWER':
-	            // If the provided drawer is open, close it by removing it from the list
-	            if (state.openDrawer.equals(action.name)) {
-	                // Get the index of the drawer to be closed
-	                var index = state.openDrawers.indexOf(action.name);
-	                return _extends({}, state, {
-	                    openDrawer: action.name
-	                });
-	            }
-	            // Otherwise do nothing
-	            else {
-	                    return _extends({}, state);
-	                }
+	            return _extends({
+	                openDrawer: 'none'
+	            }, state);
 	        default:
 	            return state;
 	    }

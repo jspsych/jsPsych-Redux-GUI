@@ -13,7 +13,7 @@ export const actionSelectTrial = (store, key) => {
         type: 'SELECT_TRIAL',
         index: key
     });
-	actionHandleDrawer(store, 'pluginDrawer');
+	actionOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch the action calling for an additional trial to be selected
@@ -44,23 +44,15 @@ export const actionRemoveTrial = (store) => {
 }
 
 // Dispatch an action calling for a Drawer to be opened
-export const actionHandleDrawer = (store, drawerName) => {
+export const actionOpenDrawer = (store, drawerName) => {
     var state = store.getState();
-
-    // If a trial is selected open the drawer
-    if (state.selected.length > 0) 
-    {
         store.dispatch({
             type: 'OPEN_DRAWER',
             name: drawerName
         })
-    } 
-    else // If no trial is selected close the plugin drawer
-    {
-        store.dispatch({
-            type: 'CLOSE_DRAWER',
-            name: drawerName
-        })
-    }
-
+}
+export const actionCloseDrawer = (store) => {
+    store.dispatch({
+        type:'CLOSE_DRAWER'
+    })
 }
