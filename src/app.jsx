@@ -9,10 +9,9 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-
 import Timeline from 'Timeline';
-import { timeline } from 'reducers';
-import { actionHandleDrawer } from 'actions';
+import { guiState } from 'reducers';
+import { actionOpenDrawer } from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
@@ -21,7 +20,6 @@ const actionAddTrial = () => {// Dispatch the action calling for a new trial to 
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-    actionHandleDrawer(store, "pluginDrawer");
 }
 
 const actionRemoveTrial = () => {
@@ -30,37 +28,25 @@ const actionRemoveTrial = () => {
         type: 'REMOVE_TRIAL',
         index: state.selected
     })
-    actionHandleDrawer(store, "pluginDrawer");
 }
 
 
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
-const App = ({
+const App = ({ 
     store,
-    trialList,
-    openDrawers,
-    selected,
-    selectTrial,
-    addTrial,
-    removeTrial
-
+    state
 }) => (
-        <Timeline
-            store={store}
-            trialList={trialList}
-            openDrawers={openDrawers}
-            selected={selected}
-            onSelect={selectTrial}
-            onAdd={addTrial}
-            onRemove={removeTrial}
-
-            />
-    );
+        <Timeline 
+    store={store}
+    state={state}
+    onAdd={actionAddTrial}
+    onRemove={actionRemoveTrial}
+    />);
 
 // Create the Redux store with timeline as the reducer that
 // manages the state updates
-const store = createStore(timeline);
+const store = createStore(guiState);
 
 // The application to be rendered
 // A Timeline object, the state of which is determined by the state of the store
@@ -69,21 +55,15 @@ const renderApp = () => {
     var state = store.getState();
 
     // Print the current state of the store to the console
-    console.log(state);
+    console.log("Render App: ", state);
     render(
         <div >
-            <MuiThemeProvider muiTheme={setMuiTheme}>
-                <Provider store={store}>
-                    <App 
-                        store={store}
-                        trialList={state.trials}
-                        openDrawers={state.openDrawers}
-                        selected={state.selected}
-                        addTrial={actionAddTrial}
-                        removeTrial={actionRemoveTrial}
-                        />
-                </Provider>
-            </MuiThemeProvider>
+        <MuiThemeProvider muiTheme={setMuiTheme}>
+        <Provider store={store}>       
+        <App store={store} state={state}/>
+        </Provider>
+
+        </MuiThemeProvider>
         </div>,
         document.getElementById('app')
     );

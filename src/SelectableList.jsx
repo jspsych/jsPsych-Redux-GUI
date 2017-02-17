@@ -21,20 +21,20 @@ const addSelectedFAB = {
     position: 'auto'
 }
 
+
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
-    handleTouchTap(id) {
+    handleTouchTap(name) {
         //console.log("Tapped", actionSelectTrial, this);
-        var store = this.props.storeState;
-        actionSelectTrial(store, id);
-        actionHandleDrawer(store, "pluginDrawer");
-    }
+        var store = this.props.store;
+        actionSelectTrial(store, name);
+    }/*
     // Dispatch an action the add the clicked trial to the 
     // list of selected trials 
-    handleTouchAdd(id) {
+    handleTouchAdd(name) {
         var store = this.props.storeState;
-        actionSelectAdditionalTrial(store, id);
+        actionSelectAdditionalTrial(store, name);
         actionHandleDrawer(store, "pluginDrawer");
     }
     // Determines if the trial is selected/checked
@@ -42,45 +42,52 @@ class SelectableTrialList extends React.Component {
         console.log(this.props.storeState.selected.includes(id));
         return this.props.storeState.selected.includes(id);
     }
+    getTrials(order, trialList){
+        
+        for (trial in trialList) {
+        
+        }
+    }*/
     render() {
         return (
             <div>
-                <List defaultValue={this.props.selected}>
-                    <Subheader>Current Trials</Subheader>
-                    {
-                        this.props.list.map(trial => {
+            <List defaultValue={this.props.state.trialOrder[0]}>
+            <Subheader>Current Trials</Subheader>
+            {
+                this.props.state.trialOrder.map(trial => {
+                    // Each trial gets a unique key
+                    return (
+                        <ListItem
+                        key={this.props.state.trialList[trial].id}
+                        primaryText={this.props.state.trialList[trial].name}
+                        leftAvatar={
+                            <Avatar
+                            onTouchTap={this.handleTouchTap.bind(this, trial)}>
+                            {this.props.state.trialList[trial].id}
+                            </Avatar>}
 
-                            // Each trial gets a unique key
-                            return (
-                                <ListItem
-                                    key={trial.id}
-                                    primaryText={trial.name}
-                                    leftAvatar={
-                                        <Avatar
-                                            onTouchTap={this.handleTouchTap.bind(this, trial.id)}>
-                                            {trial.id}
-                                        </Avatar>}
-                                    rightAvatar = {
-                                        <CheckBox
-                                            checked={this.props.selected.includes(trial.id)}
-                                            labelPosition='left'
-                                            style={addSelectedFAB}
-                                            onCheck={this.handleTouchAdd.bind(this, trial.id)}
-                                        />
-                                    }
-                                />
+                        />
 
-                            )
-                        })
-                    }
-                </List>
+                    )
+                })
+            }
+            </List>
             </div>
         );
     }
 }
 export default SelectableTrialList;
 
-
+/*
+ *
+ *                        rightAvatar = {
+                            <CheckBox
+                            checked={trial.selected}
+                            labelPosition='left'
+                            style={addSelectedFAB}
+                            onCheck={this.handleTouchTap.bind(this,trial)}
+                            />
+                        }
 /*TrialItem.defaultValue = {
                         name: "Trial",
     children: [],

@@ -5,7 +5,14 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 
 import { timeline } from 'reducers';
-
+// Archive the current state
+// This action should be called by every other action before it
+// calls it's reducer.
+export const actionArchiveState = (store) => {
+    store.dispatch({
+        type: 'ARCHIVE_STATE'
+    });
+}
 // Dispatch the action calling for a trial to be selected
 export const actionSelectTrial = (store, key) => {
     //console.log("Select", store)
@@ -13,7 +20,7 @@ export const actionSelectTrial = (store, key) => {
         type: 'SELECT_TRIAL',
         index: key
     });
-	actionHandleDrawer(store, 'pluginDrawer');
+	actionOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch the action calling for an additional trial to be selected
@@ -29,7 +36,8 @@ export const actionAddTrial = (store) => {
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-actionHandleDrawer(store, 'pluginDrawer');
+    
+actioniOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch action calling for a trial to be removed from trialList
@@ -40,27 +48,23 @@ export const actionRemoveTrial = (store) => {
         type: 'REMOVE_TRIAL',
         index: state.selected
     });
-	actionHandleDrawer(store, 'pluginDrawer');
+    state = store.getState();
+
+    if (state.trialOrder.length == 0){
+        actionCloseDrawer(store);
+    }
 }
 
 // Dispatch an action calling for a Drawer to be opened
-export const actionHandleDrawer = (store, drawerName) => {
+export const actionOpenDrawer = (store, drawerName) => {
     var state = store.getState();
-
-    // If a trial is selected open the drawer
-    if (state.selected.length > 0) 
-    {
         store.dispatch({
             type: 'OPEN_DRAWER',
             name: drawerName
         })
-    } 
-    else // If no trial is selected close the plugin drawer
-    {
-        store.dispatch({
-            type: 'CLOSE_DRAWER',
-            name: drawerName
-        })
-    }
-
+}
+export const actionCloseDrawer = (store) => {
+    store.dispatch({
+        type:'CLOSE_DRAWER'
+    })
 }
