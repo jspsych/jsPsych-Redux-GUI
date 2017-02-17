@@ -11,25 +11,25 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Timeline from 'Timeline';
 import { guiState } from 'reducers';
-import { actionHandleDrawer } from 'actions';
+import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
 // ----- Actions ----- //
 const actionAddTrial = () => {// Dispatch the action calling for a new trial to be added
+    actionArchiveState(store);
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-    actionHandleDrawer(store, "pluginDrawer");
 }
 
 const actionRemoveTrial = () => {
+    actionArchiveState(store);
     var state = store.getState();
     store.dispatch({
         type: 'REMOVE_TRIAL',
         index: state.selected
     })
-    actionHandleDrawer(store, "pluginDrawer");
 }
 
 
@@ -62,7 +62,6 @@ const renderApp = () => {
         <Provider store={store}>       
         <App store={store} state={state}/>
         </Provider>
-
         </MuiThemeProvider>
         </div>,
         document.getElementById('app')

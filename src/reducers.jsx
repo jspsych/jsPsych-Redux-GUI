@@ -1,134 +1,270 @@
-import InitialState from 'State'; // Any new features of the state should be added here
+// This is the initial state of the store.
+// Any new features of the store should be addded here.
+const Trial = {
+    id: 0, 
+    name: "default",
+    isTimeline: false,
+    timeline: [],
+    trialType: "trialType",
+    parentTrial: -1,
+    selected: false 
+}
+
+
+const InitialState = {
+    trialTable: {  [Trial.name]: Trial },
+    trialOrder: [ 'default' ],	
+    openDrawer: 'none',
+    pastStates: [],
+    futureStates: []
+}
 
 export const guiState = (state = {}, action) => {
 
     // If the state is undefined return the initial state
     if (typeof state === null) {
-        return { Trial };
+        console.log("State Undefined.");
+        return { InitialState };
     }
 
     // Perform an operation on the state specified by the action type
     switch (action.type) {
 
-        // Reducer for the initial state
+            // Reducer for the initial state
         case 'INITIAL_STATE':
             console.log("InitialState", InitialState);
             return InitialState;
-      case 'SELECT_TRIAL':
- 
-                var old_trial = state.trialList[action.name];
 
-                // Make the updated the trial property by constructing a new hashtable
-                var new_trial = {
-                    selected: true,
-                    ...old_trial
-                }
-                return{
-                    trials: {
-                        ...state.trialList.slice(0, action.name),
-                        new_trial,
-                        ...state.trialList.slice(action.name)
-                    },
-                    ...state
-                };
-         case 'ADD_TRIAL':
-            var index = state.trialList.length;
-            var name = "Trial_" + index.toString()
-            return {
-                trials: {               /// Return a new list of trials made from appending...
-                    ...state.trialList,    /// The old list of trials
-                    name: {                   /// The new trial to be added 
-                        ...Trial,
-                        name: name
-                    }
-            },
-		    ...state
-            };
+        case 'SELECT_TRIAL':
+
+            // Make the updated the trial property by constructing a new hashtable
+            var newTrial = Object.assign({}, state.trialTable[action.name]);
+            delete newTrial['selected'];
+            newTrial['selected'] = true;
+
+            var newTable = Object.assign({}, state.trialTable);
+            delete newTable[action.name];
+            newTable[action.name] = newTrial;
+
+            var newState = Object.assign({}, state);
+
+            delete newState['trialTable'];
+
+            newState['trialTable'] = newTable;
+
+            return newState;
+
+        case 'DESELECT_TRIAL':
+
+            // Make the updated the trial property by constructing a new hashtable
+            var newTrial = Object.assign({}, state.trialTable[action.name]);
+            delete newTrial['selected'];
+            newTrial['selected'] = false;
+
+            var newTable = Object.assign({}, state.trialTable);
+            delete newTable[action.name];
+            newTable[action.name] = newTrial;
+
+            var newState = Object.assign({}, state);
+
+            delete newState['trialTable'];
+
+            newState['trialTable'] = newTable;
+
+            return newState;
+
+        case 'ARCHIVE_STATE_REMOVE':
+
+            var newPStates = [
+                state,
+                ...state.pastStates.slice(0,50)
+            ];
+
+            var newState = Object.assign({}, state);
+            delete newState['pastStates'];
+            newState['pastStates'] = newPStates; 
+
+            return newState; 
+
+        case 'ARCHIVE_STATE':
+
+            var newPStates = [
+                state,
+                ...state.pastStates
+            ];
+
+            var newState = Object.assign({}, state);
+            
+            // Remove old past states
+            delete newState['pastStates'];
+
+            // Remove all future states as history has changed
+            delete newState['futureStates'];
+
+            newState['pastStates'] = newPStates; 
+            newState['futureStates'] = [];
+
+            return newState; 
+
+        case 'RESTORE_STATE':
+            var restoredState = Object.assign({}, state.pastStates[0]);
+           console.log("restore", restoredState) 
+            var newFuture = [
+                state,
+                ...state.futureStates
+            ]
+
+            var newPast = [
+                ...state.pastStates.slice(1, 51)
+            ]
+
+            delete restoredState['futureStates']
+            delete restoredState['pastStates']
+
+            restoredState['futureStates'] = newFuture;
+            restoredState['pastStates'] = newPast;
+           console.log("return", restoredState) 
+            return restoredState;
+
+        case 'RESTORE_STATE_REMOVE':
+            var restoredState = Object.assign({}, state.pastStates[0]);
+
+            var newFuture = [
+                state,
+                ...state.futureStates.slice(0, 50)
+            ]
+
+            var newPast = [
+                ...state.pastStates.slice(1, 51)
+            ]
+
+            delete restoredState['futureStates']
+            delete restoredState['pastStates']
+
+            restoredState['futureStates'] = newFuture;
+            restoredState['pastStates'] = newPast;
+            
+            return restoredState;
+
+        case 'RESTORE_FUTURE_STATE':
+            
+            var restoredState = Object.assign({}, state.futureStates[0]);
+
+            var newPast = [
+                state,
+                ...state.pastStates
+            ]
+            var newFuture = [
+                ...state.futureStates.slice(1,51)
+            ]
+
+            delete restoredState['futureStates']
+            delete restoredState['pastStates']
+
+            restoredState['futureStates'] = newFuture;
+            restoredState['pastStates'] = newPast;
+
+            return restoredState;
+        
+        case 'ADD_TRIAL':
+            // New trial's unique id
+            var index = Object.keys(state.trialTable).length;
+
+            // Ensure there are no duplicate trial names 
+            while(state.trialTable["Trial_"+index.toString()] != undefined){
+                index++; 
+            }
+
+            // New trial's name 
+            var newName = "Trial_" + index.toString();           
+
+            // Make the new trial from the default template.
+            var newTrial = Object.assign({}, Trial);
+
+            // Delete is okay as these shallow copies are not yet part
+            // of the state. 
+            delete newTrial['name'];
+            delete newTrial['id'];
+
+            // Add the new properties
+            newTrial['id'] = index;
+            newTrial['name'] = newName;
+
+            // Create the new trial table
+            var newTable = Object.assign({}, state.trialTable);
+            newTable[[newName]] = newTrial;
+
+            // Create the new trial order
+            var newOrder = [
+                ...state.trialOrder,
+                newName
+            ]
+
+            // Create the new state
+            var newState = Object.assign({}, state);
+
+            // Remove old properties
+            delete newState['trialTable'];
+            delete newState['trialOrder'];
+
+            // Add new properties
+            newState['trialTable'] = newTable;
+            newState['trialOrder'] = newOrder;
+
+            return newState;
         case 'REMOVE_TRIAL':
-            return {...state};
-/*
-		    var index;          /// Used to set the new state.selected value.
-		    var new_trials = [];/// Used to store the updated trial list 
-		    var i = 0;          /// Used to create the new trial indices
-		    /// Fancy syntax for removing a list item without mutation
-		    var old_trials = state.trialList;
-            let { [action.]}
-            return {
-            ...state,
-                state.trialList: {
-                ...state.trialList.slice()
+            // Create deep copy of the state.
+            var newState = Object.assign({}, state);
+
+            // List of trials to be removed
+            var removeList = Object.keys(state.trialTable);
+            console.log("remove", removeList)
+
+            var newOrder = state.trialOrder;
+
+            delete newState['trialOrder']
+
+            // Find and remove all the selected trials
+            for(var i = 0; i < removeList.length; i++){
+                if (state.trialTable[removeList[i]].selected) {    
+                    delete newState.trialTable[removeList[i]]; 
+
+                    newOrder = [
+                        ...newOrder.slice(0, newOrder.indexOf(removeList[i])),
+                        ...newOrder.slice(newOrder.indexOf(removeList[i]) + 1)
+                    ]
                 }
             }
+            if (Object.keys(newState.trialTable).length == 0){
+                newState.trialTable = {
+                    [Trial.name]: Trial
+                }
+                newOrder = [
+                    Trial.name,
+                    ...newOrder
+                ]
+            }
 
+            // Assign new trialTable and trialOrder
+            newState['trialOrder'] = newOrder;
 
-		    /*var new_openDrawers = [];
-		    /// Rebuild the trial list to ensure that every trial has the correct key
-		    for (var t = 0; t < old_trials.length; t++) {
-			    if (!state.selected.includes(t)) {
-				    new_trials = [
-					    ...new_trials,
-					    {
-						    id: i,
-						    name: old_trials[t].name,
-						    children: old_trials[t].children,
-						    type: old_trials[t].type,
-						    pluginType: old_trials[t].pluginType,
-						    pluginData: old_trials[t].pluginData,
-						    errors: old_trials[t].errors
-					    }
-				    ]
-				    i++;
-			    }
-		    }
-
-		    /// Set the value of index to be one less than the 
-		    /// trial removed unless that trial had index 0
-		    if (action.index === 0) {
-			    index = 0;
-		    } else {
-			    index = action.index - 1;
-		    }
-		    if (new_trials.length > 0){
-			    new_openDrawers = state.openDrawers;
-		    }
-		    return {
-			    ...state,
-			    selected: [index],
-			    trials: new_trials,
-			    openDrawers: new_openDrawers
-            }; */
+            return newState;
         case 'OPEN_DRAWER':
-            // If the provided drawer is already open do nothing
-            if (state.openDrawer.equals(action.name)) {
-                return {
-			...state
-                }
-            }
-            // Otherwise add the drawer to the list of drawers that are open
-            else {
-                return {
-                    ...state,
-                    openDrawer: action.name
-                }
-            }
+            var newState = Object.assign({}, state);
+            delete newState['openDrawer'];
+            newState['openDrawer'] = action.name;
+            return newState;
+
         case 'CLOSE_DRAWER':
-            // If the provided drawer is open, close it by removing it from the list
-            if (state.openDrawer.equals(action.name)) {
-                // Get the index of the drawer to be closed
-                var index = state.openDrawers.indexOf(action.name);
-                return {
-                    ...state,
-                    openDrawer: action.name
-                }
-            }
-            // Otherwise do nothing
-            else {
-                return { ...state }
-            }
+            // Create the new state
+            var newState = Object.assign({}, state);
+            delete newState['openDrawer'];
+            newState['openDrawer'] = 'none';
+            return newState;
         default:
             return state;
     }
-       
+
 }
 
 // Reducer for handling changes of an individual trial

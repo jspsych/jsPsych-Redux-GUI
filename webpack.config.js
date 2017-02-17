@@ -12,10 +12,9 @@ root: __dirname,
      	reducers: 'src/reducers.jsx',
      	actions: 'src/actions.jsx',
      	Timeline: 'src/Timeline.jsx',
-     	Trial: 'src/Trial.jsx',
+     	ButtonMenu: 'src/ButtonMenu.jsx',
      	SelectableList: 'src/SelectableList.jsx',
      	PluginDrawer: 'src/PluginDrawer.jsx',
-     	State: 'src/State.jsx'
       },
 extensions: ['', '.js', '.jsx', '.scss']
 	 },

@@ -8,7 +8,7 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 //import Trial from 'Trial';
-import { actionSelectTrial, actionSelectAdditionalTrial, actionHandleDrawer } from 'actions';
+import { actionToggleSelected, actionHandleDrawer } from 'actions';
 
 
 // Key for indexing list items
@@ -21,13 +21,14 @@ const addSelectedFAB = {
     position: 'auto'
 }
 
+
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
     handleTouchTap(name) {
-        //console.log("Tapped", actionSelectTrial, this);
+        console.log("Tapped name", name);
         var store = this.props.store;
-        actionSelectTrial(store, name);
+        actionToggleSelected(store, name);
     }/*
     // Dispatch an action the add the clicked trial to the 
     // list of selected trials 
@@ -41,52 +42,55 @@ class SelectableTrialList extends React.Component {
         console.log(this.props.storeState.selected.includes(id));
         return this.props.storeState.selected.includes(id);
     }
-    getTrials(order, trialList){
-        
-        for (trial in trialList) {
-        
+    getTrials(order, trialTable){
+
+        for (trial in trialTable) {
+
         }
     }*/
-    render() {
-        console.log("this", this);
-        return (
-            <div>
-            <List defaultValue={this.props.state.trialOrder[0]}>
-            <Subheader>Current Trials</Subheader>
-            {
-                this.props.state.trialOrder.map(trial => {
-                    console.log("Map",this.props.state.trialList);
-                    // Each trial gets a unique key
-                    return (
-                        <ListItem
-                        key={this.props.state.trialList[trial].id}
-                        primaryText={this.props.state.trialList[trial].name}
-                        leftAvatar={
-                            <Avatar
-                            onTouchTap={this.handleTouchTap.bind(this, trial)}>
-                            {this.props.state.trialList[trial].id}
-                            </Avatar>}
-                        rightAvatar = {
+        render() {
+            return (
+                <div>
+                <List defaultValue={this.props.state.trialOrder[0]}>
+                <Subheader>Current Trials</Subheader>
+                {
+                    this.props.state.trialOrder.map(trial => {
+                        // Each trial gets a unique key
+                        return (
+                            <ListItem
+                            key={this.props.state.trialTable[trial].id}
+                            primaryText={this.props.state.trialTable[trial].name}
+                            leftAvatar={
+                                <Avatar>
+                                {this.props.state.trialTable[trial].id}
+                                </Avatar>}
+                            rightAvatar = {
+                                <CheckBox
+                                checked={this.props.state.trialTable[trial].selected}
+                                labelPosition='left'
+                                style={addSelectedFAB}
+                                onCheck={this.handleTouchTap.bind(this,trial)}
+                                />}
+                            />
+                        )
+                    })}
+                </List>
+                </div>
+            );
+        }
+}
+export default SelectableTrialList;
+
+
+
+/*                        rightAvatar = {
                             <CheckBox
-                            checked={false}
+                            checked={trial.selected}
                             labelPosition='left'
                             style={addSelectedFAB}
                             onCheck={this.handleTouchTap.bind(this,trial)}
                             />
                         }
-                        />
-
-                    )
-                })
-            }
-            </List>
-            </div>
-        );
-    }
-}
-export default SelectableTrialList;
-
-
 /*TrialItem.defaultValue = {
                         name: "Trial",
     children: [],
