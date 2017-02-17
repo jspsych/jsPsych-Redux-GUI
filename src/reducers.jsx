@@ -28,23 +28,24 @@ export const guiState = (state = {}, action) => {
             console.log("InitialState", InitialState);
             return InitialState;
         case 'SELECT_TRIAL':
-             console.log("SelectTrial");
-            var old_trial = state.trialTable[action.name];
 
+            console.log("action.name", action.name);
             // Make the updated the trial property by constructing a new hashtable
-            var new_trial = {
-                selected: true,
-                ...old_trial
-            }
-            var newTrialList = state.trialTable;
-            delete newTrialList[action.name];
-            return {
-                trialTable: {
-                    new_trial,
-                    ...newTrialList
-                },
-                ...state
-            };
+            var newTrial = Object.assign({}, state.trialTable[action.name]);
+            delete newTrial['selected'];
+            newTrial['selected'] = true;
+            console.log("New Trial", newTrial);
+
+            var newTable = Object.assign({}, state.trialTable);
+            delete newTable[action.name];
+            newTable[action.name] = newTrial;
+         
+
+            var newState = Object.assign({}, state);
+            delete newState['trialTable'];
+            newState['trialTable'] = newTable;
+            console.log("newState", newState);
+                return newState;
         case 'ARCHIVE_STATE_REMOVE':
             return {
                 previousStates: [
@@ -107,7 +108,7 @@ export const guiState = (state = {}, action) => {
             // Create the new trial order
             var newOrder = [
                 ...state.trialOrder,
-                [newName]
+                newName
             ]
 
             // Create the new state
@@ -123,24 +124,54 @@ export const guiState = (state = {}, action) => {
     
             return newState;
         case 'REMOVE_TRIAL':
-            // Remove the trial without mutation
-            let {[action.name]: deletedItem, ...rest} = state.trialTable;
+            // Create deep copy of the state.
+            var newState = Object.assign({}, state);
+            
+            // List of trials to be removed
+            var removeList = [];
 
-            return { 
-                trialTable: rest,
-                ...state
+            // Find all the selected trials
+            for(var removeTrial in newState.trialTable){
+                if (removeTrial.selected){    
+                    removeList = [
+                        removeTrial.name,
+                        ...removeList
+                    ]
+                }
             }
 
+            // New Trial Table
+            var newTable = Object.assign({}, state.trialTable);
+            // New Trial Order
+            var newOrder = state.trialOrder;
+
+            // Remove the selected trials from trialTable and from trialOrder
+            for (name in removeList){
+                delete newTable[[name]];
+                newOrder = [
+                    ...newOrder.slice(0, newOrder.indexOf(name)),
+                    ...newOrder.slice(newOrder.indexOf(name) + 1)
+                ]
+            }
+            console.log("newTable", newTable);
+            console.log("newOrder", newOrder);
+
+            // Assign new trialTable and trialOrder
+            newState['trialTable'] = newTable;
+            newState['trialOrder'] = newOrder;
+
+            return newState;
         case 'OPEN_DRAWER':
                 return {
                     ...state,
                     openDrawer: action.name
                 }
         case 'CLOSE_DRAWER':
-            return {
-                openDrawer: 'none',
-                ...state 
-            }
+            // Create the new state
+            var newState = Object.assign({}, state);
+            delete newState['openDrawer'];
+            newState['openDrawer'] = 'none';
+            return newState;
         default:
             return state;
     }

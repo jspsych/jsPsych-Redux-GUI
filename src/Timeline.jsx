@@ -25,14 +25,14 @@ injectTapEventPlugin();
 // Style Variables
 const paperStyle = { height: window.innerHeight * 0.9 };
 
-const addStyleFAB = {
+export const addStyleFAB = {
     marginRight: 20,
     position: 'absolute',
     bottom: window.innerHeight * 0.1,
     left: window.innerWidth * 0.1
 }
 
-const removeStyleFAB = {
+export const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',
     bottom: window.innerHeight * 0.1,
@@ -64,8 +64,8 @@ const Timeline = ({
     state={state}
     />
     <PluginDrawer
-    storeState={store}
-    openDrawers={state.openDrawer}
+    store={store}
+    openDrawer={state.openDrawer}
     />
 
     <FloatingActionButton

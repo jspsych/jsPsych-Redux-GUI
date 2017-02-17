@@ -32505,6 +32505,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.removeStyleFAB = exports.addStyleFAB = undefined;
 	
 	var _react = __webpack_require__(/*! react */ 1);
 	
@@ -32578,14 +32579,14 @@
 	// Style Variables
 	var paperStyle = { height: window.innerHeight * 0.9 };
 	
-	var addStyleFAB = {
+	var addStyleFAB = exports.addStyleFAB = {
 	    marginRight: 20,
 	    position: 'absolute',
 	    bottom: window.innerHeight * 0.1,
 	    left: window.innerWidth * 0.1
 	};
 	
-	var removeStyleFAB = {
+	var removeStyleFAB = exports.removeStyleFAB = {
 	    marginRight: 20,
 	    position: 'absolute',
 	    bottom: window.innerHeight * 0.1,
@@ -32617,8 +32618,8 @@
 	            state: state
 	        }),
 	        _react2.default.createElement(_PluginDrawer2.default, {
-	            storeState: store,
-	            openDrawers: state.openDrawer
+	            store: store,
+	            openDrawer: state.openDrawer
 	        }),
 	        _react2.default.createElement(
 	            _FloatingActionButton2.default,
@@ -44366,7 +44367,7 @@
 	
 	        // Dispatch an action to change the value of 'selected'
 	        value: function handleTouchTap(name) {
-	            //console.log("Tapped", actionSelectTrial, this);
+	            console.log("Tapped name", name);
 	            var store = this.props.store;
 	            (0, _actions.actionSelectTrial)(store, name);
 	        } /*
@@ -45383,11 +45384,11 @@
 	    });
 	};
 	// Dispatch the action calling for a trial to be selected
-	var actionSelectTrial = exports.actionSelectTrial = function actionSelectTrial(store, key) {
+	var actionSelectTrial = exports.actionSelectTrial = function actionSelectTrial(store, trialName) {
 	    //console.log("Select", store)
 	    store.dispatch({
 	        type: 'SELECT_TRIAL',
-	        index: key
+	        name: trialName
 	    });
 	    actionOpenDrawer(store, 'pluginDrawer');
 	};
@@ -45483,8 +45484,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //import InitialState from 'State'; // Any new features of the state should be added here
@@ -45518,20 +45517,23 @@
 	            console.log("InitialState", InitialState);
 	            return InitialState;
 	        case 'SELECT_TRIAL':
-	            console.log("SelectTrial");
-	            var old_trial = state.trialTable[action.name];
 	
+	            console.log("action.name", action.name);
 	            // Make the updated the trial property by constructing a new hashtable
-	            var new_trial = _extends({
-	                selected: true
-	            }, old_trial);
-	            var newTrialList = state.trialTable;
-	            delete newTrialList[action.name];
-	            return _extends({
-	                trialTable: _extends({
-	                    new_trial: new_trial
-	                }, newTrialList)
-	            }, state);
+	            var newTrial = Object.assign({}, state.trialTable[action.name]);
+	            delete newTrial['selected'];
+	            newTrial['selected'] = true;
+	            console.log("New Trial", newTrial);
+	
+	            var newTable = Object.assign({}, state.trialTable);
+	            delete newTable[action.name];
+	            newTable[action.name] = newTrial;
+	
+	            var newState = Object.assign({}, state);
+	            delete newState['trialTable'];
+	            newState['trialTable'] = newTable;
+	            console.log("newState", newState);
+	            return newState;
 	        case 'ARCHIVE_STATE_REMOVE':
 	            return _extends({
 	                previousStates: [state].concat(_toConsumableArray(state.previousStates.slice(0, 50)))
@@ -45576,7 +45578,7 @@
 	            newTable[[newName]] = newTrial;
 	
 	            // Create the new trial order
-	            var newOrder = [].concat(_toConsumableArray(state.trialOrder), [[newName]]);
+	            var newOrder = [].concat(_toConsumableArray(state.trialOrder), [newName]);
 	
 	            // Create the new state
 	            var newState = Object.assign({}, state);
@@ -45591,23 +45593,47 @@
 	
 	            return newState;
 	        case 'REMOVE_TRIAL':
-	            // Remove the trial without mutation
-	            var _state$trialTable = state.trialTable,
-	                deletedItem = _state$trialTable[action.name],
-	                rest = _objectWithoutProperties(_state$trialTable, [action.name]);
+	            // Create deep copy of the state.
+	            var newState = Object.assign({}, state);
 	
-	            return _extends({
-	                trialTable: rest
-	            }, state);
+	            // List of trials to be removed
+	            var removeList = [];
 	
+	            // Find all the selected trials
+	            for (var removeTrial in newState.trialTable) {
+	                if (removeTrial.selected) {
+	                    removeList = [removeTrial.name].concat(_toConsumableArray(removeList));
+	                }
+	            }
+	
+	            // New Trial Table
+	            var newTable = Object.assign({}, state.trialTable);
+	            // New Trial Order
+	            var newOrder = state.trialOrder;
+	
+	            // Remove the selected trials from trialTable and from trialOrder
+	            for (name in removeList) {
+	                delete newTable[[name]];
+	                newOrder = [].concat(_toConsumableArray(newOrder.slice(0, newOrder.indexOf(name))), _toConsumableArray(newOrder.slice(newOrder.indexOf(name) + 1)));
+	            }
+	            console.log("newTable", newTable);
+	            console.log("newOrder", newOrder);
+	
+	            // Assign new trialTable and trialOrder
+	            newState['trialTable'] = newTable;
+	            newState['trialOrder'] = newOrder;
+	
+	            return newState;
 	        case 'OPEN_DRAWER':
 	            return _extends({}, state, {
 	                openDrawer: action.name
 	            });
 	        case 'CLOSE_DRAWER':
-	            return _extends({
-	                openDrawer: 'none'
-	            }, state);
+	            // Create the new state
+	            var newState = Object.assign({}, state);
+	            delete newState['openDrawer'];
+	            newState['openDrawer'] = 'none';
+	            return newState;
 	        default:
 	            return state;
 	    }
@@ -45700,13 +45726,15 @@
 	
 	var _Checkbox2 = _interopRequireDefault(_Checkbox);
 	
-	var _add = __webpack_require__(/*! material-ui/svg-icons/content/add */ 448);
+	var _remove = __webpack_require__(/*! material-ui/svg-icons/content/remove */ 449);
 	
-	var _add2 = _interopRequireDefault(_add);
+	var _remove2 = _interopRequireDefault(_remove);
 	
 	var _Drawer = __webpack_require__(/*! material-ui/Drawer */ 436);
 	
 	var _Drawer2 = _interopRequireDefault(_Drawer);
+	
+	var _actions = __webpack_require__(/*! actions */ 472);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -45718,7 +45746,14 @@
 	
 	var React = __webpack_require__(/*! react */ 1);
 	
+	var removeStyleFAB = {
+	    marginRight: 20,
+	    position: 'absolute',
+	    bottom: window.innerHeight * 0.1,
+	    right: window.innerWidth * 0.1
+	};
 	// Class for handling the pluginDrawer and its contents
+	
 	var PluginDrawer = function (_React$Component) {
 	    _inherits(PluginDrawer, _React$Component);
 	
@@ -45729,6 +45764,11 @@
 	    }
 	
 	    _createClass(PluginDrawer, [{
+	        key: 'close',
+	        value: function close() {
+	            (0, _actions.actionCloseDrawer)(this.props.store);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            // Could depend on if there are any trials in the selected list
@@ -45737,10 +45777,17 @@
 	                {
 	                    width: 500,
 	                    openSecondary: true,
-	                    open: this.props.openDrawers.includes("pluginDrawer") },
+	                    open: this.props.openDrawer === "pluginDrawer" },
 	                React.createElement(
 	                    'div',
 	                    null,
+	                    React.createElement(
+	                        _FloatingActionButton2.default,
+	                        {
+	                            style: removeStyleFAB,
+	                            onTouchTap: this.close.bind(this) },
+	                        React.createElement(_remove2.default, null)
+	                    ),
 	                    'Stuff'
 	                )
 	            ); // Stuff to be rendered inside the drawer could be included above 

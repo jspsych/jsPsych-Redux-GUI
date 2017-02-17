@@ -14,11 +14,11 @@ export const actionArchiveState = (store) => {
     });
 }
 // Dispatch the action calling for a trial to be selected
-export const actionSelectTrial = (store, key) => {
+export const actionSelectTrial = (store, trialName) => {
     //console.log("Select", store)
     store.dispatch({
         type: 'SELECT_TRIAL',
-        index: key
+        name: trialName
     });
 	actionOpenDrawer(store, 'pluginDrawer');
 }
