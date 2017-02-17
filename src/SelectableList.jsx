@@ -8,7 +8,7 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 //import Trial from 'Trial';
-import { actionSelectTrial, actionSelectAdditionalTrial, actionHandleDrawer } from 'actions';
+import { actionToggleSelected, actionHandleDrawer } from 'actions';
 
 
 // Key for indexing list items
@@ -28,7 +28,7 @@ class SelectableTrialList extends React.Component {
     handleTouchTap(name) {
         console.log("Tapped name", name);
         var store = this.props.store;
-        actionSelectTrial(store, name);
+        actionToggleSelected(store, name);
     }/*
     // Dispatch an action the add the clicked trial to the 
     // list of selected trials 
@@ -61,16 +61,19 @@ class SelectableTrialList extends React.Component {
                             key={this.props.state.trialTable[trial].id}
                             primaryText={this.props.state.trialTable[trial].name}
                             leftAvatar={
-                                <Avatar
-                                onTouchTap={this.handleTouchTap.bind(this, trial)}>
+                                <Avatar>
                                 {this.props.state.trialTable[trial].id}
                                 </Avatar>}
-
+                            rightAvatar = {
+                                <CheckBox
+                                checked={this.props.state.trialTable[trial].selected}
+                                labelPosition='left'
+                                style={addSelectedFAB}
+                                onCheck={this.handleTouchTap.bind(this,trial)}
+                                />}
                             />
-
                         )
-                    })
-                }
+                    })}
                 </List>
                 </div>
             );

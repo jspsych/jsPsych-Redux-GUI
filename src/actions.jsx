@@ -9,39 +9,86 @@ import { timeline } from 'reducers';
 // This action should be called by every other action before it
 // calls it's reducer.
 export const actionArchiveState = (store) => {
-    store.dispatch({
-        type: 'ARCHIVE_STATE'
-    });
-}
-// Dispatch the action calling for a trial to be selected
-export const actionSelectTrial = (store, trialName) => {
-    //console.log("Select", store)
-    store.dispatch({
-        type: 'SELECT_TRIAL',
-        name: trialName
-    });
-	actionOpenDrawer(store, 'pluginDrawer');
+    var state = store.getState();
+    if (state.pastStates.length >= 50) 
+    {
+        store.dispatch({
+            type: 'ARCHIVE_STATE_REMOVE'
+        })
+    } 
+    else 
+    {
+        store.dispatch({
+            type: 'ARCHIVE_STATE'
+        })
+    }
 }
 
-// Dispatch the action calling for an additional trial to be selected
-export const actionSelectAdditionalTrial = (store, key) => {
-    store.dispatch({
-        type: 'SELECT_ADDITIONAL_TRIAL',
-        index: key
-    });
+// Restores the state from an past state
+// archiving the current state as a future state
+export const actionRestoreState = (store) => {
+    var state = store.getState();
+    if (state.futureStates.length >= 50) 
+    {
+        store.dispatch({
+            type: 'RESTORE_STATE_REMOVE'
+        })
+    } 
+    else if (state.pastStates.length > 0) 
+    {
+        store.dispatch({
+            type: 'RESTORE_STATE'
+        })
+    }
+    // Do nothing if there are no more states in the history
 }
+
+// Restore the state from a future state
+export const actionRestoreFutureState = (store) => {
+    var state = store.getState();
+
+    if (state.futureStates.length > 0) 
+    {
+        store.dispatch({
+            type: 'RESTORE_FUTURE_STATE'
+        })
+        // Do nothing if there are no more states in the history
+    }
+}
+
+
+// Dispatch the action calling for a trial to be selected
+export const actionToggleSelected = (store, trialName) => {
+    actionArchiveState(store);
+    //console.log("Select", store)
+    var state = store.getState();
+
+    if (state.trialTable[trialName].selected){
+        store.dispatch({
+            type: 'DESELECT_TRIAL',
+            name: trialName
+        })
+    } else {
+        store.dispatch({
+            type: 'SELECT_TRIAL',
+            name: trialName
+        });
+    }
+}
+
 // Dispatch the action calling for a new trial to be added
 export const actionAddTrial = (store) => {
+    actionArchiveState(store);
     //console.log ("Add", store)
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-    
-actioniOpenDrawer(store, 'pluginDrawer');
+    actionOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch action calling for a trial to be removed from trialList
 export const actionRemoveTrial = (store) => {
+    actionArchiveState(store);
     //console.log("Remove", store)
     var state = store.getState();
     store.dispatch({
@@ -50,9 +97,9 @@ export const actionRemoveTrial = (store) => {
     });
     state = store.getState();
 
-    if (state.trialOrder.length == 0){
-        actionCloseDrawer(store);
-    }
+   // if (state.trialOrder.length == 0){
+   //     actionCloseDrawer(store);
+   // }
 }
 
 // Dispatch an action calling for a Drawer to be opened

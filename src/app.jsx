@@ -11,18 +11,20 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import Timeline from 'Timeline';
 import { guiState } from 'reducers';
-import { actionOpenDrawer } from 'actions';
+import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
 // ----- Actions ----- //
 const actionAddTrial = () => {// Dispatch the action calling for a new trial to be added
+    actionArchiveState(store);
     store.dispatch({
         type: 'ADD_TRIAL'
     });
 }
 
 const actionRemoveTrial = () => {
+    actionArchiveState(store);
     var state = store.getState();
     store.dispatch({
         type: 'REMOVE_TRIAL',
@@ -40,8 +42,6 @@ const App = ({
         <Timeline 
     store={store}
     state={state}
-    onAdd={actionAddTrial}
-    onRemove={actionRemoveTrial}
     />);
 
 // Create the Redux store with timeline as the reducer that
@@ -62,7 +62,6 @@ const renderApp = () => {
         <Provider store={store}>       
         <App store={store} state={state}/>
         </Provider>
-
         </MuiThemeProvider>
         </div>,
         document.getElementById('app')
