@@ -49,7 +49,7 @@ const checkDrawerStatus = (store, name) => {
 const Timeline = ({
     store,              // Object: The current state of the store
     state,
-    //trialList,          // List: The list containing each trial in the current experiment
+    //trialTable,          // List: The list containing each trial in the current experiment
     //trialOrder,
     //openDrawer        // List: The names of all the drawers that are currently open
     //    selected,           // Integer: The curently selected trial in the list. Default=1
@@ -73,14 +73,14 @@ const Timeline = ({
     onTouchTap={onAdd}>
     <ContentAdd />
     </FloatingActionButton>
+            <FloatingActionButton
+                style={removeStyleFAB}
+                onTouchTap={onRemove}>
+                <ContentRemove />
+            </FloatingActionButton>
     </div>
 );
 
 export default Timeline;
 
-/*            <FloatingActionButton
-                style={removeStyleFAB}
-                onTouchTap={onRemove}>
-                <ContentRemove />
-            </FloatingActionButton>
-*/
+

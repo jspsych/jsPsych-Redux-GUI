@@ -42,45 +42,45 @@ class SelectableTrialList extends React.Component {
         console.log(this.props.storeState.selected.includes(id));
         return this.props.storeState.selected.includes(id);
     }
-    getTrials(order, trialList){
-        
-        for (trial in trialList) {
-        
+    getTrials(order, trialTable){
+
+        for (trial in trialTable) {
+
         }
     }*/
-    render() {
-        return (
-            <div>
-            <List defaultValue={this.props.state.trialOrder[0]}>
-            <Subheader>Current Trials</Subheader>
-            {
-                this.props.state.trialOrder.map(trial => {
-                    // Each trial gets a unique key
-                    return (
-                        <ListItem
-                        key={this.props.state.trialList[trial].id}
-                        primaryText={this.props.state.trialList[trial].name}
-                        leftAvatar={
-                            <Avatar
-                            onTouchTap={this.handleTouchTap.bind(this, trial)}>
-                            {this.props.state.trialList[trial].id}
-                            </Avatar>}
+        render() {
+            return (
+                <div>
+                <List defaultValue={this.props.state.trialOrder[0]}>
+                <Subheader>Current Trials</Subheader>
+                {
+                    this.props.state.trialOrder.map(trial => {
+                        // Each trial gets a unique key
+                        return (
+                            <ListItem
+                            key={this.props.state.trialTable[trial].id}
+                            primaryText={this.props.state.trialTable[trial].name}
+                            leftAvatar={
+                                <Avatar
+                                onTouchTap={this.handleTouchTap.bind(this, trial)}>
+                                {this.props.state.trialTable[trial].id}
+                                </Avatar>}
 
-                        />
+                            />
 
-                    )
-                })
-            }
-            </List>
-            </div>
-        );
-    }
+                        )
+                    })
+                }
+                </List>
+                </div>
+            );
+        }
 }
 export default SelectableTrialList;
 
-/*
- *
- *                        rightAvatar = {
+
+
+/*                        rightAvatar = {
                             <CheckBox
                             checked={trial.selected}
                             labelPosition='left'

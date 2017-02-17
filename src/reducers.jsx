@@ -1,9 +1,22 @@
-import InitialState from 'State'; // Any new features of the state should be added here
+//import InitialState from 'State'; // Any new features of the state should be added here
+
+import Trial from 'Trial';
+
+// This is the initial state of the store.
+// Any new features of the store should be addded here.
+const InitialState = {
+    trialTable: {  [Trial.name]: Trial },
+    trialOrder: [ 'default' ],	
+    openDrawer: 'none',
+    previousStates: [],
+    futureStates: []
+}
 
 export const guiState = (state = {}, action) => {
 
     // If the state is undefined return the initial state
     if (typeof state === null) {
+        console.log("State Undefined.");
         return { InitialState };
     }
 
@@ -15,18 +28,18 @@ export const guiState = (state = {}, action) => {
             console.log("InitialState", InitialState);
             return InitialState;
         case 'SELECT_TRIAL':
-
-            var old_trial = state.trialList[action.name];
+             console.log("SelectTrial");
+            var old_trial = state.trialTable[action.name];
 
             // Make the updated the trial property by constructing a new hashtable
             var new_trial = {
                 selected: true,
                 ...old_trial
             }
-            var newTrialList = state.trialList;
+            var newTrialList = state.trialTable;
             delete newTrialList[action.name];
             return {
-                trials: {
+                trialTable: {
                     new_trial,
                     ...newTrialList
                 },
@@ -69,43 +82,60 @@ export const guiState = (state = {}, action) => {
                 ...restoredState
             }
         case 'ADD_TRIAL':
-            var index = Object.keys(state.trialList).length;
-            var name = "Trial_" + index.toString();
-            console.log("prevState", state);
-            return {
-                trialList:{
-                    [name]: {
-                        name: name,
-                        ...InitialState['default']
-                    },
-                    ...state.trialList
-                },
-                trialOrder: [ ...state.trialOrder, name],
-                ...state
-            };
+            // New trial's unique id
+            var index = Object.keys(state.trialTable).length;
+
+            // New trial's name 
+            var newName = "Trial_" + index.toString();           
+
+            // Make the new trial from the default template.
+            var newTrial = Object.assign({}, Trial);
+
+            // Delete is okay as these shallow copies are not yet part
+            // of the state. 
+            delete newTrial['name'];
+            delete newTrial['id'];
+
+            // Add the new properties
+            newTrial['id'] = index;
+            newTrial['name'] = newName;
+
+            // Create the new trial table
+            var newTable = Object.assign({}, state.trialTable);
+            newTable[[newName]] = newTrial;
+            
+            // Create the new trial order
+            var newOrder = [
+                ...state.trialOrder,
+                [newName]
+            ]
+
+            // Create the new state
+            var newState = Object.assign({}, state);
+            
+            // Remove old properties
+            delete newState['trialTable'];
+            delete newState['trialOrder'];
+             
+            // Add new properties
+            newState['trialTable'] = newTable;
+            newState['trialOrder'] = newOrder;
+    
+            return newState;
         case 'REMOVE_TRIAL':
             // Remove the trial without mutation
-            let {[action.name]: deletedItem, ...rest} = state.trialList;
+            let {[action.name]: deletedItem, ...rest} = state.trialTable;
 
             return { 
-                trialList: rest,
+                trialTable: rest,
                 ...state
             }
 
         case 'OPEN_DRAWER':
-            // If the provided drawer is already open do nothing
-            if (state.openDrawer == action.name) {
-                return {
-                    ...state
-                }
-            }
-            // Otherwise add the drawer to the list of drawers that are open
-            else {
                 return {
                     ...state,
                     openDrawer: action.name
                 }
-            }
         case 'CLOSE_DRAWER':
             return {
                 openDrawer: 'none',

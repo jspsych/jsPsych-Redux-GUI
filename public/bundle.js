@@ -32560,11 +32560,11 @@
 	
 	var _SelectableList2 = _interopRequireDefault(_SelectableList);
 	
-	var _PluginDrawer = __webpack_require__(/*! PluginDrawer */ 475);
+	var _PluginDrawer = __webpack_require__(/*! PluginDrawer */ 477);
 	
 	var _PluginDrawer2 = _interopRequireDefault(_PluginDrawer);
 	
-	var _reactTapEventPlugin = __webpack_require__(/*! react-tap-event-plugin */ 476);
+	var _reactTapEventPlugin = __webpack_require__(/*! react-tap-event-plugin */ 478);
 	
 	var _reactTapEventPlugin2 = _interopRequireDefault(_reactTapEventPlugin);
 	
@@ -32626,18 +32626,18 @@
 	                style: addStyleFAB,
 	                onTouchTap: onAdd },
 	            _react2.default.createElement(_add2.default, null)
+	        ),
+	        _react2.default.createElement(
+	            _FloatingActionButton2.default,
+	            {
+	                style: removeStyleFAB,
+	                onTouchTap: onRemove },
+	            _react2.default.createElement(_remove2.default, null)
 	        )
 	    );
 	};
 	
 	exports.default = Timeline;
-	
-	/*            <FloatingActionButton
-	                style={removeStyleFAB}
-	                onTouchTap={onRemove}>
-	                <ContentRemove />
-	            </FloatingActionButton>
-	*/
 
 /***/ },
 /* 373 */
@@ -44382,11 +44382,9 @@
 	             console.log(this.props.storeState.selected.includes(id));
 	             return this.props.storeState.selected.includes(id);
 	          }
-	          getTrials(order, trialList){
-	             
-	             for (trial in trialList) {
-	             
-	             }
+	          getTrials(order, trialTable){
+	              for (trial in trialTable) {
+	              }
 	          }*/
 	
 	    }, {
@@ -44408,13 +44406,13 @@
 	                    this.props.state.trialOrder.map(function (trial) {
 	                        // Each trial gets a unique key
 	                        return React.createElement(_List.ListItem, {
-	                            key: _this2.props.state.trialList[trial].id,
-	                            primaryText: _this2.props.state.trialList[trial].name,
+	                            key: _this2.props.state.trialTable[trial].id,
+	                            primaryText: _this2.props.state.trialTable[trial].name,
 	                            leftAvatar: React.createElement(
 	                                _Avatar2.default,
 	                                {
 	                                    onTouchTap: _this2.handleTouchTap.bind(_this2, trial) },
-	                                _this2.props.state.trialList[trial].id
+	                                _this2.props.state.trialTable[trial].id
 	                            )
 	
 	                        });
@@ -44429,9 +44427,7 @@
 	
 	exports.default = SelectableTrialList;
 	
-	/*
-	 *
-	 *                        rightAvatar = {
+	/*                        rightAvatar = {
 	                            <CheckBox
 	                            checked={trial.selected}
 	                            labelPosition='left'
@@ -45481,19 +45477,27 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _State = __webpack_require__(/*! State */ 482);
+	var _Trial = __webpack_require__(/*! Trial */ 476);
 	
-	var _State2 = _interopRequireDefault(_State);
+	var _Trial2 = _interopRequireDefault(_Trial);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
-	// Any new features of the state should be added here
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //import InitialState from 'State'; // Any new features of the state should be added here
+	
+	// This is the initial state of the store.
+	// Any new features of the store should be addded here.
+	var InitialState = {
+	    trialTable: _defineProperty({}, _Trial2.default.name, _Trial2.default),
+	    trialOrder: ['default'],
+	    openDrawer: 'none',
+	    previousStates: [],
+	    futureStates: []
+	};
 	
 	var guiState = exports.guiState = function guiState() {
 	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -45502,7 +45506,8 @@
 	
 	    // If the state is undefined return the initial state
 	    if (typeof state === null) {
-	        return { InitialState: _State2.default };
+	        console.log("State Undefined.");
+	        return { InitialState: InitialState };
 	    }
 	
 	    // Perform an operation on the state specified by the action type
@@ -45510,20 +45515,20 @@
 	
 	        // Reducer for the initial state
 	        case 'INITIAL_STATE':
-	            console.log("InitialState", _State2.default);
-	            return _State2.default;
+	            console.log("InitialState", InitialState);
+	            return InitialState;
 	        case 'SELECT_TRIAL':
-	
-	            var old_trial = state.trialList[action.name];
+	            console.log("SelectTrial");
+	            var old_trial = state.trialTable[action.name];
 	
 	            // Make the updated the trial property by constructing a new hashtable
 	            var new_trial = _extends({
 	                selected: true
 	            }, old_trial);
-	            var newTrialList = state.trialList;
+	            var newTrialList = state.trialTable;
 	            delete newTrialList[action.name];
 	            return _extends({
-	                trials: _extends({
+	                trialTable: _extends({
 	                    new_trial: new_trial
 	                }, newTrialList)
 	            }, state);
@@ -45548,36 +45553,57 @@
 	                futureStates: [state].concat(_toConsumableArray(state.futureStates.slice(0, 50)))
 	            }, restoredState);
 	        case 'ADD_TRIAL':
-	            var index = Object.keys(state.trialList).length;
-	            var name = "Trial_" + index.toString();
-	            console.log("prevState", state);
-	            return _extends({
-	                trialList: _extends(_defineProperty({}, name, _extends({
-	                    name: name
-	                }, _State2.default['default'])), state.trialList),
-	                trialOrder: [].concat(_toConsumableArray(state.trialOrder), [name])
-	            }, state);
+	            // New trial's unique id
+	            var index = Object.keys(state.trialTable).length;
+	
+	            // New trial's name 
+	            var newName = "Trial_" + index.toString();
+	
+	            // Make the new trial from the default template.
+	            var newTrial = Object.assign({}, _Trial2.default);
+	
+	            // Delete is okay as these shallow copies are not yet part
+	            // of the state. 
+	            delete newTrial['name'];
+	            delete newTrial['id'];
+	
+	            // Add the new properties
+	            newTrial['id'] = index;
+	            newTrial['name'] = newName;
+	
+	            // Create the new trial table
+	            var newTable = Object.assign({}, state.trialTable);
+	            newTable[[newName]] = newTrial;
+	
+	            // Create the new trial order
+	            var newOrder = [].concat(_toConsumableArray(state.trialOrder), [[newName]]);
+	
+	            // Create the new state
+	            var newState = Object.assign({}, state);
+	
+	            // Remove old properties
+	            delete newState['trialTable'];
+	            delete newState['trialOrder'];
+	
+	            // Add new properties
+	            newState['trialTable'] = newTable;
+	            newState['trialOrder'] = newOrder;
+	
+	            return newState;
 	        case 'REMOVE_TRIAL':
 	            // Remove the trial without mutation
-	            var _state$trialList = state.trialList,
-	                deletedItem = _state$trialList[action.name],
-	                rest = _objectWithoutProperties(_state$trialList, [action.name]);
+	            var _state$trialTable = state.trialTable,
+	                deletedItem = _state$trialTable[action.name],
+	                rest = _objectWithoutProperties(_state$trialTable, [action.name]);
 	
 	            return _extends({
-	                trialList: rest
+	                trialTable: rest
 	            }, state);
 	
 	        case 'OPEN_DRAWER':
-	            // If the provided drawer is already open do nothing
-	            if (state.openDrawer == action.name) {
-	                return _extends({}, state);
-	            }
-	            // Otherwise add the drawer to the list of drawers that are open
-	            else {
-	                    return _extends({}, state, {
-	                        openDrawer: action.name
-	                    });
-	                }
+	            return _extends({}, state, {
+	                openDrawer: action.name
+	            });
 	        case 'CLOSE_DRAWER':
 	            return _extends({
 	                openDrawer: 'none'
@@ -45600,7 +45626,47 @@
 	};
 
 /***/ },
-/* 475 */
+/* 475 */,
+/* 476 */
+/*!***********************!*\
+  !*** ./src/Trial.jsx ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	        value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(/*! react-dom */ 32);
+	
+	var _deepFreeze = __webpack_require__(/*! deep-freeze */ 473);
+	
+	var _reactRedux = __webpack_require__(/*! react-redux */ 183);
+	
+	var _redux = __webpack_require__(/*! redux */ 190);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Trial = {
+	        id: 0,
+	        name: "default",
+	        isTimeline: false,
+	        timeline: [],
+	        trialType: "trialType",
+	        parentTrial: -1,
+	        selected: true
+	};
+	
+	exports.default = Trial;
+
+/***/ },
+/* 477 */
 /*!******************************!*\
   !*** ./src/PluginDrawer.jsx ***!
   \******************************/
@@ -45687,14 +45753,14 @@
 	exports.default = PluginDrawer;
 
 /***/ },
-/* 476 */
+/* 478 */
 /*!**************************************************************!*\
   !*** ./~/react-tap-event-plugin/src/injectTapEventPlugin.js ***!
   \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {var invariant = __webpack_require__(/*! fbjs/lib/invariant */ 477);
-	var defaultClickRejectionStrategy = __webpack_require__(/*! ./defaultClickRejectionStrategy */ 478);
+	/* WEBPACK VAR INJECTION */(function(process) {var invariant = __webpack_require__(/*! fbjs/lib/invariant */ 479);
+	var defaultClickRejectionStrategy = __webpack_require__(/*! ./defaultClickRejectionStrategy */ 480);
 	
 	var alreadyInjected = false;
 	
@@ -45716,14 +45782,14 @@
 	  alreadyInjected = true;
 	
 	  __webpack_require__(/*! react-dom/lib/EventPluginHub */ 43).injection.injectEventPluginsByName({
-	    'TapEventPlugin':       __webpack_require__(/*! ./TapEventPlugin.js */ 479)(shouldRejectClick)
+	    'TapEventPlugin':       __webpack_require__(/*! ./TapEventPlugin.js */ 481)(shouldRejectClick)
 	  });
 	};
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../webpack/~/node-libs-browser/~/process/browser.js */ 3)))
 
 /***/ },
-/* 477 */
+/* 479 */
 /*!**********************************************************!*\
   !*** ./~/react-tap-event-plugin/~/fbjs/lib/invariant.js ***!
   \**********************************************************/
@@ -45781,7 +45847,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../../webpack/~/node-libs-browser/~/process/browser.js */ 3)))
 
 /***/ },
-/* 478 */
+/* 480 */
 /*!***********************************************************************!*\
   !*** ./~/react-tap-event-plugin/src/defaultClickRejectionStrategy.js ***!
   \***********************************************************************/
@@ -45795,7 +45861,7 @@
 
 
 /***/ },
-/* 479 */
+/* 481 */
 /*!********************************************************!*\
   !*** ./~/react-tap-event-plugin/src/TapEventPlugin.js ***!
   \********************************************************/
@@ -45826,10 +45892,10 @@
 	var EventPluginUtils = __webpack_require__(/*! react-dom/lib/EventPluginUtils */ 45);
 	var EventPropagators = __webpack_require__(/*! react-dom/lib/EventPropagators */ 42);
 	var SyntheticUIEvent = __webpack_require__(/*! react-dom/lib/SyntheticUIEvent */ 79);
-	var TouchEventUtils = __webpack_require__(/*! ./TouchEventUtils */ 480);
+	var TouchEventUtils = __webpack_require__(/*! ./TouchEventUtils */ 482);
 	var ViewportMetrics = __webpack_require__(/*! react-dom/lib/ViewportMetrics */ 80);
 	
-	var keyOf = __webpack_require__(/*! fbjs/lib/keyOf */ 481);
+	var keyOf = __webpack_require__(/*! fbjs/lib/keyOf */ 483);
 	var topLevelTypes = EventConstants.topLevelTypes;
 	
 	var isStartish = EventPluginUtils.isStartish;
@@ -45975,7 +46041,7 @@
 
 
 /***/ },
-/* 480 */
+/* 482 */
 /*!*********************************************************!*\
   !*** ./~/react-tap-event-plugin/src/TouchEventUtils.js ***!
   \*********************************************************/
@@ -46026,7 +46092,7 @@
 
 
 /***/ },
-/* 481 */
+/* 483 */
 /*!******************************************************!*\
   !*** ./~/react-tap-event-plugin/~/fbjs/lib/keyOf.js ***!
   \******************************************************/
@@ -46066,90 +46132,6 @@
 	};
 	
 	module.exports = keyOf;
-
-/***/ },
-/* 482 */
-/*!***********************!*\
-  !*** ./src/State.jsx ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _react = __webpack_require__(/*! react */ 1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactDom = __webpack_require__(/*! react-dom */ 32);
-	
-	var _deepFreeze = __webpack_require__(/*! deep-freeze */ 473);
-	
-	var _reactRedux = __webpack_require__(/*! react-redux */ 183);
-	
-	var _redux = __webpack_require__(/*! redux */ 190);
-	
-	var _Trial = __webpack_require__(/*! Trial */ 483);
-	
-	var _Trial2 = _interopRequireDefault(_Trial);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
-	// This is the initial state of the store.
-	// Any new features of the store should be addded here.
-	var InitialState = {
-	    trialList: _defineProperty({}, _Trial2.default.name, _Trial2.default),
-	    trialOrder: ['default'],
-	    openDrawer: 'none',
-	    previousStates: [],
-	    futureStates: []
-	};
-	
-	exports.default = InitialState;
-
-/***/ },
-/* 483 */
-/*!***********************!*\
-  !*** ./src/Trial.jsx ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	        value: true
-	});
-	
-	var _react = __webpack_require__(/*! react */ 1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactDom = __webpack_require__(/*! react-dom */ 32);
-	
-	var _deepFreeze = __webpack_require__(/*! deep-freeze */ 473);
-	
-	var _reactRedux = __webpack_require__(/*! react-redux */ 183);
-	
-	var _redux = __webpack_require__(/*! redux */ 190);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var Trial = {
-	        id: 0,
-	        name: "default",
-	        isTimeline: false,
-	        timeline: [],
-	        trialType: "trialType",
-	        parentTrial: -1,
-	        selected: true
-	};
-	
-	exports.default = Trial;
 
 /***/ }
 /******/ ]);
