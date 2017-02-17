@@ -10,7 +10,7 @@ export const guiState = (state = {}, action) => {
     // Perform an operation on the state specified by the action type
     switch (action.type) {
 
-        // Reducer for the initial state
+            // Reducer for the initial state
         case 'INITIAL_STATE':
             console.log("InitialState", InitialState);
             return InitialState;
@@ -25,17 +25,54 @@ export const guiState = (state = {}, action) => {
             }
             var newTrialList = state.trialList;
             delete newTrialList[action.name];
-            return{
+            return {
                 trials: {
                     new_trial,
                     ...newTrialList
                 },
                 ...state
             };
+        case 'ARCHIVE_STATE_REMOVE':
+            return {
+                previousStates: [
+                    state,
+                    ...state.previousStates.slice(0, 50)
+                ],
+                ...state
+            }
+        case 'ARCHIVE_STATE':
+            return {
+                previousStates:[
+                    state,
+                    ...state.previousStates
+                ],
+                ...state
+            }
+        case 'RESTORE_STATE':
+            var restoredState = state.previousStates[0];
+
+            return {
+               futureStates: [
+                    state,
+                    ...state.futureStates
+                ],
+                ...restoredState
+            }
+        case 'RESTORE_STATE_REMOVE':
+            var restoredState = state.previousStates[0];
+
+            return {
+                futureStates: [
+                    state,
+                    ...state.futureStates.slice(0,50)
+                ],
+                ...restoredState
+            }
         case 'ADD_TRIAL':
             var index = Object.keys(state.trialList).length;
-            var name = "Trial_" + index.toString()
-            return{
+            var name = "Trial_" + index.toString();
+            console.log("prevState", state);
+            return {
                 trialList:{
                     [name]: {
                         name: name,
@@ -43,6 +80,7 @@ export const guiState = (state = {}, action) => {
                     },
                     ...state.trialList
                 },
+                trialOrder: [ ...state.trialOrder, name],
                 ...state
             };
         case 'REMOVE_TRIAL':
@@ -58,7 +96,7 @@ export const guiState = (state = {}, action) => {
             // If the provided drawer is already open do nothing
             if (state.openDrawer == action.name) {
                 return {
-			...state
+                    ...state
                 }
             }
             // Otherwise add the drawer to the list of drawers that are open
@@ -69,14 +107,14 @@ export const guiState = (state = {}, action) => {
                 }
             }
         case 'CLOSE_DRAWER':
-                return {
-                    openDrawer: 'none',
-                    ...state 
-                }
+            return {
+                openDrawer: 'none',
+                ...state 
+            }
         default:
             return state;
     }
-       
+
 }
 
 // Reducer for handling changes of an individual trial

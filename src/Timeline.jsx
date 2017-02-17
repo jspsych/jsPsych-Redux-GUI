@@ -16,7 +16,7 @@ import SelectableTrialList from 'SelectableList';
 import PluginDrawer from 'PluginDrawer';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import {actionAddTrial} from 'actions';
+import {actionAddTrial, actionOpenDrawer } from 'actions';
 
 
 // Initialize the T.E.P. necessay for using "onTouchTap"
@@ -48,14 +48,14 @@ const checkDrawerStatus = (store, name) => {
 // The "dump" Component for the Timeline of experimental trials
 const Timeline = ({
     store,              // Object: The current state of the store
-    state
+    state,
     //trialList,          // List: The list containing each trial in the current experiment
     //trialOrder,
     //openDrawer        // List: The names of all the drawers that are currently open
     //    selected,           // Integer: The curently selected trial in the list. Default=1
     //    onSelect,           // Action: Sets the value of selected
-    //    onAdd,              // Action: Adds a trial
-    //    onRemove            // Action: Removes the trial whose index === selected
+        onAdd,              // Action: Adds a trial
+        onRemove            // Action: Removes the trial whose index === selected
 }) => (
     <div>
     <title>  Experimental Timeline </title>
@@ -70,7 +70,7 @@ const Timeline = ({
 
     <FloatingActionButton
     style={addStyleFAB}
-    onTouchTap={actionAddTrial(store)}>
+    onTouchTap={onAdd}>
     <ContentAdd />
     </FloatingActionButton>
     </div>

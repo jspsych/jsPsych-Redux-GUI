@@ -49,14 +49,12 @@ class SelectableTrialList extends React.Component {
         }
     }*/
     render() {
-        console.log("this", this);
         return (
             <div>
             <List defaultValue={this.props.state.trialOrder[0]}>
             <Subheader>Current Trials</Subheader>
             {
                 this.props.state.trialOrder.map(trial => {
-                    console.log("Map",this.props.state.trialList);
                     // Each trial gets a unique key
                     return (
                         <ListItem

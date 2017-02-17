@@ -5,7 +5,14 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 
 import { timeline } from 'reducers';
-
+// Archive the current state
+// This action should be called by every other action before it
+// calls it's reducer.
+export const actionArchiveState = (store) => {
+    store.dispatch({
+        type: 'ARCHIVE_STATE'
+    });
+}
 // Dispatch the action calling for a trial to be selected
 export const actionSelectTrial = (store, key) => {
     //console.log("Select", store)
@@ -29,7 +36,8 @@ export const actionAddTrial = (store) => {
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-actionHandleDrawer(store, 'pluginDrawer');
+    
+actioniOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch action calling for a trial to be removed from trialList
@@ -40,7 +48,11 @@ export const actionRemoveTrial = (store) => {
         type: 'REMOVE_TRIAL',
         index: state.selected
     });
-	actionHandleDrawer(store, 'pluginDrawer');
+    state = store.getState();
+
+    if (state.trialOrder.length == 0){
+        actionCloseDrawer(store);
+    }
 }
 
 // Dispatch an action calling for a Drawer to be opened
