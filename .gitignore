@@ -37,5 +37,5 @@ jspm_packages
 .node_repl_history
 
 # Bundle files
-bundle.js 
-bundle.js.map
+*bundle.js 
+*bundle.js.map
