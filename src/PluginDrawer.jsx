@@ -23,7 +23,7 @@ class PluginDrawer extends React.Component {
     render() { // Could depend on if there are any trials in the selected list
         return (
             <Drawer
-            width={500}
+            width={300}
             openSecondary={true}
             open={this.props.openDrawer === "pluginDrawer"}>
             <div>

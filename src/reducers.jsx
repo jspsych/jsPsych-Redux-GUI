@@ -87,12 +87,13 @@ export const guiState = (state = {}, action) => {
             return newState; 
 
         case 'ARCHIVE_STATE':
-
+            var oldState = Object.assign({}, state);
             var newPStates = [
-                state,
+                oldState,
                 ...state.pastStates
             ];
 
+            console.log("Archive oldState: ", oldState);
             var newState = Object.assign({}, state);
             
             // Remove old past states
@@ -108,7 +109,7 @@ export const guiState = (state = {}, action) => {
 
         case 'RESTORE_STATE':
             var restoredState = Object.assign({}, state.pastStates[0]);
-           console.log("restore", restoredState) 
+            console.log("State: to Restore", restoredState)
             var newFuture = [
                 state,
                 ...state.futureStates
@@ -123,7 +124,7 @@ export const guiState = (state = {}, action) => {
 
             restoredState['futureStates'] = newFuture;
             restoredState['pastStates'] = newPast;
-           console.log("return", restoredState) 
+           console.log("Restore: ", restoredState) 
             return restoredState;
 
         case 'RESTORE_STATE_REMOVE':
@@ -163,7 +164,7 @@ export const guiState = (state = {}, action) => {
 
             restoredState['futureStates'] = newFuture;
             restoredState['pastStates'] = newPast;
-
+            console.log("restoreState: ", restoredState)
             return restoredState;
         
         case 'ADD_TRIAL':
@@ -212,12 +213,13 @@ export const guiState = (state = {}, action) => {
             newState['trialOrder'] = newOrder;
 
             return newState;
+            
         case 'REMOVE_TRIAL':
             // Create deep copy of the state.
             var newState = Object.assign({}, state);
 
             // List of trials to be removed
-            var removeList = Object.keys(state.trialTable);
+            var removeList = Object.keys(newState.trialTable);
             console.log("remove", removeList)
 
             var newOrder = state.trialOrder;

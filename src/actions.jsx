@@ -88,7 +88,11 @@ export const actionAddTrial = (store) => {
 
 // Dispatch action calling for a trial to be removed from trialList
 export const actionRemoveTrial = (store) => {
+    var state = store.getState();
+
+    console.log("Archive State: ", state);
     actionArchiveState(store);
+    
     //console.log("Remove", store)
     var state = store.getState();
     store.dispatch({
