@@ -14,7 +14,7 @@ const Trial = {
 const InitialState = {
     trialTable: {  [Trial.id]: Trial },
     trialOrder: [ '0' ],	
-    openDrawer: 'none',
+    openTrial: 'none',
     pastStates: [],
     futureStates: []
 }
@@ -263,15 +263,15 @@ export const guiState = (state = {}, action) => {
             return newState;
         case 'OPEN_DRAWER':
             var newState = Object.assign({}, state);
-            delete newState['openDrawer'];
-            newState['openDrawer'] = action.id;
+            delete newState['openTrial'];
+            newState['openTrial'] = action.id;
             return newState;
 
         case 'CLOSE_DRAWER':
             // Create the new state
             var newState = Object.assign({}, state);
-            delete newState['openDrawer'];
-            newState['openDrawer'] = -1;
+            delete newState['openTrial'];
+            newState['openTrial'] = -1;
             return newState;
         default:
             return state;
