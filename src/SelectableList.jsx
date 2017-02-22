@@ -25,10 +25,10 @@ const addSelectedFAB = {
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
-    handleTouchTap(name) {
-        console.log("Tapped name", name);
+    handleTouchTap(id) {
+        console.log("Tapped name", id);
         var store = this.props.store;
-        actionToggleSelected(store, name);
+        actionToggleSelected(store, id);
     }/*
     // Dispatch an action the add the clicked trial to the 
     // list of selected trials 
@@ -58,11 +58,11 @@ class SelectableTrialList extends React.Component {
                         // Each trial gets a unique key
                         return (
                             <ListItem
-                            key={this.props.state.trialTable[trial].id}
+                            key={trial}
                             primaryText={this.props.state.trialTable[trial].name}
                             leftAvatar={
                                 <Avatar>
-                                {this.props.state.trialTable[trial].id}
+                                {trial}
                                 </Avatar>}
                             rightAvatar = {
                                 <CheckBox

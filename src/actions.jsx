@@ -58,20 +58,20 @@ export const actionRestoreFutureState = (store) => {
 
 
 // Dispatch the action calling for a trial to be selected
-export const actionToggleSelected = (store, trialName) => {
+export const actionToggleSelected = (store, trialID) => {
     actionArchiveState(store);
     //console.log("Select", store)
     var state = store.getState();
 
-    if (state.trialTable[trialName].selected){
+    if (state.trialTable[trialID].selected){
         store.dispatch({
             type: 'DESELECT_TRIAL',
-            name: trialName
+            id: trialID
         })
     } else {
         store.dispatch({
             type: 'SELECT_TRIAL',
-            name: trialName
+            id: trialID
         });
     }
 }
@@ -107,11 +107,11 @@ export const actionRemoveTrial = (store) => {
 }
 
 // Dispatch an action calling for a Drawer to be opened
-export const actionOpenDrawer = (store, drawerName) => {
+export const actionOpenDrawer = (store, id) => {
     var state = store.getState();
         store.dispatch({
             type: 'OPEN_DRAWER',
-            name: drawerName
+            id: id
         })
 }
 export const actionCloseDrawer = (store) => {

@@ -25,7 +25,7 @@ class PluginDrawer extends React.Component {
             <Drawer
             width={300}
             openSecondary={true}
-            open={this.props.openDrawer === "pluginDrawer"}>
+            open={this.props.openDrawer != -1}>
             <div>
             <FloatingActionButton
             style={removeStyleFAB}

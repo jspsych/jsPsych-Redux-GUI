@@ -12,12 +12,15 @@ const Trial = {
 
 
 const InitialState = {
-    trialTable: {  [Trial.name]: Trial },
-    trialOrder: [ 'default' ],	
+    trialTable: {  [Trial.id]: Trial },
+    trialOrder: [ '0' ],	
     openDrawer: 'none',
     pastStates: [],
     futureStates: []
 }
+
+// This is the variable for keeping track of the id's that have been used
+var currentID = 1;
 
 export const guiState = (state = {}, action) => {
 
@@ -38,13 +41,13 @@ export const guiState = (state = {}, action) => {
         case 'SELECT_TRIAL':
 
             // Make the updated the trial property by constructing a new hashtable
-            var newTrial = Object.assign({}, state.trialTable[action.name]);
+            var newTrial = Object.assign({}, state.trialTable[action.id]);
             delete newTrial['selected'];
             newTrial['selected'] = true;
 
             var newTable = Object.assign({}, state.trialTable);
-            delete newTable[action.name];
-            newTable[action.name] = newTrial;
+            delete newTable[action.id];
+            newTable[action.id] = newTrial;
 
             var newState = Object.assign({}, state);
 
@@ -57,13 +60,13 @@ export const guiState = (state = {}, action) => {
         case 'DESELECT_TRIAL':
 
             // Make the updated the trial property by constructing a new hashtable
-            var newTrial = Object.assign({}, state.trialTable[action.name]);
+            var newTrial = Object.assign({}, state.trialTable[action.id]);
             delete newTrial['selected'];
             newTrial['selected'] = false;
 
             var newTable = Object.assign({}, state.trialTable);
-            delete newTable[action.name];
-            newTable[action.name] = newTrial;
+            delete newTable[action.id];
+            newTable[action.id] = newTrial;
 
             var newState = Object.assign({}, state);
 
@@ -75,9 +78,11 @@ export const guiState = (state = {}, action) => {
 
         case 'ARCHIVE_STATE_REMOVE':
 
+            var oldState = Object.assign({}, state);
+            oldState['trialTable'] = Object.assign({}, state['trialTable'])
             var newPStates = [
-                state,
-                ...state.pastStates.slice(0,50)
+                oldState,
+                ...oldState.pastStates.slice(0,50)
             ];
 
             var newState = Object.assign({}, state);
@@ -87,10 +92,15 @@ export const guiState = (state = {}, action) => {
             return newState; 
 
         case 'ARCHIVE_STATE':
+            // Create a deep copy of the state object
+            // NOTE: This will not deep copy sub-objects that must be done explicitly
             var oldState = Object.assign({}, state);
+            
+            // Create a deep copy of the state.trial table object
+            oldState['trialTable'] = Object.assign({}, state['trialTable'])
             var newPStates = [
                 oldState,
-                ...state.pastStates
+                ...oldState.pastStates
             ];
 
             console.log("Archive oldState: ", oldState);
@@ -188,19 +198,18 @@ export const guiState = (state = {}, action) => {
             delete newTrial['id'];
 
             // Add the new properties
-            newTrial['id'] = index;
+            newTrial['id'] = currentID;
             newTrial['name'] = newName;
 
             // Create the new trial table
             var newTable = Object.assign({}, state.trialTable);
-            newTable[[newName]] = newTrial;
+            newTable[currentID] = newTrial;
 
             // Create the new trial order
             var newOrder = [
                 ...state.trialOrder,
-                newName
+                String(currentID)
             ]
-
             // Create the new state
             var newState = Object.assign({}, state);
 
@@ -212,6 +221,9 @@ export const guiState = (state = {}, action) => {
             newState['trialTable'] = newTable;
             newState['trialOrder'] = newOrder;
 
+            // Increment the currentID
+            currentID = currentID + 1;
+
             return newState;
             
         case 'REMOVE_TRIAL':
@@ -219,49 +231,47 @@ export const guiState = (state = {}, action) => {
             var newState = Object.assign({}, state);
 
             // List of trials to be removed
-            var removeList = Object.keys(newState.trialTable);
-            console.log("remove", removeList)
+            var removeList = Object.keys(state.trialTable);
 
-            var newOrder = state.trialOrder;
+            var newOrder = [ ...state.trialOrder];
 
             delete newState['trialOrder']
-
             // Find and remove all the selected trials
             for(var i = 0; i < removeList.length; i++){
                 if (state.trialTable[removeList[i]].selected) {    
                     delete newState.trialTable[removeList[i]]; 
-
+                    var index = newOrder.indexOf(removeList[i]);
                     newOrder = [
-                        ...newOrder.slice(0, newOrder.indexOf(removeList[i])),
-                        ...newOrder.slice(newOrder.indexOf(removeList[i]) + 1)
+                        ...newOrder.slice(0, index),
+                        ...newOrder.slice(index+1)
                     ]
                 }
             }
+
+            // If all the trial are removed add the default trial
             if (Object.keys(newState.trialTable).length == 0){
                 newState.trialTable = {
-                    [Trial.name]: Trial
+                    [Trial.id]: Trial
                 }
                 newOrder = [
-                    Trial.name,
-                    ...newOrder
+                    Trial.id
                 ]
             }
 
             // Assign new trialTable and trialOrder
             newState['trialOrder'] = newOrder;
-
             return newState;
         case 'OPEN_DRAWER':
             var newState = Object.assign({}, state);
             delete newState['openDrawer'];
-            newState['openDrawer'] = action.name;
+            newState['openDrawer'] = action.id;
             return newState;
 
         case 'CLOSE_DRAWER':
             // Create the new state
             var newState = Object.assign({}, state);
             delete newState['openDrawer'];
-            newState['openDrawer'] = 'none';
+            newState['openDrawer'] = -1;
             return newState;
         default:
             return state;
