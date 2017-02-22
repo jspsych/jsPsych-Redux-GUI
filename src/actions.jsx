@@ -68,11 +68,13 @@ export const actionToggleSelected = (store, trialID) => {
             type: 'DESELECT_TRIAL',
             id: trialID
         })
+        actionCloseDrawer(store);
     } else {
         store.dispatch({
             type: 'SELECT_TRIAL',
             id: trialID
         });
+        actionOpenDrawer(store, trialID);
     }
 }
 
@@ -83,7 +85,6 @@ export const actionAddTrial = (store) => {
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-    actionOpenDrawer(store, 'pluginDrawer');
 }
 
 // Dispatch action calling for a trial to be removed from trialList

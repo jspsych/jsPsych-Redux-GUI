@@ -14,7 +14,7 @@ const Trial = {
 const InitialState = {
     trialTable: {  [Trial.id]: Trial },
     trialOrder: [ '0' ],	
-    openTrial: 'none',
+    openTrial: -1,
     pastStates: [],
     futureStates: []
 }
@@ -103,7 +103,6 @@ export const guiState = (state = {}, action) => {
                 ...oldState.pastStates
             ];
 
-            console.log("Archive oldState: ", oldState);
             var newState = Object.assign({}, state);
             
             // Remove old past states
@@ -134,7 +133,6 @@ export const guiState = (state = {}, action) => {
 
             restoredState['futureStates'] = newFuture;
             restoredState['pastStates'] = newPast;
-           console.log("Restore: ", restoredState) 
             return restoredState;
 
         case 'RESTORE_STATE_REMOVE':

@@ -26,7 +26,6 @@ class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
     handleTouchTap(id) {
-        console.log("Tapped name", id);
         var store = this.props.store;
         actionToggleSelected(store, id);
     }/*

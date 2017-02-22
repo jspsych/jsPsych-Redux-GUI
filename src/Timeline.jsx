@@ -31,7 +31,7 @@ const Timeline = ({
 
     <PluginDrawer
     store={store}
-    openDrawer={state.openDrawer}
+    openTrial={state.openTrial}
     />
 
     <ButtonMenu 
