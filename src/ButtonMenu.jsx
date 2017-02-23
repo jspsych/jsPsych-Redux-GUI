@@ -9,6 +9,9 @@ import ContentRemove from 'material-ui/svg-icons/content/remove';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
+import IconMenu from 'material-ui/IconMenu';
+import Divider from 'material-ui/Divider';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {actionAddTrial, actionRemoveTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
@@ -43,42 +46,47 @@ const removeStyleFAB = {
     marginRight: 10,
     position: 'absolute',
     bottom: window.innerHeight * 0.05,
-    left: window.innerWidth * 0.15
+	left: window.innerWidth * 0.15
 }
 
+
 class ButtonMenu extends React.Component {
-    add () { actionAddTrial(this.props.store); }
-    remove () { actionRemoveTrial(this.props.store); }
-    fastForward () { actionRestoreFutureState(this.props.store); }
-    restore () { actionRestoreState(this.props.store); }
-    render () {
-        return (
-            <div>
-            <FloatingActionButton
-            style={addStyleFAB}
-            onTouchTap={this.add.bind(this)}>
-            <ContentAdd />
-            </FloatingActionButton>
-
-            <FloatingActionButton
-            style={removeStyleFAB}
-            onTouchTap={this.remove.bind(this)}>
-            <ContentRemove />
-            </FloatingActionButton>
-
-            <FloatingActionButton
-            style={undoStyleFAB}
-            onTouchTap={this.restore.bind(this)}>
-            <Undo />
-            </FloatingActionButton>
-
-            <FloatingActionButton
-            style={redoStyleFAB}
-            onTouchTap={this.fastForward.bind(this)}>
-            <Redo />
-            </FloatingActionButton>
-            </div>
-        );
-    }
+	add () { actionAddTrial(this.props.store); }
+	remove () { actionRemoveTrial(this.props.store); }
+	fastForward () { actionRestoreFutureState(this.props.store); }
+	restore () { actionRestoreState(this.props.store); }
+	render () {
+		return (
+			<IconMenu
+			iconButtonElement={<IconButton> <MoreVertIcon /></IconButton>}
+			anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+			targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+			>
+			<MenuItem
+			primaryText="Add"
+			rightIcon={<ContentAdd />}
+			onTouchTap={this.add.bind(this)}
+			/>
+			<Divider />
+			<MenuItem
+			primaryText="Remove"
+			rightIcon={<ContentRemove />}
+			onTouchTap={this.remove.bind(this)}
+			/>
+			<Divider />
+			<MenuItem
+			primaryText="Undo"
+			rightIcon={<Undo />}
+			onTouchTap={this.restore.bind(this)}
+			/>
+			<Divider />
+			<MenuItem
+			primaryText="Redo"
+			rightIcon={<Redo />}
+			onTouchTap={this.fastForward.bind(this)}
+			/>
+			</IconMenu>
+		);
+	}
 }
 export default ButtonMenu;
