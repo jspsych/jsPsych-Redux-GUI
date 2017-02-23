@@ -6,7 +6,7 @@ import Subheader from 'material-ui/Subheader';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-
+// Import React DND
 //import Trial from 'Trial';
 import { actionToggleSelected, actionHandleDrawer } from 'actions';
 
