@@ -38,8 +38,8 @@ const redoStyleFAB = {
 const addStyleFAB = {
     marginRight: 10,
     position: 'absolute',
-    bottom: window.innerHeight * 0.05,
-    left: window.innerWidth * 0.05
+    bottom: window.innerHeight * 0.01,
+    left: window.innerWidth * 0.01
 }
 
 const removeStyleFAB = {
@@ -59,6 +59,7 @@ class ButtonMenu extends React.Component {
 		return (
 			<IconMenu
 			iconButtonElement={<IconButton> <MoreVertIcon /></IconButton>}
+            style={addStyleFAB}
 			anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
 			targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
 			>

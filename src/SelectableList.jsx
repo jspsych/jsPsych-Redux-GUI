@@ -42,8 +42,6 @@ const propTypes = {
   //  connectDragSource: PropTypes.func.isRequired
 }
 */
-
-
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
@@ -69,31 +67,31 @@ class SelectableTrialList extends React.Component {
 
         }
     }*/
-    backgroundColorer (trial) {
-        if (this.props.state.openTrial===trial.id) {
-            return { backgroundColor: 'blue'}
-        } else {
-            return { backgroundColor: 'white'}
-        }
-    }
-    render() {
-        // I think this is okay
-        //oconst {isDragging, connectDragSource, text } = this.props;
+	render() {
+		// I think this is okay
+		//oconst {isDragging, connectDragSource, text } = this.props;
 
-        //return connectDragSource(
-            ////style={{ opacity: isDragging ? 0.5 : 1 }}>
+		//return connectDragSource(
+		////style={{ opacity: isDragging ? 0.5 : 1 }}>
 
-            return(
-                <div >
-                <List defaultValue={this.props.state.trialOrder[0]}>
-                <Subheader>Current Trials</Subheader>
+		return(
+			<div >
+			<List defaultValue={this.props.state.trialOrder[0]}>
+			<Subheader>Current Trials</Subheader>
                 {
+
                     this.props.state.trialOrder.map(trial => {
+
                         // Each trial gets a unique key
                         return (
+
                             <ListItem
                             key={trial}
-                            style={this.backgroundColorer.bind(this,trial)}
+                            style={
+                                this.props.state.openTrial === String(this.props.state.trialTable[trial].id) ? 
+                                { backgroundColor: '#BDBDBD'} : // Light grey
+                                { backgroundColor: 'white'}
+                            }
                             primaryText={this.props.state.trialTable[trial].name}
                             leftAvatar={
                                 <Avatar>
@@ -107,12 +105,12 @@ class SelectableTrialList extends React.Component {
                                 onCheck={this.handleTouchTap.bind(this,trial)}
                                 />}
                             />
-                        )
+                        );
                     })}
-                </List>
-                </div>
-            );
-        }
+            </List>
+            </div>
+        );
+    }
 }
 //SelectableTrialList.propTypes = propTypes;
 export default SelectableTrialList;

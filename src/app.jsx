@@ -55,7 +55,7 @@ const renderApp = () => {
     var state = store.getState();
 
     // Print the current state of the store to the console
-    //console.log("Render App: ", state);
+    console.log("Render App: ", state);
     render(
         <div >
         <MuiThemeProvider muiTheme={setMuiTheme}>
