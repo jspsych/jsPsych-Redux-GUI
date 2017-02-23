@@ -56,4 +56,8 @@ add only one feature per new branch.
 once everything is working merge it back into the master branch.  
 
 
-
+To do this week:
+	- Support Trial reordering
+	- Support buttonmenu expanding on hover
+	- Add AppBar accross the top. 
+	- Preview in the middle. 
