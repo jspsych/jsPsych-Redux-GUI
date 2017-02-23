@@ -6,7 +6,7 @@ import Subheader from 'material-ui/Subheader';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-// Import React DND
+import DragSource from 'react-dnd'
 //import Trial from 'Trial';
 import { actionToggleSelected, actionHandleDrawer } from 'actions';
 
@@ -20,6 +20,28 @@ const addSelectedFAB = {
     //marginTop: 5,
     position: 'auto'
 }
+/*function collect(connect, monitor) {
+    return {
+        connectDragSource: connect.dragSource(),
+        isDragging: monitor.isDragging()
+    }; 
+}
+const trialSource = {
+    beginDrag(trial) {
+        return {
+            text: trial.name 
+        };
+    }
+}
+const propTypes = {
+
+//    text: PropTypes.string.isRequired,
+
+    // Injected by React DnD
+ //   isDragging: PropTypes.bool.isRequired,
+  //  connectDragSource: PropTypes.func.isRequired
+}
+*/
 
 
 class SelectableTrialList extends React.Component {
@@ -29,8 +51,8 @@ class SelectableTrialList extends React.Component {
         var store = this.props.store;
         actionToggleSelected(store, id);
     }/*
-    // Dispatch an action the add the clicked trial to the 
-    // list of selected trials 
+        // Dispatch an action the add the clicked trial to the 
+        // list of selected trials 
     handleTouchAdd(name) {
         var store = this.props.storeState;
         actionSelectAdditionalTrial(store, name);
@@ -47,9 +69,22 @@ class SelectableTrialList extends React.Component {
 
         }
     }*/
-        render() {
-            return (
-                <div>
+    backgroundColorer (trial) {
+        if (this.props.state.openTrial===trial.id) {
+            return { backgroundColor: 'blue'}
+        } else {
+            return { backgroundColor: 'white'}
+        }
+    }
+    render() {
+        // I think this is okay
+        //oconst {isDragging, connectDragSource, text } = this.props;
+
+        //return connectDragSource(
+            ////style={{ opacity: isDragging ? 0.5 : 1 }}>
+
+            return(
+                <div >
                 <List defaultValue={this.props.state.trialOrder[0]}>
                 <Subheader>Current Trials</Subheader>
                 {
@@ -58,6 +93,7 @@ class SelectableTrialList extends React.Component {
                         return (
                             <ListItem
                             key={trial}
+                            style={this.backgroundColorer.bind(this,trial)}
                             primaryText={this.props.state.trialTable[trial].name}
                             leftAvatar={
                                 <Avatar>
@@ -78,7 +114,9 @@ class SelectableTrialList extends React.Component {
             );
         }
 }
+//SelectableTrialList.propTypes = propTypes;
 export default SelectableTrialList;
+//export default DragSource(ListItem, trialSource, collect) (SelectableTrialList);
 
 
 

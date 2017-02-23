@@ -10,7 +10,6 @@ const Trial = {
     selected: false 
 }
 
-
 const InitialState = {
     trialTable: {  [Trial.id]: Trial },
     trialOrder: [ '0' ],	
@@ -37,9 +36,7 @@ export const guiState = (state = {}, action) => {
         case 'INITIAL_STATE':
             console.log("InitialState", InitialState);
             return InitialState;
-
         case 'SELECT_TRIAL':
-
             // Make the updated the trial property by constructing a new hashtable
             var newTrial = Object.assign({}, state.trialTable[action.id]);
             delete newTrial['selected'];
@@ -56,9 +53,7 @@ export const guiState = (state = {}, action) => {
             newState['trialTable'] = newTable;
 
             return newState;
-
         case 'DESELECT_TRIAL':
-
             // Make the updated the trial property by constructing a new hashtable
             var newTrial = Object.assign({}, state.trialTable[action.id]);
             delete newTrial['selected'];
@@ -75,9 +70,7 @@ export const guiState = (state = {}, action) => {
             newState['trialTable'] = newTable;
 
             return newState;
-
         case 'ARCHIVE_STATE_REMOVE':
-
             var oldState = Object.assign({}, state);
             oldState['trialTable'] = Object.assign({}, state['trialTable'])
             var newPStates = [
@@ -90,7 +83,6 @@ export const guiState = (state = {}, action) => {
             newState['pastStates'] = newPStates; 
 
             return newState; 
-
         case 'ARCHIVE_STATE':
             // Create a deep copy of the state object
             // NOTE: This will not deep copy sub-objects that must be done explicitly
@@ -115,7 +107,6 @@ export const guiState = (state = {}, action) => {
             newState['futureStates'] = [];
 
             return newState; 
-
         case 'RESTORE_STATE':
             var restoredState = Object.assign({}, state.pastStates[0]);
             console.log("State: to Restore", restoredState)
@@ -134,7 +125,6 @@ export const guiState = (state = {}, action) => {
             restoredState['futureStates'] = newFuture;
             restoredState['pastStates'] = newPast;
             return restoredState;
-
         case 'RESTORE_STATE_REMOVE':
             var restoredState = Object.assign({}, state.pastStates[0]);
 
@@ -154,9 +144,7 @@ export const guiState = (state = {}, action) => {
             restoredState['pastStates'] = newPast;
             
             return restoredState;
-
         case 'RESTORE_FUTURE_STATE':
-            
             var restoredState = Object.assign({}, state.futureStates[0]);
 
             var newPast = [
@@ -174,7 +162,6 @@ export const guiState = (state = {}, action) => {
             restoredState['pastStates'] = newPast;
             console.log("restoreState: ", restoredState)
             return restoredState;
-        
         case 'ADD_TRIAL':
             // New trial's unique id
             var index = Object.keys(state.trialTable).length;
@@ -223,7 +210,6 @@ export const guiState = (state = {}, action) => {
             currentID = currentID + 1;
 
             return newState;
-            
         case 'REMOVE_TRIAL':
             // Create deep copy of the state.
             var newState = Object.assign({}, state);
@@ -264,7 +250,6 @@ export const guiState = (state = {}, action) => {
             delete newState['openTrial'];
             newState['openTrial'] = action.id;
             return newState;
-
         case 'CLOSE_DRAWER':
             // Create the new state
             var newState = Object.assign({}, state);
@@ -274,7 +259,6 @@ export const guiState = (state = {}, action) => {
         default:
             return state;
     }
-
 }
 
 // Reducer for handling changes of an individual trial
