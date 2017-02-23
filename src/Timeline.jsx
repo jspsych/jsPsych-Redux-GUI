@@ -31,6 +31,7 @@ const Timeline = ({
 
     <PluginDrawer
     store={store}
+    state={state}
     openTrial={state.openTrial}
     />
 

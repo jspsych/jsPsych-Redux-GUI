@@ -120,3 +120,11 @@ export const actionCloseDrawer = (store) => {
         type:'CLOSE_DRAWER'
     })
 }
+
+export const actionChangeName = (store, trialName) => {
+        store.dispatch({
+        type: 'CHANGE_NAME',
+        name: trialName
+    })
+
+}
