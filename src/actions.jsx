@@ -126,5 +126,13 @@ export const actionChangeName = (store, trialName) => {
         type: 'CHANGE_NAME',
         name: trialName
     })
-
+        actionArchiveState(store);
 }
+
+export const actionToggleButton = (store, buttonVal) => {
+    store.dispatch({
+        type: 'TOGGLE_ISTIMELINE'
+    })
+    
+}
+

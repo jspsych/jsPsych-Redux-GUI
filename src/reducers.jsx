@@ -277,8 +277,16 @@ export const guiState = (state = {}, action) => {
             // action.name is the new name of the trial.
             newState.trialTable[newState.openTrial] = Object.assign({}, newState.trialTable[newState.openTrial]);
             newState.trialTable[newState.openTrial].name = action.name;
-            // newState.trialTable[newState['openTrial']] = Object.assign({}, newState.trialTable[newState['openTrial']]);
-            // newState.trialTable[newState['openTrial']].name = action.name;
+            return newState;
+
+        case 'TOGGLE_ISTIMELINE':
+            console.log("In reducer");
+            var newState = Object.assign({}, state);
+            if(newState.trialTable[newState.openTrial].isTimeline != false) {
+                console.log("isTimeline");
+            } else {
+                console.log("isTrial");
+            }
             return newState;
             
         default:
