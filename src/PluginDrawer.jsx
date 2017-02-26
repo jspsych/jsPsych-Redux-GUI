@@ -17,6 +17,13 @@ const removeStyleFAB = {
     bottom: window.innerHeight * 0.1,
     right: window.innerWidth * 0.1
 }
+
+const inline = {
+    display: 'flex',
+    position: 'absolute',
+    marginRight: 150
+}
+
 // Class for handling the pluginDrawer and its contents
 class PluginDrawer extends React.Component {
     close(){
@@ -35,11 +42,13 @@ class PluginDrawer extends React.Component {
         if(this.props.openTrial !== -1){
             var inside = <div><TextField 
             value={this.props.state.trialTable[this.props.state.openTrial].name} 
+            id="trial text"
             underlineShow={false}
             onChange={this.handleChange.bind(this)} />
             <RadioButtonGroup
             name="toggleIsTimeline"
             defaultSelected={false}
+            style={inline}
             onChange={this.handleButtonChange.bind(this)} >
                 <RadioButton
                 value={false}
