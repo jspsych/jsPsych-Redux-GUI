@@ -8,21 +8,32 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-import {actionCloseDrawer, actionChangeName} from 'actions';
+import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',
     bottom: window.innerHeight * 0.1,
     right: window.innerWidth * 0.1
 }
+
+const inline = {
+    display: 'flex',
+    position: 'absolute',
+    marginRight: 150
+}
+
 // Class for handling the pluginDrawer and its contents
 class PluginDrawer extends React.Component {
     close(){
         actionCloseDrawer(this.props.store);
     }
     handleChange(e, newValue) {
-        actionChangeName(this.props.store, newValue)
+        actionChangeName(this.props.store, newValue);
+    }
+    handleButtonChange(e, toggleButton) {
+        actionToggleButton(this.props.store, toggleButton);
     }
 
     render() { // Could depend on if there are any trials in the selected list
@@ -30,10 +41,22 @@ class PluginDrawer extends React.Component {
         console.log(this.props.state.openTrial);
         if(this.props.openTrial !== -1){
             var inside = <div><TextField 
-            defaultValue={this.props.state.trialTable[this.props.state.openTrial].name}
-            value={this.props.state.trialTable[this.props.state.openTrial].name} //e.target.value
+            value={this.props.state.trialTable[this.props.state.openTrial].name} 
+            id="trial text"
             underlineShow={false}
             onChange={this.handleChange.bind(this)} />
+            <RadioButtonGroup
+            name="toggleIsTimeline"
+            defaultSelected={false}
+            style={inline}
+            onChange={this.handleButtonChange.bind(this)} >
+                <RadioButton
+                value={false}
+                label="Trial" />
+                <RadioButton
+                value={true}
+                label="Timeline"/>
+            </RadioButtonGroup>
             <div>
             <FloatingActionButton
             style={removeStyleFAB}
