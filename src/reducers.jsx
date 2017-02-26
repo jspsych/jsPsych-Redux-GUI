@@ -280,7 +280,6 @@ export const guiState = (state = {}, action) => {
             return newState;
 
         case 'TOGGLE_ISTIMELINE':
-            console.log("In reducer");
             var newState = Object.assign({}, state);
             if(newState.trialTable[newState.openTrial].isTimeline != false) {
                 console.log("isTimeline");

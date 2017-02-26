@@ -25,8 +25,8 @@ class PluginDrawer extends React.Component {
     handleChange(e, newValue) {
         actionChangeName(this.props.store, newValue);
     }
-    handleButtonChange(e, toggle) {
-        actionToggleButton(this.props.store, toggle);
+    handleButtonChange(e, toggleButton) {
+        actionToggleButton(this.props.store, toggleButton);
     }
 
     render() { // Could depend on if there are any trials in the selected list
@@ -39,14 +39,14 @@ class PluginDrawer extends React.Component {
             onChange={this.handleChange.bind(this)} />
             <RadioButtonGroup
             name="toggleIsTimeline"
-            defaultSelected="isTrialVal"
+            defaultSelected={false}
             onChange={this.handleButtonChange.bind(this)} >
                 <RadioButton
-                value="isTrialVal"
-                label="isTrial" />
+                value={false}
+                label="Trial" />
                 <RadioButton
-                value="isTimelineVal"
-                label="isTimeline"/>
+                value={true}
+                label="Timeline"/>
             </RadioButtonGroup>
             <div>
             <FloatingActionButton

@@ -130,9 +130,11 @@ export const actionChangeName = (store, trialName) => {
 }
 
 export const actionToggleButton = (store, buttonVal) => {
+    var state = store.getState();
+    state.trialTable[state.openTrial].isTimeline = buttonVal;
     store.dispatch({
         type: 'TOGGLE_ISTIMELINE'
     })
-    
+
 }
 
