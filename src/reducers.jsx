@@ -164,15 +164,15 @@ export const guiState = (state = {}, action) => {
             return restoredState;
         case 'ADD_TRIAL':
             // New trial's unique id
-            var index = Object.keys(state.trialTable).length;
+            var index = Math.random();//Object.keys(state.trialTable).length;
 
             // Ensure there are no duplicate trial names 
-            while(state.trialTable["Trial_"+index.toString()] != undefined){
-                index++; 
+            while(state.trialTable[index.toString()] != undefined){
+                index = Math.random(); 
             }
 
             // New trial's name 
-            var newName = "Trial_" + index.toString();           
+            var newName = "Trial_" + Object.keys(state.trialTable).length;           
 
             // Make the new trial from the default template.
             var newTrial = Object.assign({}, Trial);
@@ -183,17 +183,17 @@ export const guiState = (state = {}, action) => {
             delete newTrial['id'];
 
             // Add the new properties
-            newTrial['id'] = currentID;
+            newTrial['id'] = index;
             newTrial['name'] = newName;
 
             // Create the new trial table
             var newTable = Object.assign({}, state.trialTable);
-            newTable[currentID] = newTrial;
+            newTable[index] = newTrial;
 
             // Create the new trial order
             var newOrder = [
                 ...state.trialOrder,
-                String(currentID)
+                String(index)
             ]
             // Create the new state
             var newState = Object.assign({}, state);
@@ -205,9 +205,6 @@ export const guiState = (state = {}, action) => {
             // Add new properties
             newState['trialTable'] = newTable;
             newState['trialOrder'] = newOrder;
-
-            // Increment the currentID
-            currentID = currentID + 1;
 
             return newState;
         case 'REMOVE_TRIAL':
