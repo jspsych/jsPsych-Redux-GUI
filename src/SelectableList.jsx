@@ -1,5 +1,6 @@
 var React = require('react');
 import { Component, PropTypes } from 'react';
+import Mousetrap from 'mousetrap';
 import { List, ListItem, MakeSelectable } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import Subheader from 'material-ui/Subheader';
@@ -8,7 +9,8 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import DragSource from 'react-dnd'
 //import Trial from 'Trial';
-import { actionToggleSelected, actionHandleDrawer } from 'actions';
+import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
+    actionRemoveTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
 
 
 // Key for indexing list items
@@ -48,25 +50,29 @@ class SelectableTrialList extends React.Component {
     handleTouchTap(id) {
         var store = this.props.store;
         actionToggleSelected(store, id);
-    }/*
-        // Dispatch an action the add the clicked trial to the 
-        // list of selected trials 
-    handleTouchAdd(name) {
-        var store = this.props.storeState;
-        actionSelectAdditionalTrial(store, name);
-        actionHandleDrawer(store, "pluginDrawer");
     }
-    // Determines if the trial is selected/checked
-    isChecked(id) {
-        console.log(this.props.storeState.selected.includes(id));
-        return this.props.storeState.selected.includes(id);
+    add () { actionAddTrial(this.props.store); }
+    remove () { actionRemoveTrial(this.props.store); }
+    fastForward () { actionRestoreFutureState(this.props.store); }
+    restore () { actionRestoreState(this.props.store); }
+    // Bind the keys when this component is mounted
+    componentDidMount () {
+        // Add Trial
+        Mousetrap.bind(['ctrl+m'], this.add.bind(this)),
+            // Remove Trial
+            Mousetrap.bind(['ctrl+x', 'del'], this.remove.bind(this)),
+            // Undo State Change
+            Mousetrap.bind(['ctrl+z'], this.restore.bind(this)),
+            // Redo State Change
+            Mousetrap.bind(['ctrl+q'], this.fastForward.bind(this))
     }
-    getTrials(order, trialTable){
-
-        for (trial in trialTable) {
-
+    // Unbind the keys when the component is unmounted
+    componentWillUnmount () {
+        Mousetrap.unbind(['ctrl+m'], this.add.unbind(this)),
+            Mousetrap.unbind(['ctrl+x', 'del'], this.remove.unbind(this)),
+            Mousetrap.unbind(['ctrl+z'], this.restore.unbind(this)),
+            Mousetrap.unbind(['ctrl+q'], this.fastForward.unbind(this))
         }
-    }*/
 	render() {
 		// I think this is okay
 		//oconst {isDragging, connectDragSource, text } = this.props;
