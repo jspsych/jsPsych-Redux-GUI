@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 
 import { timeline } from 'reducers';
+
 // Archive the current state
 // This action should be called by every other action before it
 // calls it's reducer.
@@ -118,5 +119,14 @@ export const actionOpenDrawer = (store, id) => {
 export const actionCloseDrawer = (store) => {
     store.dispatch({
         type:'CLOSE_DRAWER'
+    })
+}
+
+// Move a trial from one position to another
+export const actionMoveTrail = (from, to, store) => {
+    store.dispatch({
+        type: 'MOVE_TRIAL',
+        from: from,
+        to: to
     })
 }

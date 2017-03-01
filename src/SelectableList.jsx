@@ -22,28 +22,9 @@ const addSelectedFAB = {
     //marginTop: 5,
     position: 'auto'
 }
-/*function collect(connect, monitor) {
-    return {
-        connectDragSource: connect.dragSource(),
-        isDragging: monitor.isDragging()
-    }; 
-}
-const trialSource = {
-    beginDrag(trial) {
-        return {
-            text: trial.name 
-        };
-    }
-}
-const propTypes = {
 
-//    text: PropTypes.string.isRequired,
-
-    // Injected by React DnD
- //   isDragging: PropTypes.bool.isRequired,
-  //  connectDragSource: PropTypes.func.isRequired
-}
-*/
+// For display during dragging of a trial
+var placeholder = <li className="placeholder" />
 class SelectableTrialList extends React.Component {
 
     // Dispatch an action to change the value of 'selected'
@@ -51,6 +32,30 @@ class SelectableTrialList extends React.Component {
         var store = this.props.store;
         actionToggleSelected(store, id);
     }
+    ///////////////////////////////
+    //// Drag and Drop Methods ////
+    ///////////////////////////////
+    dragStart (e) {
+        this.props.dragged = e.currentTarget;
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData("text/html", e.currentTarget);
+    }
+    dragEnd (e) {
+        //this.props.dragged.style.display = "block";
+
+        var from = Number(this.props.dragged.dataset.id);
+        var to = Number(this.props.over.dataset.id);
+        actionMoveTrial(from, to, this.props.store);
+    }
+    dragOver (e) {
+        e.preventDefault();
+        //this.props.dragged.style.display = "none";
+        if (e.target.className == "placeholder") return;
+        this.props.over.bind(e.target);
+    }
+    /////////////////////////
+    //// Hot Key Methods ////
+    /////////////////////////
     add () { actionAddTrial(this.props.store); }
     remove () { actionRemoveTrial(this.props.store); }
     fastForward () { actionRestoreFutureState(this.props.store); }
@@ -72,49 +77,47 @@ class SelectableTrialList extends React.Component {
             Mousetrap.unbind(['ctrl+x', 'del'], this.remove.unbind(this)),
             Mousetrap.unbind(['ctrl+z'], this.restore.unbind(this)),
             Mousetrap.unbind(['ctrl+q'], this.fastForward.unbind(this))
-        }
-	render() {
-		// I think this is okay
-		//oconst {isDragging, connectDragSource, text } = this.props;
+    }
+    render() {
 
-		//return connectDragSource(
-		////style={{ opacity: isDragging ? 0.5 : 1 }}>
+        return(
+            <ul onDragOver={this.dragOver.bind(this)}>
+            <List defaultValue={this.props.state.trialOrder[0]}>
+            <Subheader>Current Trials</Subheader>
+            {
 
-		return(
-			<div >
-			<List defaultValue={this.props.state.trialOrder[0]}>
-			<Subheader>Current Trials</Subheader>
-                {
+                this.props.state.trialOrder.map(trial => {
 
-                    this.props.state.trialOrder.map(trial => {
-
-                        // Each trial gets a unique key
-                        return (
-
-                            <ListItem
-                            key={trial}
-                            style={
-                                this.props.state.openTrial === String(this.props.state.trialTable[trial].id) ? 
-                                { backgroundColor: '#BDBDBD'} : // Light grey
-                                { backgroundColor: 'white'}
-                            }
-                            primaryText={this.props.state.trialTable[trial].name}
-                            leftAvatar={
-                                <Avatar>
-                                {trial}
-                                </Avatar>}
-                            rightAvatar = {
-                                <CheckBox
-                                checked={this.props.state.trialTable[trial].selected}
-                                labelPosition='left'
-                                style={addSelectedFAB}
-                                onCheck={this.handleTouchTap.bind(this,trial)}
-                                />}
-                            />
-                        );
-                    })}
+                    // Each trial gets a unique key
+                    return (
+                        <ListItem
+                        data-id={trial}
+                        draggable="true"
+                        onDragEnd={this.dragEnd.bind(this)}
+                        onDragStart={this.dragStart.bind(this)}
+                        key={trial}
+                        style={
+                            this.props.state.openTrial === String(this.props.state.trialTable[trial].id) ? 
+                            { backgroundColor: '#BDBDBD'} : // Light grey
+                            { backgroundColor: 'white'}
+                        }
+                        primaryText={this.props.state.trialTable[trial].name}
+                        leftAvatar={
+                            <Avatar>
+                            {trial}
+                            </Avatar>}
+                        rightAvatar = {
+                            <CheckBox
+                            checked={this.props.state.trialTable[trial].selected}
+                            labelPosition='left'
+                            style={addSelectedFAB}
+                            onCheck={this.handleTouchTap.bind(this,trial)}
+                            />}
+                        />
+                    );
+                })}
             </List>
-            </div>
+            </ul>
         );
     }
 }
@@ -178,4 +181,4 @@ function wrapState(ComposedComponent) {
                     />
 
                     SelectableList = wrapState(SelectableList);
-*/
+                    */

@@ -93,17 +93,4 @@ class ButtonMenu extends React.Component {
         );
     }
 }
-/*
-
-            <FocusTrap
-            focusName="ButtonMenu"
-            onFocus={true}
-            onBlur={true}
-            >
-            <HotKeys keyMap={keyMap}>
-            <HotKeys handlers={handlers}>
-            </HotKeys>
-            </HotKeys>
-            </FocusTrap>
-            */
 export default ButtonMenu;

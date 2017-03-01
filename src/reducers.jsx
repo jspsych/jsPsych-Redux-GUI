@@ -242,6 +242,23 @@ export const guiState = (state = {}, action) => {
             // Assign new trialTable and trialOrder
             newState['trialOrder'] = newOrder;
             return newState;
+       case 'MOVE_TRIAL':
+            var newState = Object.assign({}, state);
+            var trialToMove = Object.assign({}, state.trialTable[state.trialOrder[from]]);
+            var tempOrder = [ 
+                ...state.trialOrder.splice(0,from),
+                ...state.trialOrder.splice(from+1)
+                ]
+            var newOrder = [
+                tempOrder.splice(0, to),
+                trialToMove,
+                tempOrder.splice(to+1)
+                ]
+            delete newState['trialOrder'];
+            // Assign new trialTable and trialOrder
+            newState['trialOrder'] = newOrder;
+            return newState;
+
         case 'OPEN_DRAWER':
             var newState = Object.assign({}, state);
             delete newState['openTrial'];
