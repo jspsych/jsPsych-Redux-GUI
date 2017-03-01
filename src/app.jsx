@@ -8,7 +8,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import Timeline from 'Timeline';
 import { guiState } from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
@@ -39,7 +38,7 @@ const App = ({
     store,
     state
 }) => (
-        <Timeline 
+    <Timeline 
     store={store}
     state={state}
     />);

@@ -94,39 +94,34 @@ export const actionRemoveTrial = (store) => {
 
     console.log("Archive State: ", state);
     actionArchiveState(store);
-    
+
     //console.log("Remove", store)
     var state = store.getState();
     store.dispatch({
         type: 'REMOVE_TRIAL',
         index: state.selected
     });
-    state = store.getState();
-
-   // if (state.trialOrder.length == 0){
-   //     actionCloseDrawer(store);
-   // }
 }
 
 // Dispatch an action calling for a Drawer to be opened
 export const actionOpenDrawer = (store, id) => {
-    var state = store.getState();
-        store.dispatch({
-            type: 'OPEN_DRAWER',
-            id: id
-        })
+    store.dispatch({
+        type: 'OPEN_DRAWER',
+        id: id
+    })
 }
 export const actionCloseDrawer = (store) => {
     store.dispatch({
         type:'CLOSE_DRAWER'
-    })
+    });
 }
 
 // Move a trial from one position to another
-export const actionMoveTrail = (from, to, store) => {
+export const actionMoveTrial = (store, fromPos, toPos) => {
+    actionArchiveState(store);
     store.dispatch({
         type: 'MOVE_TRIAL',
-        from: from,
-        to: to
-    })
+        fromPos: fromPos,
+        toPos: toPos
+    });
 }

@@ -63,7 +63,7 @@ class ButtonMenu extends React.Component {
             >
 
             <MenuItem
-            primaryText="Add (ctrl+m)"
+            primaryText="Add (ctrl+a)"
             rightIcon={<ContentAdd />}
             onTouchTap={this.add.bind(this)}
             />

@@ -242,23 +242,31 @@ export const guiState = (state = {}, action) => {
             // Assign new trialTable and trialOrder
             newState['trialOrder'] = newOrder;
             return newState;
-       case 'MOVE_TRIAL':
+        case 'MOVE_TRIAL':
+            console.log("From: ", action.fromPos, " To: ", action.toPos);
+
+            var moveTo = action.toPos;
+            // Ensure that the trial isn't lost
+            if (isNaN(moveTo)) // If the to position is not a number
+                moveTo = state.trialOrder.length; // Move the trial to the end
+            
             var newState = Object.assign({}, state);
-            var trialToMove = Object.assign({}, state.trialTable[state.trialOrder[from]]);
+            var trialToMove = Object.assign({}, state.trialTable[state.trialOrder[action.fromPos]]);
             var tempOrder = [ 
-                ...state.trialOrder.splice(0,from),
-                ...state.trialOrder.splice(from+1)
+                ...state.trialOrder.slice(0, action.fromPos),
+                ...state.trialOrder.slice(action.fromPos+1)
                 ]
             var newOrder = [
-                tempOrder.splice(0, to),
-                trialToMove,
-                tempOrder.splice(to+1)
+                ...tempOrder.slice(0, moveTo),
+                trialToMove.id.toString(),
+                ...tempOrder.slice(moveTo)
                 ]
+
             delete newState['trialOrder'];
+
             // Assign new trialTable and trialOrder
             newState['trialOrder'] = newOrder;
             return newState;
-
         case 'OPEN_DRAWER':
             var newState = Object.assign({}, state);
             delete newState['openTrial'];
