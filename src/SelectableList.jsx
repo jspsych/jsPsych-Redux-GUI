@@ -29,8 +29,7 @@ class SelectableTrialList extends React.Component {
     /*** Selection Methods ***/
     // Dispatch an action to change the value of 'selected'
     handleTouchTap(id) {
-        var store = this.props.store;
-        actionToggleSelected(store, id);
+        actionToggleSelected(this.props.store, id);
     }
 
 
@@ -45,19 +44,19 @@ class SelectableTrialList extends React.Component {
     }
     dragEnd (e) {
         e.preventDefault();
-        this.dragged.style.display = "inline";
-
+        // Set the trial to display in the default way
+        this.dragged.style.display = "initial";
+        // Get the position the trial was dragged from
         var fromPos = Number(this.dragged.dataset.id);
-        console.log("Over: ", this.over);
-
+        // Get the position the trial was dropped
         var toPos = Number(this.over.dataset.id);
-
-        console.log("To Position: ",toPos);
+        // Move the trial
         actionMoveTrial(this.props.store, fromPos, toPos);
         return false;
     }
     dragOver (e) {
         e.preventDefault();
+        // Set the trial to not display while it's being dragged
         this.dragged.style.display = "none";
         if (e.target.className === "placeholder") return;
 
@@ -69,6 +68,7 @@ class SelectableTrialList extends React.Component {
 
     /*** Hot Key Methods ***/
     add (e) { 
+        // Prevent the default action for this HotKey
         e.preventDefault();
         actionAddTrial(this.props.store); 
     }
@@ -105,6 +105,7 @@ class SelectableTrialList extends React.Component {
         Mousetrap.unbind(['ctrl+z'], this.restore.unbind(this))
         Mousetrap.unbind(['ctrl+q'], this.fastForward.unbind(this))
     }
+
     render() {
         return (
             <List 
@@ -113,37 +114,47 @@ class SelectableTrialList extends React.Component {
                 style={addSelectedFAB}
             >
                 <Subheader>Current Trials</Subheader>
-                    {
-                        this.props.state.trialOrder.map(trial => {
-                            // Used by all rendered components
-                            var dataIden = this.props.state.trialOrder.indexOf(trial);
+                {
+                    this.props.state.trialOrder.map(trial => {
+                        // Used by all rendered components
+                        var dataIden = this.props.state.trialOrder.indexOf(trial);
 
-                            // Each trial gets a unique key
-                            return (
+                        // Each trial gets a unique key
+                        return (
+                            <div 
+                                id="wrapper" 
+                                key={trial}
+                            >
+                                <CheckBox
+                                    data-id={dataIden}
+                                    draggable={true}
+                                    checked={this.props.state.trialTable[trial].selected}
+                                    labelPosition='right'
+                                    onCheck={this.handleTouchTap.bind(this,trial)}
+                                    style={
+                                        // If this is the trial open in the pluginDrawer highlight it
+                                        this.props.state.openTrial === trial ? 
+                                            { backgroundColor: '#BDBDBD'} : // Light grey
+                                            { backgroundColor: 'white'}
+                                    }
+                                />
                                 <ListItem
                                     data-id={dataIden}
                                     draggable={true}
                                     onDragEnd={this.dragEnd.bind(this)}
                                     onDragStart={this.dragStart.bind(this)}
-                                    key={trial}
                                     style={
                                         // If this is the trial open in the pluginDrawer highlight it
-                                        this.props.state.openTrial === String(this.props.state.trialTable[trial].id) ? 
-                                        { backgroundColor: '#BDBDBD'} : // Light grey
-                                        { backgroundColor: 'white'}
+                                        this.props.state.openTrial === trial ? 
+                                            { backgroundColor: '#BDBDBD'} : // Light grey
+                                            { backgroundColor: 'white'}
                                     }
                                     primaryText={this.props.state.trialTable[trial].name}
-                                    rightAvatar = {
-                                        <CheckBox
-                                            data-id={dataIden}
-                                            draggable={true}
-                                            checked={this.props.state.trialTable[trial].selected}
-                                            labelPosition='right'
-                                            onCheck={this.handleTouchTap.bind(this,trial)}
-                                        />}
+                                    rightAvatar={<Avatar>T</Avatar>}
                                     />
-                            );
-                        }, this)}
+                                </div>
+                        );
+                    }, this)}
                 </List>
         );
     }

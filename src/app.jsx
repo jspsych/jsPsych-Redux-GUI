@@ -9,6 +9,7 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
+import TitleBar from 'TitleBar';
 import { guiState } from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
 
@@ -38,11 +39,17 @@ const App = ({
     store,
     state
 }) => (
+    <div>
+        <TitleBar
+            store={store}
+            state={state}
+        />
     <Timeline 
         draggable={false}
         store={store}
         state={state}
-    />);
+    />
+    </div>);
 
 // Create the Redux store with timeline as the reducer that
 // manages the state updates
