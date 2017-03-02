@@ -39,7 +39,6 @@
     "mousetrap": "^1.6.0",
     "react": "^15.4.1",
     "react-dnd": "^2.2.3",
-    "react-dnd-html5-backend": "^2.2.3",
     "react-dom": "^15.4.1",
     "react-form": "^1.2.6",
     "react-redux": "^4.4.6",

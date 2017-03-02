@@ -68,10 +68,22 @@ class SelectableTrialList extends React.Component {
 
 
     /*** Hot Key Methods ***/
-    add () { actionAddTrial(this.props.store); }
-    remove () { actionRemoveTrial(this.props.store); }
-    fastForward () { actionRestoreFutureState(this.props.store); }
-    restore () { actionRestoreState(this.props.store); }
+    add (e) { 
+        e.preventDefault();
+        actionAddTrial(this.props.store); 
+    }
+    remove (e) { 
+        e.preventDefault();
+        actionRemoveTrial(this.props.store); 
+    }
+    fastForward (e) { 
+        e.preventDefault();
+        actionRestoreFutureState(this.props.store); 
+    }
+    restore (e) { 
+        e.preventDefault();
+        actionRestoreState(this.props.store); 
+    }
 
     // Bind the keys when this component is mounted
     componentDidMount () {
@@ -85,6 +97,7 @@ class SelectableTrialList extends React.Component {
         Mousetrap.bind(['ctrl+q'], this.fastForward.bind(this))
     }
 
+    
     // Unbind the keys when the component is unmounted
     componentWillUnmount () {
         Mousetrap.unbind(['ctrl+a'], this.add.unbind(this))
@@ -94,14 +107,12 @@ class SelectableTrialList extends React.Component {
     }
     render() {
         return (
-
             <List 
                 defaultValue={this.props.state.trialOrder[0]} 
                 onDragOver={this.dragOver.bind(this)} 
-                draggable={false}
                 style={addSelectedFAB}
             >
-                <Subheader draggable={false}>Current Trials</Subheader>
+                <Subheader>Current Trials</Subheader>
                     {
                         this.props.state.trialOrder.map(trial => {
                             // Used by all rendered components
@@ -125,6 +136,7 @@ class SelectableTrialList extends React.Component {
                                     rightAvatar = {
                                         <CheckBox
                                             data-id={dataIden}
+                                            draggable={true}
                                             checked={this.props.state.trialTable[trial].selected}
                                             labelPosition='right'
                                             onCheck={this.handleTouchTap.bind(this,trial)}
