@@ -11,7 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
 import TitleBar from 'TitleBar';
 import { guiState } from 'reducers';
-import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
+import { actionOpenDrawer, actionArchiveState, actionRestoreStater} from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
@@ -32,6 +32,20 @@ const actionRemoveTrial = () => {
     })
 }
 
+// Here to keep the props of dummy components pure
+const actionToggleTimeline = () => {
+    var state = store.getState(store);
+    // If the timeline is open
+    state.timelineOpen ?
+        // Close it 
+        store.dispatch({
+            type: 'CLOSE_TIMELINE'
+        }) :
+        // Otherwise open it
+        store.dispatch({
+            type: 'OPEN_TIMELINE'
+        })
+}
 
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
@@ -44,11 +58,12 @@ const App = ({
             store={store}
             state={state}
         />
-    <Timeline 
-        draggable={false}
-        store={store}
-        state={state}
-    />
+        <Timeline 
+            draggable={false}
+            toggleTimeline={actionToggleTimeline}
+            store={store}
+            state={state}
+        />
     </div>);
 
 // Create the Redux store with timeline as the reducer that
@@ -67,7 +82,10 @@ const renderApp = () => {
         <div draggable={false}>
             <MuiThemeProvider muiTheme={setMuiTheme}>
                 <Provider store={store}>       
-                    <App store={store} state={state} draggable={false}/>
+                    <App 
+                        store={store} 
+                        state={state} 
+                        draggable={false}/>
                 </Provider>
             </MuiThemeProvider>
         </div>,

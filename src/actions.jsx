@@ -144,3 +144,16 @@ export const actionToggleButton = (store, buttonVal) => {
 
 }
 
+export const actionToggleTimeline = (store) => {
+    var state = store.getState();
+    // If the timeline is open
+    state.timelineOpen ?
+        // Close it 
+        store.dispatch({
+            type: 'CLOSE_TIMELINE'
+        }) :
+        // Otherwise open it
+        store.dispatch({
+            type: 'CLOSE_TIMELINE'
+        })
+}

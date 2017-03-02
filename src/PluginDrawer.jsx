@@ -9,8 +9,8 @@ import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
+
 const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',

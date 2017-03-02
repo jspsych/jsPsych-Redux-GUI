@@ -3,12 +3,16 @@ import { Component, PropTypes } from 'react';
 import Mousetrap from 'mousetrap';
 import { List, ListItem, MakeSelectable } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import AppBar from 'material-ui/AppBar';
+import Drawer from 'material-ui/Drawer';
+import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, actionMoveTrial, 
-    actionRemoveTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
+    actionRemoveTrial, actionRestoreState, actionRestoreFutureState, actionToggleTimeline } from 'actions';
 
 
 // Key for indexing list items
@@ -31,7 +35,6 @@ class SelectableTrialList extends React.Component {
     handleTouchTap(id) {
         actionToggleSelected(this.props.store, id);
     }
-
 
     /*** Drag and Drop Methods ***/
     dragStart (e) {
@@ -121,7 +124,7 @@ class SelectableTrialList extends React.Component {
 
                         // Each trial gets a unique key
                         return (
-                            <div 
+                            <div
                                 id="wrapper" 
                                 key={trial}
                             >

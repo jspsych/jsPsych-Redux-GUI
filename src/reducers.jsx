@@ -14,6 +14,7 @@ const InitialState = {
     trialTable: {  [Trial.id]: Trial },
     trialOrder: [ '0' ],	
     openTrial: -1,
+    timelineOpen: true,
     pastStates: [],
     futureStates: []
 }
@@ -278,14 +279,12 @@ export const guiState = (state = {}, action) => {
             delete newState['openTrial'];
             newState['openTrial'] = -1;
             return newState;
-
         case 'CHANGE_NAME':
             var newState = Object.assign({}, state);
             // action.name is the new name of the trial.
             newState.trialTable[newState.openTrial] = Object.assign({}, newState.trialTable[newState.openTrial]);
             newState.trialTable[newState.openTrial].name = action.name;
             return newState;
-
         case 'TOGGLE_ISTIMELINE':
             var newState = Object.assign({}, state);
             if(newState.trialTable[newState.openTrial].isTimeline != false) {
@@ -294,7 +293,18 @@ export const guiState = (state = {}, action) => {
                 console.log("isTrial");
             }
             return newState;
-            
+        case 'OPEN_TIMELINE':    
+            var newState = Object.assign({}, state);
+            delete newState['timelineOpen'];
+            newState['timelineOpen'] = true;
+            return newState;
+
+        case 'CLOSE_TIMELINE':
+            var newState = Object.assign({}, state);
+            delete newState['timelineOpen'];
+            newState['timelineOpen'] = false;
+            return newState;
+
         default:
             return state;
     }
