@@ -38,10 +38,13 @@
     "material-ui": "^0.16.4",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
+    "react-form": "^1.2.6",
     "react-inline-grid": "^0.5.3",
     "react-redux": "^4.4.6",
     "react-tap-event-plugin": "^2.0.1",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "redux-form": "^4.2.2",
+    "redux-react-form": "^0.1.4"
   },
   "devDependencies": {
     "babel-core": "^6.18.2",

@@ -9,6 +9,7 @@ import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import PluginForm from 'PluginForm';
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 const removeStyleFAB = {
@@ -22,6 +23,10 @@ const inline = {
     display: 'flex',
     position: 'absolute',
     marginRight: 150
+}
+
+const formStyle = {
+    marginTop: 70
 }
 
 // Class for handling the pluginDrawer and its contents
@@ -40,6 +45,11 @@ class PluginDrawer extends React.Component {
         console.log(this.props.state.trialTable);
         console.log(this.props.state.openTrial);
         if(this.props.openTrial !== -1){
+            if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
+                var form = <PluginForm style={formStyle}/>
+            } else {
+                var form = <div></div>
+            }
             var inside = <div><TextField 
             value={this.props.state.trialTable[this.props.state.openTrial].name} 
             id="trial text"
@@ -57,6 +67,7 @@ class PluginDrawer extends React.Component {
                 value={true}
                 label="Timeline"/>
             </RadioButtonGroup>
+            {form}
             <div>
             <FloatingActionButton
             style={removeStyleFAB}
