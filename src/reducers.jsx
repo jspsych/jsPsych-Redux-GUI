@@ -278,6 +278,23 @@ export const guiState = (state = {}, action) => {
             delete newState['openTrial'];
             newState['openTrial'] = -1;
             return newState;
+
+        case 'CHANGE_NAME':
+            var newState = Object.assign({}, state);
+            // action.name is the new name of the trial.
+            newState.trialTable[newState.openTrial] = Object.assign({}, newState.trialTable[newState.openTrial]);
+            newState.trialTable[newState.openTrial].name = action.name;
+            return newState;
+
+        case 'TOGGLE_ISTIMELINE':
+            var newState = Object.assign({}, state);
+            if(newState.trialTable[newState.openTrial].isTimeline != false) {
+                console.log("isTimeline");
+            } else {
+                console.log("isTrial");
+            }
+            return newState;
+            
         default:
             return state;
     }
