@@ -21,24 +21,26 @@ const Timeline = ({
     store,              // The store
     state              // The current state of the store
 }) => (
-    <div>
-    <title>  Experimental Timeline </title>
+    <div draggable={false}>
+        <title draggable={false}>  Experimental Timeline </title>
 
-    <SelectableTrialList
-    store={store}
-    state={state}
-    />
+        <SelectableTrialList
+            draggable={false}
+            store={store}
+            state={state}
+        />
 
     <PluginDrawer
-    store={store}
-    state={state}
-    openTrial={state.openTrial}
+        draggable={false}
+        store={store}
+        openTrial={state.openTrial}
     />
 
-    <ButtonMenu 
+<ButtonMenu 
+    draggable={false}
     store={store}
     state={state}
-    />
+/>
     </div>
 );
 

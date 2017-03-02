@@ -8,7 +8,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import Timeline from 'Timeline';
 import { guiState } from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
@@ -39,9 +38,10 @@ const App = ({
     store,
     state
 }) => (
-        <Timeline 
-    store={store}
-    state={state}
+    <Timeline 
+        draggable={false}
+        store={store}
+        state={state}
     />);
 
 // Create the Redux store with timeline as the reducer that
@@ -55,14 +55,14 @@ const renderApp = () => {
     var state = store.getState();
 
     // Print the current state of the store to the console
-    //console.log("Render App: ", state);
+    console.log("Render App: ", state);
     render(
-        <div >
-        <MuiThemeProvider muiTheme={setMuiTheme}>
-        <Provider store={store}>       
-        <App store={store} state={state}/>
-        </Provider>
-        </MuiThemeProvider>
+        <div draggable={false}>
+            <MuiThemeProvider muiTheme={setMuiTheme}>
+                <Provider store={store}>       
+                    <App store={store} state={state} draggable={false}/>
+                </Provider>
+            </MuiThemeProvider>
         </div>,
         document.getElementById('app')
     );
