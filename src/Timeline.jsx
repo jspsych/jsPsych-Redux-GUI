@@ -33,10 +33,11 @@ const Timeline = ({
     <PluginDrawer
         draggable={false}
         store={store}
+        state={state}
         openTrial={state.openTrial}
     />
 
-<ButtonMenu 
+<ButtonMenu
     draggable={false}
     store={store}
     state={state}
