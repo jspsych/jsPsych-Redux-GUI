@@ -9,13 +9,17 @@ import AppBar from 'material-ui/AppBar';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, actionMoveTrial, 
     actionRemoveTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
 
-
+const titleBarFAB = {
+    marginRight: 20,
+    position: 'relative'
+}
 const TitleBar = ({
     store,
     state
 }) => (
     <AppBar
         title="jsPsych GUI"
+        style={titleBarFAB}
         iconElementLeft={<IconButton><NavigationClose /></IconButton>}
         iconElementRight={<Avatar>jsP</Avatar>}
     />

@@ -298,13 +298,11 @@ export const guiState = (state = {}, action) => {
             delete newState['timelineOpen'];
             newState['timelineOpen'] = true;
             return newState;
-
         case 'CLOSE_TIMELINE':
             var newState = Object.assign({}, state);
             delete newState['timelineOpen'];
             newState['timelineOpen'] = false;
             return newState;
-
         default:
             return state;
     }

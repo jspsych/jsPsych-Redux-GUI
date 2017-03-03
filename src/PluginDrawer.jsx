@@ -41,39 +41,39 @@ class PluginDrawer extends React.Component {
         console.log(this.props.state.openTrial);
         if(this.props.openTrial !== -1){
             var inside = <div><TextField 
-            value={this.props.state.trialTable[this.props.state.openTrial].name} 
-            id="trial text"
-            underlineShow={false}
-            onChange={this.handleChange.bind(this)} />
-            <RadioButtonGroup
-            name="toggleIsTimeline"
-            defaultSelected={false}
-            style={inline}
-            onChange={this.handleButtonChange.bind(this)} >
-                <RadioButton
-                value={false}
-                label="Trial" />
-                <RadioButton
-                value={true}
-                label="Timeline"/>
-            </RadioButtonGroup>
-            <div>
-            <FloatingActionButton
-            style={removeStyleFAB}
-            onTouchTap={this.close.bind(this)}>
-            <ContentRemove />
-            </FloatingActionButton>
-            </div>
+                    value={this.props.state.trialTable[this.props.state.openTrial].name} 
+                    id="trial text"
+                    underlineShow={false}
+                    onChange={this.handleChange.bind(this)} />
+                <RadioButtonGroup
+                    name="toggleIsTimeline"
+                    defaultSelected={false}
+                    style={inline}
+                    onChange={this.handleButtonChange.bind(this)} >
+                    <RadioButton
+                        value={false}
+                        label="Trial" />
+                    <RadioButton
+                        value={true}
+                        label="Timeline"/>
+                </RadioButtonGroup>
+                <div>
+                    <FloatingActionButton
+                        style={removeStyleFAB}
+                        onTouchTap={this.close.bind(this)}>
+                        <ContentRemove />
+                    </FloatingActionButton>
+                </div>
             </div>
         } else { 
             var inside = <div></div>
         }
         return (
             <Drawer
-            width={300}
-            openSecondary={true}
-            open={this.props.openTrial != -1}>
-            {inside}
+                width={300}
+                openSecondary={true}
+                open={this.props.openTrial != -1}>
+                {inside}
             </Drawer>
         ) // Stuff to be rendered inside the drawer could be included above 
     }

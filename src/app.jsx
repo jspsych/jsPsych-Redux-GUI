@@ -50,6 +50,7 @@ const actionToggleTimeline = () => {
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
 const App = ({ 
+    timelineOpen,
     store,
     state
 }) => (
@@ -61,6 +62,7 @@ const App = ({
         <Timeline 
             draggable={false}
             toggleTimeline={actionToggleTimeline}
+            timelineOpen={timelineOpen}
             store={store}
             state={state}
         />
@@ -85,6 +87,7 @@ const renderApp = () => {
                     <App 
                         store={store} 
                         state={state} 
+                        timelineOpen={state.timelineOpen}
                         draggable={false}/>
                 </Provider>
             </MuiThemeProvider>
