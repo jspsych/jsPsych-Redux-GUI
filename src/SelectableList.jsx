@@ -7,34 +7,64 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
     actionMoveTrial, actionRemoveTrial, actionRestoreState, 
-    actionRestoreFutureState, actionToggleTimeline } from 'actions';
+    actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
 
 
 // Key for indexing list items
 var key = -1;
 
-const addSelectedFAB = {
+const trialListFAB = {
     //marginRight: 20,
-    marginLeft: 20,
+    //marginLeft: 20,
     //marginTop: 5,
-    position: 'auto'
+    //position: 'absolute'
+}
+const openPluginFAB = { 
+    // Light grey
+    backgroundColor: '#BDBDBD', 
+}
+const closedPluginFAB = { 
+    backgroundColor: 'white', 
 }
 
 // For display during dragging of a trial
 var placeholder = <ListItem className="placeholder" />
 
+const AddSubTrial = ({ 
+    state,
+    store,
+    id 
+}) => (
+    // If the trial is a timeline
+    state.trialTable[id].isTimeline ? 
+    <ContentAdd /> :
+    <div />
+);
+var preventFlag = false;
 class SelectableTrialList extends React.Component {
 
     /*** Selection Methods ***/
     // Dispatch an action to change the value of 'selected'
     handleTouchTap(id) {
-        actionToggleSelected(this.props.store, id);
+        if (preventFlag) {
+            preventFlag = false;
+            return 
+        } else 
+            actionToggleSelected(this.props.store, id);
+
+    }
+    handleAddChild(id) {
+        actionAddChild(this.props.store, id);
+        preventFlag = true;
+        return;
     }
 
     /*** Drag and Drop Methods ***/
@@ -112,7 +142,7 @@ class SelectableTrialList extends React.Component {
             <List 
                 defaultValue={this.props.state.trialOrder[0]} 
                 onDragOver={this.dragOver.bind(this)} 
-                style={addSelectedFAB}
+                style={trialListFAB}
             >
                 <Subheader>Current Trials</Subheader>
                 {
@@ -122,35 +152,54 @@ class SelectableTrialList extends React.Component {
 
                         // Each trial gets a unique key
                         return (
-                                <ListItem
-                                    key={trial}
-                                    data-id={dataIden}
-                                    draggable={true}
-                                    onDragEnd={this.dragEnd.bind(this)}
-                                    onDragStart={this.dragStart.bind(this)}
-                                    style={
-                                        // If this is the trial open in the pluginDrawer highlight it
-                                        this.props.state.openTrial === trial ? 
-                                        { backgroundColor: '#BDBDBD'} // Light grey
-                                        : { backgroundColor: 'white'}
-                                    }
-                                    
-                                    primaryText={
-                                        // Ensure the trials can be dropped on the text
-                                        <div data-id={dataIden}>
-                                            {this.props.state.trialTable[trial].name}
-                                        </div>}
-                                    leftCheckbox={
-                                        <CheckBox
-                                            checked={this.props.state.trialTable[trial].selected}
-                                            labelPosition='right'
-                                            onCheck={this.handleTouchTap.bind(this,trial)}
-                                        />
-                                    }
+                            <ListItem
+                            key={trial}
+                            data-id={dataIden}
+                            draggable={true}
+                            onDragEnd={this.dragEnd.bind(this)}
+                            onDragStart={this.dragStart.bind(this)}
+                            insetChildren={true}
+                            initiallyOpen={true}
+                            style={
+                                // If this is the trial open in the pluginDrawer highlight it
+                                this.props.state.openTrial === trial ? 
+                                openPluginFAB :
+                                closedPluginFAB
+                            }
+                            rightIcon={
+                                // If the trial is a timeline
+                                this.props.state.trialTable[trial].isTimeline ? 
+                                <ContentAdd onTouchTap={this.handleAddChild.bind(this, trial)}/> :
+                                <div />
+                            }
+                            primaryText={
+                                // Ensure the trials can be dropped on the text
+                                <div 
+                                data-id={dataIden}>
+                                {this.props.state.trialTable[trial].name}
+                                </div>
+                            }
+                            leftCheckbox={
+                                <CheckBox
+                                checked={this.props.state.trialTable[trial].selected}
+                                labelPosition='right'
+                                onCheck={this.handleTouchTap.bind(this,trial)}
                                 />
+                            }
+                            nestedItems={
+                                // Display the nested items
+                                this.props.state.trialTable[trial].timeline.map(child => {
+                                    return (
+                                        <ListItem
+                                            key={child}
+                                            primaryText="Hellp I'm a child"
+                                        />
+                                    );
+                                }, this)}
+                            />
                         );
-                    }, this)}
-                </List>
+                }, this)}
+            </List>
         );
     }
 }

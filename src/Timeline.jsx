@@ -25,7 +25,7 @@ const checkDrawerStatus = (store, name) => {
 const timelineTitleFAB = {
     marginLeft: 40,
     //marginTop: 5,
-    position: 'auto'
+    position: 'absolute'
 }
 
 // The "dump" Component for the Timeline of experimental trials
@@ -36,17 +36,6 @@ const Timeline = ({
     state              // The current state of the store
 }) => (
     <div>
-        <Drawer
-            width={50}
-            openSecondary={false}
-            open={!timelineOpen}
-        > 
-            <IconButton 
-                onTouchTap={toggleTimeline}
-            > 
-                <ExpandMore /> 
-            </IconButton>
-        </Drawer>
         <Drawer
             docked={true}
             width={350}

@@ -127,11 +127,12 @@ export const actionMoveTrial = (store, fromPos, toPos) => {
 }
 
 export const actionChangeName = (store, trialName) => {
-        store.dispatch({
+    // This needs to be called first
+    actionArchiveState(store);
+    store.dispatch({
         type: 'CHANGE_NAME',
         name: trialName
     })
-        actionArchiveState(store);
 }
 
 export const actionToggleButton = (store, buttonVal) => {
@@ -144,6 +145,26 @@ export const actionToggleButton = (store, buttonVal) => {
 
 }
 
+export const actionToggleIsTimeline = (store) => {
+    actionArchiveState(store);
+    var state = store.getState();
+    // The state shouldn't be mutated or altered directly 
+    //state.trialTable[state.openTrial].isTimeline = buttonVal;
+    console.log(state.trialTable[state.openTrial].isTimeline);
+
+    // Handle the logic in the action
+    if(state.trialTable[state.openTrial].isTimeline != false) {
+        store.dispatch({
+            type: 'MAKE_TIMELINE',
+            trial: state.trialTable[state.openTrial]
+        })
+    } else {
+        store.dispatch({
+            type: 'MAKE_TRIAL',
+            trial: state.trialTable[state.openTrial]
+        })
+    }
+}
 export const actionToggleTimeline = (store) => {
     var state = store.getState();
     // If the timeline is open
@@ -156,4 +177,13 @@ export const actionToggleTimeline = (store) => {
         store.dispatch({
             type: 'CLOSE_TIMELINE'
         })
+}
+
+export const actionAddChild = (store, trialID) =>
+{
+    actionArchiveState(store);
+    store.dispatch({
+        type: 'ADD_CHILD_TRIAL',
+        ID: trialID 
+    })
 }

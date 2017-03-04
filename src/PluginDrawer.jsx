@@ -9,7 +9,8 @@ import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
+import Toggle from 'material-ui/Toggle';
+import {actionCloseDrawer, actionChangeName, actionToggleButton, actionToggleIsTimeline} from 'actions';
 
 const removeStyleFAB = {
     marginRight: 20,
@@ -32,22 +33,23 @@ class PluginDrawer extends React.Component {
     handleChange(e, newValue) {
         actionChangeName(this.props.store, newValue);
     }
+
     handleButtonChange(e, toggleButton) {
         actionToggleButton(this.props.store, toggleButton);
     }
-
     render() { // Could depend on if there are any trials in the selected list
         console.log(this.props.state.trialTable);
         console.log(this.props.state.openTrial);
         if(this.props.openTrial !== -1){
-            var inside = <div><TextField 
+            var inside = <div>
+                <TextField 
                     value={this.props.state.trialTable[this.props.state.openTrial].name} 
                     id="trial text"
                     underlineShow={false}
                     onChange={this.handleChange.bind(this)} />
                 <RadioButtonGroup
                     name="toggleIsTimeline"
-                    defaultSelected={false}
+                    defaultSelected={this.props.state.trialTable[this.props.openTrial].isTimeline}
                     style={inline}
                     onChange={this.handleButtonChange.bind(this)} >
                     <RadioButton
