@@ -54,13 +54,14 @@ const App = ({
     store,
     state
 }) => (
-    <div>
+    <div draggable={false}>
         <TitleBar
             store={store}
             state={state}
+            toggleTimeline={actionToggleTimeline}
+            timelineOpeni={timelineOpen}
         />
         <Timeline 
-            draggable={false}
             toggleTimeline={actionToggleTimeline}
             timelineOpen={timelineOpen}
             store={store}

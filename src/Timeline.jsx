@@ -24,7 +24,7 @@ const checkDrawerStatus = (store, name) => {
 
 const timelineTitleFAB = {
     marginLeft: 40,
-    marginTop: 5,
+    //marginTop: 5,
     position: 'auto'
 }
 
@@ -49,7 +49,6 @@ const Timeline = ({
         </Drawer>
         <Drawer
             docked={true}
-            draggable={false}
             width={350}
             openSecondary={false}
             open={timelineOpen}
@@ -62,7 +61,6 @@ const Timeline = ({
                 }
                 iconElementLeft={
                     <ButtonMenu
-                        draggable={false}
                         store={store}
                         state={state}
                     />
@@ -79,7 +77,6 @@ const Timeline = ({
             />
         </Drawer>
         <PluginDrawer
-            draggable={false}
             store={store}
             state={state}
             openTrial={state.openTrial}

@@ -47,26 +47,23 @@ class SelectableTrialList extends React.Component {
         return false;
     }
     dragEnd (e) {
-        e.preventDefault();
+        //e.preventDefault();
         // Set the trial to display in the default way
-        this.dragged.style.display = "initial";
+        this.dragged.style.display = "block";
         // Get the position the trial was dragged from
         var fromPos = Number(this.dragged.dataset.id);
         // Get the position the trial was dropped
         var toPos = Number(this.over.dataset.id);
         // Move the trial
         actionMoveTrial(this.props.store, fromPos, toPos);
-        return false;
     }
     dragOver (e) {
-        e.preventDefault();
+        //e.preventDefault();
         // Set the trial to not display while it's being dragged
         this.dragged.style.display = "none";
         if (e.target.className === "placeholder") return;
 
         this.over = e.target;
-        return false;
-        //console.log("this.over: ",this.over);
     }
 
 
@@ -125,24 +122,8 @@ class SelectableTrialList extends React.Component {
 
                         // Each trial gets a unique key
                         return (
-                            <div
-                                id="wrapper" 
-                                key={trial}
-                            >
-                                <CheckBox
-                                    data-id={dataIden}
-                                    draggable={true}
-                                    checked={this.props.state.trialTable[trial].selected}
-                                    labelPosition='right'
-                                    onCheck={this.handleTouchTap.bind(this,trial)}
-                                    style={
-                                        // If this is the trial open in the pluginDrawer highlight it
-                                        this.props.state.openTrial === trial ? 
-                                            { backgroundColor: '#BDBDBD'} // Light grey
-                                            : { backgroundColor: 'white'}
-                                    }
-                                />
                                 <ListItem
+                                    key={trial}
                                     data-id={dataIden}
                                     draggable={true}
                                     onDragEnd={this.dragEnd.bind(this)}
@@ -150,13 +131,23 @@ class SelectableTrialList extends React.Component {
                                     style={
                                         // If this is the trial open in the pluginDrawer highlight it
                                         this.props.state.openTrial === trial ? 
-                                            { backgroundColor: '#BDBDBD'} // Light grey
-                                            : { backgroundColor: 'white'}
+                                        { backgroundColor: '#BDBDBD'} // Light grey
+                                        : { backgroundColor: 'white'}
                                     }
-                                    primaryText={this.props.state.trialTable[trial].name}
-                                    leftAvatar={<Avatar>T</Avatar>}
+                                    
+                                    primaryText={
+                                        // Ensure the trials can be dropped on the text
+                                        <div data-id={dataIden}>
+                                            {this.props.state.trialTable[trial].name}
+                                        </div>}
+                                    leftCheckbox={
+                                        <CheckBox
+                                            checked={this.props.state.trialTable[trial].selected}
+                                            labelPosition='right'
+                                            onCheck={this.handleTouchTap.bind(this,trial)}
+                                        />
+                                    }
                                 />
-                            </div>
                         );
                     }, this)}
                 </List>
