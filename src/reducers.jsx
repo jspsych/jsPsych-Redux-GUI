@@ -7,6 +7,7 @@ const Trial = {
     timeline: [],
     trialType: "trialType",
     parentTrial: -1,
+    ancestryHeight: 0,
     selected: false 
 }
 
@@ -266,11 +267,13 @@ export const guiState = (state = {}, action) => {
             delete newTrial['name'];
             delete newTrial['id'];
             delete newTrial['parentTrial'];
+            delete newTrial['ancestryHeight'];
 
             // Add the new properties
             newTrial['id'] = index;
             newTrial['name'] = newName;
             newTrial['parentTrial'] = action.ID;
+            newTrial['ancestryHeight'] = state.trialTable[action.ID].ancestryHeight + 1;
 
             console.log("New Child", newTrial);
             // Add the new trial to the trial table

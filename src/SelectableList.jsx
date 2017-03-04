@@ -3,9 +3,9 @@ import { Component, PropTypes } from 'react';
 import Mousetrap from 'mousetrap';
 import { List, ListItem, MakeSelectable } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
@@ -13,6 +13,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import TrialItem from 'TrialItem';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
     actionMoveTrial, actionRemoveTrial, actionRestoreState, 
     actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
@@ -26,13 +27,6 @@ const trialListFAB = {
     //marginLeft: 20,
     //marginTop: 5,
     //position: 'absolute'
-}
-const openPluginFAB = { 
-    // Light grey
-    backgroundColor: '#BDBDBD', 
-}
-const closedPluginFAB = { 
-    backgroundColor: 'white', 
 }
 
 // For display during dragging of a trial
@@ -48,45 +42,9 @@ const AddSubTrial = ({
     <ContentAdd /> :
     <div />
 );
-var preventFlag = false;
 class SelectableTrialList extends React.Component {
 
     /*** Selection Methods ***/
-    // Dispatch an action to change the value of 'selected'
-    handleTouchTap(id) {
-        if (preventFlag) {
-            preventFlag = false;
-            return 
-        } else 
-            actionToggleSelected(this.props.store, id);
-
-    }
-    handleAddChild(id) {
-        actionAddChild(this.props.store, id);
-        preventFlag = true;
-        return;
-    }
-
-    /*** Drag and Drop Methods ***/
-    dragStart (e) {
-        this.dragged = e.currentTarget;
-        e.dataTransfer.effectAllowed = "move"
-
-        // For FireFox compatibility
-        e.dataTransfer.setData("text/html", e.currentTarget);
-        return false;
-    }
-    dragEnd (e) {
-        //e.preventDefault();
-        // Set the trial to display in the default way
-        this.dragged.style.display = "block";
-        // Get the position the trial was dragged from
-        var fromPos = Number(this.dragged.dataset.id);
-        // Get the position the trial was dropped
-        var toPos = Number(this.over.dataset.id);
-        // Move the trial
-        actionMoveTrial(this.props.store, fromPos, toPos);
-    }
     dragOver (e) {
         //e.preventDefault();
         // Set the trial to not display while it's being dragged
@@ -96,7 +54,7 @@ class SelectableTrialList extends React.Component {
         this.over = e.target;
     }
 
-
+    // Dispatch an action to change the value of 'selected'
     /*** Hot Key Methods ***/
     add (e) { 
         // Prevent the default action for this HotKey
@@ -141,7 +99,7 @@ class SelectableTrialList extends React.Component {
         return (
             <List 
                 defaultValue={this.props.state.trialOrder[0]} 
-                onDragOver={this.dragOver.bind(this)} 
+            onDragOver={this.dragOver.bind(this)} 
                 style={trialListFAB}
             >
                 <Subheader>Current Trials</Subheader>
@@ -152,6 +110,26 @@ class SelectableTrialList extends React.Component {
 
                         // Each trial gets a unique key
                         return (
+                            <TrialItem
+                                data-id={dataIden}
+                                dataIden={dataIden}
+                                key={trial}
+                                that={this}
+                                store={this.props.store}
+                                state={this.props.state}
+                                trial={trial}
+                            />
+                        );
+                }, this)}
+            </List>
+        );
+    }
+}
+export default SelectableTrialList;
+
+
+/*
+ *
                             <ListItem
                             key={trial}
                             data-id={dataIden}
@@ -197,10 +175,4 @@ class SelectableTrialList extends React.Component {
                                     );
                                 }, this)}
                             />
-                        );
-                }, this)}
-            </List>
-        );
-    }
-}
-export default SelectableTrialList;
+                            */
