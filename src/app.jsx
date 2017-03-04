@@ -40,9 +40,9 @@ const actionToggleTimeline = () => {
         // Close it 
         store.dispatch({
             type: 'CLOSE_TIMELINE'
-        }) :
+        }) 
         // Otherwise open it
-        store.dispatch({
+       : store.dispatch({
             type: 'OPEN_TIMELINE'
         })
 }

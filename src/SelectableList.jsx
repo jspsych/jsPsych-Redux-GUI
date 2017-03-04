@@ -11,8 +11,9 @@ import Subheader from 'material-ui/Subheader';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckBox from 'material-ui/Checkbox';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { actionToggleSelected, actionHandleDrawer, actionAddTrial, actionMoveTrial, 
-    actionRemoveTrial, actionRestoreState, actionRestoreFutureState, actionToggleTimeline } from 'actions';
+import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
+    actionMoveTrial, actionRemoveTrial, actionRestoreState, 
+    actionRestoreFutureState, actionToggleTimeline } from 'actions';
 
 
 // Key for indexing list items
@@ -100,7 +101,7 @@ class SelectableTrialList extends React.Component {
         Mousetrap.bind(['ctrl+q'], this.fastForward.bind(this))
     }
 
-    
+
     // Unbind the keys when the component is unmounted
     componentWillUnmount () {
         Mousetrap.unbind(['ctrl+a'], this.add.unbind(this))
@@ -137,8 +138,8 @@ class SelectableTrialList extends React.Component {
                                     style={
                                         // If this is the trial open in the pluginDrawer highlight it
                                         this.props.state.openTrial === trial ? 
-                                            { backgroundColor: '#BDBDBD'} : // Light grey
-                                            { backgroundColor: 'white'}
+                                            { backgroundColor: '#BDBDBD'} // Light grey
+                                            : { backgroundColor: 'white'}
                                     }
                                 />
                                 <ListItem
@@ -149,13 +150,13 @@ class SelectableTrialList extends React.Component {
                                     style={
                                         // If this is the trial open in the pluginDrawer highlight it
                                         this.props.state.openTrial === trial ? 
-                                            { backgroundColor: '#BDBDBD'} : // Light grey
-                                            { backgroundColor: 'white'}
+                                            { backgroundColor: '#BDBDBD'} // Light grey
+                                            : { backgroundColor: 'white'}
                                     }
                                     primaryText={this.props.state.trialTable[trial].name}
-                                    rightAvatar={<Avatar>T</Avatar>}
-                                    />
-                                </div>
+                                    leftAvatar={<Avatar>T</Avatar>}
+                                />
+                            </div>
                         );
                     }, this)}
                 </List>

@@ -23,7 +23,7 @@ const checkDrawerStatus = (store, name) => {
 }
 
 const timelineTitleFAB = {
-    marginLeft: 60,
+    marginLeft: 40,
     marginTop: 5,
     position: 'auto'
 }
@@ -50,38 +50,41 @@ const Timeline = ({
         <Drawer
             docked={true}
             draggable={false}
-            width={400}
+            width={350}
             openSecondary={false}
             open={timelineOpen}
         >
             <AppBar 
-                title={<div style={timelineTitleFAB}>
-                    Experimental Timeline
-                </div> }
+                title={
+                    <div style={timelineTitleFAB}>
+                        Experimental Timeline
+                    </div> 
+                }
                 iconElementLeft={
                     <ButtonMenu
                         draggable={false}
                         store={store}
                         state={state}
-                    />}
-                    iconElementRight={<IconButton>
-                        <NavigationClose />
-                    </IconButton>}
-                    onRightIconButtonTouchTap={toggleTimeline}
-                />
-                <SelectableTrialList
-                    draggable={false}
-                    store={store}
-                    state={state}
-                />
-            </Drawer>
-            <PluginDrawer
+                    />
+                }
+                iconElementRight={<IconButton>
+                    <NavigationClose />
+                </IconButton>}
+                onRightIconButtonTouchTap={toggleTimeline}
+            />
+            <SelectableTrialList
                 draggable={false}
                 store={store}
                 state={state}
-                openTrial={state.openTrial}
             />
-        </div>
+        </Drawer>
+        <PluginDrawer
+            draggable={false}
+            store={store}
+            state={state}
+            openTrial={state.openTrial}
+        />
+    </div>
 );
 
 export default Timeline;
