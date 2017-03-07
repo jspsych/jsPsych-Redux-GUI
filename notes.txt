@@ -56,4 +56,10 @@ add only one feature per new branch.
 once everything is working merge it back into the master branch.  
 
 
-
+To do this week:
+	- Have oopenDrawer trial render as highlighted. 
+	- Support Trial reordering
+	- Support buttonmenu expanding on hover
+	- Add AppBar accross the top. 
+	- Preview in the middle. 
+		- Takes the current trial table and compiles it into the jsPsych code. 

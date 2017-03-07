@@ -1,12 +1,11 @@
 import React from 'react';
-import { Field, reduxForm } from 'redux-form';
+//import { Field, reduxForm } from 'redux-form';
 import TextField from 'material-ui/TextField';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import Checkbox from 'material-ui/Checkbox';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
-import PluginParameterForm from 'PluginParameterForm';
 import IconButton from 'material-ui/IconButton';
 
 const toggleStylesBlock = { maxWidth: 400 };
