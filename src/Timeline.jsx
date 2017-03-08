@@ -38,8 +38,9 @@ const Timeline = ({
     />
 
     <PluginForm 
-    store={store}
-    state={state}
+        store={store}
+        state={state}
+        pluginVal={state.pluginVal}
     />
 
 <ButtonMenu

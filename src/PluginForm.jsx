@@ -29,17 +29,27 @@ class PluginForm extends React.Component {
     value={i++} />
     );
 
+    var plugForm = this.props.state.trialTable[this.props.state.openTrial].pluginVal;
+    //{plugin.plugForm}
+
+    if(this.props.openTrial !== -1) {
+
+      var plugForm = <div><SelectField
+        value={this.props.pluginVal} 
+        autoWidth={true}
+        floatingLabelText="Trial Type"
+        maxHeight={300} 
+        onChange={this.handleChange.bind(this)} >
+        {pluginItems}
+        </SelectField>
+        </div>
+    } else {
+      var plugForm = <div></div>
+    }
 
     return (
     <div>
-    <SelectField
-      value={1}
-      autoWidth={true}
-      floatingLabelText="Trial Type"
-      maxHeight={300} 
-      onChange={this.handleChange} >
-         {pluginItems}
-    </SelectField>
+    {plugForm}
     </div>
       );
   }

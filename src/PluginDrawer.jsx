@@ -25,10 +25,6 @@ const inline = {
     marginRight: 150
 }
 
-const formStyle = {
-    marginTop: 70
-}
-
 // Class for handling the pluginDrawer and its contents
 class PluginDrawer extends React.Component {
     close(){
@@ -43,10 +39,10 @@ class PluginDrawer extends React.Component {
 
     render() { // Could depend on if there are any trials in the selected list
         console.log(this.props.state.trialTable);
-        console.log(this.props.state.openTrial);
+        console.log(this.props.state.pluginVal);
         if(this.props.openTrial !== -1){
             if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
-                var form = <PluginForm style={formStyle}/>
+                var form = <PluginForm />
             } else {
                 var form = <div></div>
             }

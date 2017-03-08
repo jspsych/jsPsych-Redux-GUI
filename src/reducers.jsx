@@ -293,9 +293,9 @@ export const guiState = (state = {}, action) => {
             return newState;
 
         case 'PLUGIN_CHANGE':
-        var newState = Object.assign({}, state);
-        newState.trialTable[newState.openTrial].pluginVal = action.pluginVal;
-        return newState;
+            var newState = Object.assign({}, state);
+            newState.trialTable[newState.openTrial].pluginVal = action.pluginVal;
+            return newState;
             
         default:
             return state;

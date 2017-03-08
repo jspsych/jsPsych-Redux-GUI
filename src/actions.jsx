@@ -130,7 +130,7 @@ export const actionChangeName = (store, trialName) => {
         store.dispatch({
         type: 'CHANGE_NAME',
         name: trialName
-    })
+    });
         actionArchiveState(store);
 }
 
@@ -141,15 +141,14 @@ export const actionToggleButton = (store, buttonVal) => {
     store.dispatch({
         type: 'TOGGLE_ISTIMELINE',
         isTimeline: buttonVal
-    })
-
+    });
 }
 
 export const actionPluginChange = (store, val) => {
     store.dispatch({
         type: 'PLUGIN_CHANGE',
         pluginVal: val
-    })
+    });
 
 }
 
