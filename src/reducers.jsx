@@ -451,28 +451,29 @@ export const guiState = (state = {}, action) => {
 
             // Delete the previous version of the trial
             delete newState.trialTable[state.openTrial];
-            var newTrial = Object.assign({}, action.trial);
+
+            var newTrial = Object.assign({}, state.trialTable[state.openTrial]);
 
             // Delete and update the isTimeline property
             delete newTrial['isTimeline'];
             newTrial['isTimeline'] = false;
-            newState.trialTable[newTrial.id] = newTrial;
+            newState.trialTable[newState.openTrial] = Object.assign({}, newTrial);
 
             return newState;
         case 'MAKE_TIMELINE':
             var newState = Object.assign({}, state);
 
-            // Remove the old version of the openTrial
-            delete newState.trialTable[state.openTrial];
-              
-            var newTrial = Object.assign({}, action.trial);
-
+            var newTrial = Object.assign({}, state.trialTable[state.openTrial]);
             // Delete and update the isTimeline property
             delete newTrial['isTimeline'];
-
             newTrial['isTimeline'] = true;
-            newState.trialTable[newTrial.id] = newTrial;
 
+            console.log("newtrial", newTrial);
+            // Delete the previous version of the trial
+            delete newState.trialTable[state.openTrial];
+
+            newState.trialTable[state.openTrial] = Object.assign({}, newTrial);
+            console.log("newState", newState);
             return newState;
         case 'OPEN_TIMELINE':    
             var newState = Object.assign({}, state);

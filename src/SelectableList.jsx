@@ -16,7 +16,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import TrialItem from 'TrialItem';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
     actionMoveTrial, actionRemoveTrial, actionRestoreState, actionSetOver,
-    actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
+    actionAddChild, actionRestoreFutureState, actionToggleTimeline, 
+    actionToggleIsTimeline} from 'actions';
 
 
 // Key for indexing list items
@@ -66,6 +67,14 @@ class SelectableTrialList extends React.Component {
         e.preventDefault();
         actionRemoveTrial(this.props.store); 
     }
+    addChild (e) {
+        e.preventDefault();
+        actionAddChild(this.props.store, this.props.state.openTrial);
+        }
+    toggleIsTimeline (e) {
+        e.preventDefault();
+        actionToggleIsTimeline(this.props.store);
+        }
     fastForward (e) { 
         e.preventDefault();
         actionRestoreFutureState(this.props.store); 
@@ -81,6 +90,10 @@ class SelectableTrialList extends React.Component {
         Mousetrap.bind(['ctrl+a'], this.add.bind(this))
         // Remove Trial
         Mousetrap.bind(['ctrl+x', 'del'], this.remove.bind(this))
+        // Add Child Trial
+        Mousetrap.bind(['ctrl+c'], this.addChild.bind(this))
+        // Make trial into timeline 
+        Mousetrap.bind(['ctrl+d'], this.toggleIsTimeline.bind(this))
         // Undo State Change
         Mousetrap.bind(['ctrl+z'], this.restore.bind(this))
         // Redo State Change
@@ -92,16 +105,18 @@ class SelectableTrialList extends React.Component {
     componentWillUnmount () {
         Mousetrap.unbind(['ctrl+a'], this.add.unbind(this))
         Mousetrap.unbind(['ctrl+x', 'del'], this.remove.unbind(this))
+        Mousetrap.unbind(['ctrl+c'], this.addChild.unbind(this))
+        Mousetrap.unbind(['ctrl+d'], this.toggleIsTimeline.unbind(this))
         Mousetrap.unbind(['ctrl+z'], this.restore.unbind(this))
         Mousetrap.unbind(['ctrl+q'], this.fastForward.unbind(this))
     }
 
     render() {
+        console.log(this);
         return (
             <List 
                 defaultValue={this.props.state.trialOrder[0]} 
                 onDragOver={this.dragOver.bind(this)} 
-                style={trialListFAB}
             >
                 <Subheader>Current Trials</Subheader>
                 {
@@ -120,6 +135,7 @@ class SelectableTrialList extends React.Component {
                 </List>
         );
     }
+
 }
 export default SelectableTrialList;
 

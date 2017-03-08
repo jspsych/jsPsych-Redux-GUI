@@ -10,6 +10,7 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
 import TitleBar from 'TitleBar';
+import PluginDrawer from 'PluginDrawer';
 import { guiState } from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreStater} from 'actions';
 
@@ -66,6 +67,11 @@ const App = ({
             timelineOpen={timelineOpen}
             store={store}
             state={state}
+    />
+        <PluginDrawer
+            store={store}
+            state={state}
+            openTrial={state.openTrial}
         />
     </div>);
 

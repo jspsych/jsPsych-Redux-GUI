@@ -35,43 +35,35 @@ const Timeline = ({
     store,              // The store
     state              // The current state of the store
 }) => (
-    <div>
-        <Drawer
-            docked={true}
-            width={350}
-            openSecondary={false}
-            open={timelineOpen}
-        >
-            <AppBar 
-                title={
-                    <div style={timelineTitleFAB}>
-                        Experimental Timeline
-                    </div> 
-                }
-                iconElementLeft={
-                    <ButtonMenu
-                        store={store}
-                        state={state}
-                    />
-                }
-                iconElementRight={<IconButton>
-                    <NavigationClose />
-                </IconButton>}
-                onRightIconButtonTouchTap={toggleTimeline}
-            />
-            <SelectableTrialList
-                draggable={false}
-                dragged={null}
-                store={store}
-                state={state}
-            />
-        </Drawer>
-        <PluginDrawer
+    <Drawer
+        docked={true}
+        width={350}
+        openSecondary={false}
+        open={timelineOpen}
+    >
+        <AppBar 
+            title={
+                <div style={timelineTitleFAB}>
+                    Experimental Timeline
+                </div> 
+            }
+            iconElementLeft={
+                <ButtonMenu
+                    store={store}
+                    state={state}
+                />
+            }
+            iconElementRight={<IconButton>
+                <NavigationClose />
+            </IconButton>}
+            onRightIconButtonTouchTap={toggleTimeline}
+        />
+        <SelectableTrialList
+            draggable={false}
             store={store}
             state={state}
-            openTrial={state.openTrial}
         />
-    </div>
+    </Drawer>
 );
 
 export default Timeline;

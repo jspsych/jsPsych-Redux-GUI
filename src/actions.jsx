@@ -140,6 +140,8 @@ export const actionChangeName = (store, trialName) => {
 
 export const actionToggleButton = (store, buttonVal) => {
     var state = store.getState();
+    // Not sure what's happening here but the state should
+    // only be modified in reducers and not in this manner
     state.trialTable[state.openTrial].isTimeline = buttonVal;
     console.log(state.trialTable[state.openTrial].isTimeline);
     store.dispatch({
@@ -156,15 +158,13 @@ export const actionToggleIsTimeline = (store) => {
     console.log(state.trialTable[state.openTrial].isTimeline);
 
     // Handle the logic in the action
-    if(state.trialTable[state.openTrial].isTimeline != false) {
+    if(state.trialTable[state.openTrial].isTimeline === false) {
         store.dispatch({
-            type: 'MAKE_TIMELINE',
-            trial: state.trialTable[state.openTrial]
+            type: 'MAKE_TIMELINE'
         })
     } else {
         store.dispatch({
-            type: 'MAKE_TRIAL',
-            trial: state.trialTable[state.openTrial]
+            type: 'MAKE_TRIAL'
         })
     }
 }
@@ -184,11 +184,13 @@ export const actionToggleTimeline = (store) => {
 
 export const actionAddChild = (store, trialID) =>
 {
-    actionArchiveState(store);
-    store.dispatch({
-        type: 'ADD_CHILD_TRIAL',
-        ID: trialID 
-    })
+    if (trialID !== -1) {
+        actionArchiveState(store);
+        store.dispatch({
+            type: 'ADD_CHILD_TRIAL',
+            ID: trialID 
+        })
+    }
 }
 
 export const actionSetDragged = (store, dragged) => {
