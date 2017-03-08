@@ -55,7 +55,7 @@ class PluginDrawer extends React.Component {
         if(this.props.openTrial !== -1){
             if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
                 var form = <div><SelectField
-                value={this.props.state.pluginVal} 
+                value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
                 autoWidth={true}
                 floatingLabelText="Trial Type"
                 maxHeight={300} 
