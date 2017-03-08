@@ -11,7 +11,8 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-//import PluginForm from 'PluginForm';
+
+import {actionPluginChange} from 'actions';
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 const removeStyleFAB = {
@@ -39,6 +40,10 @@ class PluginDrawer extends React.Component {
         actionToggleButton(this.props.store, toggleButton);
     }
 
+    handleChangePlug(e, i, val) {
+    actionPluginChange(this.props.store, val);
+    }
+
     render() { // Could depend on if there are any trials in the selected list
         var i = 0;
         const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
@@ -49,13 +54,12 @@ class PluginDrawer extends React.Component {
         console.log(this.props.state.trialTable);
         if(this.props.openTrial !== -1){
             if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
-                console.log(this.props.pluginVal);
                 var form = <div><SelectField
-                value={this.props.pluginVal} 
+                value={this.props.state.pluginVal} 
                 autoWidth={true}
                 floatingLabelText="Trial Type"
                 maxHeight={300} 
-                onChange={this.handleChange.bind(this)} >
+                onChange={this.handleChangePlug.bind(this)} >
                 {pluginItems}
                 </SelectField>
                 </div>
