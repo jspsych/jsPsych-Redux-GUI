@@ -15,7 +15,7 @@ import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import TrialItem from 'TrialItem';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
-    actionMoveTrial, actionRemoveTrial, actionRestoreState, 
+    actionMoveTrial, actionRemoveTrial, actionRestoreState, actionSetOver,
     actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
 
 
@@ -48,10 +48,11 @@ class SelectableTrialList extends React.Component {
     dragOver (e) {
         //e.preventDefault();
         // Set the trial to not display while it's being dragged
-        this.dragged.style.display = "none";
         if (e.target.className === "placeholder") return;
-
-        this.over = e.target;
+        // Don't update the state unnecessarily
+        else if (e.target.id === this.props.state.over) return;
+        //console.log("DOver", e.target);
+        actionSetOver(this.props.store, e.target.id.toString());
     }
 
     // Dispatch an action to change the value of 'selected'
@@ -99,29 +100,24 @@ class SelectableTrialList extends React.Component {
         return (
             <List 
                 defaultValue={this.props.state.trialOrder[0]} 
-            onDragOver={this.dragOver.bind(this)} 
+                onDragOver={this.dragOver.bind(this)} 
                 style={trialListFAB}
             >
                 <Subheader>Current Trials</Subheader>
                 {
                     this.props.state.trialOrder.map(trial => {
                         // Used by all rendered components
-                        var dataIden = this.props.state.trialOrder.indexOf(trial);
-
                         // Each trial gets a unique key
                         return (
                             <TrialItem
-                                data-id={dataIden}
-                                dataIden={dataIden}
                                 key={trial}
-                                that={this}
                                 store={this.props.store}
                                 state={this.props.state}
                                 trial={trial}
                             />
                         );
-                }, this)}
-            </List>
+                    }, this)}
+                </List>
         );
     }
 }

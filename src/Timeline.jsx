@@ -61,6 +61,7 @@ const Timeline = ({
             />
             <SelectableTrialList
                 draggable={false}
+                dragged={null}
                 store={store}
                 state={state}
             />

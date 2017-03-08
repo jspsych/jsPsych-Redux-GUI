@@ -11,8 +11,8 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
-    actionMoveTrial, actionRemoveTrial, actionRestoreState, 
-    actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
+    actionMoveTrial, actionRemoveTrial, actionRestoreState, actionSetDragged,
+    actionSetOver, actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
 
 const openPluginFAB = { 
     // Light grey
@@ -47,29 +47,29 @@ class TrialItem extends React.Component {
     dragOver (e) {
         //e.preventDefault();
         // Set the trial to not display while it's being dragged
-        this.dragged.style.display = "none";
+        //this.props.dragged.style.display = "none";
         if (e.target.className === "placeholder") return;
-
-        this.over = e.target;
+        // Don't update the state unnecessarily
+        else if (this.props.trial === this.props.state.over) return;
+        actionSetOver(this.props.store, this.props.trial);
+        //console.log("DragOverTrial", this);
     }
     dragStart (e) {
-        this.dragged = e.currentTarget;
-        e.dataTransfer.effectAllowed = "move"
 
+        actionSetDragged(this.props.store, this.props.trial);
+        e.dataTransfer.effectAllowed = "move"
         // For FireFox compatibility
         e.dataTransfer.setData("text/html", e.currentTarget);
+        //console.log("dragStart", this);
         return false;
     }
     dragEnd (e) {
         //e.preventDefault();
         // Set the trial to display in the default way
-        this.dragged.style.display = "block";
-        // Get the position the trial was dragged from
-        var fromPos = Number(this.dragged.dataset.id);
-        // Get the position the trial was dropped
-        var toPos = Number(this.over.dataset.id);
+        //this.props.dragged.style.display = "block";
         // Move the trial
-        actionMoveTrial(this.props.store, fromPos, toPos);
+        actionMoveTrial(this.props.store);
+        //console.log("DragEnd", this);
     }
     handleTouchTap(id) {
         if (preventFlag) {
@@ -88,10 +88,10 @@ class TrialItem extends React.Component {
         return (
        <ListItem
             key={this.props.trial}
-            data-id={this.props.dataIden}
+            id={this.props.trial}
             draggable={true}
-            onDragEnd={this.dragEnd.bind(this.props.that)}
-            onDragStart={this.dragStart.bind(this.props.that)}
+            onDragEnd={this.dragEnd.bind(this)}
+            onDragStart={this.dragStart.bind(this)}
             insetChildren={true}
             initiallyOpen={true}
             style={
@@ -109,7 +109,7 @@ class TrialItem extends React.Component {
             primaryText={
                 // Ensure the trials can be dropped on the text
                 <div 
-                    data-id={this.props.dataIden}>
+                    id={this.props.trial}>
                     {this.props.state.trialTable[this.props.trial].name}
                 </div>
             }
@@ -126,8 +126,7 @@ class TrialItem extends React.Component {
                     var childIden = this.props.state.trialOrder.indexOf(child);
                     return (
                         <TrialItem
-                            dataIden={childIden}
-                            that={this}
+                            dataIden={child}
                             store={this.props.store}
                             state={this.props.state}
                             trial={child}

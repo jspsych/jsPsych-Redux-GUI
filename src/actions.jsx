@@ -117,12 +117,15 @@ export const actionCloseDrawer = (store) => {
 }
 
 // Move a trial from one position to another
-export const actionMoveTrial = (store, fromPos, toPos) => {
+export const actionMoveTrial = (store) => {
     actionArchiveState(store);
+    var state = store.getState();
+
+    console.log("MoveTrial");
     store.dispatch({
         type: 'MOVE_TRIAL',
-        fromPos: fromPos,
-        toPos: toPos
+        fromPos: state.dragged,
+        toPos: state.over
     });
 }
 
@@ -185,5 +188,18 @@ export const actionAddChild = (store, trialID) =>
     store.dispatch({
         type: 'ADD_CHILD_TRIAL',
         ID: trialID 
+    })
+}
+
+export const actionSetDragged = (store, dragged) => {
+    store.dispatch({
+        type: 'SET_DRAGGED',
+        dragged: dragged 
+    }) 
+}
+export const actionSetOver = (store, over) => {
+    store.dispatch({
+        type: 'SET_OVER',
+        over: over
     })
 }

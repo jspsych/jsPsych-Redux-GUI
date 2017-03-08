@@ -17,6 +17,8 @@ const InitialState = {
     openTrial: -1,
     timelineOpen: true,
     pastStates: [],
+    dragged: null,
+    over: null,
     futureStates: []
 }
 
@@ -245,7 +247,6 @@ export const guiState = (state = {}, action) => {
             newState['trialOrder'] = newOrder;
             return newState;
         case 'ADD_CHILD_TRIAL':
-        
             // New trial's unique id
             var index = Math.random();//Object.keys(state.trialTable).length;
 
@@ -270,7 +271,7 @@ export const guiState = (state = {}, action) => {
             delete newTrial['ancestryHeight'];
 
             // Add the new properties
-            newTrial['id'] = index;
+            newTrial['id'] = String(index);
             newTrial['name'] = newName;
             newTrial['parentTrial'] = action.ID;
             newTrial['ancestryHeight'] = state.trialTable[action.ID].ancestryHeight + 1;
@@ -310,27 +311,121 @@ export const guiState = (state = {}, action) => {
         case 'MOVE_TRIAL':
             console.log("From: ", action.fromPos, " To: ", action.toPos);
 
-            var moveTo = action.toPos;
-            // Ensure that the trial isn't lost
-            if (isNaN(moveTo)) // If the to position is not a number
-                moveTo = state.trialOrder.length; // Move the trial to the end
-            
             var newState = Object.assign({}, state);
-            var trialToMove = Object.assign({}, state.trialTable[state.trialOrder[action.fromPos]]);
-            var tempOrder = [ 
-                ...state.trialOrder.slice(0, action.fromPos),
-                ...state.trialOrder.slice(action.fromPos+1)
-                ]
-            var newOrder = [
-                ...tempOrder.slice(0, moveTo),
-                trialToMove.id.toString(),
-                ...tempOrder.slice(moveTo)
+
+            //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
+
+            // If fromPos and toPos are the same don't do anything
+            if (action.fromPos === action.toPos){
+                return newState;
+            }
+            // If the trial is being moved from the top level
+
+            else if (state.trialTable[action.fromPos].parentTrial === -1) {
+                var newOrder = [ 
+                    ...state.trialOrder.slice(0, state.trialOrder.indexOf(action.fromPos)),
+                    ...state.trialOrder.slice(state.trialOrder.indexOf(action.fromPos)+1)
                 ]
 
-            delete newState['trialOrder'];
+                delete newState['trialOrder'];
 
-            // Assign new trialTable and trialOrder
-            newState['trialOrder'] = newOrder;
+                // Assign new trialOrder
+                newState['trialOrder'] = newOrder;
+                console.log("NewOrder before move", newOrder);
+            } 
+            else // Otherwise it's being moved from a parent  
+            {
+                // Modify the parent
+                var parent = state.trialTable[action.fromPos].parentTrial;
+                console.log("Parent before", parent);
+                var oldTimeline = state.trialTable[parent].timeline;
+                console.log("oldChilren before", oldTimeline);
+
+                // Update the Parent
+                var newTimeline = [
+                    ...oldTimeline.slice(0, oldTimeline.indexOf(action.fromPos)),
+                    ...oldTimeline.slice(oldTimeline.indexOf(action.fromPos)+1)
+                ];
+                console.log("newTimeline before:", newTimeline);
+                var newParent = Object.assign({}, state.trialTable[parent]);
+                delete newParent['timeline'];
+                newParent['timeline'] = newTimeline;
+                
+                console.log("New Parent", newParent);
+                // Update the trial table with the modified parent
+                delete newState.trialTable[parent];
+                newState.trialTable[parent] = Object.assign({}, newParent);
+            }
+
+            //////// UPDATE WHERE THE TRIAL IS MOVED TO ////////
+
+            // If the trial is being moved to the top level
+            if(newState.trialTable[action.toPos].parentTrial === -1) {
+                console.log("Move to top level");
+                var newPos = state.trialOrder.indexOf(action.toPos);
+                var newOrder = [
+                    ...newState.trialOrder.slice(0, newPos),
+                    action.fromPos,
+                    ...newState.trialOrder.slice(newPos)
+                ];
+                
+                // Update the properties of the trial
+                var newTrial = Object.assign({}, state.trialTable[action.fromPos]);
+                delete newTrial['parentTrial'];
+                delete newTrial['ancestryHeight'];
+                newTrial['parentTrial'] = -1;
+                newTrial['ancestryHeight'] = 0;
+                
+                // Update the trialTable
+                var newTable = Object.assign({}, state.trialTable);
+                delete newTable[action.fromPos];
+                newTable[action.fromPos] = newTrial;
+
+                // Update the state
+                delete newState['trialOrder'];
+                delete newState['trialTable'];
+                newState['trialOrder'] = newOrder;
+                newState['trialTable'] = Object.assign({}, newTable);
+
+            }
+            else // Otherwise the trial is being moved to a new parent
+            {
+                var parent = newState.trialTable[action.toPos].parentTrial;
+                var oldTimeline = newState.trialTable[parent].timeline;
+                var newTimeline = [
+                    ...oldTimeline.slice(0, oldTimeline.indexOf(action.toPos)),
+                    action.fromPos,
+                    ...oldTimeline.slice(oldTimeline.indexOf(action.toPos))
+                    ]
+                console.log("NewTimeline", newTimeline);
+                // Update the new Parent
+                var newParent = Object.assign({}, newState.trialTable[parent]);
+                delete newParent['timeline'];
+                newParent['timeline'] = newTimeline;
+                
+                // Update the properties of the trial
+                var newTrial = Object.assign({}, state.trialTable[action.fromPos]);
+                delete newTrial['parentTrial'];
+                delete newTrial['ancestryHeight'];
+                newTrial['parentTrial'] = parent;
+                newTrial['ancestryHeight'] = newParent.ancestryHeight + 1;
+                
+                // Update the trialTable
+                var newTable = Object.assign({}, state.trialTable);
+                delete newTable[action.fromPos];
+                delete newTable[parent];
+                newTable[action.fromPos] = newTrial;
+                newTable[parent] = newParent;
+                
+                // Update the state
+                delete newState['trialTable'];
+                newState['trialTable'] = Object.assign({}, newTable);
+            }
+            // reset over and dragged 
+            delete newState['over'];
+            delete newState['dragged'];
+            newState['over'] = null;
+            newState['dragged'] = null;
             return newState;
         case 'OPEN_DRAWER':
             var newState = Object.assign({}, state);
@@ -388,6 +483,16 @@ export const guiState = (state = {}, action) => {
             var newState = Object.assign({}, state);
             delete newState['timelineOpen'];
             newState['timelineOpen'] = false;
+            return newState;
+        case 'SET_DRAGGED':
+            var newState = Object.assign({}, state);
+            delete newState['dragged'];
+            newState['dragged'] = action.dragged;
+            return newState;
+        case 'SET_OVER':
+            var newState = Object.assign({}, state);
+            delete newState['over'];
+            newState['over'] = action.over;
             return newState;
         default:
             return state;

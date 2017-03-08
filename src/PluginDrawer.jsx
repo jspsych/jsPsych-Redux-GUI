@@ -38,8 +38,8 @@ class PluginDrawer extends React.Component {
         actionToggleButton(this.props.store, toggleButton);
     }
     render() { // Could depend on if there are any trials in the selected list
-        console.log(this.props.state.trialTable);
-        console.log(this.props.state.openTrial);
+        //console.log(this.props.state.trialTable);
+        //console.log(this.props.state.openTrial);
         if(this.props.openTrial !== -1){
             var inside = <div>
                 <TextField 
