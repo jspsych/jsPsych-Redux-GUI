@@ -29,8 +29,6 @@ class PluginForm extends React.Component {
     value={i++} />
     );
 
-    var plugForm = this.props.state.trialTable[this.props.state.openTrial].pluginVal;
-    //{plugin.plugForm}
 
     if(this.props.openTrial !== -1) {
 
@@ -43,6 +41,7 @@ class PluginForm extends React.Component {
         {pluginItems}
         </SelectField>
         </div>
+        //console.log(this.plugForm.value);
     } else {
       var plugForm = <div></div>
     }

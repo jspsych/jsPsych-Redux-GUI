@@ -3,7 +3,6 @@ import { render, Component, PropTypes } from 'react-dom';
 import PluginDrawer from 'PluginDrawer';
 import ButtonMenu from 'ButtonMenu';
 import SelectableTrialList from 'SelectableList';
-import PluginForm from 'PluginForm';
 
 
 // Style Variables
@@ -37,11 +36,6 @@ const Timeline = ({
         openTrial={state.openTrial}
     />
 
-    <PluginForm 
-        store={store}
-        state={state}
-        pluginVal={state.pluginVal}
-    />
 
 <ButtonMenu
     draggable={false}

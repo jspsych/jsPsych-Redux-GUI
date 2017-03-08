@@ -8,8 +8,10 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import PluginForm from 'PluginForm';
+//import PluginForm from 'PluginForm';
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 const removeStyleFAB = {
@@ -38,11 +40,25 @@ class PluginDrawer extends React.Component {
     }
 
     render() { // Could depend on if there are any trials in the selected list
+        var i = 0;
+        const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
+        <MenuItem 
+        primaryText={plugin}
+        value={i++} />
+        );
         console.log(this.props.state.trialTable);
-        console.log(this.props.state.pluginVal);
         if(this.props.openTrial !== -1){
             if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
-                var form = <PluginForm />
+                console.log(this.props.pluginVal);
+                var form = <div><SelectField
+                value={this.props.pluginVal} 
+                autoWidth={true}
+                floatingLabelText="Trial Type"
+                maxHeight={300} 
+                onChange={this.handleChange.bind(this)} >
+                {pluginItems}
+                </SelectField>
+                </div>
             } else {
                 var form = <div></div>
             }
