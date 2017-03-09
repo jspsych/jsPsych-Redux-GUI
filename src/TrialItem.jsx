@@ -121,6 +121,8 @@ class TrialItem extends React.Component {
                 />
             }
             nestedItems={
+                // If this is a timeline
+                this.props.state.trialTable[this.props.trial].isTimeline ?
                 // Display the nested items
                 this.props.state.trialTable[this.props.trial].timeline.map(child => {
                     var childIden = this.props.state.trialOrder.indexOf(child);
@@ -133,8 +135,11 @@ class TrialItem extends React.Component {
                             key={child}
                         />
                     );
-                }, this)}
-            />
+                }, this)
+                // Otherwise don't render anything
+                : []
+            } 
+        />
         );
     }
 }

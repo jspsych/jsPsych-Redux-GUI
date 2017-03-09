@@ -11,6 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
 import TitleBar from 'TitleBar';
 import PluginDrawer from 'PluginDrawer';
+import HotKeys from 'HotKeys';
 import { guiState } from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreStater} from 'actions';
 
@@ -42,8 +43,8 @@ const actionToggleTimeline = () => {
         store.dispatch({
             type: 'CLOSE_TIMELINE'
         }) 
-        // Otherwise open it
-       : store.dispatch({
+    // Otherwise open it
+        : store.dispatch({
             type: 'OPEN_TIMELINE'
         })
 }
@@ -55,7 +56,11 @@ const App = ({
     store,
     state
 }) => (
-    <div draggable={false}>
+    <div>
+        <HotKeys
+            store={store}
+            state={state}
+        />
         <TitleBar
             store={store}
             state={state}
@@ -67,7 +72,7 @@ const App = ({
             timelineOpen={timelineOpen}
             store={store}
             state={state}
-    />
+        />
         <PluginDrawer
             store={store}
             state={state}
