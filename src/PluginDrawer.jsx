@@ -49,19 +49,27 @@ class PluginDrawer extends React.Component {
         const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
         <MenuItem 
         primaryText={plugin}
-        value={i++} />
+        value={plugin} />
         );
-        console.log(this.props.state.trialTable);
+
+
         if(this.props.openTrial !== -1){
+            var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
+            const plugForm = Object.keys(getPlugVal.info.parameters).map((plug) =>
+                <TextField
+                id="pluginForm"
+                value={plug} />
+                );
             if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
                 var form = <div><SelectField
                 value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
-                autoWidth={true}
+                autoWidth={true}     
                 floatingLabelText="Trial Type"
                 maxHeight={300} 
                 onChange={this.handleChangePlug.bind(this)} >
                 {pluginItems}
                 </SelectField>
+                {plugForm}
                 </div>
             } else {
                 var form = <div></div>
@@ -100,7 +108,7 @@ class PluginDrawer extends React.Component {
             width={300}
             openSecondary={true}
             open={this.props.openTrial != -1}>
-            {inside}
+            {inside} 
             </Drawer>
         ) // Stuff to be rendered inside the drawer could be included above 
     }

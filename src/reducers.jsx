@@ -3,7 +3,7 @@
 const Trial = {
     id: 0, 
     name: "default",
-    pluginVal: 1,
+    pluginVal: "text",
     isTimeline: false,
     timeline: [],
     trialType: "trialType",
