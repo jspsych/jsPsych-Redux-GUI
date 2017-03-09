@@ -73,3 +73,10 @@ To do this week:
     - Enable the hiding of the timeline. Make it visible unless someone
         wants to hide it. Keyboard shorcut to togle the drawer. Controls
         along the bottom.
+
+
+Function that take the set of trials and maps it into the timeline. 
+When someone clicks preview,
+take all the )selected) trials, pass that to the function and then it calls the jsPsych init method.
+
+IN the next 5 weeks, code clean up

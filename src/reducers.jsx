@@ -220,16 +220,52 @@ export const guiState = (state = {}, action) => {
 
             var newOrder = [ ...state.trialOrder];
 
-            delete newState['trialOrder']
             // Find and remove all the selected trials
             for(var i = 0; i < removeList.length; i++){
-                if (state.trialTable[removeList[i]].selected) {    
-                    delete newState.trialTable[removeList[i]]; 
-                    var index = newOrder.indexOf(removeList[i]);
-                    newOrder = [
-                        ...newOrder.slice(0, index),
-                        ...newOrder.slice(index+1)
-                    ]
+
+                var trial = removeList[i];
+                console.log("Trial", trial);
+
+                if (state.trialTable[trial].selected) {    
+                    // if the trial has children 
+                    if (state.trialTable[trial].timeline.length > 0) {
+                        // Delete the children 
+                        for (var j = 0; j < state.trialTable[trial].length; j++) {
+                            var child = state.trialTable[trial].timeline[j];
+                            console.log("Delete Child: ", child);
+                            delete newState.trialTable[child];
+                        }
+                        console.log("Returned state: ", newState);
+                    }
+
+                    console.log("State: ", state);
+                    // IF the trial is in the top level
+                    if (state.trialTable[trial].parentTrial == -1){
+                        var index = newOrder.indexOf(trial);
+                        newOrder = [
+                            ...newOrder.slice(0, index),
+                            ...newOrder.slice(index+1)
+                        ];
+                    } 
+                    
+                    // Otherwise it's a child
+                    else 
+                    {
+                        var parent = state.trialTable[trial].parentTrial;
+                        var newParent = state.trialTable[parent];
+                        var childIndex = newParent.timeline.indexOf(trial); 
+                        var newChildren = [
+                            ...newParent.timeline.slice(0, childIndex),
+                            ...newParent.timeline.slice(childIndex+1)
+                        ]; 
+
+                        delete newParent['timeline'];
+                        newParent['timeline'] = newChildren;
+                        delete newState.trialTable[parent];
+                        newState.trialTable[parent] = Object.assign({}, newParent);
+                    }
+                    
+                    delete newState.trialTable[trial]; 
                 }
             }
 
@@ -243,6 +279,7 @@ export const guiState = (state = {}, action) => {
                 ]
             }
 
+            delete newState['trialOrder']
             // Assign new trialTable and trialOrder
             newState['trialOrder'] = newOrder;
             return newState;
@@ -273,8 +310,7 @@ export const guiState = (state = {}, action) => {
             // Add the new properties
             newTrial['id'] = String(index);
             newTrial['name'] = newName;
-            newTrial['parentTrial'] = action.ID;
-            newTrial['ancestryHeight'] = state.trialTable[action.ID].ancestryHeight + 1;
+            newTrial['parentTrial'] = action.ID; newTrial['ancestryHeight'] = state.trialTable[action.ID].ancestryHeight + 1;
 
             console.log("New Child", newTrial);
             // Add the new trial to the trial table
