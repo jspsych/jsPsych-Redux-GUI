@@ -11,8 +11,8 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import PluginForm from 'PluginForm';
 
-import {actionPluginChange} from 'actions';
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 const removeStyleFAB = {
@@ -40,40 +40,8 @@ class PluginDrawer extends React.Component {
         actionToggleButton(this.props.store, toggleButton);
     }
 
-    handleChangePlug(e, i, val) {
-    actionPluginChange(this.props.store, val);
-    }
-
     render() { // Could depend on if there are any trials in the selected list
-        var i = 0;
-        const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
-        <MenuItem 
-        primaryText={plugin}
-        value={plugin} />
-        );
-
-
-        if(this.props.openTrial !== -1){
-            var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
-            const plugForm = Object.keys(getPlugVal.info.parameters).map((plug) =>
-                <TextField
-                id="pluginForm"
-                value={plug} />
-                );
-            if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
-                var form = <div><SelectField
-                value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
-                autoWidth={true}     
-                floatingLabelText="Trial Type"
-                maxHeight={300} 
-                onChange={this.handleChangePlug.bind(this)} >
-                {pluginItems}
-                </SelectField>
-                {plugForm}
-                </div>
-            } else {
-                var form = <div></div>
-            }
+        if(this.props.state.openTrial != -1) { 
             var inside = <div><TextField 
             value={this.props.state.trialTable[this.props.state.openTrial].name} 
             id="trial text"
@@ -91,7 +59,6 @@ class PluginDrawer extends React.Component {
                 value={true}
                 label="Timeline"/>
             </RadioButtonGroup>
-            {form}
             <div>
             <FloatingActionButton
             style={removeStyleFAB}

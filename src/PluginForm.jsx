@@ -1,6 +1,5 @@
 var React = require('react');
 import { Component, PropTypes } from 'react';
-import { Field, reduxForm } from 'redux-form';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -10,45 +9,44 @@ import {actionPluginChange} from 'actions';
 
 class PluginForm extends React.Component {
 
-  handleChange(e, i, val) {
+  handleChangePlug(e, i, val) {
     actionPluginChange(this.props.store, val);
   }
 
   render() {
-  //   var paramLength = jsPsych.plugins.text.info.parameters.length;
-  // for(var i = 0; i < paramLength; i++) {
-  //   var objParam = jsPsych.plugins.text.info.parameters[i];
-  //   console.log(objParam);
-  //   var params = params + "<TextField>" + objParam + "</TextField>"; 
-  //   console.log(params);
-  // }
     var i = 0;
     const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
     <MenuItem 
     primaryText={plugin}
-    value={i++} />
+    value={plugin} />
     );
 
 
-    if(this.props.openTrial !== -1) {
-
-      var plugForm = <div><SelectField
-        value={this.props.pluginVal} 
-        autoWidth={true}
+      if(this.props.state.openTrial !== -1) {
+        if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
+        var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
+        const plugForm = Object.keys(getPlugVal.info.parameters).map((plug) =>
+          <TextField
+          id="pluginForm"
+          value={plug} />
+          );
+        var form = <div><SelectField
+        value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
+        autoWidth={true}     
         floatingLabelText="Trial Type"
         maxHeight={300} 
-        onChange={this.handleChange.bind(this)} >
+        onChange={this.handleChangePlug.bind(this)} >
         {pluginItems}
         </SelectField>
+        {plugForm}
         </div>
-        //console.log(this.plugForm.value);
+      }
     } else {
       var plugForm = <div></div>
     }
-
     return (
     <div>
-    {plugForm}
+    {form}
     </div>
       );
   }
