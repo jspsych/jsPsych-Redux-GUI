@@ -15,6 +15,7 @@ import PluginForm from 'PluginForm';
 
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
+import {connect} from 'react-redux';
 const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',
@@ -39,6 +40,7 @@ class PluginDrawer extends React.Component {
     handleButtonChange(e, toggleButton) {
         actionToggleButton(this.props.store, toggleButton);
     }
+
 
     render() { // Could depend on if there are any trials in the selected list
         if(this.props.state.openTrial != -1) { 
@@ -76,6 +78,9 @@ class PluginDrawer extends React.Component {
             openSecondary={true}
             open={this.props.openTrial != -1}>
             {inside} 
+            <PluginForm
+            state={this.props.state}
+            store={this.props.store} />
             </Drawer>
         ) // Stuff to be rendered inside the drawer could be included above 
     }

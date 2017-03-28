@@ -37,10 +37,6 @@ const Timeline = ({
         openTrial={state.openTrial}
     />
 
-    <PluginForm
-        store={store}
-        state={state}
-        pluginVal={state.pluginVal} />
 
 
 <ButtonMenu

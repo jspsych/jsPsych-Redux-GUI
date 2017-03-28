@@ -6,12 +6,15 @@ import MenuItem from 'material-ui/MenuItem';
 import PluginDrawer from 'PluginDrawer';
 
 import {actionPluginChange} from 'actions';
+import {connect} from 'react-redux';
+import ReactDOM from 'react-dom';
 
 class PluginForm extends React.Component {
 
   handleChangePlug(e, i, val) {
     actionPluginChange(this.props.store, val);
   }
+
 
   render() {
     var i = 0;
@@ -20,9 +23,9 @@ class PluginForm extends React.Component {
     primaryText={plugin}
     value={plugin} />
     );
-
-
-      if(this.props.state.openTrial !== -1) {
+      console.log("InPlug");
+      if(this.props.state.openTrial != -1) {
+        console.log("After Plug");
         if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
         var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
         const plugForm = Object.keys(getPlugVal.info.parameters).map((plug) =>
