@@ -3,6 +3,7 @@
 const Trial = {
     id: 0, 
     name: "default",
+    pluginVal: "text",
     isTimeline: false,
     timeline: [],
     trialType: "trialType",
@@ -288,11 +289,12 @@ export const guiState = (state = {}, action) => {
 
         case 'TOGGLE_ISTIMELINE':
             var newState = Object.assign({}, state);
-            if(newState.trialTable[newState.openTrial].isTimeline != false) {
-                console.log("isTimeline");
-            } else {
-                console.log("isTrial");
-            }
+            newState.trialTable[newState.openTrial].isTimeline = action.isTimeline;
+            return newState;
+
+        case 'PLUGIN_CHANGE':
+            var newState = Object.assign({}, state);
+            newState.trialTable[newState.openTrial].pluginVal = action.pluginVal;
             return newState;
             
         default:

@@ -8,9 +8,14 @@ import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import PluginForm from 'PluginForm';
+
 
 import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
+import {connect} from 'react-redux';
 const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',
@@ -36,10 +41,9 @@ class PluginDrawer extends React.Component {
         actionToggleButton(this.props.store, toggleButton);
     }
 
+
     render() { // Could depend on if there are any trials in the selected list
-        console.log(this.props.state.trialTable);
-        console.log(this.props.state.openTrial);
-        if(this.props.openTrial !== -1){
+        if(this.props.state.openTrial != -1) { 
             var inside = <div><TextField 
             value={this.props.state.trialTable[this.props.state.openTrial].name} 
             id="trial text"
@@ -73,7 +77,10 @@ class PluginDrawer extends React.Component {
             width={300}
             openSecondary={true}
             open={this.props.openTrial != -1}>
-            {inside}
+            {inside} 
+            <PluginForm
+            state={this.props.state}
+            store={this.props.store} />
             </Drawer>
         ) // Stuff to be rendered inside the drawer could be included above 
     }
