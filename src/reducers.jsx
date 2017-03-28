@@ -23,20 +23,16 @@ const InitialState = {
     futureStates: []
 }
 
-// This is the variable for keeping track of the id's that have been used
-var currentID = 1;
-
+// Main Store
 export const guiState = (state = {}, action) => {
-
     // If the state is undefined return the initial state
-    if (typeof state === null) {
+    if (state === null) {
         console.log("State Undefined.");
         return { InitialState };
     }
 
     // Perform an operation on the state specified by the action type
     switch (action.type) {
-
             // Reducer for the initial state
         case 'INITIAL_STATE':
             console.log("InitialState", InitialState);
@@ -482,19 +478,23 @@ export const guiState = (state = {}, action) => {
             newState.trialTable[newState.openTrial] = Object.assign({}, newState.trialTable[newState.openTrial]);
             newState.trialTable[newState.openTrial].name = action.name;
 
+            console.log("Make a Timeline ", newState);
             return newState;
         case 'MAKE_TRIAL':
             var newState = Object.assign({}, state);
 
             var newTrial = Object.assign({}, state.trialTable[state.openTrial]);
+
+
             // Delete and update the isTimeline property
             delete newTrial['isTimeline'];
-            newTrial['isTimeline'] = false;
+            newTrial.isTimeline = false;
 
             // Delete the previous version of the trial
             delete newState.trialTable[state.openTrial];
 
             newState.trialTable[state.openTrial] = Object.assign({}, newTrial);
+            console.log("Make a trial", newState);
             return newState;
         case 'MAKE_TIMELINE':
             var newState = Object.assign({}, state);
@@ -529,7 +529,7 @@ export const guiState = (state = {}, action) => {
             delete newState['over'];
             newState['over'] = action.over;
 
-
+            return newState;
         case 'PLUGIN_CHANGE':
             var newState = Object.assign({}, state);
             newState.trialTable[newState.openTrial].pluginVal = action.pluginVal;
@@ -542,7 +542,7 @@ export const guiState = (state = {}, action) => {
 
 // Reducer for handling changes of an individual trial
 export const trial = (state, action) => {
-    if (typeof state === null) {
+    if (state === null) {
         return 0;
     }
 

@@ -144,7 +144,6 @@ export const actionToggleIsTimeline = (store) => {
     actionArchiveState(store);
     var state = store.getState();
     // The state shouldn't be mutated or altered directly 
-    //state.trialTable[state.openTrial].isTimeline = buttonVal;
     console.log(state.trialTable[state.openTrial].isTimeline);
 
     // Handle the logic in the action
