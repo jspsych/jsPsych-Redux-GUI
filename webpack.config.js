@@ -17,9 +17,8 @@ module.exports = {
             PluginDrawer: 'src/PluginDrawer.jsx',
             HotKeys: 'src/HotKeys.jsx',
             TrialItem: 'src/TrialItem.jsx',
-            TitleBar: 'src/TitleBar.jsx'
             PluginForm: 'src/PluginForm.jsx',
-
+            TitleBar: 'src/TitleBar.jsx'
         },
         extensions: ['', '.js', '.jsx', '.scss']
     },
