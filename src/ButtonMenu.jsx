@@ -74,14 +74,14 @@ class ButtonMenu extends React.Component {
             rightIcon={<ContentRemove />}
             onTouchTap={this.remove.bind(this)}
             />
-            
+
             <Divider />
             <MenuItem
             primaryText="Undo (ctrl+z)"
             rightIcon={<Undo />}
             onTouchTap={this.restore.bind(this)}
             />
-            
+
             <Divider />
             <MenuItem
             primaryText="Redo (ctrl+q)"

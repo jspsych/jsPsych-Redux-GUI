@@ -1,16 +1,7 @@
-import React from 'react';
-import { render } from 'react-dom';
-import { deepFreeze } from 'deep-freeze';
-import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
-
-import { timeline } from 'reducers';
-
 // Archive the current state
 // This action should be called by every other action before it
 // calls it's reducer.
-export const actionArchiveState = (store) => 
-{
+export const actionArchiveState = (store) => {
     var state = store.getState();
     if (state.pastStates.length >= 50) 
     {
@@ -27,8 +18,7 @@ export const actionArchiveState = (store) =>
 }
 // Restores the state from an past state
 // archiving the current state as a future state
-export const actionRestoreState = (store) => 
-{
+export const actionRestoreState = (store) => {
     var state = store.getState();
     if (state.futureStates.length >= 50) 
     {
@@ -44,9 +34,8 @@ export const actionRestoreState = (store) =>
     }
     // Do nothing if there are no more states in the history
 }
-// Restore the state from a future state
-export const actionRestoreFutureState = (store) => 
-{
+// Action calling for the state to be restored from a future state
+export const actionRestoreFutureState = (store) => {
     var state = store.getState();
 
     if (state.futureStates.length > 0) 
@@ -57,9 +46,8 @@ export const actionRestoreFutureState = (store) =>
         // Do nothing if there are no more states in the history
     }
 }
-// Dispatch the action calling for a trial to be selected
-export const actionToggleSelected = (store, trialID) => 
-{
+// Action calling for a trial to be selected
+export const actionToggleSelected = (store, trialID) => {
     actionArchiveState(store);
     //console.log("Select", store)
     var state = store.getState();
@@ -78,18 +66,16 @@ export const actionToggleSelected = (store, trialID) =>
         actionOpenDrawer(store, trialID);
     }
 }
-// Dispatch the action calling for a new trial to be added
-export const actionAddTrial = (store) => 
-{
+// Action calling for a new trial to be added
+export const actionAddTrial = (store) => {
     actionArchiveState(store);
     //console.log ("Add", store)
     store.dispatch({
         type: 'ADD_TRIAL'
     });
 }
-// Dispatch action calling for a trial to be removed from trialList
-export const actionRemoveTrial = (store) => 
-{
+// Action calling for a trial to be removed from trialList
+export const actionRemoveTrial = (store) => {
     var state = store.getState();
 
     console.log("Archive State: ", state);
@@ -102,23 +88,20 @@ export const actionRemoveTrial = (store) =>
         index: state.selected
     });
 }
-// Dispatch an action calling for a Drawer to be opened
-export const actionOpenDrawer = (store, id) => 
-{
+// Action calling for a Drawer to be opened
+export const actionOpenDrawer = (store, id) => {
     store.dispatch({
         type: 'OPEN_DRAWER',
         id: id
     })
 }
-export const actionCloseDrawer = (store) => 
-{
+export const actionCloseDrawer = (store) => {
     store.dispatch({
         type:'CLOSE_DRAWER'
     });
 }
 // Move a trial from one position to another
-export const actionMoveTrial = (store) => 
-{
+export const actionMoveTrial = (store) => {
     actionArchiveState(store);
     var state = store.getState();
 
@@ -129,29 +112,27 @@ export const actionMoveTrial = (store) =>
         toPos: state.over
     });
 }
-export const actionChangeName = (store, trialName) =>
-{
-    // This needs to be called first
+// Action calling for the name of a trial to be changed
+export const actionChangeName = (store, trialName) => {
     actionArchiveState(store);
     store.dispatch({
         type: 'CHANGE_NAME',
         name: trialName
     })
 }
-export const actionToggleButton = (store, buttonVal) =>
-{
+// ?
+export const actionToggleButton = (store, buttonVal) => {
     var state = store.getState();
     // Not sure what's happening here but the state should
     // only be modified in reducers and not in this manner
-    state.trialTable[state.openTrial].isTimeline = buttonVal;
+    // state.trialTable[state.openTrial].isTimeline = buttonVal;
     console.log(state.trialTable[state.openTrial].isTimeline);
     store.dispatch({
         type: 'TOGGLE_ISTIMELINE'
     })
-
 }
-export const actionToggleIsTimeline = (store) =>
-{
+// ?
+export const actionToggleIsTimeline = (store) => {
     actionArchiveState(store);
     var state = store.getState();
     // The state shouldn't be mutated or altered directly 
@@ -169,8 +150,8 @@ export const actionToggleIsTimeline = (store) =>
         })
     }
 }
-export const actionToggleTimeline = (store) =>
-{
+// Action calling for the status of the timeline drawer to be toggled
+export const actionToggleTimeline = (store) => {
     var state = store.getState();
     // If the timeline is open
     state.timelineOpen ?
@@ -183,8 +164,8 @@ export const actionToggleTimeline = (store) =>
             type: 'CLOSE_TIMELINE'
         })
 }
-export const actionAddChild = (store, trialID) =>
-{
+// Action calling for a child to be added to the currently selected timeline
+export const actionAddChild = (store, trialID) => {
     if (trialID !== -1) {
         actionArchiveState(store);
         store.dispatch({
@@ -193,15 +174,15 @@ export const actionAddChild = (store, trialID) =>
         })
     }
 }
-export const actionSetDragged = (store, dragged) =>
-{
+// Action calling for dragged to be set as the store's dragged prop
+export const actionSetDragged = (store, dragged) => {
     store.dispatch({
-        type: 'SET_DRAGGED',
-        dragged: dragged 
-    }) 
+      type: 'SET_DRAGGED',
+        dragged: dragged
+    })
 }
-export const actionSetOver = (store, over) =>
-{
+// Action calling for over to be set as the store's over prop
+export const actionSetOver = (store, over) =>{
     store.dispatch({
         type: 'SET_OVER',
         over: over
