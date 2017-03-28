@@ -11,11 +11,12 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+
+import Toggle from 'material-ui/Toggle';
+import {actionCloseDrawer, actionChangeName, actionToggleButton, actionToggleIsTimeline} from 'actions';
 import PluginForm from 'PluginForm';
-
-
-import {actionCloseDrawer, actionChangeName, actionToggleButton} from 'actions';
 import {connect} from 'react-redux';
+        
 const removeStyleFAB = {
     marginRight: 20,
     position: 'absolute',
@@ -37,6 +38,7 @@ class PluginDrawer extends React.Component {
     handleChange(e, newValue) {
         actionChangeName(this.props.store, newValue);
     }
+
     handleButtonChange(e, toggleButton) {
         actionToggleButton(this.props.store, toggleButton);
     }
@@ -68,6 +70,7 @@ class PluginDrawer extends React.Component {
             <ContentRemove />
             </FloatingActionButton>
             </div>
+
             </div>
         } else { 
             var inside = <div></div>
@@ -81,6 +84,7 @@ class PluginDrawer extends React.Component {
             <PluginForm
             state={this.props.state}
             store={this.props.store} />
+
             </Drawer>
         ) // Stuff to be rendered inside the drawer could be included above 
     }

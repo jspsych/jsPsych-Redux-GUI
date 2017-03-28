@@ -63,3 +63,20 @@ To do this week:
 	- Add AppBar accross the top. 
 	- Preview in the middle. 
 		- Takes the current trial table and compiles it into the jsPsych code. 
+
+To do this week:
+    - Tuning the Drap n Drop 
+    - Want to visually represent when trials are within timelines. Visualize 
+        the nesting of the timeline. Make the child trials collapsable. If you 
+        drag a timeline all the parts of the timeline come with it. 
+    - Add the component in which he "demo" will be rendered. 
+    - Enable the hiding of the timeline. Make it visible unless someone
+        wants to hide it. Keyboard shorcut to togle the drawer. Controls
+        along the bottom.
+
+
+Function that take the set of trials and maps it into the timeline. 
+When someone clicks preview,
+take all the )selected) trials, pass that to the function and then it calls the jsPsych init method.
+
+IN the next 5 weeks, code clean up

@@ -9,8 +9,11 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
+import TitleBar from 'TitleBar';
+import PluginDrawer from 'PluginDrawer';
+import HotKeys from 'HotKeys';
 import { guiState } from 'reducers';
-import { actionOpenDrawer, actionArchiveState, actionRestoreState } from 'actions';
+import { actionOpenDrawer, actionArchiveState, actionRestoreStater} from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
 
@@ -31,19 +34,52 @@ const actionRemoveTrial = () => {
     })
 }
 
+// Here to keep the props of dummy components pure
+const actionToggleTimeline = () => {
+    var state = store.getState(store);
+    // If the timeline is open
+    state.timelineOpen ?
+        // Close it 
+        store.dispatch({
+            type: 'CLOSE_TIMELINE'
+        }) 
+    // Otherwise open it
+        : store.dispatch({
+            type: 'OPEN_TIMELINE'
+        })
+}
 
 
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
 const App = ({ 
+    timelineOpen,
     store,
     state
 }) => (
-    <Timeline 
-        draggable={false}
-        store={store}
-        state={state}
-    />);
+    <div>
+        <HotKeys
+            store={store}
+            state={state}
+        />
+        <TitleBar
+            store={store}
+            state={state}
+            toggleTimeline={actionToggleTimeline}
+            timelineOpeni={timelineOpen}
+        />
+        <Timeline 
+            toggleTimeline={actionToggleTimeline}
+            timelineOpen={timelineOpen}
+            store={store}
+            state={state}
+        />
+        <PluginDrawer
+            store={store}
+            state={state}
+            openTrial={state.openTrial}
+        />
+    </div>);
 
 // Create the Redux store with timeline as the reducer that
 // manages the state updates
@@ -61,7 +97,11 @@ const renderApp = () => {
         <div draggable={false}>
             <MuiThemeProvider muiTheme={setMuiTheme}>
                 <Provider store={store}>       
-                    <App store={store} state={state} draggable={false}/>
+                    <App 
+                        store={store} 
+                        state={state} 
+                        timelineOpen={state.timelineOpen}
+                        draggable={false}/>
                 </Provider>
             </MuiThemeProvider>
         </div>,

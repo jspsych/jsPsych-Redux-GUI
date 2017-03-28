@@ -1,25 +1,6 @@
 import React from 'react';
-import {guiState} from '../src/reducers.jsx'; 
+import {Trial, InitialState, guiState} from '../src/reducers.jsx'; 
 import deepFreeze from 'deep-freeze';
-
-const Trial = {
-        id: 0, 
-        name: "default",
-        isTimeline: false,
-        timeline: [],
-        trialType: "trialType",
-        parentTrial: -1,
-        selected: true
-}
-
-const InitialState = {
-    trialTable: {  [Trial.name]: Trial },
-    trialOrder: [ 'default' ],	
-    openDrawer: 'none',
-    previousStates: [],
-    futureStates: []
-}
-
 deepFreeze(InitialState);
 
 var Trial1 = {

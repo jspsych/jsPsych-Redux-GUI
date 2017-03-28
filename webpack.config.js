@@ -15,7 +15,10 @@ module.exports = {
             ButtonMenu: 'src/ButtonMenu.jsx',
             SelectableList: 'src/SelectableList.jsx',
             PluginDrawer: 'src/PluginDrawer.jsx',
+            HotKeys: 'src/HotKeys.jsx',
+            TrialItem: 'src/TrialItem.jsx',
             PluginForm: 'src/PluginForm.jsx',
+            TitleBar: 'src/TitleBar.jsx'
         },
         extensions: ['', '.js', '.jsx', '.scss']
     },

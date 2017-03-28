@@ -2,10 +2,10 @@ import React from 'react';
 import { render, Component, PropTypes } from 'react-dom';
 import Avatar from 'material-ui/Avatar';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
 import Undo from 'material-ui/svg-icons/content/undo';
 import Redo from 'material-ui/svg-icons/content/redo';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -74,14 +74,14 @@ class ButtonMenu extends React.Component {
             rightIcon={<ContentRemove />}
             onTouchTap={this.remove.bind(this)}
             />
-            
+
             <Divider />
             <MenuItem
             primaryText="Undo (ctrl+z)"
             rightIcon={<Undo />}
             onTouchTap={this.restore.bind(this)}
             />
-            
+
             <Divider />
             <MenuItem
             primaryText="Redo (ctrl+q)"
