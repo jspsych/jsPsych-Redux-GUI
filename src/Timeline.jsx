@@ -9,7 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import PluginDrawer from 'PluginDrawer';
 import ButtonMenu from 'ButtonMenu';
 import SelectableTrialList from 'SelectableList';
-
+import PluginForm from 'PluginForm';
 
 
 // Style Variables
@@ -63,7 +63,21 @@ const Timeline = ({
             store={store}
             state={state}
         />
-    </Drawer>
+
+
+    <PluginDrawer
+        draggable={false}
+        store={store}
+        state={state}
+        openTrial={state.openTrial}
+    />
+
+<ButtonMenu
+    draggable={false}
+    store={store}
+    state={state}
+/>
+
 );
 
 export default Timeline;

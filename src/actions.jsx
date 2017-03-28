@@ -118,11 +118,12 @@ export const actionChangeName = (store, trialName) => {
     store.dispatch({
         type: 'CHANGE_NAME',
         name: trialName
-    })
+    });
 }
 // ?
 export const actionToggleButton = (store, buttonVal) => {
     var state = store.getState();
+
     // Not sure what's happening here but the state should
     // only be modified in reducers and not in this manner
     // state.trialTable[state.openTrial].isTimeline = buttonVal;
@@ -130,6 +131,13 @@ export const actionToggleButton = (store, buttonVal) => {
     store.dispatch({
         type: 'TOGGLE_ISTIMELINE'
     })
+}
+
+export const actionPluginChange = (store, val) => {
+    store.dispatch({
+        type: 'PLUGIN_CHANGE',
+        pluginVal: val
+    });
 }
 // ?
 export const actionToggleIsTimeline = (store) => {

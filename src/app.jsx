@@ -49,6 +49,7 @@ const actionToggleTimeline = () => {
         })
 }
 
+
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
 const App = ({ 

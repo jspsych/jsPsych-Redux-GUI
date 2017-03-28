@@ -3,6 +3,7 @@
 const Trial = {
     id: 0,
     name: "default",
+    pluginVal: "text",
     isTimeline: false,
     timeline: [],
     trialType: "trialType",
@@ -527,6 +528,12 @@ export const guiState = (state = {}, action) => {
             var newState = Object.assign({}, state);
             delete newState['over'];
             newState['over'] = action.over;
+
+
+        case 'PLUGIN_CHANGE':
+            var newState = Object.assign({}, state);
+            newState.trialTable[newState.openTrial].pluginVal = action.pluginVal;
+
             return newState;
         default:
             return state;
