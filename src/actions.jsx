@@ -96,17 +96,6 @@ export const actionCloseDrawer = (store) => {
         type:'CLOSE_DRAWER'
     });
 };
-// Move a trial from one position to another
-export const actionMoveTrial = (store) => {
-    actionArchiveState(store);
-    var state = store.getState();
-
-    store.dispatch({
-        type: 'MOVE_TRIAL',
-        fromPos: state.dragged,
-        toPos: state.over
-    });
-};
 // Action calling for the name of a trial to be changed
 export const actionChangeName = (store, trialName) => {
     actionArchiveState(store);
@@ -170,7 +159,7 @@ export const actionAddChild = (store, trialID) => {
 };
 // Action calling for a child to be removed from its parent timeline
 export const actionRemoveChild = (store, trialID) => {
-    if (trialID !== -1) {
+    if (trialID !== -1){
         actionArchiveState(store);
         store.dispatch({
             type: 'REMOVE_CHILD_TRIAL',
@@ -191,4 +180,21 @@ export const actionSetOver = (store, over) =>{
         type: 'SET_OVER',
         over: over
     });
+};
+// Move a trial from one position to another
+export const actionMoveTrial = (store) => {
+    actionArchiveState(store);
+    var state = store.getState();
+    var found = state.trialTable[state.over].ancestry.indexOf(state.dragged);
+    if (state.dragged === state.over || found) {
+        // Allow printing to the console
+        // eslint-disable-next-line no-console
+        console.log ('Illegal move of parent into child');
+    } else {
+        store.dispatch({
+            type: 'MOVE_TRIAL',
+            fromPos: state.dragged,
+            toPos: state.over
+        });
+    }
 };

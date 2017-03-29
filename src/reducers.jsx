@@ -8,12 +8,25 @@ const Trial = {
     timeline: [],
     trialType: 'trialType',
     parentTrial: -1,
-    ancestryHeight: 0,
+    ancestry: [],
+    selected: false
+};
+const Timeline = {
+    id: 0,
+    name: 'default',
+    pluginVal: 'text',
+    isTimeline: true,
+    timeline: [],
+    trialType: 'trialType',
+    parentTrial: -1,
+    ancestry: [],
     selected: false
 };
 const InitialState = {
-    trialTable: {  [Trial.id]: Trial },
-    trialOrder: [ '0' ],    
+    trialTable: {
+        [Timeline.id]: Timeline,
+    },
+    trialOrder: [ '0' ],
     openTrial: -1,
     timelineOpen: true,
     pastStates: [],
@@ -290,12 +303,16 @@ export const guiState = (state = {}, action) => {
         delete newTrial['name'];
         delete newTrial['id'];
         delete newTrial['parentTrial'];
-        delete newTrial['ancestryHeight'];
+        delete newTrial['ancestry'];
 
         // Add the new properties
         newTrial['id'] = String(index);
         newTrial['name'] = newName;
-        newTrial['parentTrial'] = action.ID; newTrial['ancestryHeight'] = state.trialTable[action.ID].ancestryHeight + 1;
+        newTrial['parentTrial'] = action.ID; 
+        newTrial['ancestry'] = [
+            action.ID,
+            ...state.trialTable[action.ID].ancestry
+        ];
 
         // Add the new trial to the trial table
         newTable[index] = newTrial;
@@ -331,15 +348,16 @@ export const guiState = (state = {}, action) => {
     case 'REMOVE_CHILD_TRIAL':
         var newState = Object.assign({}, state);
         // Get the trial's parent
-        var newParent = state.trialTable[action.trialID].parent;
+        var parent = state.trialTable[action.ID].parentTrial;
+        var newParent = Object.assign({}, state.trialTable[parent]);
 
-        var index = newOrder.indexOf(trial);
+        var index = newParent.timeline.indexOf(action.ID);
         newParent.timeline = [
-            ...newParent.timeline.splice(0, index),
-            ...newParent.timeline.splice(index+1)
+            ...newParent.timeline.slice(0, index),
+            ...newParent.timeline.slice(index+1)
         ];
 
-        delete newState.trialTable[action.trialID];
+        delete newState.trialTable[action.ID];
         delete newState.trialTable[parent];
 
         newState.trialTable[parent] = newParent;
@@ -401,9 +419,9 @@ export const guiState = (state = {}, action) => {
             // Update the properties of the trial
             var newTrial = Object.assign({}, state.trialTable[action.fromPos]);
             delete newTrial['parentTrial'];
-            delete newTrial['ancestryHeight'];
+            delete newTrial['ancestry'];
             newTrial['parentTrial'] = -1;
-            newTrial['ancestryHeight'] = 0;
+            newTrial['ancestry'] = [];
 
             // Update the trialTable
             var newTable = Object.assign({}, state.trialTable);
@@ -434,9 +452,12 @@ export const guiState = (state = {}, action) => {
             // Update the properties of the trial
             var newTrial = Object.assign({}, state.trialTable[action.fromPos]);
             delete newTrial['parentTrial'];
-            delete newTrial['ancestryHeight'];
+            delete newTrial['ancestry'];
             newTrial['parentTrial'] = parent;
-            newTrial['ancestryHeight'] = newParent.ancestryHeight + 1;
+            newTrial['ancestry'] = [
+                parent,
+                ...newParent.ancestry
+            ];
 
             // Update the trialTable
             var newTable = Object.assign({}, state.trialTable);
