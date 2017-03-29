@@ -6,50 +6,48 @@ import MenuItem from 'material-ui/MenuItem';
 import {actionPluginChange} from 'actions';
 
 class PluginForm extends React.Component {
+
+    state propTypes = {
+        store: React.PropTypes.object.isRequired,
+        state: React.PropTypes.object.isRequired,
+    }
+
     handleChangePlug(e, i, val) {
         actionPluginChange(this.props.store, val);
     }
 
     render() {
         var i = 0;
-        const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
-            <MenuItem
-                primaryText={plugin}
-                value={plugin} />
-    );
-        if(this.props.state.openTrial != -1) {
-
-            if(this.props.state.trialTable[this.props.state.openTrial].isTimeline != true) {
-
-                var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
-
-                const plugForm = {};
-                Object.keys(getPlugVal.info.parameters).map((plug) =>
-          <TextField
-              id="pluginForm"
-              key={i++}
-              value={plug} />
-          );
-
-                var form = <div>
-        <SelectField
-                value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
-                autoWidth={true}     
-                floatingLabelText="Trial Type"
-                maxHeight={300} 
-                onChange={this.handleChangePlug.bind(this)} >
-            </SelectField>
-            {plugForm}
-        </div>;
-            }
-        } else {
-            var plugForm = <div
-      ></div>;
-        }
+        var getPlugVal = jsPsych.plugins[this.props.state.trialTable[this.props.state.openTrial].pluginVal];
         return (
-    <div>
-        {form}
-    </div>
+        // This type of if-then logic is allowed within the render method
+        (
+        this.props.state.openTrial !== -1 &&
+            this.props.state.trialTable[this.props.state.openTrial].isTimeline !== true
+            ) ?
+                    <SelectField
+                        value={this.props.state.trialTable[this.props.state.openTrial].pluginVal} 
+                        autoWidth={true}     
+                        floatingLabelText="Trial Type"
+                        maxHeight={300} 
+                        onChange={this.handleChangePlug.bind(this)} 
+                    >
+                        {
+                        Object.keys(getPlugVal.info.parameters).map((plug) =>
+                             <TextField
+                                 id="pluginForm"
+                                 key={i++}
+                                 value={plug} 
+                             />
+   );
+                        Object.keys(jsPsych.plugins).map((plugin) =>
+                             <MenuItem
+                                 primaryText={plugin}
+                                 value={plugin} 
+                             />
+   );
+                    }
+                </SelectField> : <div />
         );
     }
 }

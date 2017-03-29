@@ -29,7 +29,6 @@ const trialStyle =({
     indent
 }) =>
 {
-
     var margin = indent*10;
     if (margin === NaN)
         margin = 100;
@@ -111,20 +110,48 @@ class TrialItem extends React.Component {
             style={
                 // If this is the trial open in the pluginDrawer highlight it
                 this.props.state.openTrial === this.props.trial ?
-                Object.assign({marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20}, openPluginFAB) :
-                Object.assign({marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20}, closedPluginFAB)
+                Object.assign(
+                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20},
+                    openPluginFAB
+                ) :
+                Object.assign(
+                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20},
+                    closedPluginFAB
+                )
             }
             rightIcon={
-
                     this.props.state.trialTable[this.props.trial].isTimeline ?
                 <IconMenu
-                  iconButtonElement={<IconButton> <MoreVertIcon /></IconButton>}
-                  anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                  onMouseOver={open}
-                  >
-               </IconMenu> :
-                           <ContentRemove onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}/>
+                    iconButtonElement={
+                        <IconButton>
+                            <MoreVertIcon />
+                        </IconButton>
+                    }
+                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    onMouseOver={open}
+                >
+                    {
+                        this.props.state.trialTable[this.props.trial].isTimeline ?
+                        <MenuItem
+                            primaryText="Add Child" 
+                        >
+                            <ContentAdd onTouchTap={this.handleAddChild.bind(this, this.props.trial)}/>
+                        </MenuItem> : <div/>
+                      }
+                      <Divider />
+                      {
+                        this.props.state.trialTable[this.props.trial].parent !== -1 ?
+                        <MenuItem
+                            primaryText="Remove Child"
+                        >
+                            <ContentAdd onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}/>
+                        </MenuItem> : <div/>
+                      }
+                  </IconMenu> :
+                           <ContentRemove
+                               onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
+                           />
             }
             primaryText={
                 // Ensure the trials can be dropped on the text
@@ -164,21 +191,3 @@ class TrialItem extends React.Component {
     }
 }
 export default TrialItem;
-         //     <MenuItem
-         //         primaryText="Add (ctrl+a)"
-         //         rightIcon={
-         //         this.props.state.trialTable[this.props.trial].isTimeline ?
-         //             <ContentAdd onTouchTap={this.handleAddChild.bind(this, this.props.trial)}/> :
-         //             <div />
-         //         }
-         //     />
-         //    <Divider />
-         //            this.props.state.trialTable[this.props.trial].parent !== -1 ?
-         //    <MenuItem
-         //        primaryText="Remove (ctrl+x / Delete)"
-         //        rightIcon={
-         //                <ContentRemove
-         //                    onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
-         //                />
-         //            }
-         //        />
