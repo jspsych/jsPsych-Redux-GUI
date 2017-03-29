@@ -10,7 +10,7 @@ import SelectableTrialList from 'SelectableList';
 const timelineTitleFAB = {
     marginLeft: 40,
     position: 'absolute'
-}
+};
 
 // The "dump" Component for the Timeline of experimental trials
 const Timeline = ({

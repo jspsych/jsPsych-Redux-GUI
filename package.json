@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dswallach/jsPsych-Redux-GUI.git"
+    "url": "git+https://github.com/jsPsych/jsPsych-Redux-GUI.git"
   },
   "authors": [
     "David S. Wallach",
@@ -34,24 +34,24 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dswallach/jsPsych-Redux-GUI/issues"
+    "url": "https://github.com/jsPsych/jsPsych-Redux-GUI/issues"
   },
-  "homepage": "https://github.com/dswallach/jsPsych-Redux-GUI#readme",
+  "homepage": "https://github.com/jsPsych/jsPsych-Redux-GUI#readme",
   "dependencies": {
     "express": "^4.14.0",
     "immutable": "^3.8.1",
-    "material-ui": "^0.16.4",
+    "material-ui": "^0.17.1",
     "mousetrap": "^1.6.0",
     "react": "^15.4.2",
-    "react-dom": "^15.4.1",
+    "react-dom": "^15.4.2",
     "react-form": "^1.2.6",
     "react-redux": "^4.4.6",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "redux-form": "^4.2.2",
-    "redux-react-form": "^0.1.4"
+    "redux-form": "^4.2.2"
   },
   "devDependencies": {
+    "babel": "^6.23.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.2.1",
     "babel-jest": "^17.0.2",
@@ -65,7 +65,7 @@
     "eslint": "^3.18.0",
     "eslint-config-google": "^0.7.1",
     "eslint-plugin-react": "^6.10.3",
-    "jest": "^17.0.3",
+    "jest": "^19.0.2",
     "validate": "^3.0.1",
     "webpack": "^1.13.3"
   }

@@ -5,7 +5,6 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Timeline from 'Timeline';
@@ -23,7 +22,7 @@ const actionAddTrial = () => {// Dispatch the action calling for a new trial to 
     store.dispatch({
         type: 'ADD_TRIAL'
     });
-}
+};
 
 const actionRemoveTrial = () => {
     actionArchiveState(store);
@@ -31,28 +30,28 @@ const actionRemoveTrial = () => {
     store.dispatch({
         type: 'REMOVE_TRIAL',
         index: state.selected
-    })
-}
+    });
+};
 
 // Here to keep the props of dummy components pure
 const actionToggleTimeline = () => {
     var state = store.getState(store);
     // If the timeline is open
     state.timelineOpen ?
-        // Close it 
+        // Close it
         store.dispatch({
             type: 'CLOSE_TIMELINE'
-        }) 
+        })
     // Otherwise open it
         : store.dispatch({
             type: 'OPEN_TIMELINE'
-        })
-}
+        });
+};
 
 
 // A "dump" component. It contains no logic
 // It defines how the current state of the application is to be rendered
-const App = ({ 
+const App = ({
     timelineOpen,
     store,
     state
@@ -68,7 +67,7 @@ const App = ({
             toggleTimeline={actionToggleTimeline}
             timelineOpeni={timelineOpen}
         />
-        <Timeline 
+        <Timeline
             toggleTimeline={actionToggleTimeline}
             timelineOpen={timelineOpen}
             store={store}
@@ -96,10 +95,10 @@ const renderApp = () => {
     render(
         <div draggable={false}>
             <MuiThemeProvider muiTheme={setMuiTheme}>
-                <Provider store={store}>       
-                    <App 
-                        store={store} 
-                        state={state} 
+                <Provider store={store}>
+                    <App
+                        store={store}
+                        state={state}
                         timelineOpen={state.timelineOpen}
                         draggable={false}/>
                 </Provider>
@@ -112,12 +111,12 @@ const renderApp = () => {
 
 // Callback that Redux store will call every time an action is dispatched
 // i.e. Every time the state is changed
-store.subscribe(renderApp)
+store.subscribe(renderApp);
 
 // Set the initial state of the application
 store.dispatch({
     type: 'INITIAL_STATE'
-})
+});
 
 // Render the application
 renderApp();
