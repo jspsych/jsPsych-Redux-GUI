@@ -11,7 +11,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {
-    actionToggleSelected, actionMoveTrial, actionRemoveTrial, 
+    actionToggleSelected, actionMoveTrial, actionRemoveChild, 
     actionSetDragged, actionSetOver, actionAddChild,
     } from 'actions';
 
@@ -56,6 +56,7 @@ const removeStyleFAB = {
 };
 var preventFlag = false;
 class TrialItem extends React.Component {
+    // eslint-disable-next-line error
     static propTypes = {
         store: React.PropTypes.object.isRequired,
         state: React.PropTypes.object.isRequired,
@@ -89,12 +90,15 @@ class TrialItem extends React.Component {
             actionToggleSelected(this.props.store, id);
     }
     handleAddChild(id) {
+        console.log("Action Add Child", id)
         actionAddChild(this.props.store, id);
         preventFlag = true;
         return;
     }
     handleRemoveChild(id){
-        actionRemoveTrial(this.props.store, id);
+        console.log("Action Remove Child", id)
+        actionRemoveChild(this.props.store, id);
+        preventFlag = true;
         return;
     }
     render (){
@@ -111,42 +115,46 @@ class TrialItem extends React.Component {
                 // If this is the trial open in the pluginDrawer highlight it
                 this.props.state.openTrial === this.props.trial ?
                 Object.assign(
-                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20},
+                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
                     openPluginFAB
                 ) :
                 Object.assign(
-                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20},
+                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
                     closedPluginFAB
                 )
             }
             rightIcon={
                     this.props.state.trialTable[this.props.trial].isTimeline ?
-                <IconMenu
-                    iconButtonElement={
-                        <IconButton>
-                            <MoreVertIcon />
-                        </IconButton>
-                    }
-                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    onMouseOver={open}
+               <IconMenu
+                   style={{
+                        position: 'absolute',
+                        marginTop: window.innerHeight * 0.0001,
+                        marginRight: window.innerHeight * 0.025,
+                   }}
+                   iconButtonElement={
+                       <IconButton>
+                           <MoreVertIcon />
+                       </IconButton>
+                   }
+                   anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                   targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
                 >
                     {
                         this.props.state.trialTable[this.props.trial].isTimeline ?
                         <MenuItem
-                            primaryText="Add Child" 
-                        >
-                            <ContentAdd onTouchTap={this.handleAddChild.bind(this, this.props.trial)}/>
-                        </MenuItem> : <div/>
+                            primaryText="Add Child (Ctrl-C)"
+                            rightIcon={<ContentAdd />}
+                            onTouchTap={this.handleAddChild.bind(this, this.props.trial)}
+                        /> : <div/>
                       }
                       <Divider />
                       {
                         this.props.state.trialTable[this.props.trial].parent !== -1 ?
                         <MenuItem
-                            primaryText="Remove Child"
-                        >
-                            <ContentAdd onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}/>
-                        </MenuItem> : <div/>
+                            primaryText="Remove This Trial"
+                            rightIcon={<ContentRemove />}
+                            onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
+                        />: <div/>
                       }
                   </IconMenu> :
                            <ContentRemove
