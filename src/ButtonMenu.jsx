@@ -24,28 +24,28 @@ const undoStyleFAB = {
     position: 'absolute',
     bottom: window.innerHeight * 0.15,
     left: window.innerWidth * 0.05
-}
+};
 
 const redoStyleFAB = {
     marginRight: 10,
     position: 'absolute',
     bottom: window.innerHeight * 0.15,
     left: window.innerWidth * 0.15
-}
+};
 
 const addStyleFAB = {
     marginRight: 10,
     position: 'absolute',
     bottom: window.innerHeight * 0.01,
     left: window.innerWidth * 0.01
-}
+};
 
 const removeStyleFAB = {
     marginRight: 10,
     position: 'absolute',
     bottom: window.innerHeight * 0.05,
-	left: window.innerWidth * 0.15
-}
+    left: window.innerWidth * 0.15
+};
 
 class ButtonMenu extends React.Component {
 
@@ -60,6 +60,7 @@ class ButtonMenu extends React.Component {
             style={addStyleFAB}
             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
             targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            onMouseOver={open}
             >
 
             <MenuItem

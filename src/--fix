@@ -337,15 +337,13 @@ export const guiState = (state = {}, action) => {
         newParent.timeline = [
             ...newParent.timeline.splice(0, index),
             ...newParent.timeline.splice(index+1)
-        ];
+        ]
 
         delete newState.trialTable[action.trialID];
-        delete newState.trialTable[parent];
-
-        newState.trialTable[parent] = newParent;
 
         return newState;
     case 'MOVE_TRIAL':
+
         var newState = Object.assign({}, state);
 
         //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////

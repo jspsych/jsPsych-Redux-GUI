@@ -168,6 +168,16 @@ export const actionAddChild = (store, trialID) => {
         });
     }
 };
+// Action calling for a child to be removed from its parent timeline
+export const actionRemoveChild = (store, trialID) => {
+    if (trialID !== -1) {
+        actionArchiveState(store);
+        store.dispatch({
+            type: 'REMOVE_CHILD_TRIAL',
+            ID: trialID
+        });
+    }
+};
 // Action calling for dragged to be set as the store's dragged prop
 export const actionSetDragged = (store, dragged) => {
     store.dispatch({

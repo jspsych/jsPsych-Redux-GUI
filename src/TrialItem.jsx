@@ -1,25 +1,26 @@
 var React = require('react');
-import { Component, PropTypes } from 'react';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import { List, ListItem, MakeSelectable } from 'material-ui/List';
-import Mousetrap from 'mousetrap';
-import IconButton from 'material-ui/IconButton';
-import FlatButton from 'material-ui/FlatButton';
-import Subheader from 'material-ui/Subheader';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
+import { ListItem } from 'material-ui/List';
 import CheckBox from 'material-ui/Checkbox';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
-    actionMoveTrial, actionRemoveTrial, actionRestoreState, actionSetDragged,
-    actionSetOver, actionAddChild, actionRestoreFutureState, actionToggleTimeline } from 'actions';
+import IconButton from 'material-ui/IconButton';
+import MenuItem from 'material-ui/MenuItem';
+import IconMenu from 'material-ui/IconMenu';
+import Divider from 'material-ui/Divider';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import {
+    actionToggleSelected, actionMoveTrial, actionRemoveTrial, 
+    actionSetDragged, actionSetOver, actionAddChild,
+    } from 'actions';
 
-const openPluginFAB = { 
+const openPluginFAB = {
     // Light grey
-    backgroundColor: '#BDBDBD', 
+    backgroundColor: '#BDBDBD',
 }
-const closedPluginFAB = { 
-    backgroundColor: 'white', 
+const closedPluginFAB = {
+    backgroundColor: 'white',
 }
 
 const trialStyle =({
@@ -34,25 +35,40 @@ const trialStyle =({
         margin = 100;
     var styleObject;
 
-    openTrial === trial ? 
+    openTrial === trial ?
         styleObject = Object.assign({}, openPluginFAB) :
         styleObject = Object.assign({}, closedPluginFAB)
-    styleObject['marginLeft']= margin; 
+    styleObject['marginLeft']= margin;
     return styleObject;
 }
 
+const addStyleFAB = {
+    marginRight: 10,
+    position: 'absolute',
+    bottom: window.innerHeight * 0.01,
+    left: window.innerWidth * 0.01
+};
+
+const removeStyleFAB = {
+    marginRight: 10,
+    position: 'absolute',
+    bottom: window.innerHeight * 0.05,
+    left: window.innerWidth * 0.15
+};
 var preventFlag = false;
 class TrialItem extends React.Component {
+    static propTypes = {
+        store: React.PropTypes.object.isRequired,
+        state: React.PropTypes.object.isRequired,
+    }
     /*** Drag and Drop Methods ***/
     dragOver (e) {
-        //e.preventDefault();
         // Set the trial to not display while it's being dragged
         //this.props.dragged.style.display = "none";
         if (e.target.className === "placeholder") return;
         // Don't update the state unnecessarily
         else if (this.props.trial === this.props.state.over) return;
         actionSetOver(this.props.store, this.props.trial);
-        //console.log("DragOverTrial", this);
     }
     dragStart (e) {
 
@@ -60,28 +76,26 @@ class TrialItem extends React.Component {
         e.dataTransfer.effectAllowed = "move"
         // For FireFox compatibility
         e.dataTransfer.setData("text/html", e.currentTarget);
-        //console.log("dragStart", this);
         return false;
     }
     dragEnd (e) {
-        //e.preventDefault();
-        // Set the trial to display in the default way
-        //this.props.dragged.style.display = "block";
         // Move the trial
         actionMoveTrial(this.props.store);
-        //console.log("DragEnd", this);
     }
     handleTouchTap(id) {
         if (preventFlag) {
             preventFlag = false;
-            return 
-        } else 
+            return;
+        } else
             actionToggleSelected(this.props.store, id);
-
     }
     handleAddChild(id) {
         actionAddChild(this.props.store, id);
         preventFlag = true;
+        return;
+    }
+    handleRemoveChild(id){
+        actionRemoveTrial(this.props.store, id);
         return;
     }
     render (){
@@ -96,15 +110,21 @@ class TrialItem extends React.Component {
             initiallyOpen={true}
             style={
                 // If this is the trial open in the pluginDrawer highlight it
-                this.props.state.openTrial === this.props.trial ? 
-                Object.assign({ marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20}, openPluginFAB) :
+                this.props.state.openTrial === this.props.trial ?
+                Object.assign({marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20}, openPluginFAB) :
                 Object.assign({marginLeft: this.props.state.trialTable[this.props.trial].ancestryHeight * 20}, closedPluginFAB)
             }
             rightIcon={
-                // If the trial is a timeline
-                this.props.state.trialTable[this.props.trial].isTimeline ? 
-                <ContentAdd onTouchTap={this.handleAddChild.bind(this, this.props.trial)}/> :
-                <div />
+
+                    this.props.state.trialTable[this.props.trial].isTimeline ?
+                <IconMenu
+                  iconButtonElement={<IconButton> <MoreVertIcon /></IconButton>}
+                  anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                  targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                  onMouseOver={open}
+                  >
+               </IconMenu> :
+                           <ContentRemove onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}/>
             }
             primaryText={
                 // Ensure the trials can be dropped on the text
@@ -144,3 +164,21 @@ class TrialItem extends React.Component {
     }
 }
 export default TrialItem;
+         //     <MenuItem
+         //         primaryText="Add (ctrl+a)"
+         //         rightIcon={
+         //         this.props.state.trialTable[this.props.trial].isTimeline ?
+         //             <ContentAdd onTouchTap={this.handleAddChild.bind(this, this.props.trial)}/> :
+         //             <div />
+         //         }
+         //     />
+         //    <Divider />
+         //            this.props.state.trialTable[this.props.trial].parent !== -1 ?
+         //    <MenuItem
+         //        primaryText="Remove (ctrl+x / Delete)"
+         //        rightIcon={
+         //                <ContentRemove
+         //                    onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
+         //                />
+         //            }
+         //        />
