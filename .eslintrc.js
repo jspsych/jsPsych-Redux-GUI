@@ -5,14 +5,17 @@ module.exports = {
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
     "parserOptions": {
-        "ecmaVersion": 6,
+        "ecmaVersion": 7,
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
             "jsx": true
         },
-        "sourceType": "module"
+        "sourceType": "module",
     },
     "plugins": [
         "react"
@@ -36,5 +39,6 @@ module.exports = {
         ],
         "react/jsx-uses-vars": "error",
         "react/jsx-uses-react": "error",
+	"no-redeclare": 0
     }
 };

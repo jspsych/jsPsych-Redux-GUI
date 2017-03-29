@@ -1,22 +1,25 @@
-var React = require('react');
-import { Component, PropTypes } from 'react';
+import React from 'react';
 import Mousetrap from 'mousetrap';
-import { actionToggleSelected, actionHandleDrawer, actionAddTrial, 
-    actionMoveTrial, actionRemoveTrial, actionRestoreState, actionSetOver,
-    actionAddChild, actionRestoreFutureState, actionToggleTimeline, 
-    actionToggleIsTimeline} from 'actions';
+import {
+    actionAddTrial, actionRemoveTrial, actionRestoreState,
+    actionAddChild, actionRestoreFutureState, actionToggleIsTimeline
+    } from 'actions';
 
 class HotKeys extends React.Component {
     // Dispatch an action to change the value of 'selected'
+    static propTypes = {
+      state: React.PropTypes.object.isRequired,
+      store: React.PropTypes.object.isRequired
+    }
     /*** Hot Key Methods ***/
-    add (e) { 
+    add (e) {
         // Prevent the default action for this HotKey
         e.preventDefault();
-        actionAddTrial(this.props.store); 
+        actionAddTrial(this.props.store);
     }
-    remove (e) { 
+    remove (e) {
         e.preventDefault();
-        actionRemoveTrial(this.props.store); 
+        actionRemoveTrial(this.props.store);
     }
     addChild (e) {
         e.preventDefault();
@@ -24,7 +27,6 @@ class HotKeys extends React.Component {
     }
     toggleIsTimeline (e) {
         e.preventDefault();
-        console.log("Toggle");
         actionToggleIsTimeline(this.props.store);
     }
     fastForward (e) { 
