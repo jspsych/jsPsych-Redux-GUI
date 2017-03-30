@@ -9,8 +9,12 @@ module.exports = {
         alias: {
             app: 'src/app.jsx',
             components: 'src/components.jsx',
-            reducers: 'src/reducers.jsx',
+            // Reducer Files
+            reducers: 'src/reducers/index.jsx',
+            overReducers: 'src/reducers/overReducers.jsx',
+            draggedReducers: 'src/reducers/draggedReducers.jsx',
             actions: 'src/actions.jsx',
+            // Component Files
             Timeline: 'src/Timeline.jsx',
             ButtonMenu: 'src/ButtonMenu.jsx',
             SelectableList: 'src/SelectableList.jsx',

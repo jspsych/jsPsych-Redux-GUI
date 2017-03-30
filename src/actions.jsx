@@ -112,8 +112,10 @@ export const actionToggleButton = (store) => {
 };
 // ?
 export const actionPluginChange = (store, val) => {
+    var state = store.getState();
     store.dispatch({
         type: 'PLUGIN_CHANGE',
+        openTrial: state.openTrial,
         pluginVal: val
     });
 };
