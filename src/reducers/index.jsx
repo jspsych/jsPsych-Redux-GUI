@@ -5,8 +5,8 @@ import { combineReducers } from 'redux';
 //import timelineOpen from 'timelineOpenReducers';
 //import pastStates from 'pastStatesreducers';
 //import futureStates from 'futureStatesReducers';
-//import dragged from 'draggedReducers';
-import over from './overReducers.jsx';
+import dragged from 'draggedReducers';
+import over from 'overReducers';
 
 // Combine all the different reducers into the store
 const rootReducer = combineReducers({

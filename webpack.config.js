@@ -13,6 +13,14 @@ module.exports = {
             reducers: 'src/reducers/index.jsx',
             overReducers: 'src/reducers/overReducers.jsx',
             draggedReducers: 'src/reducers/draggedReducers.jsx',
+            trialTableReducers: 'src/reducers/trialTableReducers.jsx',
+            trialOrderReducers: 'src/reducers/trialOrderReducers.jsx',
+            openTrialReducers: 'src/reducers/trialOrderReducers.jsx',
+            timelineOpenReducers: 'src/reducers/timelineOpenReducers.jsx',
+            pastStatesreducers: 'src/reducers/pastStatesReducers.jsx',
+            futureStatesReducers: 'src/reducers/futureStatesReducers.jsx'
+
+            // Action Files
             actions: 'src/actions.jsx',
             // Component Files
             Timeline: 'src/Timeline.jsx',
