@@ -84,3 +84,4 @@ IN the next 5 weeks, code clean up
 Going Forward 3-30-17
     Work on creating issues on github for any new features to be added .
     Open issue about infinitely recursing actions
+    Add a duplicate button to the timeline on the left
