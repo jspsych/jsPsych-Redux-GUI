@@ -6,13 +6,17 @@ export const actionArchiveState = (store) => {
     if (state.pastStates.length >= 50)
     {
         store.dispatch({
-            type: 'ARCHIVE_STATE_REMOVE'
+            type: 'ARCHIVE_STATE_REMOVE',
+            state: state,
+            store: store
         });
     }
     else
     {
         store.dispatch({
-            type: 'ARCHIVE_STATE'
+            type: 'ARCHIVE_STATE',
+            state: state,
+            store: store
         });
     }
 };

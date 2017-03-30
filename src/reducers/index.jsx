@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 //import trialTable from 'trialTableReducers';
 //import trialOrder from 'trialOrderReducers';
-//import openTrial from 'openTrialReducers';
-//import timelineOpen from 'timelineOpenReducers';
-//import pastStates from 'pastStatesreducers';
-//import futureStates from 'futureStatesReducers';
+import timelineOpen from 'timelineOpenReducers';
+import openTrial from 'openTrialReducers';
+import pastStates from 'pastStatesreducers';
+import futureStates from 'futureStatesReducers';
 import dragged from 'draggedReducers';
 import over from 'overReducers';
 
@@ -12,10 +12,10 @@ import over from 'overReducers';
 const rootReducer = combineReducers({
     //trialTable,
     //trialOrder,
-    //openTrial,
-    //timelineOpen,
-    //pastStates,
-    //futureStates,
+    openTrial,
+    timelineOpen,
+    pastStates,
+    futureStates,
     dragged,
     over
 });
