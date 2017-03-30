@@ -1,24 +1,24 @@
 For timeline
 
 To Do:
-- Change selected to a list, usually of one element. 
+- Change selected to a list, usually of one element.
 - Drag to reoroder trials in the Timeline. <------
 - A couple trials in a certain order should be able to be repeaterd.
 	- In jsPsych is can be defined as a procedure, the stimulus parameter is a timeline variable.
-	- hsPsych should perform the proceedure for each variable 
-- Some sets of trials and a set of trials underneath them. 
+	- hsPsych should perform the proceedure for each variable
+- Some sets of trials and a set of trials underneath them.
 	- Maybe can toggle between trial and processure
 	- under the procedure setting the timeline becomes a lsit of variables you can define.
-- Select individual or sets of trials. 
+- Select individual or sets of trials.
 - Should be be able to play only the selected trials.
 = Mabe checkboxes maybe highlight an area.
 - Follow the material floating action design model.
 
-- When you select some trials the delete button would appear. 
-- other buttons could appear.   
+- When you select some trials the delete button would appear.
+- other buttons could appear.
 
-A text value can be text or a function that returns text. 
-Form field can be altered to enter text. 
+A text value can be text or a function that returns text.
+Form field can be altered to enter text.
 Be sure to sanatize input.
 
 
@@ -27,10 +27,10 @@ For Form input;
 Top component:
 Use MaterialUI AppBar
 
-0 Experiment settings page 
+0 Experiment settings page
 
 In addition to the add key there should be a copy option.
-To copy all the currently selected trials. Make it so the 
+To copy all the currently selected trials. Make it so the
 trial selected for the drawer stays highlighted. Also reorder
 the trials.
 
@@ -42,9 +42,9 @@ Have an array that represents Each trial needs
 -	TrialType: Arrary [<Integer> Children IDs]
 - TrialType: <String>
 - Parent: <Integer> representing ID.
-- Selected: <boolean> 
+- Selected: <boolean>
 
-- Have additional property for keeping track of the ordering of the trials 
+- Have additional property for keeping track of the ordering of the trials
 
 Add tracking of the state history back 50 steps
 also redo
@@ -52,31 +52,35 @@ also redo
 When implementing a new feature, generate a new branch on the repository
 
 Prepend the branch name with "feature"
-add only one feature per new branch. 
-once everything is working merge it back into the master branch.  
+add only one feature per new branch.
+once everything is working merge it back into the master branch.
 
 
 To do this week:
-	- Have oopenDrawer trial render as highlighted. 
+	- Have oopenDrawer trial render as highlighted.
 	- Support Trial reordering
 	- Support buttonmenu expanding on hover
-	- Add AppBar accross the top. 
-	- Preview in the middle. 
-		- Takes the current trial table and compiles it into the jsPsych code. 
+	- Add AppBar accross the top.
+	- Preview in the middle.
+		- Takes the current trial table and compiles it into the jsPsych code.
 
 To do this week:
-    - Tuning the Drap n Drop 
-    - Want to visually represent when trials are within timelines. Visualize 
-        the nesting of the timeline. Make the child trials collapsable. If you 
-        drag a timeline all the parts of the timeline come with it. 
-    - Add the component in which he "demo" will be rendered. 
+    - Tuning the Drap n Drop
+    - Want to visually represent when trials are within timelines. Visualize
+        the nesting of the timeline. Make the child trials collapsable. If you
+        drag a timeline all the parts of the timeline come with it.
+    - Add the component in which he "demo" will be rendered.
     - Enable the hiding of the timeline. Make it visible unless someone
         wants to hide it. Keyboard shorcut to togle the drawer. Controls
         along the bottom.
 
 
-Function that take the set of trials and maps it into the timeline. 
+Function that take the set of trials and maps it into the timeline.
 When someone clicks preview,
 take all the )selected) trials, pass that to the function and then it calls the jsPsych init method.
 
 IN the next 5 weeks, code clean up
+
+Going Forward 3-30-17
+    Work on creating issues on github for any new features to be added .
+    Open issue about infinitely recursing actions
