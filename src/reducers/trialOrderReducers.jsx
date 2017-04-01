@@ -1,9 +1,4 @@
-import { Trial } from 'trialTableReducers';
-
-
-
-const trialOrder = (state = {}, action) => {
-    console.log('TrialOrderReducers');
+const trialOrder = (state = [], action) => {
     switch (action.type) {
     case 'INITIAL_STATE':
         var newState = [ 0 ];
@@ -46,7 +41,7 @@ const trialOrder = (state = {}, action) => {
         // If all the trial are removed add the default trial
         if (Object.keys(newState.trialTable).length == 0){
             newState = [
-                Trial.id
+                0
             ];
         }
 
@@ -63,7 +58,7 @@ const trialOrder = (state = {}, action) => {
         // If all the trial are removed add the default trial
         if (newState.length == 0){
             newState = [
-                Trial.id
+                0
             ];
         }
 
