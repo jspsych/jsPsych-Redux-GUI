@@ -1,6 +1,7 @@
 // Archive the current state
 // This action should be called by every other action before it
 // calls it's reducer.
+// Affects: pastStates, futureStates
 export const actionArchiveState = (store) => {
     var state = store.getState();
     if (state.pastStates.length >= 50)
@@ -22,6 +23,7 @@ export const actionArchiveState = (store) => {
 };
 // Restores the state from an past state
 // archiving the current state as a future state
+// Affects: futureState, pastStates
 export const actionRestoreState = (store) => {
     var state = store.getState();
     if (state.futureStates.length >= 50) 
@@ -39,6 +41,7 @@ export const actionRestoreState = (store) => {
     // Do nothing if there are no more states in the history
 };
 // Action calling for the state to be restored from a future state
+// Affects: futureStates, pastStates
 export const actionRestoreFutureState = (store) => {
     var state = store.getState();
 
@@ -51,6 +54,7 @@ export const actionRestoreFutureState = (store) => {
     }
 };
 // Action calling for a trial to be selected
+// Affects: trialTable, openTrial
 export const actionToggleSelected = (store, trialID) => {
     actionArchiveState(store);
     //console.log("Select", store)
@@ -71,6 +75,7 @@ export const actionToggleSelected = (store, trialID) => {
     }
 };
 // Action calling for a new trial to be added
+// Affects: trialTable, trialOrder
 export const actionAddTrial = (store) => {
     // Archive the previous state
     actionArchiveState(store);
@@ -92,6 +97,7 @@ export const actionAddTrial = (store) => {
         id: index
     });
 };
+// REMOVE_TRIAL
 // Action calling for a trial to be removed from trialList
 // Affects: trialTable, trialOrder
 export const actionRemoveTrial = (store) => {
@@ -113,13 +119,14 @@ export const actionRemoveTrial = (store) => {
         toRemove: removeList
     });
 };
-// Action calling for a Drawer to be opened
+// ?
 export const actionOpenDrawer = (store, id) => {
     store.dispatch({
         type: 'OPEN_DRAWER',
         id: id
     });
 };
+// ?
 export const actionCloseDrawer = (store) => {
     store.dispatch({
         type:'CLOSE_DRAWER'
@@ -166,7 +173,9 @@ export const actionToggleIsTimeline = (store) => {
         });
     }
 };
+
 // Action calling for the status of the timeline drawer to be toggled
+// Affects: timelineOpen
 export const actionToggleTimeline = (store) => {
     var state = store.getState();
     // If the timeline is open
@@ -180,7 +189,9 @@ export const actionToggleTimeline = (store) => {
             type: 'CLOSE_TIMELINE'
         });
 };
+
 // Action calling for a child to be added to the currently selected timeline
+// Affects: trialTable
 export const actionAddChild = (store, trialID) => {
     if (trialID !== -1) {
         actionArchiveState(store);
@@ -191,6 +202,7 @@ export const actionAddChild = (store, trialID) => {
     }
 };
 // Action calling for a child to be removed from its parent timeline
+// Affects: trialTable, trialOrder
 export const actionRemoveChild = (store, trialID) => {
     if (trialID !== -1){
         var state = store.getState();
@@ -209,14 +221,18 @@ export const actionRemoveChild = (store, trialID) => {
         });
     }
 };
+
 // Action calling for dragged to be set as the store's dragged prop
+// Affects: dragged
 export const actionSetDragged = (store, dragged) => {
     store.dispatch({
         type: 'SET_DRAGGED',
         dragged: dragged
     });
 };
+
 // Action calling for over to be set as the store's over prop
+// Affects: over
 export const actionSetOver = (store, over) =>{
     store.dispatch({
         type: 'SET_OVER',
@@ -224,6 +240,7 @@ export const actionSetOver = (store, over) =>{
     });
 };
 // Move a trial from one position to another
+// Affects: trialTable, trialOrder
 export const actionMoveTrial = (store) => {
     actionArchiveState(store);
     var state = store.getState();

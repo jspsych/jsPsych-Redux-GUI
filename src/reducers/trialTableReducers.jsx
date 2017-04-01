@@ -32,13 +32,20 @@ const trialTable = (state = {}, action) => {
         };
         return newState;
     case 'SET_STATE':
-        var newState = [
-            ...action.state.trialTable
-        ];
+        var newState = Object.assign({}, action.state.trialTable);
         return newState;
     case 'PLUGIN_CHANGE':
         var newState = Object.assign({}, state);
-        newState[action.openTrial].pluginVal = action.pluginVal;
+            // Get the new trial
+        var newTrial = Object.assign({}, state[action.openTrial]);
+            // Remove the old plugin value
+        delete newTrial.pluginVal;
+
+            // Set the new value
+        newTrial.pluginVal = action.pluginVal;
+
+        newState[action.openTrial] = newTrial;
+
         return newState;
     case 'SELECT_TRIAL':
         // Make the updated the trial property by constructing a new hashtable
@@ -53,10 +60,10 @@ const trialTable = (state = {}, action) => {
 
         return newState;
     case 'DESELECT_TRIAL':
-        // Make the updated the trial property by constructing a new hashtable
+            // Make the updated the trial property by constructing a new hashtable
         var newTrial = Object.assign({}, state[action.id]);
-        delete newTrial['selected'];
-        newTrial['selected'] = false;
+        delete newTrial.selected;
+        newTrial.selected = false;
 
         var newState = Object.assign({}, state);
         delete newState[action.id];
@@ -64,46 +71,46 @@ const trialTable = (state = {}, action) => {
 
         return newState;
     case 'ADD_TRIAL':
-        // New trial's name 
+            // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
 
-        // Make the new trial from the default template.
+            // Make the new trial from the default template.
         var newTrial = Object.assign({}, Trial);
 
-        // Delete is okay as these shallow copies are not yet part
-        // of the state. 
+            // Delete is okay as these shallow copies are not yet part
+            // of the state. 
         delete newTrial['name'];
         delete newTrial['id'];
 
-        // Add the new properties
+            // Add the new properties
         newTrial['id'] = action.id;
         newTrial['name'] = newName;
 
-        // Create the new trial table
+            // Create the new trial table
         var newState = Object.assign({}, state);
-        newState[index] = newTrial;
+        newState[action.id] = newTrial;
 
         return newState;
     case 'REMOVE_TRIAL':
-        // Create deep copy of the state.
+            // Create deep copy of the state.
         var newState = Object.assign({}, state);
         var removeList = action.toRemove;
 
-        // Find and remove all the selected trials
+            // Find and remove all the selected trials
         for(var i = 0; i < removeList.length; i++){
             var trial = removeList[i];
 
             if (state[trial].selected) {
-                // if the trial has children 
+                    // if the trial has children 
                 if (state[trial].timeline.length > 0) {
-                    // Delete the children 
+                        // Delete the children 
                     for (var j = 0; j < state[trial].length; j++) {
                         var child = state[trial].timeline[j];
                         delete newState[child];
                     }
                 }
 
-                // IF the trial is not on the top level
+                    // IF the trial is not on the top level
                 if (state[trial].parentTrial !== -1) {
                     var parent = state[trial].parentTrial;
                     var newParent = state[parent];
@@ -122,7 +129,7 @@ const trialTable = (state = {}, action) => {
             }
         }
 
-        // If all the trial are removed add the default trial
+            // If all the trial are removed add the default trial
         if (Object.keys(newState).length == 0){
             newState.trialTable = {
                 [Trial.id]: Trial
@@ -130,30 +137,30 @@ const trialTable = (state = {}, action) => {
         }
         return newState;
     case 'ADD_CHILD_TRIAL':
-        // New trial's unique id
+            // New trial's unique id
         var index = Math.random();//Object.keys(state).length;
 
-        // Ensure there are no duplicate trial names 
+            // Ensure there are no duplicate trial names 
         while(state[index.toString()] != undefined){
             index = Math.random();
         }
 
-        // New trial's name 
+            // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
 
-        // Make the new trial from the default template.
+            // Make the new trial from the default template.
         var newTrial = Object.assign({}, Trial);
 
-        // Make the new Table
+            // Make the new Table
         var newState = Object.assign({}, state);
-        // Delete is okay as these shallow copies are not yet part
-        // of the state. 
+            // Delete is okay as these shallow copies are not yet part
+            // of the state. 
         delete newTrial['name'];
         delete newTrial['id'];
         delete newTrial['parentTrial'];
         delete newTrial['ancestry'];
 
-        // Add the new properties
+            // Add the new properties
         newTrial['id'] = String(index);
         newTrial['name'] = newName;
         newTrial['parentTrial'] = action.ID; 
@@ -162,32 +169,32 @@ const trialTable = (state = {}, action) => {
             ...state[action.ID].ancestry
         ];
 
-        // Add the new trial to the trial table
+            // Add the new trial to the trial table
         newState[index] = newTrial;
 
-        // Create the new child timeline 
+            // Create the new child timeline 
         var newChildren = [
             ...state[action.ID].timeline,
             newTrial.id
         ];
 
-        // Create the new parent
+            // Create the new parent
         var newParent = Object.assign({}, state[action.ID]);
-        // Delete its old children
+            // Delete its old children
         delete newParent['timeline'];
-        // Assign the new Children
+            // Assign the new Children
         newParent['timeline'] = newChildren;
 
-        // Delete the old parent Trial
+            // Delete the old parent Trial
         delete newState[action.ID];
-        // Assign the new parent 
+            // Assign the new parent 
         newState[action.ID] = newParent;
 
         return newState;
     case 'REMOVE_CHILD_TRIAL':
         var newState = Object.assign({}, state);
 
-        // Get the trial's parent
+            // Get the trial's parent
         var parent = state[action.ID].parentTrial;
         var newParent = Object.assign({}, state[parent]);
 
@@ -206,21 +213,21 @@ const trialTable = (state = {}, action) => {
     case 'MOVE_TRIAL':
         var newState = Object.assign({}, state);
 
-        //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
+            //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
 
-        // If fromPos and toPos are the same don't do anything
+            // If fromPos and toPos are the same don't do anything
         if (action.fromPos === action.toPos){
             return newState;
         }
-        // If the trial is being moved from the top level
+            // If the trial is being moved from the top level
 
-        // Otherwise it's being moved from a parent  
+            // Otherwise it's being moved from a parent  
         else if (state[action.fromPos].parentTrial !== -1) {
-            // Modify the parent
+                // Modify the parent
             var parent = state[action.fromPos].parentTrial;
             var oldTimeline = state[parent].timeline;
 
-            // Update the Parent
+                // Update the Parent
             var newTimeline = [
                 ...oldTimeline.slice(0, oldTimeline.indexOf(action.fromPos)),
                 ...oldTimeline.slice(oldTimeline.indexOf(action.fromPos)+1)
@@ -229,30 +236,30 @@ const trialTable = (state = {}, action) => {
             delete newParent['timeline'];
             newParent['timeline'] = newTimeline;
 
-            // Update the trial table with the modified parent
+                // Update the trial table with the modified parent
             delete newState[parent];
             newState[parent] = Object.assign({}, newParent);
         }
 
-        //////// UPDATE WHERE THE TRIAL IS MOVED TO ////////
+            //////// UPDATE WHERE THE TRIAL IS MOVED TO ////////
 
-        // If the trial is being moved to the top level
+            // If the trial is being moved to the top level
         if(newState.trialTable[action.toPos].parentTrial === -1) {
 
-            // Update the properties of the trial
+                // Update the properties of the trial
             var newTrial = Object.assign({}, state[action.fromPos]);
             delete newTrial['parentTrial'];
             delete newTrial['ancestry'];
             newTrial['parentTrial'] = -1;
             newTrial['ancestry'] = [];
 
-            // Update the trialTable
+                // Update the trialTable
             var newState = Object.assign({}, state);
             delete newState[action.fromPos];
             newState[action.fromPos] = newTrial;
         }
         else // Otherwise the trial is being moved to a new parent
-        {
+            {
             var parent = newState.trialTable[action.toPos].parentTrial;
             var oldTimeline = newState.trialTable[parent].timeline;
             var newTimeline = [
@@ -260,12 +267,12 @@ const trialTable = (state = {}, action) => {
                 action.fromPos,
                 ...oldTimeline.slice(oldTimeline.indexOf(action.toPos))
             ];
-            // Update the new Parent
+                // Update the new Parent
             var newParent = Object.assign({}, newState.trialTable[parent]);
             delete newParent['timeline'];
             newParent['timeline'] = newTimeline;
 
-            // Update the properties of the trial
+                // Update the properties of the trial
             var newTrial = Object.assign({}, state[action.fromPos]);
             delete newTrial['parentTrial'];
             delete newTrial['ancestry'];
@@ -275,7 +282,7 @@ const trialTable = (state = {}, action) => {
                 ...newParent.ancestry
             ];
 
-            // Update the trialTable
+                // Update the trialTable
             var newState = Object.assign({}, state);
             delete newState[action.fromPos];
             delete newState[parent];
@@ -289,11 +296,11 @@ const trialTable = (state = {}, action) => {
 
         var newTrial = Object.assign({}, state[state.openTrial]);
 
-        // Delete and update the isTimeline property
+            // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial.isTimeline = false;
 
-        // Delete the previous version of the trial
+            // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);
@@ -302,11 +309,11 @@ const trialTable = (state = {}, action) => {
         var newState = Object.assign({}, state);
 
         var newTrial = Object.assign({}, state[state.openTrial]);
-        // Delete and update the isTimeline property
+            // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial['isTimeline'] = true;
 
-        // Delete the previous version of the trial
+            // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);
@@ -318,7 +325,7 @@ const trialTable = (state = {}, action) => {
         delete newTrial[name];
         newTrial[name] = action.name;
 
-        // action.name is the new name of the trial.
+            // action.name is the new name of the trial.
         delete newState[newState.openTrial];
 
         newState[newState.openTrial] = newTrial;
