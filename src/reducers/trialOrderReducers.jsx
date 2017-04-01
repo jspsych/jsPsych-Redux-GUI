@@ -17,32 +17,24 @@ const trialOrder = (state = [], action) => {
     case 'REMOVE_TRIAL':
         var newState = [ ...state];
 
-        // Get the list of trials to remove
-        var removeList = action.toRemove;
-
         // Find and remove all the selected trials
-        for(var i = 0; i < removeList.length; i++){
+        for(var i = 0; i < action.toRemove.length; i++){
 
-            var trial = removeList[i];
+            var trial = action.toRemove[i];
+            var index = newState.indexOf(trial);
 
-            if (action.state[trial].selected) {
-
-                // IF the trial is in the top level
-                if (action.state[trial].parentTrial == -1){
-                    var index = newState.indexOf(trial);
-                    newState = [
-                        ...newState.slice(0, index),
-                        ...newState.slice(index+1)
-                    ];
-                }
+            // IF the trial is in the top level
+            if (index > -1){
+                newState = [
+                    ...newState.slice(0, index),
+                    ...newState.slice(index+1)
+                ];
             }
         }
 
         // If all the trial are removed add the default trial
-        if (Object.keys(newState.trialTable).length == 0){
-            newState = [
-                0
-            ];
+        if (newState.length == 0){
+            newState = [ 0 ];
         }
 
         return newState;

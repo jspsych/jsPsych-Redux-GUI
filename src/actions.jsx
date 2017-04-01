@@ -91,13 +91,19 @@ export const actionAddTrial = (store) => {
         type: 'ADD_TRIAL',
         id: index
     });
-
 };
 // Action calling for a trial to be removed from trialList
+// Affects: trialTable, trialOrder
 export const actionRemoveTrial = (store) => {
     var state = store.getState();
+
+    // Call back predicate for use by filter
+    const isSelected = (trialID) => {
+        state.trialTable[trialID].selected;
+    };
     // List of trials to be removed
     var removeList = Object.keys(state.trialTable);
+    removeList = removeList.filter(isSelected);
 
     actionArchiveState(store);
     store.dispatch({
@@ -232,6 +238,7 @@ export const actionMoveTrial = (store) => {
             fromPos: state.dragged,
             toPos: state.over
         });
+
         // If the trial is being moved to the top level
         if(state.trialTable[state.over].parentTrial === -1) {
             var newPos = state.trialOrder.indexOf(state.over);

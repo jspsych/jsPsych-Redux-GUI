@@ -21,13 +21,43 @@ deepFreeze(store);
 // test. This will allow the variable names in the tests to 
 // be standardized without have different test interfear with
 // each other's results.
-// TESTING INITIAL_STATE
-const trialOrderTest_INITIAL_STATE = () => {
+
+
+//  TESTING INITIAL_STATE
+// -------------------------
+const test_INITIAL_STATE = () => {
     const test_INITIAL_STATE = trialOrder(state, { type: 'INITIAL_STATE' });
     const soln_INITIAL_STATE = [ 0 ];
+    // The comment block below prevents eslint from complaining
+    // about 'it' and 'expect' being undefined. 
+    // (They are defined implicitly by jest)
+
     /* eslint-disable */
     it('INITIAL_STATE', () => {
         expect(test_INITIAL_STATE).toEqual(soln_INITIAL_STATE);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING SET_STATE
+// -------------------------
+const test_SET_STATE = () => {
+    // NOTE: The test only needs to supply the parts of the
+    //       action that are relevent to the store property 
+    //       being tested. Even when the actual action supplies
+    //       more information for used by other store properties
+    const test_SET_STATE = trialOrder(state,
+        {
+            type: 'SET_STATE',
+            state: {
+                trialOrder: [1, 2, 3, 4]
+            }
+        }
+    );
+    const soln_SET_STATE = [ 1, 2, 3, 4];
+    /* eslint-disable */
+    it('SET_STATE', () => {
+        expect(test_SET_STATE).toEqual(soln_SET_STATE);
     });
     /* eslint-enable */
 };
@@ -36,7 +66,7 @@ const trialOrderTest_INITIAL_STATE = () => {
 // ------------------------------------
 //  Test all the different situations where 
 //  ADD_TRIAL can be called here
-const trialOrderTest_ADD_TRIAL = () => {
+const test_ADD_TRIAL = () => {
     // New trial's unique id
     var index = Math.random();
 
@@ -61,11 +91,36 @@ const trialOrderTest_ADD_TRIAL = () => {
     const soln_ADD_TRIAL_1 = [ index ];
     // This is the test itself, it just checks the equally
     // of the test_* and the soln_*
-    // The comment block below prevents eslint from complaining
-    // about 'it' and 'expect' being undefined. (They are defined implicitly by jest)
     /* eslint-disable */
     it('ADD_TRIAL', () => {
         expect(test_ADD_TRIAL_1).toEqual(soln_ADD_TRIAL_1);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING REMOVE_TRIAL
+// -------------------------
+const test_REMOVE_TRIAL = () => {
+    // Get the list of trials to remove
+    const initialState = [ 1, 2, 3, 4];
+    // NOTE: The test only needs to supply the parts of the
+    //       action that are relevent to the store property 
+    //       being tested. Even when the actual action supplies
+    //       more information for used by other store properties
+    const test_REMOVE_TRIAL = trialOrder( 
+        // The state when the action is dispatched
+        initialState,
+        // The action to dispatch
+        {
+            type: 'REMOVE_TRIAL',
+            toRemove: [ 1, 3 ]
+        }
+    );
+    // What the state should be after dispatching the action
+    const soln_REMOVE_TRIAL = [ 2, 4];
+    /* eslint-disable */
+    it('REMOVE_TRIAL', () => {
+        expect(test_REMOVE_TRIAL).toEqual(soln_REMOVE_TRIAL);
     });
     /* eslint-enable */
 };
@@ -74,6 +129,8 @@ const trialOrderTest_ADD_TRIAL = () => {
 // root directory of the repository
 // eslint-disable-next-line no-undef
 describe('Testing trialOrderReducers', () => {
-    trialOrderTest_INITIAL_STATE();
-    trialOrderTest_ADD_TRIAL();
+    test_INITIAL_STATE();
+    test_SET_STATE();
+    test_ADD_TRIAL();
+    test_REMOVE_TRIAL();
 });
