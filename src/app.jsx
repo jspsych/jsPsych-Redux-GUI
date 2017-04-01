@@ -11,7 +11,7 @@ import Timeline from 'Timeline';
 import TitleBar from 'TitleBar';
 import PluginDrawer from 'PluginDrawer';
 import HotKeys from 'HotKeys';
-import { guiState } from 'reducers';
+import rootReducer from 'reducers';
 import { actionOpenDrawer, actionArchiveState, actionRestoreStater} from 'actions';
 
 const setMuiTheme = getMuiTheme(lightBaseTheme);
@@ -82,7 +82,7 @@ const App = ({
 
 // Create the Redux store with timeline as the reducer that
 // manages the state updates
-const store = createStore(guiState);
+const store = createStore(rootReducer);
 
 // The application to be rendered
 // A Timeline object, the state of which is determined by the state of the store

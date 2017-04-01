@@ -6,13 +6,17 @@ export const actionArchiveState = (store) => {
     if (state.pastStates.length >= 50)
     {
         store.dispatch({
-            type: 'ARCHIVE_STATE_REMOVE'
+            type: 'ARCHIVE_STATE_REMOVE',
+            state: state,
+            store: store
         });
     }
     else
     {
         store.dispatch({
-            type: 'ARCHIVE_STATE'
+            type: 'ARCHIVE_STATE',
+            state: state,
+            store: store
         });
     }
 };
@@ -68,20 +72,45 @@ export const actionToggleSelected = (store, trialID) => {
 };
 // Action calling for a new trial to be added
 export const actionAddTrial = (store) => {
+    // Archive the previous state
     actionArchiveState(store);
+
+    // Get the state
+    var state = store.getState();
+
+    // New trial's unique id
+    var index = Math.random();
+
+    // Ensure there are no duplicate trial names 
+    while(state[index.toString()] != undefined){
+        index = Math.random();
+    }
+
     //console.log ("Add", store)
     store.dispatch({
-        type: 'ADD_TRIAL'
+        type: 'ADD_TRIAL',
+        id: index
     });
 };
 // Action calling for a trial to be removed from trialList
+// Affects: trialTable, trialOrder
 export const actionRemoveTrial = (store) => {
     var state = store.getState();
+
+    // Call back predicate for use by filter
+    const isSelected = (trialID) => {
+        state.trialTable[trialID].selected;
+    };
+    // List of trials to be removed
+    var removeList = Object.keys(state.trialTable);
+    removeList = removeList.filter(isSelected);
 
     actionArchiveState(store);
     store.dispatch({
         type: 'REMOVE_TRIAL',
-        index: state.selected
+        index: state.selected,
+        state: state,
+        toRemove: removeList
     });
 };
 // Action calling for a Drawer to be opened
@@ -99,8 +128,10 @@ export const actionCloseDrawer = (store) => {
 // Action calling for the name of a trial to be changed
 export const actionChangeName = (store, trialName) => {
     actionArchiveState(store);
+    var state = store.getState();
     store.dispatch({
         type: 'CHANGE_NAME',
+        state: state,
         name: trialName
     });
 };
@@ -112,8 +143,10 @@ export const actionToggleButton = (store) => {
 };
 // ?
 export const actionPluginChange = (store, val) => {
+    var state = store.getState();
     store.dispatch({
         type: 'PLUGIN_CHANGE',
+        openTrial: state.openTrial,
         pluginVal: val
     });
 };
@@ -153,14 +186,23 @@ export const actionAddChild = (store, trialID) => {
         actionArchiveState(store);
         store.dispatch({
             type: 'ADD_CHILD_TRIAL',
-            ID: trialID 
+            ID: trialID
         });
     }
 };
 // Action calling for a child to be removed from its parent timeline
 export const actionRemoveChild = (store, trialID) => {
     if (trialID !== -1){
+        var state = store.getState();
         actionArchiveState(store);
+
+        if (state.trialTable[trialID].parentTrial === -1) {
+            store.dispatch({
+                type: 'REMOVE_TRIAL_FROM_TRIALORDER',
+                id: trialID
+            });
+        }
+
         store.dispatch({
             type: 'REMOVE_CHILD_TRIAL',
             ID: trialID
@@ -195,6 +237,23 @@ export const actionMoveTrial = (store) => {
             type: 'MOVE_TRIAL',
             fromPos: state.dragged,
             toPos: state.over
+        });
+
+        // If the trial is being moved to the top level
+        if(state.trialTable[state.over].parentTrial === -1) {
+            var newPos = state.trialOrder.indexOf(state.over);
+            store.dispatch({
+                type: 'INSERT_INTO_TRIALORDER',
+                id: state.over,
+                insertIndex: newPos
+            });
+        }
+        // reset over and dragged 
+        store.dispatch({
+            type: 'RESET_OVER'
+        });
+        store.dispatch({
+            type: 'RESET_DRAGGED'
         });
     }
 };

@@ -56,7 +56,7 @@ const removeStyleFAB = {
 };
 var preventFlag = false;
 class TrialItem extends React.Component {
-    // eslint-disable-next-line error
+    // eslint-disable-next-line all error
     static propTypes = {
         store: React.PropTypes.object.isRequired,
         state: React.PropTypes.object.isRequired,
@@ -102,7 +102,10 @@ class TrialItem extends React.Component {
         return;
     }
     render (){
+                console.log("TrialItem: ", this.props);
         return (
+        // Each trial item is a ListItem with various 
+        // additional properties
        <ListItem
             key={this.props.trial}
             id={this.props.trial}

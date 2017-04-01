@@ -17,7 +17,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "npm test -- --watch",
+    "test-watch": "jest --watch",
     "start": "node server.js",
     "dev": "webpack -d --watch",
     "build": "webpack -p",
