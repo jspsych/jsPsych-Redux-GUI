@@ -23,14 +23,19 @@ export const Timeline = {
     selected: false
 };
 
-
 // Reducers for modifiying the trialTable sotre property
 const trialTable = (state = {}, action) => {
+    console.log('TrialTableReducers');
     switch(action.type) {
     case 'INITIAL_STATE':
         var newState = {
             '0': Timeline
         };
+        return newState;
+    case 'SET_STATE':
+        var newState = [
+            ...action.state.trialTable
+        ];
         return newState;
     case 'PLUGIN_CHANGE':
         var newState = Object.assign({}, state);
@@ -60,14 +65,6 @@ const trialTable = (state = {}, action) => {
 
         return newState;
     case 'ADD_TRIAL':
-        // New trial's unique id
-        var index = Math.random();
-
-        // Ensure there are no duplicate trial names 
-        while(state[index.toString()] != undefined){
-            index = Math.random();
-        }
-
         // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
 
@@ -80,25 +77,18 @@ const trialTable = (state = {}, action) => {
         delete newTrial['id'];
 
         // Add the new properties
-        newTrial['id'] = index;
+        newTrial['id'] = action.id;
         newTrial['name'] = newName;
 
         // Create the new trial table
         var newState = Object.assign({}, state);
         newState[index] = newTrial;
 
-        action.store.dispatch({
-            type: 'APPEND_TO_TRIALORDER',
-            id: String(index)
-        });
-
         return newState;
     case 'REMOVE_TRIAL':
         // Create deep copy of the state.
         var newState = Object.assign({}, state);
-
-        // List of trials to be removed
-        var removeList = Object.keys(state);
+        var removeList = action.toRemove;
 
         // Find and remove all the selected trials
         for(var i = 0; i < removeList.length; i++){
@@ -139,13 +129,6 @@ const trialTable = (state = {}, action) => {
                 [Trial.id]: Trial
             };
         }
-
-        action.store.dispatch({
-            type: 'REMOVE_FROM_TRIALORDER',
-            state: action.state,
-            toRemove: removeList
-        });
-
         return newState;
     case 'ADD_CHILD_TRIAL':
         // New trial's unique id
@@ -204,6 +187,7 @@ const trialTable = (state = {}, action) => {
         return newState;
     case 'REMOVE_CHILD_TRIAL':
         var newState = Object.assign({}, state);
+
         // Get the trial's parent
         var parent = state[action.ID].parentTrial;
         var newParent = Object.assign({}, state[parent]);
@@ -231,15 +215,8 @@ const trialTable = (state = {}, action) => {
         }
         // If the trial is being moved from the top level
 
-        else if (state[action.fromPos].parentTrial === -1) {
-            action.store.dispatch({
-                type: 'REMOVE_TRIAL_FROM_TRIALORDER',
-                id: state[action.fromPos]
-
-            });
-        }
-        else // Otherwise it's being moved from a parent  
-        {
+        // Otherwise it's being moved from a parent  
+        else if (state[action.fromPos].parentTrial !== -1) {
             // Modify the parent
             var parent = state[action.fromPos].parentTrial;
             var oldTimeline = state[parent].timeline;
@@ -262,12 +239,6 @@ const trialTable = (state = {}, action) => {
 
         // If the trial is being moved to the top level
         if(newState.trialTable[action.toPos].parentTrial === -1) {
-            var newPos = state.trialOrder.indexOf(action.toPos);
-            action.store.dispatch({
-                type: 'INSERT_INTO_TRIALORDER',
-                id: action.toPos,
-                insertIndex: newPos
-            });
 
             // Update the properties of the trial
             var newTrial = Object.assign({}, state[action.fromPos]);
@@ -312,13 +283,6 @@ const trialTable = (state = {}, action) => {
             newState[action.fromPos] = newTrial;
             newState[parent] = newParent;
         }
-        // reset over and dragged 
-        action.store.dispatch({
-            type: 'RESET_OVER'
-        });
-        action.store.dispatch({
-            type: 'RESET_DRAGGED'
-        });
 
         return newState;
     case 'MAKE_TRIAL':
@@ -361,7 +325,6 @@ const trialTable = (state = {}, action) => {
         newState[newState.openTrial] = newTrial;
 
         return newState;
-
     default:
         return state;
     }

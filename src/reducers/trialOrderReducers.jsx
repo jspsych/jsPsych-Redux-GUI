@@ -3,17 +3,23 @@ import { Trial } from 'trialTableReducers';
 
 
 const trialOrder = (state = {}, action) => {
+    console.log('TrialOrderReducers');
     switch (action.type) {
     case 'INITIAL_STATE':
-        var newState = [ '0' ];
+        var newState = [ 0 ];
         return newState;
-    case 'APPEND_TO_TRIALORDER':
+    case 'SET_STATE':
+        var newState = [
+            ...action.state.trialOrder
+        ];
+        return newState;
+    case 'ADD_TRIAL':
         var newState = [
             ...state,
             action.id
         ];
         return newState;
-    case 'REMOVE_FROM_TRIALORDER':
+    case 'REMOVE_TRIAL':
         var newState = [ ...state];
 
         // Get the list of trials to remove
@@ -55,7 +61,7 @@ const trialOrder = (state = {}, action) => {
         ];
 
         // If all the trial are removed add the default trial
-        if (Object.keys(newState.trialTable).length == 0){
+        if (newState.length == 0){
             newState = [
                 Trial.id
             ];

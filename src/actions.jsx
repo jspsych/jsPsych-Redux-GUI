@@ -72,23 +72,39 @@ export const actionToggleSelected = (store, trialID) => {
 };
 // Action calling for a new trial to be added
 export const actionAddTrial = (store) => {
+    // Archive the previous state
     actionArchiveState(store);
+
+    // Get the state
+    var state = store.getState();
+
+    // New trial's unique id
+    var index = Math.random();
+
+    // Ensure there are no duplicate trial names 
+    while(state[index.toString()] != undefined){
+        index = Math.random();
+    }
+
     //console.log ("Add", store)
     store.dispatch({
         type: 'ADD_TRIAL',
-        store: store
+        id: index
     });
+
 };
 // Action calling for a trial to be removed from trialList
 export const actionRemoveTrial = (store) => {
     var state = store.getState();
+    // List of trials to be removed
+    var removeList = Object.keys(state.trialTable);
 
     actionArchiveState(store);
     store.dispatch({
         type: 'REMOVE_TRIAL',
         index: state.selected,
         state: state,
-        store: store
+        toRemove: removeList
     });
 };
 // Action calling for a Drawer to be opened
@@ -164,19 +180,26 @@ export const actionAddChild = (store, trialID) => {
         actionArchiveState(store);
         store.dispatch({
             type: 'ADD_CHILD_TRIAL',
-            ID: trialID,
-            store: store
+            ID: trialID
         });
     }
 };
 // Action calling for a child to be removed from its parent timeline
 export const actionRemoveChild = (store, trialID) => {
     if (trialID !== -1){
+        var state = store.getState();
         actionArchiveState(store);
+
+        if (state.trialTable[trialID].parentTrial === -1) {
+            store.dispatch({
+                type: 'REMOVE_TRIAL_FROM_TRIALORDER',
+                id: trialID
+            });
+        }
+
         store.dispatch({
             type: 'REMOVE_CHILD_TRIAL',
-            ID: trialID,
-            store: store
+            ID: trialID
         });
     }
 };
@@ -208,6 +231,22 @@ export const actionMoveTrial = (store) => {
             type: 'MOVE_TRIAL',
             fromPos: state.dragged,
             toPos: state.over
+        });
+        // If the trial is being moved to the top level
+        if(state.trialTable[state.over].parentTrial === -1) {
+            var newPos = state.trialOrder.indexOf(state.over);
+            store.dispatch({
+                type: 'INSERT_INTO_TRIALORDER',
+                id: state.over,
+                insertIndex: newPos
+            });
+        }
+        // reset over and dragged 
+        store.dispatch({
+            type: 'RESET_OVER'
+        });
+        store.dispatch({
+            type: 'RESET_DRAGGED'
         });
     }
 };

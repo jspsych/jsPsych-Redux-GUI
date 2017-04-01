@@ -1,7 +1,11 @@
 const openTrial = (state = -1, action) => {
+    console.log('OpenTrialReducer');
     switch (action.type) {
     case 'INITIAL_STATE':
         newState = -1;
+        return newState;
+    case 'SET_STATE':
+        var newState = Object.assign({}, action.state.openTrial);
         return newState;
     case 'OPEN_DRAWER':
         var newState = Object.assign({}, state);

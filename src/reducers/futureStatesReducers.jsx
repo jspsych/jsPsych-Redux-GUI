@@ -3,20 +3,24 @@ const futureStates = (state = [], action) => {
     case 'INITIAL_STATE':
         var newState = [];
         return newState;
-    case 'ARCHIVE_FUTURE_STATE':
+    case 'SET_STATE':
+        var newState = [
+            ...action.state.futureStates
+        ];
+        return newState;
+    case 'RESTORE_STATE':
+        // Archive the current state of the store in futureStates
         var newState = [
             action.state,
             ...state
         ];
         return newState;
-    case 'REMOVE_FUTURE_STATES':
+    // Both reducers are handled in the same manner
+    case 'ARCHIVE_STATE_REMOVE':
+    case 'ARCHIVE_STATE':
         var newState = [];
         return newState;
     case 'RESTORE_FUTURE_STATE':
-        action.store.dispatch({
-            type: 'ARCHIVE_STATE',
-            state: action.state
-        });
         var newState = [
             ...state.slice(1,51)
         ];

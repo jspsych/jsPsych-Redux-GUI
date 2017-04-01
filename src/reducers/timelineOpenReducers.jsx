@@ -3,6 +3,11 @@ const timelineOpen = (state = false, action) => {
     case 'INITIAL_STATE':
         newState = true;
         return newState;
+    case 'SET_STATE':
+        var newState = [
+            ...action.state.timelineOpen
+        ];
+        return newState;
     case 'OPEN_TIMELINE':
         var newState  = true;
         return newState;

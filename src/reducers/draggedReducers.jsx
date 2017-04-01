@@ -1,6 +1,7 @@
 const dragged = (state = -1, action) => {
     switch(action.type) {
     case 'INITIAL_STATE':
+    case 'SET_STATE':
         newState = null;
         return newState;
     case 'SET_DRAGGED':

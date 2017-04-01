@@ -7,8 +7,8 @@ module.exports = {
     resolve: {
         root: __dirname,
         alias: {
+            // Main App
             app: 'src/app.jsx',
-            components: 'src/components.jsx',
 
             // Reducer Files
             reducers: 'src/reducers/index.jsx',
@@ -23,15 +23,16 @@ module.exports = {
 
             // Action Files
             actions: 'src/actions.jsx',
+
             // Component Files
-            Timeline: 'src/Timeline.jsx',
-            ButtonMenu: 'src/ButtonMenu.jsx',
-            SelectableList: 'src/SelectableList.jsx',
-            PluginDrawer: 'src/PluginDrawer.jsx',
-            HotKeys: 'src/HotKeys.jsx',
-            TrialItem: 'src/TrialItem.jsx',
-            PluginForm: 'src/PluginForm.jsx',
-            TitleBar: 'src/TitleBar.jsx'
+            Timeline: 'src/components/Timeline.jsx',
+            ButtonMenu: 'src/components/ButtonMenu.jsx',
+            SelectableList: 'src/components/SelectableList.jsx',
+            PluginDrawer: 'src/components/PluginDrawer.jsx',
+            HotKeys: 'src/components/HotKeys.jsx',
+            TrialItem: 'src/components/TrialItem.jsx',
+            PluginForm: 'src/components/PluginForm.jsx',
+            TitleBar: 'src/components/TitleBar.jsx'
         },
         extensions: ['', '.js', '.jsx', '.scss']
     },
