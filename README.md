@@ -14,5 +14,4 @@ To setup:
 
 6) The page will be loaded at http://localhost:3000
 
-7) run "npm test" to run the tests in tests/ 
-
+7) run "npm test" to run the tests in __tests__/
