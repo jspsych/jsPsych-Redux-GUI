@@ -1,5 +1,8 @@
 const pastStates = (state = [], action) => {
     switch(action.type) {
+    case 'INITIAL_STATE':
+        newState = [];
+        return newState;
     case 'ARCHIVE_STATE_REMOVE':
         var oldState = Object.assign({}, action.state);
 

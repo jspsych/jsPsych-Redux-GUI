@@ -75,7 +75,8 @@ export const actionAddTrial = (store) => {
     actionArchiveState(store);
     //console.log ("Add", store)
     store.dispatch({
-        type: 'ADD_TRIAL'
+        type: 'ADD_TRIAL',
+        store: store
     });
 };
 // Action calling for a trial to be removed from trialList
@@ -85,7 +86,9 @@ export const actionRemoveTrial = (store) => {
     actionArchiveState(store);
     store.dispatch({
         type: 'REMOVE_TRIAL',
-        index: state.selected
+        index: state.selected,
+        state: state,
+        store: store
     });
 };
 // Action calling for a Drawer to be opened
@@ -103,8 +106,10 @@ export const actionCloseDrawer = (store) => {
 // Action calling for the name of a trial to be changed
 export const actionChangeName = (store, trialName) => {
     actionArchiveState(store);
+    var state = store.getState();
     store.dispatch({
         type: 'CHANGE_NAME',
+        state: state,
         name: trialName
     });
 };
@@ -159,7 +164,8 @@ export const actionAddChild = (store, trialID) => {
         actionArchiveState(store);
         store.dispatch({
             type: 'ADD_CHILD_TRIAL',
-            ID: trialID 
+            ID: trialID,
+            store: store
         });
     }
 };
@@ -169,7 +175,8 @@ export const actionRemoveChild = (store, trialID) => {
         actionArchiveState(store);
         store.dispatch({
             type: 'REMOVE_CHILD_TRIAL',
-            ID: trialID
+            ID: trialID,
+            store: store
         });
     }
 };

@@ -1,26 +1,3 @@
-export const Timeline = {
-    id: 0,
-    name: 'default',
-    pluginVal: 'text',
-    isTimeline: true,
-    timeline: [],
-    trialType: 'trialType',
-    parentTrial: -1,
-    ancestry: [],
-    selected: false
-};
-export const InitialState = {
-    trialTable: {
-        [Timeline.id]: Timeline,
-    },
-    trialOrder: [ '0' ],
-    openTrial: -1,
-    timelineOpen: true,
-    pastStates: [],
-    dragged: null,
-    over: null,
-    futureStates: []
-};
 
 // Main Store
 export const guiState = (state = {}, action) => {
@@ -32,6 +9,9 @@ export const guiState = (state = {}, action) => {
     switch (action.type) {
     // Reducer for the initial state
     case 'INITIAL_STATE':
+        var newState = {
+        '0': 
+        }
         return InitialState;
     case 'RESTORE_FUTURE_STATE':
         var restoredState = Object.assign({}, state.futureStates[0]);
@@ -50,25 +30,6 @@ export const guiState = (state = {}, action) => {
         restoredState['futureStates'] = newFuture;
         restoredState['pastStates'] = newPast;
         return restoredState;
-    case 'OPEN_DRAWER':
-        var newState = Object.assign({}, state);
-        delete newState['openTrial'];
-        newState['openTrial'] = action.id;
-        return newState;
-    case 'CLOSE_DRAWER':
-        // Create the new state
-        var newState = Object.assign({}, state);
-        delete newState['openTrial'];
-        newState['openTrial'] = -1;
-        return newState;
-    case 'CHANGE_NAME':
-        var newState = Object.assign({}, state);
-
-        // action.name is the new name of the trial.
-        newState.trialTable[newState.openTrial] = Object.assign({}, newState.trialTable[newState.openTrial]);
-        newState.trialTable[newState.openTrial].name = action.name;
-
-        return newState;
     default:
         return state;
     }
