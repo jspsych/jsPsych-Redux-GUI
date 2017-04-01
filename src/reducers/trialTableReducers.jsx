@@ -25,7 +25,6 @@ export const Timeline = {
 
 // Reducers for modifiying the trialTable sotre property
 const trialTable = (state = {}, action) => {
-    console.log('TrialTableReducers');
     switch(action.type) {
     case 'INITIAL_STATE':
         var newState = {

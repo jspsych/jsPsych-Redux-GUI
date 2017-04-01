@@ -134,6 +134,7 @@ const test_ADD_TRIAL_AT_INDEX = () => {
 const test_REMOVE_TRIAL = () => {
     // Get the list of trials to remove
     const initialState = [ 1, 2, 3, 4];
+    deepFreeze(initialState);
     // NOTE: The test only needs to supply the parts of the
     //       action that are relevent to the store property 
     //       being tested. Even when the actual action supplies
