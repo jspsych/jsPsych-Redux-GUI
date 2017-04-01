@@ -14,6 +14,14 @@ const trialOrder = (state = [], action) => {
             action.id
         ];
         return newState;
+    case 'ADD_TRIAL_AT_INDEX':
+        var newID = action.id;
+        var newState = [
+            ...state.slice(0, action.index),
+            newID,
+            ... state.slice(action.index)
+        ];
+        return newState;
     case 'REMOVE_TRIAL':
         var newState = [ ...state];
 
@@ -37,30 +45,6 @@ const trialOrder = (state = [], action) => {
             newState = [ 0 ];
         }
 
-        return newState;
-    case 'REMOVE_TRIAL_FROM_TRIALORDER':
-        var newState = [ ...state];
-
-        var index = newState.indexOf(action.id);
-        newState = [
-            ...newState.slice(0, index),
-            ...newState.slice(index+1)
-        ];
-
-        // If all the trial are removed add the default trial
-        if (newState.length == 0){
-            newState = [
-                0
-            ];
-        }
-
-        return newState;
-    case 'INSERT_INTO_TRIALORDER':
-        var newState = [
-            ...state.slice(0, action.insertIndex),
-            action.id,
-            ... state.slice(action.insertIndex)
-        ];
         return newState;
     default:
         return state;

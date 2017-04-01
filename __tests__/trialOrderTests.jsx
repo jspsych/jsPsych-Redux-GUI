@@ -67,20 +67,16 @@ const test_SET_STATE = () => {
 //  Test all the different situations where 
 //  ADD_TRIAL can be called here
 const test_ADD_TRIAL = () => {
-    // New trial's unique id
-    var index = Math.random();
 
-    // Ensure there are no duplicate trial names 
-    while(index === 0){
-        index = Math.random();
-    }
+    // ID of the trial to be added
+    var id = 1;
 
     // test_ADD_TRIAL_1 is defined as the result of dispatching the
     // 'ADD_TRIAL' reducer on trialOrder
     const test_ADD_TRIAL_1 = trialOrder(state,
         {
             type: 'ADD_TRIAL',
-            id: index
+            id: id
         });
 
 
@@ -88,12 +84,47 @@ const test_ADD_TRIAL = () => {
     // 'ADD_TRIAL' on InitialState (i.e. it's the solution to test_ADD_TRIAL_1)
         // This is what the state of trialOrder should look like
         // after calling ADD_TRIAL
-    const soln_ADD_TRIAL_1 = [ index ];
+    const soln_ADD_TRIAL_1 = [ id ];
     // This is the test itself, it just checks the equally
     // of the test_* and the soln_*
     /* eslint-disable */
     it('ADD_TRIAL', () => {
         expect(test_ADD_TRIAL_1).toEqual(soln_ADD_TRIAL_1);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING ADD_TRIAL_AT_INDEX
+// ------------------------------------
+//  Test all the different situations where 
+//  ADD_TRIAL_AT_INDEX can be called here
+const test_ADD_TRIAL_AT_INDEX = () => {
+    // New trial's unique id
+    var id = 2;
+
+    const initialState = [0, 1, 3, 4];
+
+    // test_ADD_TRIAL_AT_INDEX_1 is defined as the result of dispatching the
+    // 'ADD_TRIAL_AT_INDEX' reducer on trialOrder
+    const test_ADD_TRIAL_AT_INDEX_1 = trialOrder(
+        initialState,
+        {
+            type: 'ADD_TRIAL_AT_INDEX',
+            id: id,
+            index: 2
+        });
+
+
+    // soln_ADD_TRIAL_AT_INDEX_1 is defined as the correct result of dispatching
+    // 'ADD_TRIAL_AT_INDEX' on InitialState (i.e. it's the solution to test_ADD_TRIAL_AT_INDEX_1)
+        // This is what the state of trialOrder should look like
+        // after calling ADD_TRIAL_AT_INDEX
+    const soln_ADD_TRIAL_AT_INDEX_1 = [ 0, 1, 2, 3, 4 ];
+    // This is the test itself, it just checks the equally
+    // of the test_* and the soln_*
+    /* eslint-disable */
+    it('ADD_TRIAL_AT_INDEX', () => {
+        expect(test_ADD_TRIAL_AT_INDEX_1).toEqual(soln_ADD_TRIAL_AT_INDEX_1);
     });
     /* eslint-enable */
 };
@@ -132,5 +163,6 @@ describe('Testing trialOrderReducers', () => {
     test_INITIAL_STATE();
     test_SET_STATE();
     test_ADD_TRIAL();
+    test_ADD_TRIAL_AT_INDEX();
     test_REMOVE_TRIAL();
 });
