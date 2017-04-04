@@ -274,6 +274,7 @@ const test_ADD_CHILD_TRIAL = () => {
             index: index
         }
     );
+
     const soln_ADD_CHILD_TRIAL = {
         '0': initialTimeline,
         [index]: childTrial 
@@ -282,6 +283,60 @@ const test_ADD_CHILD_TRIAL = () => {
     /* eslint-disable */
     it('ADD_CHILD_TRIAL', () => {
         expect(test_ADD_CHILD_TRIAL).toEqual(soln_ADD_CHILD_TRIAL);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING REMOVE_CHILD_TRIAL
+// -------------------------------
+const test_REMOVE_CHILD_TRIAL = () => {
+    var index = Math.random();
+
+    // Create an additional trial with a different name
+    const childTrial = Object.assign({}, Trial);
+    const initialTimeline = Object.assign({}, Timeline);
+
+    // Set the child trial properly
+    delete childTrial.parentTrial;
+    delete childTrial.id;
+    delete childTrial.name;
+    delete childTrial.ancestry;
+    childTrial.parentTrial = 0;
+    childTrial.id = index;
+    childTrial.name = 'Trial_1';
+    childTrial.ancestry = [
+        0
+    ];
+
+    const newTimeline = [
+        ...initialTimeline.timeline,
+        index // The bracket indicate to use the value of the 
+                // variable index rather than the character string 'index'
+    ];
+    delete initialTimeline.timeline;
+    initialTimeline.timeline = newTimeline;
+
+    const initialState = {
+        '0': initialTimeline,
+        [index]: childTrial 
+    };
+    deepFreeze(initialState);
+
+    const test_REMOVE_CHILD_TRIAL = trialTable(
+        initialState,
+        {
+            type: 'REMOVE_CHILD_TRIAL',
+            ID: index
+        }
+    );
+
+    const soln_REMOVE_CHILD_TRIAL = {
+        '0': Timeline
+    };
+
+    /* eslint-disable */
+    it('REMOVE_CHILD_TRIAL', () => {
+        expect(test_REMOVE_CHILD_TRIAL).toEqual(soln_REMOVE_CHILD_TRIAL);
     });
     /* eslint-enable */
 };
@@ -296,4 +351,5 @@ describe('Testing trialTableReducers', () => {
     test_ADD_TRIAL();
     test_REMOVE_TRIAL();
     test_ADD_CHILD_TRIAL();
+    test_REMOVE_CHILD_TRIAL();
 });
