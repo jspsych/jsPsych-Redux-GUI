@@ -193,11 +193,21 @@ export const actionToggleTimeline = (store) => {
 // Action calling for a child to be added to the currently selected timeline
 // Affects: trialTable
 export const actionAddChild = (store, trialID) => {
+
+            // New trial's unique id
+        var index = Math.random();
+        var state = store.getState();
+
+            // Ensure there are no duplicate trial names 
+        while(state[index.toString()] != undefined){
+            index = Math.random();
+        }
     if (trialID !== -1) {
         actionArchiveState(store);
         store.dispatch({
             type: 'ADD_CHILD_TRIAL',
-            ID: trialID
+            ID: trialID,
+            index: index
         });
     }
 };

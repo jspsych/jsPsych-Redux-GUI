@@ -199,6 +199,93 @@ const test_ADD_TRIAL = () => {
     /* eslint-enable */
 };
 
+//  TESTING REMOVE_TRIAL
+// -------------------------------
+const test_REMOVE_TRIAL = () => {
+    // Create an additional trial with a different name
+    const selectedTimeline = Object.assign({}, Timeline);
+    delete selectedTimeline.seleceted;
+    delete selectedTimeline.id;
+    selectedTimeline.selected = true;
+    selectedTimeline.id = 1;
+    const initialState = {
+        '0': Timeline,
+        '1': selectedTimeline
+    };
+    deepFreeze(initialState);
+
+    const test_REMOVE_TRIAL = trialTable(
+        initialState,
+        {
+            type: 'REMOVE_TRIAL',
+            toRemove: [1]
+        }
+    );
+    const soln_REMOVE_TRIAL = {
+        '0': Timeline
+    };
+
+    /* eslint-disable */
+    it('REMOVE_TRIAL', () => {
+        expect(test_REMOVE_TRIAL).toEqual(soln_REMOVE_TRIAL);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING ADD_CHILD_TRIAL
+// -------------------------------
+const test_ADD_CHILD_TRIAL = () => {
+    var index = Math.random(); 
+
+    // Create an additional trial with a different name
+    const childTrial = Object.assign({}, Trial);
+    const initialTimeline = Object.assign({}, Timeline);
+
+    // Set the child trial properly
+    delete childTrial.parentTrial;
+    delete childTrial.id;
+    delete childTrial.name;
+    delete childTrial.ancestry;
+    childTrial.parentTrial = 0;
+    childTrial.id = index;
+    childTrial.name = 'Trial_1';
+    childTrial.ancestry = [
+        0
+    ];
+
+    const newTimeline = [
+        ...initialTimeline.timeline,
+        index // The bracket indicate to use the value of the 
+                // variable index rather than the character string 'index'
+    ];
+    delete initialTimeline.timeline;
+    initialTimeline.timeline = newTimeline;
+
+    const initialState = {
+        '0': Timeline
+    };
+    deepFreeze(initialState);
+
+    const test_ADD_CHILD_TRIAL = trialTable(
+        initialState,
+        {
+            type: 'ADD_CHILD_TRIAL',
+            ID: 0,
+            index: index
+        }
+    );
+    const soln_ADD_CHILD_TRIAL = {
+        '0': initialTimeline,
+        [index]: childTrial 
+    };
+
+    /* eslint-disable */
+    it('ADD_CHILD_TRIAL', () => {
+        expect(test_ADD_CHILD_TRIAL).toEqual(soln_ADD_CHILD_TRIAL);
+    });
+    /* eslint-enable */
+};
+
 // eslint-disable-next-line no-undef
 describe('Testing trialTableReducers', () => {
     test_INITIAL_STATE();
@@ -207,4 +294,6 @@ describe('Testing trialTableReducers', () => {
     test_SELECT_TRIAL();
     test_DESELECT_TRIAL();
     test_ADD_TRIAL();
+    test_REMOVE_TRIAL();
+    test_ADD_CHILD_TRIAL();
 });

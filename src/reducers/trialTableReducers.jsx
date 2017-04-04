@@ -137,13 +137,6 @@ const trialTable = (state = {}, action) => {
         }
         return newState;
     case 'ADD_CHILD_TRIAL':
-            // New trial's unique id
-        var index = Math.random();//Object.keys(state).length;
-
-            // Ensure there are no duplicate trial names 
-        while(state[index.toString()] != undefined){
-            index = Math.random();
-        }
 
             // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
@@ -161,7 +154,7 @@ const trialTable = (state = {}, action) => {
         delete newTrial['ancestry'];
 
             // Add the new properties
-        newTrial['id'] = String(index);
+        newTrial['id'] = action.index;
         newTrial['name'] = newName;
         newTrial['parentTrial'] = action.ID; 
         newTrial['ancestry'] = [
@@ -170,12 +163,12 @@ const trialTable = (state = {}, action) => {
         ];
 
             // Add the new trial to the trial table
-        newState[index] = newTrial;
+        newState[action.index] = newTrial;
 
             // Create the new child timeline 
         var newChildren = [
             ...state[action.ID].timeline,
-            newTrial.id
+            action.index
         ];
 
             // Create the new parent
