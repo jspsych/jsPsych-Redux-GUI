@@ -85,3 +85,12 @@ Going Forward 3-30-17
     Work on creating issues on github for any new features to be added .
     Open issue about infinitely recursing actions
     Add a duplicate button to the timeline on the left
+
+
+Create a 1-2 paragraph description of how the combine reducers works.
+To Do:
+    - Split trial reducers out. 
+    - Write more tests.
+    - Add a .yml file to setup travis support
+
+
