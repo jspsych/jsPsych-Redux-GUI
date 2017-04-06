@@ -1,15 +1,26 @@
+import { combineReducers } from 'redux';
+import id from 'idReducers';
+import name from 'nameReducers';
+import pluginVal from 'PluginValReducers';
+import isTimeline from 'isTimelineReducers';
+import timeline from 'timelineReducers';
+import trialType from 'trialTypeReducers';
+import parentTrial from 'parentTrialReducers';
+import ancestry from 'ancestryReducers';
+import selected from 'selectedReducers';
+
 // The default configuration for a new trial
-export const Trial = {
-    id: 0,
-    name: 'default',
-    pluginVal: 'text',
-    isTimeline: false,
-    timeline: [],
-    trialType: 'trialType',
-    parentTrial: -1,
-    ancestry: [],
-    selected: false
-};
+const Trial = combineReducers({
+    id,
+    name,
+    pluginVal,
+    isTimeline,
+    timeline,
+    trialType,
+    parentTrial,
+    ancestry,
+    selected
+});
 
 export const Timeline = {
     id: 0,
@@ -24,7 +35,18 @@ export const Timeline = {
 };
 
 // Reducers for modifiying the trialTable sotre property
-const trialTable = (state = {}, action) => {
+const trialTable = (state = { Trial }, action) => {
+    switch (action.type) {
+    case 'INITIAL_STATE':
+        return { Trial };
+    default:
+        return state;
+    }
+};
+
+export default trialTable;
+
+/*
     switch(action.type) {
     case 'INITIAL_STATE':
         var newState = {
@@ -327,6 +349,4 @@ const trialTable = (state = {}, action) => {
     default:
         return state;
     }
-};
-
-export default trialTable;
+*/
