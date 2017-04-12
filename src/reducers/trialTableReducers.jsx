@@ -34,19 +34,9 @@ export const Timeline = {
     selected: false
 };
 
+
 // Reducers for modifiying the trialTable sotre property
 const trialTable = (state = { Trial }, action) => {
-    switch (action.type) {
-    case 'INITIAL_STATE':
-        return { Trial };
-    default:
-        return state;
-    }
-};
-
-export default trialTable;
-
-/*
     switch(action.type) {
     case 'INITIAL_STATE':
         var newState = {
@@ -311,24 +301,24 @@ export default trialTable;
 
         var newTrial = Object.assign({}, state[state.openTrial]);
 
-            // Delete and update the isTimeline property
+        // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial.isTimeline = false;
 
-            // Delete the previous version of the trial
+        // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);
-        return newTrial;
+        return newState;
     case 'MAKE_TIMELINE':
         var newState = Object.assign({}, state);
 
         var newTrial = Object.assign({}, state[state.openTrial]);
-            // Delete and update the isTimeline property
+        // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial['isTimeline'] = true;
 
-            // Delete the previous version of the trial
+        // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);
@@ -349,4 +339,6 @@ export default trialTable;
     default:
         return state;
     }
-*/
+};
+
+export default trialTable;

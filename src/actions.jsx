@@ -172,6 +172,7 @@ export const actionToggleIsTimeline = (store) => {
             type: 'MAKE_TRIAL'
         });
     }
+    console.log( "After ToggleIsTimeline: ", store.getState())
 };
 
 // Action calling for the status of the timeline drawer to be toggled
