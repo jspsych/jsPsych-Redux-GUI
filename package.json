@@ -66,6 +66,10 @@
     "eslint-config-google": "^0.7.1",
     "eslint-plugin-react": "^6.10.3",
     "jest": "^19.0.2",
+    "travis": "^0.1.1",
+    "travis-build-tools": "^1.2.39",
+    "travis-ci": "^2.1.1",
+    "travis-yaml": "^1.0.0",
     "validate": "^3.0.1",
     "webpack": "^1.13.3"
   }
