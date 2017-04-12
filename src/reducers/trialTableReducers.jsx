@@ -1,15 +1,26 @@
+import { combineReducers } from 'redux';
+import id from 'idReducers';
+import name from 'nameReducers';
+import pluginVal from 'PluginValReducers';
+import isTimeline from 'isTimelineReducers';
+import timeline from 'timelineReducers';
+import trialType from 'trialTypeReducers';
+import parentTrial from 'parentTrialReducers';
+import ancestry from 'ancestryReducers';
+import selected from 'selectedReducers';
+
 // The default configuration for a new trial
-export const Trial = {
-    id: 0,
-    name: 'default',
-    pluginVal: 'text',
-    isTimeline: false,
-    timeline: [],
-    trialType: 'trialType',
-    parentTrial: -1,
-    ancestry: [],
-    selected: false
-};
+const Trial = combineReducers({
+    id,
+    name,
+    pluginVal,
+    isTimeline,
+    timeline,
+    trialType,
+    parentTrial,
+    ancestry,
+    selected
+});
 
 export const Timeline = {
     id: 0,
@@ -23,8 +34,9 @@ export const Timeline = {
     selected: false
 };
 
+
 // Reducers for modifiying the trialTable sotre property
-const trialTable = (state = {}, action) => {
+const trialTable = (state = { Trial }, action) => {
     switch(action.type) {
     case 'INITIAL_STATE':
         var newState = {
@@ -289,24 +301,24 @@ const trialTable = (state = {}, action) => {
 
         var newTrial = Object.assign({}, state[state.openTrial]);
 
-            // Delete and update the isTimeline property
+        // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial.isTimeline = false;
 
-            // Delete the previous version of the trial
+        // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);
-        return newTrial;
+        return newState;
     case 'MAKE_TIMELINE':
         var newState = Object.assign({}, state);
 
         var newTrial = Object.assign({}, state[state.openTrial]);
-            // Delete and update the isTimeline property
+        // Delete and update the isTimeline property
         delete newTrial['isTimeline'];
         newTrial['isTimeline'] = true;
 
-            // Delete the previous version of the trial
+        // Delete the previous version of the trial
         delete newState[state.openTrial];
 
         newState[state.openTrial] = Object.assign({}, newTrial);

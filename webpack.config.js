@@ -21,6 +21,17 @@ module.exports = {
             pastStatesreducers: 'src/reducers/pastStatesReducers.jsx',
             futureStatesReducers: 'src/reducers/futureStatesReducers.jsx',
 
+            // Trial Reducer Files
+            idReducers: 'src/reducers/trialReducers/idReducers.jsx',
+            nameReducers: 'src/reducers/trialReducers/nameReducers.jsx',
+            PluginValReducers: 'src/reducers/trialReducers/pluginValReducers.jsx',
+            isTimelineReducers: 'src/reducers/trialReducers/isTimelineReducers.jsx',
+            timelineReducers: 'src/reducers/trialReducers/timelineReducers.jsx',
+            trialTypeReducers: 'src/reducers/trialReducers/trialTypeReducers.jsx',
+            parentTrialReducers: 'src/reducers/trialReducers/parentTrialReducers.jsx',
+            ancestryReducers: 'src/reducers/trialReducers/ancestryReducers.jsx',
+            selectedReducers: 'src/reducers/trialReducers/selectedReducers.jsx',
+
             // Action Files
             actions: 'src/actions.jsx',
 

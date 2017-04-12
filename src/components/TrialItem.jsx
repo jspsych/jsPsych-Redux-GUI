@@ -54,6 +54,7 @@ const removeStyleFAB = {
     bottom: window.innerHeight * 0.05,
     left: window.innerWidth * 0.15
 };
+
 var preventFlag = false;
 class TrialItem extends React.Component {
     // eslint-disable-next-line all error
