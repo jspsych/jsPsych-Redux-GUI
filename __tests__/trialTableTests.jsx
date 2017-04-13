@@ -10,6 +10,8 @@ const state = store.getState();
 // Freeze it to ensure there is no mutation
 deepFreeze(store);
 deepFreeze(state);
+deepFreeze(Trial);
+deepFreeze(Timeline);
 
 //  TESTING INITIAL_STATE
 // -------------------------
@@ -341,6 +343,97 @@ const test_REMOVE_CHILD_TRIAL = () => {
     /* eslint-enable */
 };
 
+
+//  TESTING MAKE_TIMELINE
+// -------------------------------
+const test_MAKE_TIMELINE = () => {
+
+    const initialState = {
+        '0': Trial
+    };
+    deepFreeze(initialState);
+
+    const test_MAKE_TIMELINE = trialTable(
+        initialState,
+        {
+            type: 'MAKE_TIMELINE',
+            openTrial: 0
+        }
+    );
+
+    const soln_MAKE_TIMELINE = {
+        '0': Timeline
+    };
+
+    /* eslint-disable */
+    it('MAKE_TIMELINE', () => {
+        expect(test_MAKE_TIMELINE).toEqual(soln_MAKE_TIMELINE);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING MAKE_TRIAL
+// -------------------------------
+const test_MAKE_TRIAL = () => {
+
+    const initialState = {
+        '0': Timeline
+    };
+    deepFreeze(initialState);
+
+    const test_MAKE_TRIAL = trialTable(
+        initialState,
+        {
+            type: 'MAKE_TRIAL',
+            openTrial: 0
+        }
+    );
+
+    const soln_MAKE_TRIAL = {
+        '0': Trial
+    };
+
+    /* eslint-disable */
+    it('MAKE_TRIAL', () => {
+        expect(test_MAKE_TRIAL).toEqual(soln_MAKE_TRIAL);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING CHANGE_NAME
+// -------------------------------
+const test_CHANGE_NAME = () => {
+
+    const initialState = {
+        '0': Timeline
+    };
+    deepFreeze(initialState);
+
+    const test_CHANGE_NAME = trialTable(
+        initialState,
+        {
+            type: 'CHANGE_NAME',
+            openTrial: '0',
+            name: 'New_Name'
+        }
+    );
+
+    var newTimeline = Object.assign({}, Timeline);
+    delete newTimeline.name;
+    newTimeline.name = "New_Name";
+
+    const soln_CHANGE_NAME = {
+        '0': newTimeline
+    };
+
+    /* eslint-disable */
+    it('CHANGE_NAME', () => {
+        expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
+    });
+    /* eslint-enable */
+};
+
+
 // eslint-disable-next-line no-undef
 describe('Testing trialTableReducers', () => {
     test_INITIAL_STATE();
@@ -352,4 +445,7 @@ describe('Testing trialTableReducers', () => {
     test_REMOVE_TRIAL();
     test_ADD_CHILD_TRIAL();
     test_REMOVE_CHILD_TRIAL();
+    test_MAKE_TIMELINE();
+    test_MAKE_TRIAL();
+    test_CHANGE_NAME();
 });
