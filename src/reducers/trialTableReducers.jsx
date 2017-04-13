@@ -50,11 +50,14 @@ const trialTable = (state = { Trial }, action) => {
         var newState = Object.assign({}, state);
             // Get the new trial
         var newTrial = Object.assign({}, state[action.openTrial]);
+
             // Remove the old plugin value
         delete newTrial.pluginVal;
 
             // Set the new value
         newTrial.pluginVal = action.pluginVal;
+
+        delete newState[action.openTrial];
 
         newState[action.openTrial] = newTrial;
 
@@ -221,7 +224,7 @@ const trialTable = (state = { Trial }, action) => {
             //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
 
             // If fromPos and toPos are the same don't do anything
-        if (action.fromPos === action.toPos){
+        if (action.fromPos === action.toPos) {
             return newState;
         }
             // If the trial is being moved from the top level
@@ -288,7 +291,6 @@ const trialTable = (state = { Trial }, action) => {
             ];
 
                 // Update the trialTable
-            var newState = Object.assign({}, state);
             delete newState[action.fromPos];
             delete newState[parent];
             newState[action.fromPos] = newTrial;
@@ -299,29 +301,28 @@ const trialTable = (state = { Trial }, action) => {
     case 'MAKE_TRIAL':
         var newState = Object.assign({}, state);
 
-        var newTrial = Object.assign({}, state[state.openTrial]);
-
+        var newTrial = Object.assign({}, newState[action.openTrial]);
         // Delete and update the isTimeline property
-        delete newTrial['isTimeline'];
+        delete newTrial.isTimeline;
         newTrial.isTimeline = false;
 
         // Delete the previous version of the trial
-        delete newState[state.openTrial];
+        delete newState[action.openTrial];
 
-        newState[state.openTrial] = Object.assign({}, newTrial);
+        newState[action.openTrial] = Object.assign({}, newTrial);
         return newState;
     case 'MAKE_TIMELINE':
         var newState = Object.assign({}, state);
 
-        var newTrial = Object.assign({}, state[state.openTrial]);
+        const newTrial = Object.assign({}, state[action.openTrial]);
         // Delete and update the isTimeline property
-        delete newTrial['isTimeline'];
-        newTrial['isTimeline'] = true;
+        delete newTrial.isTimeline;
+        newTrial.isTimeline = true;
 
         // Delete the previous version of the trial
-        delete newState[state.openTrial];
+        delete newState[action.openTrial];
 
-        newState[state.openTrial] = Object.assign({}, newTrial);
+        newState[action.openTrial] = Object.assign({}, newTrial);
         return newState;
     case 'CHANGE_NAME':
         var newState = Object.assign({}, state);

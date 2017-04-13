@@ -165,14 +165,15 @@ export const actionToggleIsTimeline = (store) => {
     // Handle the logic in the action
     if(state.trialTable[state.openTrial].isTimeline === false) {
         store.dispatch({
-            type: 'MAKE_TIMELINE'
+            type: 'MAKE_TIMELINE',
+            openTrial: state.openTrial
         });
     } else {
         store.dispatch({
-            type: 'MAKE_TRIAL'
+            type: 'MAKE_TRIAL',
+            openTrial: state.openTrial
         });
     }
-    console.log( "After ToggleIsTimeline: ", store.getState())
 };
 
 // Action calling for the status of the timeline drawer to be toggled
@@ -195,14 +196,14 @@ export const actionToggleTimeline = (store) => {
 // Affects: trialTable
 export const actionAddChild = (store, trialID) => {
 
-            // New trial's unique id
-        var index = Math.random();
-        var state = store.getState();
+    // New trial's unique id
+    var index = Math.random();
+    var state = store.getState();
 
-            // Ensure there are no duplicate trial names 
-        while(state[index.toString()] != undefined){
-            index = Math.random();
-        }
+    // Ensure there are no duplicate trial names 
+    while(state[index.toString()] != undefined){
+        index = Math.random();
+    }
     if (trialID !== -1) {
         actionArchiveState(store);
         store.dispatch({
