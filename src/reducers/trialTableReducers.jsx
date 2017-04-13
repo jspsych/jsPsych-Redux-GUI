@@ -10,17 +10,17 @@ import ancestry from 'ancestryReducers';
 import selected from 'selectedReducers';
 
 // The default configuration for a new trial
-const Trial = combineReducers({
-    id,
-    name,
-    pluginVal,
-    isTimeline,
-    timeline,
-    trialType,
-    parentTrial,
-    ancestry,
-    selected
-});
+export const Trial = {
+    id: 0,
+    name: 'default',
+    pluginVal: 'text',
+    isTimeline: false,
+    timeline: [],
+    trialType: 'trialType',
+    parentTrial: -1,
+    ancestry: [],
+    selected: false
+};
 
 export const Timeline = {
     id: 0,
@@ -91,6 +91,7 @@ const trialTable = (state = { Trial }, action) => {
 
             // Make the new trial from the default template.
         var newTrial = Object.assign({}, Trial);
+        console.log("New Trial", newTrial)
 
             // Delete is okay as these shallow copies are not yet part
             // of the state. 
