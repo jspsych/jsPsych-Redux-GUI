@@ -25,6 +25,7 @@ module.exports = {
             idReducers: 'src/reducers/trialReducers/idReducers.jsx',
             nameReducers: 'src/reducers/trialReducers/nameReducers.jsx',
             PluginValReducers: 'src/reducers/trialReducers/pluginValReducers.jsx',
+            paramValReducer: 'src/reducers/trialReducers/paramValReducer',
             isTimelineReducers: 'src/reducers/trialReducers/isTimelineReducers.jsx',
             timelineReducers: 'src/reducers/trialReducers/timelineReducers.jsx',
             trialTypeReducers: 'src/reducers/trialReducers/trialTypeReducers.jsx',
