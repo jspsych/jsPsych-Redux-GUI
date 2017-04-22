@@ -286,3 +286,14 @@ export const actionMoveTrial = (store) => {
         });
     }
 };
+//Changes value of plugin parameters
+export const actionParamChange = (store, val) => {
+        actionArchiveState(store);
+        var state = store.getState();
+
+        store.dispatch({
+            type: 'PARAM_CHANGE',
+            paramVal: val
+        });
+
+};
