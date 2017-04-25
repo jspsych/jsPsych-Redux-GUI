@@ -97,7 +97,58 @@ export const actionAddTrial = (store) => {
         id: index
     });
 };
-// REMOVE_TRIAL
+
+// Action calling for a new trial to be added with the same properties
+// as the currently selected trial
+// Affects: trialTable, trialOrder
+export const actionDuplicateTrial = (store) => {
+    actionArchiveState(store);
+
+    // Get the state
+    var state = store.getState();
+
+    // Get the trial to be copied from
+    var toCopy = state.openTrial;
+
+    // Create the new trial's name
+    var newName = state.trialTable[toCopy].name.concat(' - Copy');
+
+    // New trial's unique id
+    var index = Math.random();
+
+    // Ensure there are no duplicate trial names 
+    while(state.trialTable[index.toString()] != undefined){
+        index = Math.random();
+    }
+
+    // If the trial being copied is in the top level
+    if (-1 <  state.trialOrder.indexOf(toCopy))
+    {
+        console.log ("Call Dup");
+        // Call the reducer
+        store.dispatch({
+            type: 'DUPLICATE_TRIAL',
+            index: index,
+            name: newName,
+            copyFrom: toCopy
+        });
+    } 
+    // Otherwise the trial is in someone's timeline
+    else 
+    {
+        console.log("Call child sup");
+        // Call the reducer
+        store.dispatch({
+            type: 'DUPLICATE_CHILD_TRIAL',
+            index: index,
+            name: newName,
+            copyFrom: toCopy,
+            parentTrial: state.trialTable[toCopy].ancestry[0]
+        });
+    }
+
+};
+
 // Action calling for a trial to be removed from trialList
 // Affects: trialTable, trialOrder
 export const actionRemoveTrial = (store) => {

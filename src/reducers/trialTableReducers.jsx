@@ -85,6 +85,78 @@ const trialTable = (state = { Trial }, action) => {
         newState[action.id] = newTrial;
 
         return newState;
+
+    case 'DUPLICATE_TRIAL':
+
+        console.log("Action duplicate", action);
+
+        // Copy the trial being duplicated
+        var newTrial = Object.assign({}, state[action.copyFrom]);
+
+        // Update the name
+        delete newTrial.name
+        newTrial.name = action.name;
+
+        // Update the id
+        delete newTrial.id;
+        newTrial.id = action.index;
+
+        // Add the new trial to the top level
+        var newTable = Object.assign({}, state);
+        state[action.index] = newTrial;
+
+        // Return
+        return newTable;
+
+    case 'DUPLICATE_CHILD_TRIAL':
+
+        console.log("Action child duplicate", action);
+
+        // Copy the trial being duplicated
+        var newTrial = Object.assign({}, state[action.copyFrom]);
+
+        // Update the name
+        delete newTrial.name
+        newTrial.name = action.name;
+
+        // Update the id
+        delete newTrial.id;
+        newTrial.id = action.index;
+
+            // Add the new trial to the same timeline
+            // as the trial being duplicated
+        var newTable = Object.assign({}, state);
+
+        var newParent = Object.assign({}, state[action.parentTrial]);
+
+        // Get the index of the trial being copied in the parent's timeline
+        var index = newParent.timeline.indexOf(action.copyFrom.id);
+
+        // Add the new trial's id
+        var newTimeline = [
+            ...newParent.timeline.slice(0, index+1),
+            action.index,
+            ...newParent.timeline.slice(index+1)
+        ];
+
+        // Update the parent's info
+        delete newParent.timeline;
+        newParent.timeline = newTimeline;
+
+        // Copy the current trialTable
+        var newTable = Object.assign({}, state);
+
+        // Update the trial table with the parent
+        delete newTable[action.parentTrial];
+        newTable[action.parentTrial] = newParent;
+
+        // Add the new Trial
+        newTable[action.id] = newTrial;
+
+        // Return
+        return newTable;
+
+
     case 'ADD_TRIAL':
             // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
@@ -153,7 +225,6 @@ const trialTable = (state = { Trial }, action) => {
         }
         return newState;
     case 'ADD_CHILD_TRIAL':
-
             // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
 
