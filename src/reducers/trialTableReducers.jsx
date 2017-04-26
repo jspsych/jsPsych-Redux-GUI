@@ -93,14 +93,12 @@ const trialTable = (state = { Trial }, action) => {
 
         // Add the new trial to the top level
         var newTable = Object.assign({}, state);
-        newTable[action.index] = Object.assign({}, newTrial);
+        newTable[action.index] = newTrial;
 
         // Return
         return newTable;
 
     case 'DUPLICATE_CHILD_TRIAL':
-
-        console.log("Action child duplicate", action);
 
         // Copy the trial being duplicated
         var newTrial = Object.assign({}, state[action.copyFrom]);
@@ -120,7 +118,7 @@ const trialTable = (state = { Trial }, action) => {
         var newParent = Object.assign({}, state[action.parentTrial]);
 
         // Get the index of the trial being copied in the parent's timeline
-        var index = newParent.timeline.indexOf(action.copyFrom.id);
+        var index = newParent.timeline.indexOf(action.copyFrom);
 
         // Add the new trial's id
         var newTimeline = [
@@ -145,7 +143,6 @@ const trialTable = (state = { Trial }, action) => {
 
         // Return
         return newTable;
-
 
     case 'ADD_TRIAL':
             // New trial's name 
