@@ -1,13 +1,3 @@
-import { combineReducers } from 'redux';
-import id from 'idReducers';
-import name from 'nameReducers';
-import pluginVal from 'PluginValReducers';
-import isTimeline from 'isTimelineReducers';
-import timeline from 'timelineReducers';
-import trialType from 'trialTypeReducers';
-import parentTrial from 'parentTrialReducers';
-import ancestry from 'ancestryReducers';
-import selected from 'selectedReducers';
 
 // The default configuration for a new trial
 export const Trial = {
@@ -88,13 +78,13 @@ const trialTable = (state = { Trial }, action) => {
 
     case 'DUPLICATE_TRIAL':
 
-        console.log("Action duplicate", action);
-
         // Copy the trial being duplicated
         var newTrial = Object.assign({}, state[action.copyFrom]);
 
+        console.log(newTrial);
+
         // Update the name
-        delete newTrial.name
+        delete newTrial.name;
         newTrial.name = action.name;
 
         // Update the id
@@ -103,7 +93,7 @@ const trialTable = (state = { Trial }, action) => {
 
         // Add the new trial to the top level
         var newTable = Object.assign({}, state);
-        state[action.index] = newTrial;
+        newTable[action.index] = Object.assign({}, newTrial);
 
         // Return
         return newTable;

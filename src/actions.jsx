@@ -107,44 +107,49 @@ export const actionDuplicateTrial = (store) => {
     // Get the state
     var state = store.getState();
 
-    // Get the trial to be copied from
-    var toCopy = state.openTrial;
-
-    // Create the new trial's name
-    var newName = state.trialTable[toCopy].name.concat(' - Copy');
-
-    // New trial's unique id
-    var index = Math.random();
-
-    // Ensure there are no duplicate trial names 
-    while(state.trialTable[index.toString()] != undefined){
-        index = Math.random();
-    }
-
-    // If the trial being copied is in the top level
-    if (-1 <  state.trialOrder.indexOf(toCopy))
+    // When there is an open trial
+    if (state.openTrial !== -1)
     {
-        console.log ("Call Dup");
-        // Call the reducer
-        store.dispatch({
-            type: 'DUPLICATE_TRIAL',
-            index: index,
-            name: newName,
-            copyFrom: toCopy
-        });
-    } 
-    // Otherwise the trial is in someone's timeline
-    else 
-    {
-        console.log("Call child sup");
-        // Call the reducer
-        store.dispatch({
-            type: 'DUPLICATE_CHILD_TRIAL',
-            index: index,
-            name: newName,
-            copyFrom: toCopy,
-            parentTrial: state.trialTable[toCopy].ancestry[0]
-        });
+
+        // Get the trial to be copied from
+        var toCopy = state.openTrial;
+
+        // Create the new trial's name
+        var newName = state.trialTable[toCopy].name.concat(' - Copy');
+
+        // New trial's unique id
+        var index = Math.random();
+
+        // Ensure there are no duplicate trial names 
+        while(state.trialTable[index.toString()] != undefined){
+            index = Math.random();
+        }
+
+        // If the trial being copied is in the top level
+        if (-1 <  state.trialOrder.indexOf(toCopy))
+        {
+            console.log ('Call Dup');
+            // Call the reducer
+            store.dispatch({
+                type: 'DUPLICATE_TRIAL',
+                index: index,
+                name: newName,
+                copyFrom: toCopy
+            });
+        } 
+        // Otherwise the trial is in someone's timeline
+        else 
+        {
+            console.log("Call child sup");
+            // Call the reducer
+            store.dispatch({
+                type: 'DUPLICATE_CHILD_TRIAL',
+                index: index,
+                name: newName,
+                copyFrom: toCopy,
+                parentTrial: state.trialTable[toCopy].ancestry[0]
+            });
+        }
     }
 
 };

@@ -12,7 +12,7 @@ const trialOrder = (state = [], action) => {
     case 'DUPLICATE_TRIAL':
 
         // Get the index of the trial being duplicated
-        var insertIndex = state.indexOf(action.copyFrom.id);
+        var insertIndex = state.indexOf(action.copyFrom);
 
         // Insert the copy after the original
         var newOrder = [
@@ -60,7 +60,6 @@ const trialOrder = (state = [], action) => {
         if (newState.length == 0){
             newState = [ 0 ];
         }
-
         return newState;
     default:
         return state;

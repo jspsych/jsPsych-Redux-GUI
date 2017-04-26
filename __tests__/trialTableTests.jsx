@@ -341,6 +341,66 @@ const test_REMOVE_CHILD_TRIAL = () => {
     /* eslint-enable */
 };
 
+//  TESTING DUPLICATE_TRIAL
+// -------------------------
+const test_DUPLICATE_TRIAL = () => {
+    // Get what will become the new trial
+    // give it some unique properties to check 
+    // that they are duplicated
+    const solnTrial = Object.assign({}, Trial);
+
+    // Set the ID
+    delete solnTrial.id;
+    solnTrial.id = 2;
+    // Set the trial name
+    delete solnTrial.name;
+    solnTrial.name = 'Trial_1';
+    // Set the pluginValue
+    delete solnTrial.pluginVal;
+    solnTrial.pluginval = 'testVal';
+    // Set the trialType
+    delete solnTrial.trialType;
+    solnTrial.trialType = 'testType';
+
+    deepFreeze(solnTrial);
+
+    const initialState = {
+        '2': solnTrial 
+    };
+    deepFreeze(initialState);
+    // Make a copy to compare against
+    const solnTrialDup = Object.assign({}, solnTrial);
+    delete solnTrialDup.name;
+    solnTrialDup.name = 'newName';
+
+    delete solnTrialDup.id;
+    solnTrialDup.id = 3;
+
+
+    const test_DUPLICATE_TRIAL = trialTable(
+        initialState,
+        {
+            type: 'DUPLICATE_TRIAL',
+            index: 3,
+            name: 'newName',
+            copyFrom: 2
+        });
+
+    deepFreeze(test_DUPLICATE_TRIAL);
+
+    const soln_DUPLICATE_TRIAL = {
+        '2': solnTrial,
+        '3': solnTrialDup
+    };
+
+
+    /* eslint-disable */
+    it('DUPLICATE_TRIAL', () => {
+        expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
+    });
+    /* eslint-enable */
+};
+
 // eslint-disable-next-line no-undef
 describe('Testing trialTableReducers', () => {
     test_INITIAL_STATE();
@@ -352,4 +412,5 @@ describe('Testing trialTableReducers', () => {
     test_REMOVE_TRIAL();
     test_ADD_CHILD_TRIAL();
     test_REMOVE_CHILD_TRIAL();
+    test_DUPLICATE_TRIAL();
 });

@@ -27,6 +27,7 @@ deepFreeze(store);
 // -------------------------
 const test_INITIAL_STATE = () => {
     const test_INITIAL_STATE = trialOrder(state, { type: 'INITIAL_STATE' });
+    deepFreeze(test_INITIAL_STATE);
     const soln_INITIAL_STATE = [ 0 ];
     // The comment block below prevents eslint from complaining
     // about 'it' and 'expect' being undefined. 
@@ -54,6 +55,8 @@ const test_SET_STATE = () => {
             }
         }
     );
+    deepFreeze(test_SET_STATE);
+
     const soln_SET_STATE = [ 1, 2, 3, 4];
     /* eslint-disable */
     it('SET_STATE', () => {
@@ -78,6 +81,7 @@ const test_ADD_TRIAL = () => {
             type: 'ADD_TRIAL',
             id: id
         });
+    deepFreeze(test_ADD_TRIAL);
 
 
     // soln_ADD_TRIAL_1 is defined as the correct result of dispatching
@@ -113,6 +117,7 @@ const test_ADD_TRIAL_AT_INDEX = () => {
             id: id,
             index: 2
         });
+    deepFreeze(test_ADD_TRIAL);
 
 
     // soln_ADD_TRIAL_AT_INDEX_1 is defined as the correct result of dispatching
@@ -148,11 +153,43 @@ const test_REMOVE_TRIAL = () => {
             toRemove: [ 1, 3 ]
         }
     );
+    deepFreeze(test_REMOVE_TRIAL);
+
+
     // What the state should be after dispatching the action
     const soln_REMOVE_TRIAL = [ 2, 4];
     /* eslint-disable */
     it('REMOVE_TRIAL', () => {
         expect(test_REMOVE_TRIAL).toEqual(soln_REMOVE_TRIAL);
+    });
+    /* eslint-enable */
+};
+
+//  TESTING DUPLICATE_TRIAL
+// -------------------------
+const test_DUPLICATE_TRIAL = () => {
+    // Get the list of trials to remove
+    const initialState = [ 1, 2, 3, 4];
+    deepFreeze(initialState);
+
+    const test_DUPLICATE_TRIAL = trialOrder( 
+        // The state when the action is dispatched
+        initialState,
+        // The action to dispatch
+        {
+            type: 'DUPLICATE_TRIAL',
+            index: 5,
+            copyFrom: 3
+        }
+    );
+    deepFreeze(test_DUPLICATE_TRIAL);
+
+    // What the state should be after dispatching the action
+    const soln_DUPLICATE_TRIAL = [ 1, 2, 3, 5, 4];
+
+    /* eslint-disable */
+    it('DUPLICATE_TRIAL', () => {
+        expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
     });
     /* eslint-enable */
 };
@@ -166,4 +203,5 @@ describe('Testing trialOrderReducers', () => {
     test_ADD_TRIAL();
     test_ADD_TRIAL_AT_INDEX();
     test_REMOVE_TRIAL();
+    test_DUPLICATE_TRIAL();
 });
