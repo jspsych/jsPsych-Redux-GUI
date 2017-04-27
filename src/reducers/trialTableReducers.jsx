@@ -1,9 +1,9 @@
-
 // The default configuration for a new trial
 export const Trial = {
     id: 0,
     name: 'default',
     pluginVal: 'text',
+    paramVal: '',
     isTimeline: false,
     timeline: [],
     trialType: 'trialType',
@@ -16,6 +16,7 @@ export const Timeline = {
     id: 0,
     name: 'default',
     pluginVal: 'text',
+    paramVal: '',
     isTimeline: true,
     timeline: [],
     trialType: 'trialType',
@@ -377,15 +378,27 @@ const trialTable = (state = { Trial }, action) => {
         return newState;
     case 'CHANGE_NAME':
         var newState = Object.assign({}, state);
-        var newTrial = Object.assign({}, state[action.state.openTrial]);
+        var newTrial = Object.assign({}, state[action.openTrial]);
 
-        delete newTrial[name];
-        newTrial[name] = action.name;
+        delete newTrial.name;
+        newTrial.name = action.name;
 
             // action.name is the new name of the trial.
-        delete newState[newState.openTrial];
+        delete newState[action.openTrial];
 
-        newState[newState.openTrial] = newTrial;
+        newState[action.openTrial] = newTrial;
+
+        return newState;
+    case 'PARAM_CHANGE':
+        var newState=Object.assign({}, state);
+        var newTrial = Object.assign({}. state[action.openTrial]);
+
+        delete newTrial.pluginVal;
+        newTrial.pluginVal = action.pluginVal; 
+
+        delete newState[action.openTrial];
+
+        newState[action.openTrial] = newTrial;
 
         return newState;
     default:
