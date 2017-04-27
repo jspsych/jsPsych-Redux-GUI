@@ -9,7 +9,7 @@ import IconMenu from 'material-ui/IconMenu';
 import Divider from 'material-ui/Divider';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import {actionAddTrial, actionRemoveTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
+import {actionAddTrial, actionRemoveTrial, actionDuplicateTrial, actionRestoreState, actionRestoreFutureState } from 'actions';
 
 // Initialize the T.E.P. necessay for using "onTouchTap"
 injectTapEventPlugin();
@@ -66,6 +66,10 @@ class ButtonMenu extends React.Component {
         e.preventDefault();
         actionRestoreState(this.props.store); 
     }
+    duplicate (e) {
+        e.preventDefault();
+        actionDuplicateTrial(this.props.store);
+    }
     render () {
         return (
             <IconMenu
@@ -80,27 +84,34 @@ class ButtonMenu extends React.Component {
                 rightIcon={<ContentAdd />}
                 onTouchTap={this.add.bind(this)}
             />
+            <Divider />
+            <MenuItem
+                primaryText="Duplicate"
+                rightIcon={<ContentAdd />}
+            onTouchTap={this.duplicate.bind(this)}
+            />
 
-        <Divider />
-        <MenuItem
-            primaryText="Remove (ctrl+x / Delete)"
-            rightIcon={<ContentRemove />}
+
+            <Divider />
+            <MenuItem
+                primaryText="Remove (ctrl+x / Delete)"
+                rightIcon={<ContentRemove />}
             onTouchTap={this.remove.bind(this)}
-        />
+            />
 
-    <Divider />
-    <MenuItem
-        primaryText="Undo (ctrl+z)"
-        rightIcon={<Undo />}
-        onTouchTap={this.restore.bind(this)}
-    />
+            <Divider />
+            <MenuItem
+                primaryText="Undo (ctrl+z)"
+                rightIcon={<Undo />}
+            onTouchTap={this.restore.bind(this)}
+            />
 
-<Divider />
-<MenuItem
-    primaryText="Redo (ctrl+q)"
-    rightIcon={<Redo />}
-    onTouchTap={this.fastForward.bind(this)}
-/>
+            <Divider />
+            <MenuItem
+                primaryText="Redo (ctrl+q)"
+                rightIcon={<Redo />}
+            onTouchTap={this.fastForward.bind(this)}
+            />
 
             </IconMenu>
         );
