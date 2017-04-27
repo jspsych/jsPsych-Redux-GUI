@@ -75,13 +75,9 @@ const trialTable = (state = { Trial }, action) => {
         newState[action.id] = newTrial;
 
         return newState;
-
     case 'DUPLICATE_TRIAL':
-
         // Copy the trial being duplicated
         var newTrial = Object.assign({}, state[action.copyFrom]);
-
-        console.log(newTrial);
 
         // Update the name
         delete newTrial.name;
@@ -99,7 +95,6 @@ const trialTable = (state = { Trial }, action) => {
         return newTable;
 
     case 'DUPLICATE_CHILD_TRIAL':
-
         // Copy the trial being duplicated
         var newTrial = Object.assign({}, state[action.copyFrom]);
 
@@ -113,23 +108,19 @@ const trialTable = (state = { Trial }, action) => {
 
             // Add the new trial to the same timeline
             // as the trial being duplicated
-        var newTable = Object.assign({}, state);
-
         var newParent = Object.assign({}, state[action.parentTrial]);
 
         // Get the index of the trial being copied in the parent's timeline
         var index = newParent.timeline.indexOf(action.copyFrom);
 
-        // Add the new trial's id
-        var newTimeline = [
-            ...newParent.timeline.slice(0, index+1),
-            action.index,
-            ...newParent.timeline.slice(index+1)
-        ];
+            // Update the parent's info
+            newParent.timeline = [
+                ...newParent.timeline.slice(0, index+1),
+                action.index,
+                ...newParent.timeline.slice(index+1)
+            ];
 
-        // Update the parent's info
-        delete newParent.timeline;
-        newParent.timeline = newTimeline;
+            console.log('parents timeline', newParent.timeline);
 
         // Copy the current trialTable
         var newTable = Object.assign({}, state);
@@ -139,8 +130,9 @@ const trialTable = (state = { Trial }, action) => {
         newTable[action.parentTrial] = newParent;
 
         // Add the new Trial
-        newTable[action.id] = newTrial;
+        newTable[action.index] = newTrial;
 
+            console.log(newTable);
         // Return
         return newTable;
 
