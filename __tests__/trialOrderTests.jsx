@@ -98,38 +98,38 @@ const test_ADD_TRIAL = () => {
     /* eslint-enable */
 };
 
-//  TESTING ADD_TRIAL_AT_INDEX
+//  TESTING INSERT_TRIAL_INTO_TRIALORDER
 // ------------------------------------
 //  Test all the different situations where 
-//  ADD_TRIAL_AT_INDEX can be called here
-const test_ADD_TRIAL_AT_INDEX = () => {
+//  INSERT_TRIAL_INTO_TRIALORDER can be called here
+const test_INSERT_TRIAL_INTO_TRIALORDER = () => {
     // New trial's unique id
     var id = 2;
 
     const initialState = [0, 1, 3, 4];
 
-    // test_ADD_TRIAL_AT_INDEX_1 is defined as the result of dispatching the
-    // 'ADD_TRIAL_AT_INDEX' reducer on trialOrder
-    const test_ADD_TRIAL_AT_INDEX_1 = trialOrder(
+    // test_INSERT_TRIAL_INTO_TRIALORDER_1 is defined as the result of dispatching the
+    // 'INSERT_TRIAL_INTO_TRIALORDER' reducer on trialOrder
+    const test_INSERT_TRIAL_INTO_TRIALORDER_1 = trialOrder(
         initialState,
         {
-            type: 'ADD_TRIAL_AT_INDEX',
+            type: 'INSERT_TRIAL_INTO_TRIALORDER',
             id: id,
             index: 2
         });
     deepFreeze(test_ADD_TRIAL);
 
 
-    // soln_ADD_TRIAL_AT_INDEX_1 is defined as the correct result of dispatching
-    // 'ADD_TRIAL_AT_INDEX' on InitialState (i.e. it's the solution to test_ADD_TRIAL_AT_INDEX_1)
+    // soln_INSERT_TRIAL_INTO_TRIALORDER_1 is defined as the correct result of dispatching
+    // 'INSERT_TRIAL_INTO_TRIALORDER' on InitialState (i.e. it's the solution to test_INSERT_TRIAL_INTO_TRIALORDER_1)
         // This is what the state of trialOrder should look like
-        // after calling ADD_TRIAL_AT_INDEX
-    const soln_ADD_TRIAL_AT_INDEX_1 = [ 0, 1, 2, 3, 4 ];
+        // after calling INSERT_TRIAL_INTO_TRIALORDER
+    const soln_INSERT_TRIAL_INTO_TRIALORDER_1 = [ 0, 1, 2, 3, 4 ];
     // This is the test itself, it just checks the equally
     // of the test_* and the soln_*
     /* eslint-disable */
-    it('ADD_TRIAL_AT_INDEX', () => {
-        expect(test_ADD_TRIAL_AT_INDEX_1).toEqual(soln_ADD_TRIAL_AT_INDEX_1);
+    it('INSERT_TRIAL_INTO_TRIALORDER', () => {
+        expect(test_INSERT_TRIAL_INTO_TRIALORDER_1).toEqual(soln_INSERT_TRIAL_INTO_TRIALORDER_1);
     });
     /* eslint-enable */
 };
@@ -169,7 +169,7 @@ const test_REMOVE_TRIAL = () => {
 // -------------------------
 const test_DUPLICATE_TRIAL = () => {
     // Get the list of trials to remove
-    const initialState = [ 1, 2, 3, 4];
+    const initialState = [ "1", "2", "3", "4"];
     deepFreeze(initialState);
 
     const test_DUPLICATE_TRIAL = trialOrder( 
@@ -201,7 +201,7 @@ describe('Testing trialOrderReducers', () => {
     test_INITIAL_STATE();
     test_SET_STATE();
     test_ADD_TRIAL();
-    test_ADD_TRIAL_AT_INDEX();
+    test_INSERT_TRIAL_INTO_TRIALORDER();
     test_REMOVE_TRIAL();
     test_DUPLICATE_TRIAL();
 });

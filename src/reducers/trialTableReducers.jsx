@@ -247,58 +247,58 @@ const trialTable = (state = { Trial }, action) => {
             newState[action.ID] = newParent;
 
             return newState;
-        case 'REMOVE_CHILD_TRIAL':
+      case 'REMOVE_CHILD_TRIAL':
             var newState = Object.assign({}, state);
 
-            // Get the trial's parent
-            var parent = state[action.ID].parentTrial;
-            var newParent = Object.assign({}, state[parent]);
+            // Get the trial's parentTrial
+            var parentTrial = state[action.ID].parentTrialTrial;
+            var newparentTrial = Object.assign({}, state[parentTrial]);
 
-            var index = newParent.timeline.indexOf(action.ID);
-            newParent.timeline = [
-                ...newParent.timeline.slice(0, index),
-                ...newParent.timeline.slice(index+1)
+            var index = newparentTrial.timeline.indexOf(action.ID);
+            newparentTrial.timeline = [
+                ...newparentTrial.timeline.slice(0, index),
+                ...newparentTrial.timeline.slice(index+1)
             ];
 
             delete newState[action.ID];
-            delete newState[parent];
+            delete newState[parentTrial];
 
-            newState[parent] = newParent;
+            newState[parentTrial] = newparentTrial;
 
         return newState;
-    case 'MOVE_TRIAL_TO_TIMELINE':
+        // Remove trial from the parent's timeline but not the 
+        // trialTable 
+      case 'REMOVE_TRIAL_FROM_TIMELINE':
         var newState = Object.assign({}, state);
 
-            //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
+        // Get the trial's parent
+        var parentID = state[action.ID].parentTrial;
+        var newParent = Object.assign({}, state[parentID]);
 
-            // If fromPos and toPos are the same don't do anything
-            if (action.fromPos === action.toPos) {
-                return newState;
-            }
-            // If the trial is being moved from the top level
+        var index = newParent.timeline.indexOf(action.ID);
+        newParent.timeline = [
+          ...newParent.timeline.slice(0, index),
+          ...newParent.timeline.slice(index+1)
+        ];
+        delete newState[parentID];
+        newState[parentID] = newParent;
 
-            // Otherwise it's being moved from a parent  
-            else if (state[action.fromPos].parentTrial !== -1) {
-                // Modify the parent
-                var parent = state[action.fromPos].parentTrial;
-                var oldTimeline = state[parent].timeline;
+        return newState;
+        // Update the ancestry
+    case 'INSERT_TRIAL_INTO_TRIALORDER':
+        var newState = Object.assign({}, state);
+        var newTrial = Object.assign({}, state[action.id]);
+        delete newTrial.ancestry;
+        delete newTrial.parentTrial;
+        newTrial.ancestry = [];
+        newTrial.parentTrial = -1;
 
-                // Update the Parent
-                var newTimeline = [
-                    ...oldTimeline.slice(0, oldTimeline.indexOf(action.fromPos)),
-                    ...oldTimeline.slice(oldTimeline.indexOf(action.fromPos)+1)
-                ];
-                var newParent = Object.assign({}, state[parent]);
-                delete newParent['timeline'];
-                newParent['timeline'] = newTimeline;
+        delete newState[action.id];
+        newState[action.id] = newTrial;
 
-                // Update the trial table with the modified parent
-                delete newState[parent];
-                newState[parent] = Object.assign({}, newParent);
-            }
-
-            //////// UPDATE WHERE THE TRIAL IS MOVED TO ////////
-
+        return newState;
+    case 'INSERT_TRIAL_IN_TIMELINE':
+        var newState = Object.assign({}, state);
             // If the trial is being moved to the top level
             if(newState.trialTable[action.toPos].parentTrial === -1) {
 
