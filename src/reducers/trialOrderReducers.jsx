@@ -23,7 +23,6 @@ const trialOrder = (state = [], action) => {
 
         // Return
         return newOrder;
-
     case 'ADD_TRIAL':
         var newState = [
             ...state,
@@ -38,6 +37,7 @@ const trialOrder = (state = [], action) => {
             ... state.slice(action.index)
         ];
         return newState;
+    case ""
     case 'REMOVE_TRIAL':
         var newState = [ ...state];
 

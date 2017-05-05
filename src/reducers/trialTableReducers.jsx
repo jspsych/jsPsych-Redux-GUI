@@ -94,7 +94,6 @@ const trialTable = (state = { Trial }, action) => {
 
         // Return
         return newTable;
-
     case 'DUPLICATE_CHILD_TRIAL':
         // Copy the trial being duplicated
         var newTrial = Object.assign({}, state[action.copyFrom]);
@@ -136,7 +135,6 @@ const trialTable = (state = { Trial }, action) => {
             console.log(newTable);
         // Return
         return newTable;
-
     case 'ADD_TRIAL':
             // New trial's name 
         var newName = 'Trial_' + Object.keys(state).length;
@@ -270,7 +268,7 @@ const trialTable = (state = { Trial }, action) => {
         newState[parent] = newParent;
 
         return newState;
-    case 'MOVE_TRIAL':
+    case 'MOVE_TRIAL_TO_TIMELINE':
         var newState = Object.assign({}, state);
 
             //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////

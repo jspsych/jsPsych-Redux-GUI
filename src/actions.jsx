@@ -97,7 +97,6 @@ export const actionAddTrial = (store) => {
         id: index
     });
 };
-
 // Action calling for a new trial to be added with the same properties
 // as the currently selected trial
 // Affects: trialTable, trialOrder
@@ -151,9 +150,7 @@ export const actionDuplicateTrial = (store) => {
             });
         }
     }
-
 };
-
 // Action calling for a trial to be removed from trialList
 // Affects: trialTable, trialOrder
 export const actionRemoveTrial = (store) => {
@@ -231,7 +228,6 @@ export const actionToggleIsTimeline = (store) => {
         });
     }
 };
-
 // Action calling for the status of the timeline drawer to be toggled
 // Affects: timelineOpen
 export const actionToggleTimeline = (store) => {
@@ -247,11 +243,9 @@ export const actionToggleTimeline = (store) => {
             type: 'CLOSE_TIMELINE'
         });
 };
-
 // Action calling for a child to be added to the currently selected timeline
 // Affects: trialTable
 export const actionAddChild = (store, trialID) => {
-
     // New trial's unique id
     var index = Math.random();
     var state = store.getState();
@@ -289,7 +283,6 @@ export const actionRemoveChild = (store, trialID) => {
         });
     }
 };
-
 // Action calling for dragged to be set as the store's dragged prop
 // Affects: dragged
 export const actionSetDragged = (store, dragged) => {
@@ -298,7 +291,6 @@ export const actionSetDragged = (store, dragged) => {
         dragged: dragged
     });
 };
-
 // Action calling for over to be set as the store's over prop
 // Affects: over
 export const actionSetOver = (store, over) =>{
@@ -318,21 +310,53 @@ export const actionMoveTrial = (store) => {
         // eslint-disable-next-line no-console
         console.log ('Illegal move of parent into child');
     } else {
+
+    // state.dragged is the ID of the trial to be moved
+
+        //////// Handle removing the trial from its old location ////////
+
+
+        // If the trial is being moved from the top level
+        if (state.trialTable[state.dragged].parentTrial === -1) {
         store.dispatch({
-            type: 'MOVE_TRIAL',
-            fromPos: state.dragged,
-            toPos: state.over
-        });
+            type: 'REMOVE_TRIAL_FROM_TRIALORDER',
+            ID: state.dragged
+        })
+        }
+        // Otherwise the trial is in a timeline
+        else {
+        store.dispatch({
+
+        })
+        }
+
+        ////////// Handle Inserting the trial into its new location ///////////
+
+        // state.over is the trial, state.dragged was dropped over
+        // indicating where that trial is to be moved to
 
         // If the trial is being moved to the top level
         if(state.trialTable[state.over].parentTrial === -1) {
             var newPos = state.trialOrder.indexOf(state.over);
+            // This reducer affects trialOrder
             store.dispatch({
                 type: 'INSERT_INTO_TRIALORDER',
+                trial: state.dragged,
                 id: state.over,
                 insertIndex: newPos
             });
         }
+        else {
+            var newPos = state.trialOrder.indexOf(state.over);
+            // This reducer affects trialTable
+            store.dispatch({
+                type: 'INSERT_INTO_TIMELINE',
+                trial: state.dragged,
+                id: state.over,
+                insertIndex: newPos
+            });
+        }
+
         // reset over and dragged 
         store.dispatch({
             type: 'RESET_OVER'
@@ -351,5 +375,4 @@ export const actionParamChange = (store, val) => {
             type: 'PARAM_CHANGE',
             paramVal: val
         });
-
 };
