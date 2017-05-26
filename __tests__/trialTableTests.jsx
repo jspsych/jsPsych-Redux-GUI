@@ -571,6 +571,73 @@ const test_CHANGE_NAME = () => {
   /* eslint-enable */
 };
 
+//  TESTING OPEN_CHILDREN
+// -------------------------------
+const test_OPEN_CHILDREN = () => {
+  const startTimeline = Object.assign({}, Timeline);
+  delete startTimeline.timelineOpen;
+  startTimeline.timelineOpen = false;
+  const initialState = {
+    '0': startTimeline
+  };
+  deepFreeze(initialState);
+
+  const test_OPEN_CHILDREN = trialTable(
+    initialState,
+    {
+      type: 'OPEN_CHILDREN',
+      ID: '0',
+    }
+  );
+
+  var newTimeline = Object.assign({}, Timeline);
+  delete newTimeline.timelineOpen;
+  newTimeline.timelineOpen = true;
+
+  const soln_OPEN_CHILDREN = {
+    '0': newTimeline
+  };
+  deepFreeze(newTimeline);
+
+  /* eslint-disable */
+  it('OPEN_CHILDREN', () => {
+    expect(test_OPEN_CHILDREN).toEqual(soln_CHANGE_NAME);
+  });
+  /* eslint-enable */
+};
+
+//  TESTING CLOSE_CHILDREN
+// -------------------------------
+const test_CLOSE_CHILDREN = () => {
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
+
+  const test_CLOSE_CHILDREN = trialTable(
+    initialState,
+    {
+      type: 'CLOSE_CHILDREN',
+      ID: '0',
+    }
+  );
+
+  var newTimeline = Object.assign({}, Timeline);
+  delete newTimeline.timelineOpen;
+  newTimeline.timelineOpen = false;
+
+  const soln_CLOSE_CHILDREN = {
+    '0': newTimeline
+  };
+  deepFreeze(newTimeline);
+
+  /* eslint-disable */
+  it('CLOSE_CHILDREN', () => {
+    expect(test_CLOSE_CHILDREN).toEqual(soln_CHANGE_NAME);
+  });
+  /* eslint-enable */
+};
+
 // eslint-disable-next-line no-undef
 describe('Testing trialTableReducers', () => {
   test_INITIAL_STATE();

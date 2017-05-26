@@ -352,7 +352,9 @@ const trialTable = (state = { Trial }, action) => {
       var newTrial = Object.assign({}, newState[action.openTrial]);
       // Delete and update the isTimeline property
       delete newTrial.isTimeline;
+      delete newTrial.timelineOpen;
       newTrial.isTimeline = false;
+      newTrial.timelineOpen = false;
 
       // Delete the previous version of the trial
       delete newState[action.openTrial];
@@ -362,10 +364,12 @@ const trialTable = (state = { Trial }, action) => {
     case 'MAKE_TIMELINE':
       var newState = Object.assign({}, state);
 
-      const newTrial = Object.assign({}, state[action.openTrial]);
+      var newTrial = Object.assign({}, state[action.openTrial]);
       // Delete and update the isTimeline property
       delete newTrial.isTimeline;
+      delete newTrial.timelineOpen;
       newTrial.isTimeline = true;
+      newTrial.timelineOpen = true;
 
       newState[action.openTrial] = Object.assign({}, newTrial);
       return newState;
