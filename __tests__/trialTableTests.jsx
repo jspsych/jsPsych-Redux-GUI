@@ -16,524 +16,646 @@ deepFreeze(Timeline);
 //  TESTING INITIAL_STATE
 // -------------------------
 const test_INITIAL_STATE = () => {
-    const test_INITIAL_STATE = trialTable(state, { type: 'INITIAL_STATE' });
-    const soln_INITIAL_STATE = {
-        '0': Timeline
-    };
-    // The comment block below prevents eslint from complaining
-    // about 'it' and 'expect' being undefined. 
-    // (They are defined implicitly by jest)
+  const test_INITIAL_STATE = trialTable(state, { type: 'INITIAL_STATE' });
+  const soln_INITIAL_STATE = {
+    '0': Timeline
+  };
+  // The comment block below prevents eslint from complaining
+  // about 'it' and 'expect' being undefined. 
+  // (They are defined implicitly by jest)
 
-    /* eslint-disable */
-    it('INITIAL_STATE', () => {
-        expect(test_INITIAL_STATE).toEqual(soln_INITIAL_STATE);
-    });
-    /* eslint-enable */
+  /* eslint-disable */
+  it('INITIAL_STATE', () => {
+    expect(test_INITIAL_STATE).toEqual(soln_INITIAL_STATE);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING SET_STATE
 // -------------------------
 const test_SET_STATE = () => {
-    const emptyState = {};  // Make an empty state
-    deepFreeze(emptyState); // Ensure no mutations
+  const emptyState = {};  // Make an empty state
+  deepFreeze(emptyState); // Ensure no mutations
 
-    const stateToSet = {
-        '0': Timeline
-    };
-    deepFreeze(stateToSet);
+  const stateToSet = {
+    '0': Timeline
+  };
+  deepFreeze(stateToSet);
 
-    const test_SET_STATE = trialTable(
-        emptyState,
-        {
-            type: 'SET_STATE',
-            state: {
-                trialTable: stateToSet
-            }
-        });
-    const soln_SET_STATE = {
-        '0': Timeline
-    };
-    // The comment block below prevents eslint from complaining
-    // about 'it' and 'expect' being undefined. 
-    // (They are defined implicitly by jest)
-
-    /* eslint-disable */
-    it('SET_STATE', () => {
-        expect(test_SET_STATE).toEqual(soln_SET_STATE);
+  const test_SET_STATE = trialTable(
+    emptyState,
+    {
+      type: 'SET_STATE',
+      state: {
+        trialTable: stateToSet
+      }
     });
-    /* eslint-enable */
+  const soln_SET_STATE = {
+    '0': Timeline
+  };
+  // The comment block below prevents eslint from complaining
+  // about 'it' and 'expect' being undefined. 
+  // (They are defined implicitly by jest)
+
+  /* eslint-disable */
+  it('SET_STATE', () => {
+    expect(test_SET_STATE).toEqual(soln_SET_STATE);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING PLUGIN_CHANGE
 // -------------------------
 const test_PLUGIN_CHANGE = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    const solnState = Object.assign({}, Timeline);
-    delete solnState['pluginVal'];
-    solnState.pluginVal = 'Test_Plugin';
-    deepFreeze(solnState);
+  const solnState = Object.assign({}, Timeline);
+  delete solnState['pluginVal'];
+  solnState.pluginVal = 'Test_Plugin';
+  deepFreeze(solnState);
 
-    const test_PLUGIN_CHANGE = trialTable(
-        initialState,
-        {
-            type: 'PLUGIN_CHANGE',
-            openTrial: '0',
-            pluginVal: 'Test_Plugin'
-        });
-
-    const soln_PLUGIN_CHANGE = {
-        '0': solnState
-    };
-
-    /* eslint-disable */
-    it('PLUGIN_CHANGE', () => {
-        expect(test_PLUGIN_CHANGE).toEqual(soln_PLUGIN_CHANGE);
+  const test_PLUGIN_CHANGE = trialTable(
+    initialState,
+    {
+      type: 'PLUGIN_CHANGE',
+      openTrial: '0',
+      pluginVal: 'Test_Plugin'
     });
-    /* eslint-enable */
+
+  const soln_PLUGIN_CHANGE = {
+    '0': solnState
+  };
+
+  /* eslint-disable */
+  it('PLUGIN_CHANGE', () => {
+    expect(test_PLUGIN_CHANGE).toEqual(soln_PLUGIN_CHANGE);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING SELECT_TRIAL
 // -------------------------
 const test_SELECT_TRIAL = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    const solnState = Object.assign({}, Timeline);
-    delete solnState.selected;
-    solnState.selected = true;
-    deepFreeze(solnState);
+  const solnState = Object.assign({}, Timeline);
+  delete solnState.selected;
+  solnState.selected = true;
+  deepFreeze(solnState);
 
-    const test_SELECT_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'SELECT_TRIAL',
-            id: '0'
-        });
-
-    const soln_SELECT_TRIAL = {
-        '0': solnState
-    };
-
-    /* eslint-disable */
-    it('SELECT_TRIAL', () => {
-        expect(test_SELECT_TRIAL).toEqual(soln_SELECT_TRIAL);
+  const test_SELECT_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'SELECT_TRIAL',
+      id: '0'
     });
-    /* eslint-enable */
+
+  const soln_SELECT_TRIAL = {
+    '0': solnState
+  };
+
+  /* eslint-disable */
+  it('SELECT_TRIAL', () => {
+    expect(test_SELECT_TRIAL).toEqual(soln_SELECT_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING DESELECT_TRIAL
 // -------------------------
 const test_DESELECT_TRIAL = () => {
-    const initialTimeline = Object.assign({}, Timeline);
-    // Set selected to 'true' for this test
-    delete initialTimeline.selected;
-    initialTimeline.selected = true;
+  const initialTimeline = Object.assign({}, Timeline);
+  // Set selected to 'true' for this test
+  delete initialTimeline.selected;
+  initialTimeline.selected = true;
 
-    const initialState = {
-        '0': initialTimeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': initialTimeline
+  };
+  deepFreeze(initialState);
 
-    const solnState = Object.assign({}, Timeline);
-    deepFreeze(solnState);
+  const solnState = Object.assign({}, Timeline);
+  deepFreeze(solnState);
 
-    const test_DESELECT_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'DESELECT_TRIAL',
-            id: '0'
-        });
-
-    const soln_DESELECT_TRIAL = {
-        '0': solnState
-    };
-
-    /* eslint-disable */
-    it('DESELECT_TRIAL', () => {
-        expect(test_DESELECT_TRIAL).toEqual(soln_DESELECT_TRIAL);
+  const test_DESELECT_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'DESELECT_TRIAL',
+      id: '0'
     });
-    /* eslint-enable */
+
+  const soln_DESELECT_TRIAL = {
+    '0': solnState
+  };
+
+  /* eslint-disable */
+  it('DESELECT_TRIAL', () => {
+    expect(test_DESELECT_TRIAL).toEqual(soln_DESELECT_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING ADD_TRIAL
 // -------------------------
 const test_ADD_TRIAL = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    const solnTimeline = Object.assign({}, Timeline);
-    deepFreeze(solnTimeline);
+  const solnTimeline = Object.assign({}, Timeline);
+  deepFreeze(solnTimeline);
 
-    // Get what will become the new trial
-    const solnTrial = Object.assign({}, Trial);
-    // Set the ID
-    delete solnTrial.id;
-    solnTrial.id = 2;
-    // Set the trial name
-    delete solnTrial.name;
-    solnTrial.name = 'Trial_1';
-    deepFreeze(solnTrial);
+  // Get what will become the new trial
+  const solnTrial = Object.assign({}, Trial);
+  // Set the ID
+  delete solnTrial.id;
+  solnTrial.id = 2;
+  // Set the trial name
+  delete solnTrial.name;
+  solnTrial.name = 'Trial_1';
+  deepFreeze(solnTrial);
 
-    const test_ADD_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'ADD_TRIAL',
-            id: 2
-        });
-
-    const soln_ADD_TRIAL = {
-        '0': solnTimeline,
-        '2': solnTrial
-    };
-
-    /* eslint-disable */
-    it('ADD_TRIAL', () => {
-        expect(test_ADD_TRIAL).toEqual(soln_ADD_TRIAL);
+  const test_ADD_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'ADD_TRIAL',
+      id: 2
     });
-    /* eslint-enable */
+
+  const soln_ADD_TRIAL = {
+    '0': solnTimeline,
+    '2': solnTrial
+  };
+
+  /* eslint-disable */
+  it('ADD_TRIAL', () => {
+    expect(test_ADD_TRIAL).toEqual(soln_ADD_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING REMOVE_TRIAL
 // -------------------------------
 const test_REMOVE_TRIAL = () => {
-    // Create an additional trial with a different name
-    const selectedTimeline = Object.assign({}, Timeline);
-    delete selectedTimeline.seleceted;
-    delete selectedTimeline.id;
-    selectedTimeline.selected = true;
-    selectedTimeline.id = 1;
-    const initialState = {
-        '0': Timeline,
-        '1': selectedTimeline
-    };
-    deepFreeze(initialState);
+  // Create an additional trial with a different name
+  const selectedTimeline = Object.assign({}, Timeline);
+  delete selectedTimeline.seleceted;
+  delete selectedTimeline.id;
+  selectedTimeline.selected = true;
+  selectedTimeline.id = 1;
+  const initialState = {
+    '0': Timeline,
+    '1': selectedTimeline
+  };
+  deepFreeze(initialState);
 
-    const test_REMOVE_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'REMOVE_TRIAL',
-            toRemove: [1]
-        }
-    );
-    const soln_REMOVE_TRIAL = {
-        '0': Timeline
-    };
+  const test_REMOVE_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'REMOVE_TRIAL',
+      toRemove: [1]
+    }
+  );
+  const soln_REMOVE_TRIAL = {
+    '0': Timeline
+  };
 
-    /* eslint-disable */
-    it('REMOVE_TRIAL', () => {
-        expect(test_REMOVE_TRIAL).toEqual(soln_REMOVE_TRIAL);
-    });
-    /* eslint-enable */
+  /* eslint-disable */
+  it('REMOVE_TRIAL', () => {
+    expect(test_REMOVE_TRIAL).toEqual(soln_REMOVE_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING ADD_CHILD_TRIAL
 // -------------------------------
 const test_ADD_CHILD_TRIAL = () => {
-    var index = Math.random(); 
+  var index = Math.random(); 
 
-    // Create an additional trial with a different name
-    const childTrial = Object.assign({}, Trial);
-    const initialTimeline = Object.assign({}, Timeline);
+  // Create an additional trial with a different name
+  const childTrial = Object.assign({}, Trial);
+  const initialTimeline = Object.assign({}, Timeline);
 
-    // Set the child trial properly
-    delete childTrial.parentTrial;
-    delete childTrial.id;
-    delete childTrial.name;
-    delete childTrial.ancestry;
-    childTrial.parentTrial = 0;
-    childTrial.id = index;
-    childTrial.name = 'Trial_1';
-    childTrial.ancestry = [
-        0
-    ];
+  // Set the child trial properly
+  delete childTrial.parentTrial;
+  delete childTrial.id;
+  delete childTrial.name;
+  delete childTrial.ancestry;
+  childTrial.parentTrial = 0;
+  childTrial.id = index;
+  childTrial.name = 'Trial_1';
+  childTrial.ancestry = [
+    0
+  ];
 
-    const newTimeline = [
-        ...initialTimeline.timeline,
-        index // The bracket indicate to use the value of the 
-                // variable index rather than the character string 'index'
-    ];
-    delete initialTimeline.timeline;
-    initialTimeline.timeline = newTimeline;
+  const newTimeline = [
+    ...initialTimeline.timeline,
+    index // The bracket indicate to use the value of the 
+    // variable index rather than the character string 'index'
+  ];
+  delete initialTimeline.timeline;
+  initialTimeline.timeline = newTimeline;
 
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    const test_ADD_CHILD_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'ADD_CHILD_TRIAL',
-            ID: 0,
-            index: index
-        }
-    );
+  const test_ADD_CHILD_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'ADD_CHILD_TRIAL',
+      ID: 0,
+      index: index
+    }
+  );
 
-    const soln_ADD_CHILD_TRIAL = {
-        '0': initialTimeline,
-        [index]: childTrial 
-    };
+  const soln_ADD_CHILD_TRIAL = {
+    '0': initialTimeline,
+    [index]: childTrial 
+  };
 
-    /* eslint-disable */
-    it('ADD_CHILD_TRIAL', () => {
-        expect(test_ADD_CHILD_TRIAL).toEqual(soln_ADD_CHILD_TRIAL);
-    });
-    /* eslint-enable */
+  /* eslint-disable */
+  it('ADD_CHILD_TRIAL', () => {
+    expect(test_ADD_CHILD_TRIAL).toEqual(soln_ADD_CHILD_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING REMOVE_CHILD_TRIAL
 // -------------------------------
 const test_REMOVE_CHILD_TRIAL = () => {
-    var index = Math.random();
 
-    // Create an additional trial with a different name
-    const childTrial = Object.assign({}, Trial);
-    const initialTimeline = Object.assign({}, Timeline);
+  var index = Math.random();
 
-    // Set the child trial properly
-    delete childTrial.parentTrial;
-    delete childTrial.id;
-    delete childTrial.name;
-    delete childTrial.ancestry;
-    childTrial.parentTrial = 0;
-    childTrial.id = index;
-    childTrial.name = 'Trial_1';
-    childTrial.ancestry = [
-        0
-    ];
+  // Create an additional trial with a different name
+  const childTrial = Object.assign({}, Trial);
+  const initialTimeline = Object.assign({}, Timeline);
 
-    const newTimeline = [
-        ...initialTimeline.timeline,
-        [index] // The bracket indicate to use the value of the 
-                // variable index rather than the character string 'index'
-    ];
-    delete initialTimeline.timeline;
-    initialTimeline.timeline = newTimeline;
+  // Set the child trial properly
+  delete childTrial.parentTrial;
+  delete childTrial.id;
+  delete childTrial.name;
+  delete childTrial.ancestry;
+  childTrial.parentTrial = 0;
+  childTrial.id = index;
+  childTrial.name = 'Trial_1';
+  childTrial.ancestry = [
+    0
+  ];
 
-    const initialState = {
-        '0': initialTimeline,
-        [index]: childTrial 
-    };
-    deepFreeze(initialState);
+  const newTimeline = [
+    ...initialTimeline.timeline,
+    index // The bracket indicate to use the value of the 
+    // variable index rather than the character string 'index'
+  ];
+  delete initialTimeline.timeline;
+  initialTimeline.timeline = newTimeline;
 
-    const test_REMOVE_CHILD_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'REMOVE_CHILD_TRIAL',
-            ID: index
-        }
-    );
+  const initialState = {
+    '0': initialTimeline,
+    [index]: childTrial 
+  };
+  deepFreeze(initialState);
 
-    const soln_REMOVE_CHILD_TRIAL = {
-        '0': Timeline
-    };
+  const test_REMOVE_CHILD_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'REMOVE_CHILD_TRIAL',
+      ID: index
+    }
+  );
 
-    /* eslint-disable */
-    it('REMOVE_CHILD_TRIAL', () => {
-        expect(test_REMOVE_CHILD_TRIAL).toEqual(soln_REMOVE_CHILD_TRIAL);
-    });
-    /* eslint-enable */
+  const soln_REMOVE_CHILD_TRIAL = {
+    '0': Timeline
+  };
+
+  /* eslint-disable */
+  it('REMOVE_CHILD_TRIAL', () => {
+    expect(test_REMOVE_CHILD_TRIAL).toEqual(soln_REMOVE_CHILD_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING DUPLICATE_TRIAL
 // -------------------------
 const test_DUPLICATE_TRIAL = () => {
-    // Get what will become the new trial
-    // give it some unique properties to check 
-    // that they are duplicated
-    const solnTrial = Object.assign({}, Trial);
 
-    // Set the ID
-    delete solnTrial.id;
-    solnTrial.id = 2;
-    // Set the trial name
-    delete solnTrial.name;
-    solnTrial.name = 'Trial_1';
-    // Set the pluginValue
-    delete solnTrial.pluginVal;
-    solnTrial.pluginval = 'testVal';
-    // Set the trialType
-    delete solnTrial.trialType;
-    solnTrial.trialType = 'testType';
+  // Get what will become the new trial
+  // give it some unique properties to check 
+  // that they are duplicated
+  const solnTrial = Object.assign({}, Trial);
 
-    deepFreeze(solnTrial);
+  // Set the ID
+  delete solnTrial.id;
+  solnTrial.id = 2;
+  // Set the trial name
+  delete solnTrial.name;
+  solnTrial.name = 'Trial_1';
+  // Set the pluginValue
+  delete solnTrial.pluginVal;
+  solnTrial.pluginval = 'testVal';
+  // Set the trialType
+  delete solnTrial.trialType;
+  solnTrial.trialType = 'testType';
 
-    const initialState = {
-        '2': solnTrial 
-    };
-    deepFreeze(initialState);
-    // Make a copy to compare against
-    const solnTrialDup = Object.assign({}, solnTrial);
-    delete solnTrialDup.name;
-    solnTrialDup.name = 'newName';
+  deepFreeze(solnTrial);
 
-    delete solnTrialDup.id;
-    solnTrialDup.id = 3;
+  const initialState = {
+    '2': solnTrial 
+  };
+  deepFreeze(initialState);
+  // Make a copy to compare against
+  const solnTrialDup = Object.assign({}, solnTrial);
+  delete solnTrialDup.name;
+  solnTrialDup.name = 'newName';
 
+  delete solnTrialDup.id;
+  solnTrialDup.id = 3;
 
-    const test_DUPLICATE_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'DUPLICATE_TRIAL',
-            index: 3,
-            name: 'newName',
-            copyFrom: 2
-        });
-
-    deepFreeze(test_DUPLICATE_TRIAL);
-
-    const soln_DUPLICATE_TRIAL = {
-        '2': solnTrial,
-        '3': solnTrialDup
-    };
-
-
-    /* eslint-disable */
-    it('DUPLICATE_TRIAL', () => {
-        expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
+  const test_DUPLICATE_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'DUPLICATE_TRIAL',
+      index: 3,
+      name: 'newName',
+      copyFrom: 2
     });
+
+  deepFreeze(test_DUPLICATE_TRIAL);
+
+  const soln_DUPLICATE_TRIAL = {
+    '2': solnTrial,
+    '3': solnTrialDup
+  };
+
+  /* eslint-disable */
+  it('DUPLICATE_TRIAL', () => {
+    expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
+  });
+
 };
 
 //  TESTING MAKE_TIMELINE
 // -------------------------------
 const test_MAKE_TIMELINE = () => {
-    const initialState = {
-        '0': Trial
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Trial
+  };
+  deepFreeze(initialState);
 
-    const test_MAKE_TIMELINE = trialTable(
-        initialState,
-        {
-            type: 'MAKE_TIMELINE',
-            openTrial: 0
-        }
-    );
+  const test_MAKE_TIMELINE = trialTable(
+    initialState,
+    {
+      type: 'MAKE_TIMELINE',
+      openTrial: 0
+    }
+  );
 
-    const soln_MAKE_TIMELINE = {
-        '0': Timeline
-    };
+  const soln_MAKE_TIMELINE = {
+    '0': Timeline
+  };
 
-    /* eslint-disable */
-    it('MAKE_TIMELINE', () => {
-        expect(test_MAKE_TIMELINE).toEqual(soln_MAKE_TIMELINE);
-    });
-    /* eslint-enable */
+  /* eslint-disable */
+  it('MAKE_TIMELINE', () => {
+    expect(test_MAKE_TIMELINE).toEqual(soln_MAKE_TIMELINE);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING DUPLICATE_CHILD_TRIAL
 // -------------------------
 const test_DUPLICATE_CHILD_TRIAL = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
 
-    const test_CHANGE_NAME = trialTable(
-        initialState,
-        {
-            type: 'CHANGE_NAME',
-            openTrial: '0',
-            name: 'New_Name'
-        }
-    );
+  // Get what will become the new trial
+  // give it some unique properties to check 
+  // that they are duplicated
+  const solnTrial = Object.assign({}, Trial);
 
-    var newTimeline = Object.assign({}, Timeline);
-    delete newTimeline.name;
-    newTimeline.name = "New_Name";
+  // Set the ID
+  delete solnTrial.id;
+  solnTrial.id = 2;
 
-    const soln_CHANGE_NAME = {
-        '0': newTimeline
-    };
+  // Set the trial name
+  delete solnTrial.name;
+  solnTrial.name = 'Trial_1';
 
-    /* eslint-disable */
-    it('CHANGE_NAME', () => {
-        expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
+  // Set the pluginValue
+  delete solnTrial.pluginVal;
+  solnTrial.pluginval = 'testVal';
+
+  // Set the trialType
+  delete solnTrial.trialType;
+  solnTrial.trialType = 'testType';
+
+  deepFreeze(solnTrial);
+
+  // Make the trial that acts as the parent
+  const parentTrial = Object.assign({}, Timeline);
+
+  delete parentTrial.timeline;
+  parentTrial.timeline = [ 2 ];
+
+  deepFreeze(parentTrial);
+
+
+  const initialState = {
+    '0': parentTrial,
+    '2': solnTrial
+  };
+
+  deepFreeze(initialState);
+
+  // Make a copy to compare against
+  const solnTrialDup = Object.assign({}, solnTrial);
+  delete solnTrialDup.name;
+  solnTrialDup.name = 'newName';
+
+  delete solnTrialDup.id;
+  solnTrialDup.id = 3;
+
+
+  // Make a copy of the parent to compare against
+  const solnParentTrial = Object.assign({}, parentTrial);
+
+  solnParentTrial.timeline = [
+    ...solnParentTrial.timeline.slice(0, 1),
+    solnTrialDup.id
+  ]
+
+  const test_DUPLICATE_CHILD_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'DUPLICATE_CHILD_TRIAL',
+      index: 3,
+      name: 'newName',
+      copyFrom: 2,
+      parentTrial: parentTrial.id
     });
-    /* eslint-enable */
-};
 
+  deepFreeze(test_DUPLICATE_CHILD_TRIAL);
+
+  const soln_DUPLICATE_CHILD_TRIAL = {
+    '0': solnParentTrial,
+    '2': solnTrial,
+    '3': solnTrialDup,
+  };
+
+
+  /* eslint-disable */
+  it('DUPLICATE_CHILD_TRIAL', () => {
+    expect(test_DUPLICATE_CHILD_TRIAL).toEqual(soln_DUPLICATE_CHILD_TRIAL);
+  });
+};
 
 //  TESTING MAKE_TRIAL
 // -------------------------------
 const test_MAKE_TRIAL = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    const test_MAKE_TRIAL = trialTable(
-        initialState,
-        {
-            type: 'MAKE_TRIAL',
-            openTrial: 0
-        }
-    );
+  const test_MAKE_TRIAL = trialTable(
+    initialState,
+    {
+      type: 'MAKE_TRIAL',
+      openTrial: 0
+    }
+  );
 
-    const soln_MAKE_TRIAL = {
-        '0': Trial
-    };
+  const soln_MAKE_TRIAL = {
+    '0': Trial
+  };
 
-    /* eslint-disable */
-    it('MAKE_TRIAL', () => {
-        expect(test_MAKE_TRIAL).toEqual(soln_MAKE_TRIAL);
-    });
-    /* eslint-enable */
+  /* eslint-disable */
+  it('MAKE_TRIAL', () => {
+    expect(test_MAKE_TRIAL).toEqual(soln_MAKE_TRIAL);
+  });
+  /* eslint-enable */
 };
 
 //  TESTING CHANGE_NAME
 // -------------------------------
 const test_CHANGE_NAME = () => {
-    const initialState = {
-        '0': Timeline
-    };
-    deepFreeze(initialState);
 
-    const test_CHANGE_NAME = trialTable(
-        initialState,
-        {
-            type: 'CHANGE_NAME',
-            openTrial: '0',
-            name: 'New_Name'
-        }
-    );
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
 
-    var newTimeline = Object.assign({}, Timeline);
-    delete newTimeline.name;
-    newTimeline.name = "New_Name";
+  const test_CHANGE_NAME = trialTable(
+    initialState,
+    {
+      type: 'CHANGE_NAME',
+      openTrial: '0',
+      name: 'New_Name'
+    }
+  );
 
-    const soln_CHANGE_NAME = {
-        '0': newTimeline
-    };
+  var newTimeline = Object.assign({}, Timeline);
+  delete newTimeline.name;
+  newTimeline.name = "New_Name";
 
-    /* eslint-disable */
-    it('CHANGE_NAME', () => {
-        expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
-    });
+  const soln_CHANGE_NAME = {
+    '0': newTimeline
+  };
+
+  /* eslint-disable */
+  it('CHANGE_NAME', () => {
+    expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
+  });
+  /* eslint-enable */
+};
+
+//  TESTING OPEN_CHILDREN
+// -------------------------------
+const test_OPEN_CHILDREN = () => {
+  const startTimeline = Object.assign({}, Timeline);
+  delete startTimeline.timelineOpen;
+  startTimeline.timelineOpen = false;
+  const initialState = {
+    '0': startTimeline
+  };
+  deepFreeze(initialState);
+
+  const test_OPEN_CHILDREN = trialTable(
+    initialState,
+    {
+      type: 'OPEN_CHILDREN',
+      ID: '0',
+    }
+  );
+
+  var newTimeline = Object.assign({}, Timeline);
+  delete newTimeline.timelineOpen;
+  newTimeline.timelineOpen = true;
+
+  const soln_OPEN_CHILDREN = {
+    '0': newTimeline
+  };
+  deepFreeze(newTimeline);
+
+  /* eslint-disable */
+  it('OPEN_CHILDREN', () => {
+    expect(test_OPEN_CHILDREN).toEqual(soln_CHANGE_NAME);
+  });
+  /* eslint-enable */
+};
+
+//  TESTING CLOSE_CHILDREN
+// -------------------------------
+const test_CLOSE_CHILDREN = () => {
+  const initialState = {
+    '0': Timeline
+  };
+  deepFreeze(initialState);
+
+  const test_CLOSE_CHILDREN = trialTable(
+    initialState,
+    {
+      type: 'CLOSE_CHILDREN',
+      ID: '0',
+    }
+  );
+
+  var newTimeline = Object.assign({}, Timeline);
+  delete newTimeline.timelineOpen;
+  newTimeline.timelineOpen = false;
+
+  const soln_CLOSE_CHILDREN = {
+    '0': newTimeline
+  };
+  deepFreeze(newTimeline);
+
+  /* eslint-disable */
+  it('CLOSE_CHILDREN', () => {
+    expect(test_CLOSE_CHILDREN).toEqual(soln_CHANGE_NAME);
+  });
+  /* eslint-enable */
 };
 
 // eslint-disable-next-line no-undef
 describe('Testing trialTableReducers', () => {
-    test_INITIAL_STATE();
-    test_SET_STATE();
-    test_PLUGIN_CHANGE();
-    test_SELECT_TRIAL();
-    test_DESELECT_TRIAL();
-    test_ADD_TRIAL();
-    test_REMOVE_TRIAL();
-    test_ADD_CHILD_TRIAL();
-    test_REMOVE_CHILD_TRIAL();
-    test_DUPLICATE_TRIAL();
-    test_DUPLICATE_CHILD_TRIAL();
-    test_MAKE_TIMELINE();
-    test_MAKE_TRIAL();
-    test_CHANGE_NAME();
+  test_INITIAL_STATE();
+  test_SET_STATE();
+  test_PLUGIN_CHANGE();
+  test_SELECT_TRIAL();
+  test_DESELECT_TRIAL();
+  test_ADD_TRIAL();
+  test_REMOVE_TRIAL();
+  test_ADD_CHILD_TRIAL();
+  test_REMOVE_CHILD_TRIAL();
+  test_DUPLICATE_TRIAL();
+  test_DUPLICATE_CHILD_TRIAL();
+  test_MAKE_TIMELINE();
+  test_MAKE_TRIAL();
+  test_CHANGE_NAME();
 });

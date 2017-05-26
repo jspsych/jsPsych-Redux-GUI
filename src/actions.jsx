@@ -121,7 +121,6 @@ export const actionDuplicateTrial = (store) => {
     while(state.trialTable[index.toString()] != undefined){
       index = Math.random();
     }
-
     // If the trial being copied is in the top level
     if (-1 <  state.trialOrder.indexOf(toCopy))
     {
@@ -356,8 +355,8 @@ export const actionMoveTrial = (store) => {
         index: newPos
       });
     }
+ // Reset over and dragged 
 
-    // Reset over and dragged 
     store.dispatch({
       type: 'RESET_OVER'
     });
@@ -369,10 +368,29 @@ export const actionMoveTrial = (store) => {
 //Changes value of plugin parameters
 export const actionParamChange = (store, val) => {
   actionArchiveState(store);
+
   var state = store.getState();
 
   store.dispatch({
     type: 'PARAM_CHANGE',
     paramVal: val
+  });
+};
+// Sets the openTimeline value for a timeline trial to false
+// Affects: trialTable
+export const actionCloseChildren = (store, val) => {
+  actionArchiveState(store);
+  store.dispatch({
+    type: 'CLOSE_CHILDREN',
+    ID: val
+  });
+};
+// Sets the openTimeline value for a timeline trial to true
+// Affects: trialTable
+export const actionOpenChildren = (store, val) => {
+  actionArchiveState(store);
+  store.dispatch({
+    type: 'OPEN_CHILDREN',
+    ID: val
   });
 };
