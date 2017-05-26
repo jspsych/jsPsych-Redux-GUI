@@ -91,19 +91,16 @@ class TrialItem extends React.Component {
             actionToggleSelected(this.props.store, id);
     }
     handleAddChild(id) {
-        console.log("Action Add Child", id)
         actionAddChild(this.props.store, id);
         preventFlag = true;
         return;
     }
     handleRemoveChild(id){
-        console.log("Action Remove Child", id)
         actionRemoveChild(this.props.store, id);
         preventFlag = true;
         return;
     }
     render (){
-                console.log("TrialItem: ", this.props);
         return (
         // Each trial item is a ListItem with various 
         // additional properties
