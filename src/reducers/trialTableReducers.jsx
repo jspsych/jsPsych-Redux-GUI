@@ -300,7 +300,7 @@ const trialTable = (state = { Trial }, action) => {
     case 'INSERT_TRIAL_IN_TIMELINE':
         var newState = Object.assign({}, state);
             // If the trial is being moved to the top level
-            if(newState.trialTable[action.toPos].parentTrial === -1) {
+            if(newState[action.toPos].parentTrial === -1) {
 
                 // Update the properties of the trial
                 var newTrial = Object.assign({}, state[action.fromPos]);
@@ -316,15 +316,17 @@ const trialTable = (state = { Trial }, action) => {
             }
             else // Otherwise the trial is being moved to a new parent
             {
-                var parent = newState.trialTable[action.toPos].parentTrial;
-                var oldTimeline = newState.trialTable[parent].timeline;
+                var parent = newState[action.toPos].parentTrial;
+                var oldTimeline = newState[parent].timeline;
                 var newTimeline = [
                     ...oldTimeline.slice(0, oldTimeline.indexOf(action.toPos)),
                     action.fromPos,
                     ...oldTimeline.slice(oldTimeline.indexOf(action.toPos))
                 ];
+
                 // Update the new Parent
-                var newParent = Object.assign({}, newState.trialTable[parent]);
+                var newParent = Object.assign({}, newState[parent]);
+
                 delete newParent['timeline'];
                 newParent['timeline'] = newTimeline;
 
@@ -333,19 +335,21 @@ const trialTable = (state = { Trial }, action) => {
                 delete newTrial['parentTrial'];
                 delete newTrial['ancestry'];
                 newTrial['parentTrial'] = parent;
+
+                // Add the parent to the child's ancestry
                 newTrial['ancestry'] = [
                     parent,
                     ...newParent.ancestry
                 ];
 
-                // Update the trialTable
+                // Update the
                 delete newState[action.fromPos];
                 delete newState[parent];
                 newState[action.fromPos] = newTrial;
                 newState[parent] = newParent;
             }
-
             return newState;
+
         case 'MAKE_TRIAL':
             var newState = Object.assign({}, state);
 

@@ -359,8 +359,8 @@ export const actionMoveTrial = (store) => {
       // This reducer affects trialTable
       store.dispatch({
         type: 'INSERT_TRIAL_IN_TIMELINE',
-        toPos: state.dragged,
-        fromPos: state.over,
+        toPos: state.over,
+        fromPos: state.dragged,
         index: newPos
       });
     }
