@@ -312,28 +312,30 @@ export const actionSetOver = (store, over) =>{
 export const actionMoveTrial = (store) => {
     actionArchiveState(store);
     var state = store.getState();
-    var found = state.trialTable[state.over].ancestry.indexOf(state.dragged);
-    if (state.dragged === state.over || found) {
-        // Allow printing to the console
-        // eslint-disable-next-line no-console
-        console.log ('Illegal move of parent into child');
-    } else {
-        store.dispatch({
-            type: 'MOVE_TRIAL',
-            fromPos: state.dragged,
-            toPos: state.over
-        });
+  var found = state.trialTable[state.over].ancestry.indexOf(state.dragged);
+  if (state.dragged === state.over || found) {
+    // Allow printing to the console
+    // eslint-disable-next-line no-console
+    console.log ('Illegal move of parent into child');
+  } else {
+    store.dispatch({
+      type: 'MOVE_TRIAL',
+      fromPos: state.dragged,
+      toPos: state.over
+    });
 
-        // If the trial is being moved to the top level
-        if(state.trialTable[state.over].parentTrial === -1) {
-            var newPos = state.trialOrder.indexOf(state.over);
-            store.dispatch({
-                type: 'INSERT_INTO_TRIALORDER',
-                id: state.over,
-                insertIndex: newPos
-            });
-        }
-        // reset over and dragged 
+    // If the trial is being moved to the top level
+    if(state.trialTable[state.over].parentTrial === -1) {
+      var newPos = state.trialOrder.indexOf(state.over);
+      store.dispatch({
+        type: 'ADD_TRIAL_AT_INDEX',
+        id: state.dragged,
+        index: newPos
+      });
+    }
+    else {
+    }
+    // reset over and dragged 
         store.dispatch({
             type: 'RESET_OVER'
         });
