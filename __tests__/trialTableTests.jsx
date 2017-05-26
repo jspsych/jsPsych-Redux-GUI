@@ -399,6 +399,8 @@ const test_DUPLICATE_TRIAL = () => {
     /* eslint-disable */
     it('DUPLICATE_TRIAL', () => {
         expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
+    });
+}
 
 //  TESTING MAKE_TIMELINE
 // -------------------------------
@@ -432,6 +434,7 @@ const test_MAKE_TIMELINE = () => {
 // -------------------------
 const test_DUPLICATE_CHILD_TRIAL = () => {
 
+}
 
     // Get what will become the new trial
     // give it some unique properties to check 
@@ -514,7 +517,6 @@ const test_DUPLICATE_CHILD_TRIAL = () => {
 //  TESTING MAKE_TRIAL
 // -------------------------------
 const test_MAKE_TRIAL = () => {
-
     const initialState = {
         '0': Timeline
     };
@@ -542,7 +544,6 @@ const test_MAKE_TRIAL = () => {
 //  TESTING CHANGE_NAME
 // -------------------------------
 const test_CHANGE_NAME = () => {
-
     const initialState = {
         '0': Timeline
     };
