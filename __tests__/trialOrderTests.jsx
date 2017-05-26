@@ -70,7 +70,6 @@ const test_SET_STATE = () => {
 //  Test all the different situations where 
 //  ADD_TRIAL can be called here
 const test_ADD_TRIAL = () => {
-
     // ID of the trial to be added
     var id = 1;
 
@@ -169,7 +168,7 @@ const test_REMOVE_TRIAL = () => {
 // -------------------------
 const test_DUPLICATE_TRIAL = () => {
     // Get the list of trials to remove
-    const initialState = [ "1", "2", "3", "4"];
+    const initialState = [ 1, 2, 3, 4];
     deepFreeze(initialState);
 
     const test_DUPLICATE_TRIAL = trialOrder( 

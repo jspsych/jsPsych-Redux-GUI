@@ -57,7 +57,6 @@ export const actionRestoreFutureState = (store) => {
 // Affects: trialTable, openTrial
 export const actionToggleSelected = (store, trialID) => {
   actionArchiveState(store);
-  //console.log("Select", store)
   var state = store.getState();
 
   if (state.trialTable[trialID].selected){
@@ -91,7 +90,6 @@ export const actionAddTrial = (store) => {
     index = Math.random();
   }
 
-  //console.log ("Add", store)
   store.dispatch({
     type: 'ADD_TRIAL',
     id: index
@@ -127,7 +125,6 @@ export const actionDuplicateTrial = (store) => {
     // If the trial being copied is in the top level
     if (-1 <  state.trialOrder.indexOf(toCopy))
     {
-      console.log ('Call Dup');
       // Call the reducer
       store.dispatch({
         type: 'DUPLICATE_TRIAL',
@@ -139,7 +136,6 @@ export const actionDuplicateTrial = (store) => {
     // Otherwise the trial is in someone's timeline
     else 
     {
-      console.log("Call child sup");
       // Call the reducer
       store.dispatch({
         type: 'DUPLICATE_CHILD_TRIAL',
@@ -306,7 +302,6 @@ export const actionMoveTrial = (store) => {
   var state = store.getState();
   // If state.dragged isn't in the ancestry found will equal -1
   var found = state.trialTable[state.over].ancestry.indexOf(state.dragged);
-  console.log("Found", found);
   if (state.dragged === state.over || -1 < found) {
     // Allow printing to the console
     // eslint-disable-next-line no-console
@@ -321,7 +316,6 @@ export const actionMoveTrial = (store) => {
 
     // If the trial is being moved from the top level
     if (state.trialTable[state.dragged].parentTrial === -1) {
-      console.log("Call trialorder")
       store.dispatch({
         type: 'REMOVE_TRIAL_FROM_TRIALORDER',
         toRemove: [ state.dragged ] // Pass as a list b/c the reducer also handles removing multiple trials
@@ -329,7 +323,6 @@ export const actionMoveTrial = (store) => {
     }
     // Otherwise the trial is in a timeline
     else {
-      console.log("Call timelien")
       store.dispatch({
         type: 'REMOVE_TRIAL_FROM_TIMELINE',
         ID: state.dragged,

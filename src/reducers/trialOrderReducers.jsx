@@ -1,7 +1,7 @@
 const trialOrder = (state = [], action) => {
     switch (action.type) {
     case 'INITIAL_STATE':
-        var newState = [ "0" ];
+        var newState = [ 0 ];
         return newState;
     case 'SET_STATE':
         var newState = [
@@ -17,7 +17,7 @@ const trialOrder = (state = [], action) => {
         // Insert the copy after the original
         var newOrder = [
             ...state.slice(0, insertIndex+1),
-            String(action.index),
+            action.index,
             ...state.slice(insertIndex+1)
         ];
 
@@ -26,14 +26,14 @@ const trialOrder = (state = [], action) => {
     case 'ADD_TRIAL':
         var newState = [
             ...state,
-            String(action.id)
+            action.id
         ];
         return newState;
 
     case 'INSERT_TRIAL_INTO_TRIALORDER':
         var newState = [
             ...state.slice(0, action.index),
-            String(action.id),
+            action.id,
             ...state.slice(action.index)
         ];
         console.log("NEW_STATE", newState)
@@ -54,7 +54,7 @@ const trialOrder = (state = [], action) => {
         for(var i = 0; i < action.toRemove.length; i++){
 
             var trial = action.toRemove[i];
-            var index = newState.indexOf(String(trial));
+            var index = newState.indexOf(trial);
 
             // IF the trial is in the top level
                 newState = [
@@ -65,7 +65,7 @@ const trialOrder = (state = [], action) => {
 
         // If all the trial are removed add the default trial
         if (newState.length == 0){
-            newState = [ "0" ];
+            newState = [ 0 ];
         }
         console.log("Remove trila", newState)
         return newState;

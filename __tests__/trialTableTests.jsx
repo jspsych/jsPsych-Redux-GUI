@@ -312,7 +312,7 @@ const test_REMOVE_CHILD_TRIAL = () => {
 
     const newTimeline = [
         ...initialTimeline.timeline,
-        index // The bracket indicate to use the value of the 
+        [index] // The bracket indicate to use the value of the 
                 // variable index rather than the character string 'index'
     ];
     delete initialTimeline.timeline;
@@ -399,11 +399,12 @@ const test_DUPLICATE_TRIAL = () => {
     /* eslint-disable */
     it('DUPLICATE_TRIAL', () => {
         expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
+    });
+};
 
 //  TESTING MAKE_TIMELINE
 // -------------------------------
 const test_MAKE_TIMELINE = () => {
-
     const initialState = {
         '0': Trial
     };
@@ -431,90 +432,39 @@ const test_MAKE_TIMELINE = () => {
 //  TESTING DUPLICATE_CHILD_TRIAL
 // -------------------------
 const test_DUPLICATE_CHILD_TRIAL = () => {
-
-
-    // Get what will become the new trial
-    // give it some unique properties to check 
-    // that they are duplicated
-    const solnTrial = Object.assign({}, Trial);
-
-    // Set the ID
-    delete solnTrial.id;
-    solnTrial.id = 2;
-
-    // Set the trial name
-    delete solnTrial.name;
-    solnTrial.name = 'Trial_1';
-
-    // Set the pluginValue
-    delete solnTrial.pluginVal;
-    solnTrial.pluginval = 'testVal';
-
-    // Set the trialType
-    delete solnTrial.trialType;
-    solnTrial.trialType = 'testType';
-
-    deepFreeze(solnTrial);
-
-    // Make the trial that acts as the parent
-    const parentTrial = Object.assign({}, Timeline);
-
-    delete parentTrial.timeline;
-    parentTrial.timeline = [ 2 ];
-
-    deepFreeze(parentTrial);
-
-
     const initialState = {
-        '0': parentTrial,
-        '2': solnTrial
+        '0': Timeline
     };
-
     deepFreeze(initialState);
 
-    // Make a copy to compare against
-    const solnTrialDup = Object.assign({}, solnTrial);
-    delete solnTrialDup.name;
-    solnTrialDup.name = 'newName';
-
-    delete solnTrialDup.id;
-    solnTrialDup.id = 3;
-
-
-    // Make a copy of the parent to compare against
-    const solnParentTrial = Object.assign({}, parentTrial);
-        
-    solnParentTrial.timeline = [
-        ...solnParentTrial.timeline.slice(0, 1),
-        solnTrialDup.id
-    ]
-
-    const test_DUPLICATE_CHILD_TRIAL = trialTable(
+    const test_CHANGE_NAME = trialTable(
         initialState,
         {
-            type: 'DUPLICATE_CHILD_TRIAL',
-            index: 3,
-            name: 'newName',
-            copyFrom: 2,
-            parentTrial: parentTrial.id
-        });
+            type: 'CHANGE_NAME',
+            openTrial: '0',
+            name: 'New_Name'
+        }
+    );
 
-    deepFreeze(test_DUPLICATE_CHILD_TRIAL);
+    var newTimeline = Object.assign({}, Timeline);
+    delete newTimeline.name;
+    newTimeline.name = "New_Name";
 
-    const soln_DUPLICATE_CHILD_TRIAL = {
-        '0': solnParentTrial,
-        '2': solnTrial,
-        '3': solnTrialDup,
+    const soln_CHANGE_NAME = {
+        '0': newTimeline
     };
 
-
     /* eslint-disable */
-    it('DUPLICATE_CHILD_TRIAL', () => {
-        expect(test_DUPLICATE_CHILD_TRIAL).toEqual(soln_DUPLICATE_CHILD_TRIAL);
+    it('CHANGE_NAME', () => {
+        expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
+    });
+    /* eslint-enable */
+};
+
+
 //  TESTING MAKE_TRIAL
 // -------------------------------
 const test_MAKE_TRIAL = () => {
-
     const initialState = {
         '0': Timeline
     };
@@ -542,7 +492,6 @@ const test_MAKE_TRIAL = () => {
 //  TESTING CHANGE_NAME
 // -------------------------------
 const test_CHANGE_NAME = () => {
-
     const initialState = {
         '0': Timeline
     };
@@ -588,4 +537,5 @@ describe('Testing trialTableReducers', () => {
     test_MAKE_TIMELINE();
     test_MAKE_TRIAL();
     test_CHANGE_NAME();
+
 });
