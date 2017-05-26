@@ -13,6 +13,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import {
     actionToggleSelected, actionMoveTrial, actionRemoveChild, 
     actionSetDragged, actionSetOver, actionAddChild,
+    actionOpenChildren, actionCloseChildren
     } from 'actions';
 
 const openPluginFAB = {
@@ -88,93 +89,116 @@ class TrialItem extends React.Component {
             preventFlag = false;
             return;
         } else
-            actionToggleSelected(this.props.store, id);
+        actionToggleSelected(this.props.store, id);
     }
-    handleAddChild(id) {
-        console.log("Action Add Child", id)
-        actionAddChild(this.props.store, id);
-        preventFlag = true;
-        return;
-    }
-    handleRemoveChild(id){
-        console.log("Action Remove Child", id)
-        actionRemoveChild(this.props.store, id);
-        preventFlag = true;
-        return;
-    }
-    render (){
-                console.log("TrialItem: ", this.props);
-        return (
-        // Each trial item is a ListItem with various 
-        // additional properties
-       <ListItem
-            key={this.props.trial}
-            id={this.props.trial}
-            draggable={true}
-            onDragEnd={this.dragEnd.bind(this)}
-            onDragStart={this.dragStart.bind(this)}
-            insetChildren={true}
-            initiallyOpen={true}
-            style={
-                // If this is the trial open in the pluginDrawer highlight it
-                this.props.state.openTrial === this.props.trial ?
-                Object.assign(
-                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
-                    openPluginFAB
-                ) :
-                Object.assign(
-                    {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
-                    closedPluginFAB
-                )
+  handleAddChild(id) {
+    actionAddChild(this.props.store, id);
+    preventFlag = true;
+    return;
+  }
+  handleRemoveChild(id){
+    actionRemoveChild(this.props.store, id);
+    preventFlag = true;
+    return;
+  }
+  handleOpenTimeline(id){
+    actionOpenChildren(this.props.store, id);
+    preventFlag = true;
+    return;
+  }
+  handleCloseTimeline(id){
+    actionCloseChildren(this.props.store, id);
+    preventFlag = true;
+    return;
+  }
+  render (){
+    console.log("TrialItem: ", this.props);
+    return (
+      // Each trial item is a ListItem with various 
+      // additional properties
+      <ListItem
+        key={this.props.trial}
+        id={this.props.trial}
+        draggable={true}
+        onDragEnd={this.dragEnd.bind(this)}
+        onDragStart={this.dragStart.bind(this)}
+        insetChildren={true}
+        initiallyOpen={true}
+        style={
+        // If this is the trial open in the pluginDrawer highlight it
+        this.props.state.openTrial === this.props.trial ?
+        Object.assign(
+        {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
+        openPluginFAB
+        ) :
+        Object.assign(
+        {marginLeft: this.props.state.trialTable[this.props.trial].ancestry.length * 20},
+        closedPluginFAB
+        )
+        }
+        rightIcon={
+        this.props.state.trialTable[this.props.trial].isTimeline ?
+        <IconMenu
+          style={{
+          position: 'absolute',
+          marginTop: window.innerHeight * 0.0001,
+          marginRight: window.innerHeight * 0.025,
+          }}
+          iconButtonElement={
+          <IconButton>
+            <MoreVertIcon />
+          </IconButton>
+          }
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+        >
+          {
+          this.props.state.trialTable[this.props.trial].isTimeline ?
+          <div>
+            <MenuItem
+              primaryText="Add Child (Ctrl-C)"
+              rightIcon={<ContentAdd />}
+              onTouchTap={this.handleAddChild.bind(this, this.props.trial)}
+            /> 
+            <Divider />
+            {
+            this.props.state.trialTable[this.props.trial].timelineOpen ?
+            <MenuItem 
+              primaryText="Close Timeline"
+              rightIcon={<ContentRemove />}
+              onTouchTap={this.handleCloseTimeline.bind(this, this.props.trial)}
+            /> :
+              <MenuItem 
+                primaryText="Open Timeline"
+                rightIcon={<ContentAdd />}
+              onTouchTap={this.handleOpenTimeline.bind(this, this.props.trial)}
+              />  
             }
-            rightIcon={
-                    this.props.state.trialTable[this.props.trial].isTimeline ?
-               <IconMenu
-                   style={{
-                        position: 'absolute',
-                        marginTop: window.innerHeight * 0.0001,
-                        marginRight: window.innerHeight * 0.025,
-                   }}
-                   iconButtonElement={
-                       <IconButton>
-                           <MoreVertIcon />
-                       </IconButton>
-                   }
-                   anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                   targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                >
-                    {
-                        this.props.state.trialTable[this.props.trial].isTimeline ?
-                        <MenuItem
-                            primaryText="Add Child (Ctrl-C)"
-                            rightIcon={<ContentAdd />}
-                            onTouchTap={this.handleAddChild.bind(this, this.props.trial)}
-                        /> : <div/>
-                      }
-                      <Divider />
-                      {
-                        this.props.state.trialTable[this.props.trial].parent !== -1 ?
-                        <MenuItem
-                            primaryText="Remove This Trial"
-                            rightIcon={<ContentRemove />}
-                            onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
-                        />: <div/>
-                      }
-                  </IconMenu> :
-                           <ContentRemove
-                               onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
-                           />
+            </div>: <div/>
             }
-            primaryText={
-                // Ensure the trials can be dropped on the text
-                <div 
-                    id={this.props.trial}>
-                    {this.props.state.trialTable[this.props.trial].name}
-                </div>
+          <Divider />
+          {
+            this.props.state.trialTable[this.props.trial].parent !== -1 ?
+            <MenuItem
+              primaryText="Remove This Trial"
+              rightIcon={<ContentRemove />}
+            onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
+            />: <div/>
             }
-            leftCheckbox={
-                <CheckBox
-                    checked={this.props.state.trialTable[this.props.trial].selected}
+          </IconMenu> :
+          <ContentRemove
+            onTouchTap={this.handleRemoveChild.bind(this, this.props.trial)}
+          />
+          }
+      primaryText={
+        // Ensure the trials can be dropped on the text
+        <div 
+          id={this.props.trial}>
+          {this.props.state.trialTable[this.props.trial].name}
+        </div>
+        }
+      leftCheckbox={
+        <CheckBox checked={this.props.state.trialTable[this.props.trial].selected}
                     labelPosition='right'
                     onCheck={this.handleTouchTap.bind(this, this.props.trial)}
                 />
@@ -183,7 +207,7 @@ class TrialItem extends React.Component {
                 // If this is a timeline
               (this.props.state.trialTable[this.props.trial].isTimeline &&
                 // And its timeline is open
-              this.props.state.trialTable[this.props.trial].openTimeline) ?
+              this.props.state.trialTable[this.props.trial].timelineOpen) ?
                 // Display the nested items
                 this.props.state.trialTable[this.props.trial].timeline.map(child => {
                     var childIden = this.props.state.trialOrder.indexOf(child);

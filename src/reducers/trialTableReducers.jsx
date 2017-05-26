@@ -19,7 +19,7 @@ export const Timeline = {
     pluginVal: 'text',
     paramVal: '',
     isTimeline: true,
-    timelineOpen: false,
+    timelineOpen: true,
     timeline: [],
     trialType: 'trialType',
     parentTrial: -1,
@@ -122,8 +122,6 @@ const trialTable = (state = { Trial }, action) => {
         ...newParent.timeline.slice(index+1)
       ];
 
-      console.log('parents timeline', newParent.timeline);
-
       // Copy the current trialTable
       var newTable = Object.assign({}, state);
 
@@ -134,7 +132,6 @@ const trialTable = (state = { Trial }, action) => {
       // Add the new Trial
       newTable[action.index] = newTrial;
 
-      console.log(newTable);
       // Return
       return newTable;
     case 'ADD_TRIAL':
@@ -398,16 +395,16 @@ const trialTable = (state = { Trial }, action) => {
     case 'OPEN_CHILDREN':
       // Set the trial's open timeline value to true
       newState = Object.assign({}, state);
-      const newTrial = Object.assign({}, newState[action.ID]);
-      newTrial.openTimeline = true;
+      var newTrial = Object.assign({}, newState[action.ID]);
+      newTrial.timelineOpen = true;
       delete newState[action.ID];
       newState[action.ID] = newTrial;
       return newState;
     case 'CLOSE_CHILDREN':
       // Set the trial's open timeline value to false
       newState = Object.assign({}, state);
-      const newTrial = Object.assign({}, newState[action.ID]);
-      newTrial.openTimeline = true;
+      var newTrial = Object.assign({}, newState[action.ID]);
+      newTrial.timelineOpen = false;
       delete newState[action.ID];
       newState[action.ID] = newTrial;
       return newState;

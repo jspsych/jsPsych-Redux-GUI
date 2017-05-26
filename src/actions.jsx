@@ -151,7 +151,6 @@ export const actionDuplicateTrial = (store) => {
             });
         }
     }
-
 };
 
 // Action calling for a trial to be removed from trialList
@@ -293,25 +292,25 @@ export const actionRemoveChild = (store, trialID) => {
 // Action calling for dragged to be set as the store's dragged prop
 // Affects: dragged
 export const actionSetDragged = (store, dragged) => {
-    store.dispatch({
-        type: 'SET_DRAGGED',
-        dragged: dragged
-    });
+  store.dispatch({
+    type: 'SET_DRAGGED',
+    dragged: dragged
+  });
 };
 
 // Action calling for over to be set as the store's over prop
 // Affects: over
 export const actionSetOver = (store, over) =>{
-    store.dispatch({
-        type: 'SET_OVER',
-        over: over
-    });
+  store.dispatch({
+    type: 'SET_OVER',
+    over: over
+  });
 };
 // Move a trial from one position to another
 // Affects: trialTable, trialOrder
 export const actionMoveTrial = (store) => {
-    actionArchiveState(store);
-    var state = store.getState();
+  actionArchiveState(store);
+  var state = store.getState();
   var found = state.trialTable[state.over].ancestry.indexOf(state.dragged);
   if (state.dragged === state.over || found) {
     // Allow printing to the console
@@ -336,22 +335,37 @@ export const actionMoveTrial = (store) => {
     else {
     }
     // reset over and dragged 
-        store.dispatch({
-            type: 'RESET_OVER'
-        });
-        store.dispatch({
-            type: 'RESET_DRAGGED'
-        });
-    }
+    store.dispatch({
+      type: 'RESET_OVER'
+    });
+    store.dispatch({
+      type: 'RESET_DRAGGED'
+    });
+  }
 };
 //Changes value of plugin parameters
 export const actionParamChange = (store, val) => {
-        actionArchiveState(store);
-        var state = store.getState();
-
-        store.dispatch({
-            type: 'PARAM_CHANGE',
-            paramVal: val
-        });
-
+  actionArchiveState(store);
+  store.dispatch({
+    type: 'PARAM_CHANGE',
+    paramVal: val
+  });
+};
+// Sets the openTimeline value for a timeline trial to false
+// Affects: trialTable
+export const actionCloseChildren = (store, val) => {
+  actionArchiveState(store);
+  store.dispatch({
+    type: 'CLOSE_CHILDREN',
+    ID: val
+  });
+};
+// Sets the openTimeline value for a timeline trial to true
+// Affects: trialTable
+export const actionOpenChildren = (store, val) => {
+  actionArchiveState(store);
+  store.dispatch({
+    type: 'OPEN_CHILDREN',
+    ID: val
+  });
 };
