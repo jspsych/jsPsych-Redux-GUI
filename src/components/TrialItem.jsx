@@ -91,6 +91,7 @@ class TrialItem extends React.Component {
         } else
         actionToggleSelected(this.props.store, id);
     }
+
   handleAddChild(id) {
     actionAddChild(this.props.store, id);
     preventFlag = true;
@@ -173,7 +174,7 @@ class TrialItem extends React.Component {
                 rightIcon={<ContentAdd />}
               onTouchTap={this.handleOpenTimeline.bind(this, this.props.trial)}
               />  
-            }
+           }
             </div>: <div/>
             }
           <Divider />

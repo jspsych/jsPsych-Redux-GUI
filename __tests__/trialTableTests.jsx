@@ -292,6 +292,7 @@ const test_ADD_CHILD_TRIAL = () => {
 //  TESTING REMOVE_CHILD_TRIAL
 // -------------------------------
 const test_REMOVE_CHILD_TRIAL = () => {
+
   var index = Math.random();
 
   // Create an additional trial with a different name
@@ -346,6 +347,7 @@ const test_REMOVE_CHILD_TRIAL = () => {
 //  TESTING DUPLICATE_TRIAL
 // -------------------------
 const test_DUPLICATE_TRIAL = () => {
+
   // Get what will become the new trial
   // give it some unique properties to check 
   // that they are duplicated
@@ -398,6 +400,7 @@ const test_DUPLICATE_TRIAL = () => {
   it('DUPLICATE_TRIAL', () => {
     expect(test_DUPLICATE_TRIAL).toEqual(soln_DUPLICATE_TRIAL);
   });
+
 };
 
 //  TESTING MAKE_TIMELINE
@@ -542,6 +545,7 @@ const test_MAKE_TRIAL = () => {
 //  TESTING CHANGE_NAME
 // -------------------------------
 const test_CHANGE_NAME = () => {
+
   const initialState = {
     '0': Timeline
   };

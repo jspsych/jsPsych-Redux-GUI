@@ -30,6 +30,7 @@ export const Timeline = {
 
 // Reducers for modifiying the trialTable sotre property
 const trialTable = (state = { Trial }, action) => {
+
   switch(action.type) {
     case 'INITIAL_STATE':
       var newState = {
@@ -78,6 +79,7 @@ const trialTable = (state = { Trial }, action) => {
       newState[action.id] = newTrial;
 
       return newState;
+
     case 'DUPLICATE_TRIAL':
       // Copy the trial being duplicated
       var newTrial = Object.assign({}, state[action.copyFrom]);
@@ -174,6 +176,7 @@ const trialTable = (state = { Trial }, action) => {
             }
           }
 
+
           // IF the trial is not on the top level
           if (state[trial].parentTrial !== -1) {
             var parent = state[trial].parentTrial;
@@ -268,6 +271,7 @@ const trialTable = (state = { Trial }, action) => {
       return newState;
     case 'MOVE_TRIAL':
       var newState = Object.assign({}, state);
+
 
       //////// UPDATE WHERE THE TRIAL IS MOVED FROM ////////
 
