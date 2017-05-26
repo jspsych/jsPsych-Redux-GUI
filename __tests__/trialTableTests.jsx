@@ -518,7 +518,6 @@ const test_CHANGE_NAME = () => {
     it('CHANGE_NAME', () => {
         expect(test_CHANGE_NAME).toEqual(soln_CHANGE_NAME);
     });
-    /* eslint-enable */
 };
 
 // eslint-disable-next-line no-undef
@@ -537,5 +536,4 @@ describe('Testing trialTableReducers', () => {
     test_MAKE_TIMELINE();
     test_MAKE_TRIAL();
     test_CHANGE_NAME();
-
 });

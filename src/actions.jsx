@@ -333,7 +333,6 @@ export const actionMoveTrial = (store) => {
 
     // Get the updated state from the store
     var state = store.getState();
-
     ////////// Handle Inserting the trial into its new location ///////////
 
     // state.over is the trial, state.dragged was dropped over

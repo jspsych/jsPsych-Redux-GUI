@@ -155,7 +155,7 @@ const trialTable = (state = { Trial }, action) => {
             newState[action.id] = newTrial;
 
             return newState;
-        case 'REMOVE_TRIAL':
+    case 'REMOVE_TRIAL':
             // Create deep copy of the state.
             var newState = Object.assign({}, state);
             var removeList = action.toRemove;
