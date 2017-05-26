@@ -181,7 +181,7 @@ class TrialItem extends React.Component {
             }
             nestedItems={
                 // If this is a timeline
-                this.props.state.trialTable[this.props.trial].isTimeline ?
+                (this.props.state.trialTable[this.props.trial].isTimeline == 1) ?
                 // Display the nested items
                 this.props.state.trialTable[this.props.trial].timeline.map(child => {
                     var childIden = this.props.state.trialOrder.indexOf(child);
