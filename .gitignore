@@ -27,6 +27,8 @@ coverage
 build/Release
 
 # Dependency directories
+build
+dist
 node_modules
 jspm_packages
 
@@ -36,6 +38,8 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-# Bundle files
-*bundle.js 
-*bundle.js.map
+# test and modules
+tests\ and\ raw\ models
+
+*.duplicate.*
+
