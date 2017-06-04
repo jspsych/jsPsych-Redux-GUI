@@ -21,6 +21,7 @@ var experimentTitleStyle = {
 	fontFamily: 'Roboto',
 }
 
+
 class Appbar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -40,13 +41,6 @@ class Appbar extends React.Component {
 								<TextField value="Untitled Experiment" />
 							</div>
   							<Toolbar style={{height: 40}}>
-  								<IconButton 
-  									style={{float: 'left'}} 
-			        				onTouchTap={this.props.toggleTimelineOrganizerDrawer}
-			        				disableTouchRipple={true}
-			        				>
-			        				<OpenDrawer color={(this.props.timelineOrganizerDrawerToggle) ? cyan500 : 'black'}/>
-			        			</IconButton>
   							</Toolbar>
   						</div>
   					</div>

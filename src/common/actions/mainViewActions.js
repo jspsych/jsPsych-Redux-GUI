@@ -1,8 +1,9 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function resizeTimelineOrganizerAction(percent) {
+export function resizeTimelineOrganizerAction(percent, close=false) {
 	return {
 		type: actionTypes.RESIZE_TIMELINE_ORGANIZAER_DRAWER,
-		percent: percent
+		percent: percent,
+		close: close
 	};
 }
