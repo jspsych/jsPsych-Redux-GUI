@@ -24,7 +24,8 @@ class TimelineNodeEditorDrawer extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>		
-			<div style={{width: (this.props.open) ? '20%': '0%', 
+			<div className="Timeline-Editor"
+					style={{width: (this.props.open) ? '20%': '0%', 
 						right: '0px',
 						height: '100vh', 
 						display: 'flex',
@@ -32,31 +33,36 @@ class TimelineNodeEditorDrawer extends React.Component {
 						'MozTransition': 'all 0.3s ease',
 						transition: 'all 0.3s ease',
 						}}>
-				<div style={{backgroundColor: 'black',
+				<div className="Timeline-Editor-Divider"
+					style={{backgroundColor: 'black',
 					   height:'100%',
 					   float: 'left',
 					   width: '3px',
 						}}
 					draggable={false}
 				/>
-				<div style={{height: '100vh', width: '100%', visibility: visibilityString(this.props.open)}}>
-					<div style={{display: 'flex'}}>
-						<IconButton 
-						disableTouchRipple={true}
-						onTouchTap={this.props.toggleTimelineEditorCallback}
-						>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
-						<Subheader>Timeline/Trial Editor</Subheader>
-					</div>
-					<Divider />
-					<MenuItem primaryText="Maps" />
+				<div className="Timeline-Editor-Container"
+					style={{height: '100vh', width: '100%', visibility: visibilityString(this.props.open)}}>
+					{(this.props.open) ? 
+					<div className="Timeline-Editor-Content">
+						<div style={{display: 'flex'}}>
+							<IconButton 
+							disableTouchRipple={true}
+	  						hoveredStyle={{backgroundColor: grey400}}
+							onTouchTap={this.props.closeTimelineEditorCallback}
+							>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
+							<Subheader>Timeline/Trial Editor</Subheader>
+						</div>
+						<Divider />
+						<MenuItem primaryText="Maps" />
+					</div> : null}
 				</div>
   				{(this.props.open) ? null :
   					<IconButton 
+  						className="Timeline-Editor-Handle"
   						tooltip="Open Timeline/Trial Editor"
-  						hoveredStyle={{
-  							backgroundColor: grey400,
-  						}}
-  						onTouchTap={this.props.toggleTimelineEditorCallback}
+  						hoveredStyle={{backgroundColor: grey400}}
+  						onTouchTap={this.props.openTimelineEditorCallback}
   						tooltipPosition="bottom-left"
   						style={{
 	  					position: 'fixed',

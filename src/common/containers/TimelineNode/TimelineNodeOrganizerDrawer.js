@@ -4,6 +4,14 @@ import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineN
 
 var position = 0;
 
+function pauseEvent(e){
+    if(e.stopPropagation) e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+    e.cancelBubble=true;
+    e.returnValue=false;
+    return false;
+}
+
 const toggleTimelineOrganizerDrawer = (dispatch, ownProps) => {
 	ownProps.toggleTimelineOrganizerCallback();
 	dispatch((dispatch, getState) => {
@@ -29,27 +37,30 @@ const toggleTimelineOrganizerDrawer = (dispatch, ownProps) => {
 }
 
 const onDrag = (e, dispatch) => {
-	e.preventDefault();
 	let percent = (e.pageX / window.innerWidth) * 100;
 	if (percent < 20) return;
 	position = percent;
 	dispatch(resizeTimelineOrganizerAction(position));
+	pauseEvent(e);
 }
 
 const onDragEnd = (e, dispatch) => {
-	e.preventDefault();
-	dispatch(resizeTimelineOrganizerAction(position));
+
 }
 
+const onDragStart = (e, dispatch) => {
+
+}
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		width: state.timelineOrganizerWidth,
+		width: state.timelineOrganizerWidth
 	}
 };
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+	onDragStart: (e) => { onDragStart(e, dispatch) },
 	onDragEnd: (e) => { onDragEnd(e, dispatch) },
 	onDrag: (e) => { onDrag(e, dispatch) },
 	toggleTimelineOrganizerDrawer: () => { toggleTimelineOrganizerDrawer(dispatch, ownProps) }

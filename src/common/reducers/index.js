@@ -7,7 +7,6 @@ const TOTAL_WIDTH = 100;
 const initState = {
 	timelineOrganizerWidth: 20,
 	mainBodyWidth: 80,
-	timelineEditorWidth: 0,
 }
 
 function resizeTimelineOrganizer(state, action) {
@@ -19,7 +18,7 @@ function resizeTimelineOrganizer(state, action) {
 
 	return Object.assign({}, state, {
 		timelineOrganizerWidth: percent,
-		mainBodyWidth: TOTAL_WIDTH - percent - state.timelineEditorWidth
+		mainBodyWidth: TOTAL_WIDTH - percent
 	});
 }
 

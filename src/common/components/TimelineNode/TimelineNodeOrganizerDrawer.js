@@ -1,4 +1,5 @@
 import React from 'react';
+import Draggable from 'react-draggable';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
@@ -27,34 +28,55 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div style={{width: convertPercent(this.props.width), 
+			<div className="Timeline-Organizer"
+				 style={{width: convertPercent(this.props.width), 
 						left: '0px',
 						height: '100vh', 
 						display: 'flex',
-						}}>
-				<div style={{height: '100vh', width: '100%', visibility: visibilityString(this.props.open)}}>
-					<div style={{display: 'flex'}}>
-						<Subheader>Timeline Organizer</Subheader>
-						<IconButton 
-						disableTouchRipple={true}
-						onTouchTap={this.props.toggleTimelineOrganizerDrawer}
-						>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
-					</div>
-					<Divider />
-					<MenuItem primaryText="Maps" />
+				}}>
+				<div className="Timeline-Organizer-Container"
+					style={{height: '100vh', width: '100%'}}>
+					{(this.props.open) ? 
+					<div className="Timeline-Organizer-Content">
+						<div style={{display: 'flex'}}>
+							<Subheader>Timeline Organizer</Subheader>
+								<IconButton 
+		  							hoveredStyle={{backgroundColor: grey400}}
+									disableTouchRipple={true}
+									onTouchTap={this.props.toggleTimelineOrganizerDrawer}
+									>
+									<CloseDrawer hoverColor={CloseDrawerHoverColor}/>
+								</IconButton> 
+						</div>
+						<Divider />
+						<MenuItem primaryText="Maps" leftIcon={<OpenDrawer />} onTouchTap={this.props.openTimelineEditorCallback}/>
+						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
+						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
+						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
+					</div>: null}
 				</div>
-  				<div 	style={{backgroundColor: 'black',
+				<Draggable
+			        axis="x"
+			        handle=".Timeline-Organizer-Dragger"
+			        grid={[2, 0]}
+			        zIndex={100}
+			        position={this.props.width}
+			        onStart={this.props.onDragStart}
+			        onDrag={this.props.onDrag}
+			        onStop={this.props.onDragEnd}
+			        >
+  				<div 	className="Timeline-Organizer-Dragger"
+  						style={{backgroundColor: 'black',
 							   height:'100%',
 							   float: 'right',
 							   width: '3px',
 							   cursor: 'col-resize',
   							}}
-  						draggable={true}	
-  						onDrag={this.props.onDrag}
-  						onDragEnd={this.props.onDragEnd}
   						/>
+  				</Draggable>
   				{(this.props.width > 0) ? null :
   					<IconButton 
+  						className="Timeline-Organizer-Handle"
   						tooltip="Open Timeline Organizer"
   						hoveredStyle={{
   							backgroundColor: grey400,
