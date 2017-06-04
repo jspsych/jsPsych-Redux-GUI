@@ -6,17 +6,17 @@ import MenuItem from 'material-ui/MenuItem';
 import Drawer from 'material-ui/Drawer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import CloseDrawer from 'material-ui/svg-icons/navigation/arrow-forward';
+import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
 	grey200,
 	grey400,
-	cyan500,
+	pink500 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
 const visibilityString = (flag) => ((flag) ? 'visible' : 'hidden');
 
-class TimelineNodeOrganizerDrawer extends React.Component {
+class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -28,9 +28,9 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						right: '0px',
 						height: '100vh', 
 						display: 'flex',
-						'-webkit-transition': 'all 0.4s ease',
-						'-moz-transition': 'all 0.4s ease',
-						transition: 'all 0.4s ease',
+						'WebkitTransition': 'all 0.3s ease',
+						'MozTransition': 'all 0.3s ease',
+						transition: 'all 0.3s ease',
 						}}>
 				<div style={{backgroundColor: 'black',
 					   height:'100%',
@@ -44,7 +44,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						<IconButton 
 						disableTouchRipple={true}
 						onTouchTap={this.props.toggleTimelineEditorCallback}
-						>{(this.props.open) ? <CloseDrawer hoverColor={cyan500}/> : null}</IconButton>
+						>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
 						<Subheader>Timeline/Trial Editor</Subheader>
 					</div>
 					<Divider />
@@ -73,4 +73,4 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 	}
 }
 // 
-export default TimelineNodeOrganizerDrawer;
+export default TimelineNodeEditorDrawer;

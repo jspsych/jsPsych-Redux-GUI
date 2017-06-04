@@ -20,7 +20,7 @@ const toggleTimelineOrganizerDrawer = (dispatch, ownProps) => {
 				if (current > 0) dispatch(resizeTimelineOrganizerAction(current-2, true));
 				else clear();
 			}
-		}, 20);
+		}, 17);
 
 		var clear = function() {
 			clearInterval(interval);

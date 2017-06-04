@@ -11,7 +11,7 @@ import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
 	grey200,
 	grey400,
-	pink500,
+	pink500 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
 const visibilityString = (flag) => ((flag) ? 'visible' : 'hidden');
@@ -27,8 +27,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div id="timelineOrganizerDrawer" 
-				style={{width: convertPercent(this.props.width), 
+			<div style={{width: convertPercent(this.props.width), 
 						left: '0px',
 						height: '100vh', 
 						display: 'flex',
@@ -39,7 +38,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						<IconButton 
 						disableTouchRipple={true}
 						onTouchTap={this.props.toggleTimelineOrganizerDrawer}
-						>{(this.props.open) ? <CloseDrawer hoverColor={pink500}/> : null}</IconButton>
+						>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
 					</div>
 					<Divider />
 					<MenuItem primaryText="Maps" />
@@ -70,14 +69,11 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 	  					backgroundColor: grey200,
 	  					padding: '12px 0',
 	  					zIndex: 1,
-  				}}><OpenDrawer /></IconButton>
-  			}
+  				}}><OpenDrawer /></IconButton>}
   			</div>
-
-  			
   			</MuiThemeProvider>
   			)
 	}
 }
-// 
+
 export default TimelineNodeOrganizerDrawer;
