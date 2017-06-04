@@ -24,7 +24,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>		
-			<div className="Timeline-Editor"
+			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? '20%': '0%', 
 						right: '0px',
 						height: '100vh', 
@@ -33,7 +33,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 						'MozTransition': 'all 0.3s ease',
 						transition: 'all 0.3s ease',
 						}}>
-				<div className="Timeline-Editor-Divider"
+				<div className="TimelineNode-Editor-Divider"
 					style={{backgroundColor: 'black',
 					   height:'100%',
 					   float: 'left',
@@ -41,10 +41,10 @@ class TimelineNodeEditorDrawer extends React.Component {
 						}}
 					draggable={false}
 				/>
-				<div className="Timeline-Editor-Container"
+				<div className="TimelineNode-Editor-Container"
 					style={{height: '100vh', width: '100%', visibility: visibilityString(this.props.open)}}>
 					{(this.props.open) ? 
-					<div className="Timeline-Editor-Content">
+					<div className="TimelineNode-Editor-Content">
 						<div style={{display: 'flex'}}>
 							<IconButton 
 							disableTouchRipple={true}
@@ -59,7 +59,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 				</div>
   				{(this.props.open) ? null :
   					<IconButton 
-  						className="Timeline-Editor-Handle"
+  						className="TimelineNode-Editor-Handle"
   						tooltip="Open Timeline/Trial Editor"
   						hoveredStyle={{backgroundColor: grey400}}
   						onTouchTap={this.props.openTimelineEditorCallback}

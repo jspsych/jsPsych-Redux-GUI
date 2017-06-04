@@ -33,7 +33,7 @@ class Appbar extends React.Component {
         			<div className="Appbar" style={{width: "100%", margin: '0 auto', display: 'flex'}}>
   						<div style={{display: 'inline-block', minWidth:"6vw", width: "7%"}}>
   						<GridTile style={{height: 90, backgroundColor: cyan500}}>
-  							<img src='./jsPsych/jspsych-logo-readme.jpg'/>
+  							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg'/>
   							</GridTile>
   						</div>
         				<div className="Appbar-main" style={{display: 'inline-block', width:"93%"}}>

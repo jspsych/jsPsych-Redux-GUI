@@ -20,22 +20,21 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div className="Timeline-Organizer"
+			<div className="TimelineNode-Organizer"
 				 style={{width: convertPercent(this.props.width), 
 						left: '0px',
 						height: '100vh', 
 						display: 'flex',
-
 						'WebkitTransition': this.props.animation,
 						'MozTransition': this.props.animation,
 						transition: this.props.animation,
 				}}>
-				<div className="Timeline-Organizer-Container"
+				<div className="TimelineNode-Organizer-Container"
 					style={{height: '100vh', width: '100%'}}>
 					{(this.props.open) ? 
-					<div className="Timeline-Organizer-Content">
+					<div className="TimelineNode-Organizer-Content">
 						<div style={{display: 'flex'}}>
-							<Subheader>Timeline Organizer</Subheader>
+							<Subheader>Timeline/Trial Organizer</Subheader>
 								<IconButton 
 		  							hoveredStyle={{backgroundColor: grey400}}
 									disableTouchRipple={true}
@@ -53,14 +52,14 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 				</div>
 				<Draggable
 			        axis="x"
-			        handle=".Timeline-Organizer-Dragger"
+			        handle=".TimelineNode-Organizer-Dragger"
 			        zIndex={100}
 			        position={this.props.width}
 			        onStart={this.props.onDragStart}
 			        onDrag={this.props.onDrag}
 			        onStop={this.props.onDragEnd}
 			        >
-  				<div 	className="Timeline-Organizer-Dragger"
+  				<div 	className="TimelineNode-Organizer-Dragger"
   						style={{backgroundColor: 'black',
 							   height:'100%',
 							   float: 'right',
@@ -71,8 +70,8 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   				</Draggable>
   				{(this.props.width > 0) ? null :
   					<IconButton 
-  						className="Timeline-Organizer-Handle"
-  						tooltip="Open Timeline Organizer"
+  						className="TimelineNode-Organizer-Handle"
+  						tooltip="Open Timeline/Trial Organizer"
   						hoveredStyle={{
   							backgroundColor: grey400,
   						}}
