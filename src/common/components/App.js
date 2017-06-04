@@ -12,15 +12,9 @@ class App extends React.Component {
 		super(props);
 
 		this.state = {
-			timelineOrganizerDrawerToggle: true,
 			timelineEditorDrawerToggle: false,
 		}
 
-		this.toggleTimelineOrganizerDrawer = () => {
-			this.setState({
-				timelineOrganizerDrawerToggle: !this.state.timelineOrganizerDrawerToggle,
-			});
-		}
 
 		this.openTimelineEditorDrawer = () => {
 			this.setState({
@@ -38,11 +32,10 @@ class App extends React.Component {
 	render() {
 		return (
   			<div className="main-container" style={{width: '100%', display: 'flex', overflowX: 'hidden'}}>
-  				<TimelineNodeOrganizerDrawer open={this.state.timelineOrganizerDrawerToggle} 
-  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
-  					toggleTimelineOrganizerCallback={this.toggleTimelineOrganizerDrawer} 
-  				/>
-  				<div id="main" style={{width: convertPercent(this.props.width)}}>
+  				<TimelineNodeOrganizerDrawer openTimelineEditorCallback={this.openTimelineEditorDrawer}/>
+  				<div className="main-body" 
+  					style={{width: convertPercent(this.props.width)}}
+  				>
   					<Appbar />
   					<Preview />
   				</div>

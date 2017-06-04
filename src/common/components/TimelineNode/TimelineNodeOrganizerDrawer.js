@@ -4,7 +4,6 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
-import Drawer from 'material-ui/Drawer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
@@ -15,16 +14,9 @@ import {
 	pink500 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-const visibilityString = (flag) => ((flag) ? 'visible' : 'hidden');
-
 const convertPercent = (number) => (number + '%'); 
 
 class TimelineNodeOrganizerDrawer extends React.Component {
-	constructor(props) {
-		super(props);
-
-	}
-
 	render() {
 		return (
 			<MuiThemeProvider>
@@ -33,6 +25,10 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						left: '0px',
 						height: '100vh', 
 						display: 'flex',
+
+						'WebkitTransition': this.props.animation,
+						'MozTransition': this.props.animation,
+						transition: this.props.animation,
 				}}>
 				<div className="Timeline-Organizer-Container"
 					style={{height: '100vh', width: '100%'}}>
@@ -43,7 +39,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 								<IconButton 
 		  							hoveredStyle={{backgroundColor: grey400}}
 									disableTouchRipple={true}
-									onTouchTap={this.props.toggleTimelineOrganizerDrawer}
+									onTouchTap={this.props.closeTimelineOrganizerDrawer}
 									>
 									<CloseDrawer hoverColor={CloseDrawerHoverColor}/>
 								</IconButton> 
@@ -58,7 +54,6 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 				<Draggable
 			        axis="x"
 			        handle=".Timeline-Organizer-Dragger"
-			        grid={[2, 0]}
 			        zIndex={100}
 			        position={this.props.width}
 			        onStart={this.props.onDragStart}
@@ -81,7 +76,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   						hoveredStyle={{
   							backgroundColor: grey400,
   						}}
-  						onTouchTap={this.props.toggleTimelineOrganizerDrawer}
+  						onTouchTap={this.props.openTimelineOrganizerDrawer}
   						tooltipPosition="bottom-right"
   						style={{
 	  					position: 'fixed',

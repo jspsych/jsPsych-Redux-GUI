@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { resizeTimelineOrganizerAction } from '../../actions/mainViewActions';
 import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineNodeOrganizerDrawer';
 
-var position = 0;
+var dragging = false;
 
 function pauseEvent(e){
     if(e.stopPropagation) e.stopPropagation();
@@ -12,49 +12,36 @@ function pauseEvent(e){
     return false;
 }
 
-const toggleTimelineOrganizerDrawer = (dispatch, ownProps) => {
-	ownProps.toggleTimelineOrganizerCallback();
-	dispatch((dispatch, getState) => {
-		var interval = setInterval(() => {
-			let current = getState().timelineOrganizerWidth;
-			// we take the opposite as ownProps is not updated yet
-			if (!ownProps.open) { // open
-				if (current < 20) {
-					dispatch(resizeTimelineOrganizerAction(current+2, true));
-				} else {
-					clear();
-				}
-			} else { // close
-				if (current > 0) dispatch(resizeTimelineOrganizerAction(current-2, true));
-				else clear();
-			}
-		}, 17);
+const openTimelineOrganizerDrawer = (dispatch, ownProps) => {
+	dispatch(resizeTimelineOrganizerAction(20));
+}
 
-		var clear = function() {
-			clearInterval(interval);
-		}
-	});
+const closeTimelineOrganizerDrawer = (dispatch, ownProps) => {
+	dispatch(resizeTimelineOrganizerAction(0, true))
 }
 
 const onDrag = (e, dispatch) => {
 	let percent = (e.pageX / window.innerWidth) * 100;
-	if (percent < 20) return;
-	position = percent;
-	dispatch(resizeTimelineOrganizerAction(position));
-	pauseEvent(e);
+	if (percent >= 20) dispatch(resizeTimelineOrganizerAction(percent));
+	pauseEvent(e)
 }
 
+// placeholder
 const onDragEnd = (e, dispatch) => {
-
+	console.log('Stop dragging');
+	dragging = false;
 }
-
+// placeholder
 const onDragStart = (e, dispatch) => {
-
+	console.log('Start dragging');
+	dragging = true;
 }
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		width: state.timelineOrganizerWidth
+		width: state.timelineOrganizerWidth,
+		animation: (dragging) ? 'none' : 'all 0.3s ease',
+		open: state.timelineOrganizerWidth > 0,
 	}
 };
 
@@ -63,7 +50,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	onDragStart: (e) => { onDragStart(e, dispatch) },
 	onDragEnd: (e) => { onDragEnd(e, dispatch) },
 	onDrag: (e) => { onDrag(e, dispatch) },
-	toggleTimelineOrganizerDrawer: () => { toggleTimelineOrganizerDrawer(dispatch, ownProps) }
+	openTimelineOrganizerDrawer: () => { openTimelineOrganizerDrawer(dispatch, ownProps) },
+	closeTimelineOrganizerDrawer: () => { closeTimelineOrganizerDrawer(dispatch, ownProps) }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineNodeOrganizerDrawer);
