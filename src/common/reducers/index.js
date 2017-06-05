@@ -1,7 +1,11 @@
 import * as actionTypes from '../constants/ActionTypes';
 
 const initState = {
+	// id of which is being previewed/editted
+	previewId: null,
 
+	// the main timeline
+	mainTimeline: [], 
 };
 
 

@@ -5,7 +5,6 @@ import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import Drawer from 'material-ui/Drawer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Toggle from 'material-ui/Toggle';
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
@@ -16,27 +15,12 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-const visibilityString = (flag) => ((flag) ? 'visible' : 'hidden');
-
-const inline = {
-	display: 'flex',
-	position: 'absolute',
-	marginRight: 150
-}
-
 class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			isTimelineToggleValue: true
 		};
-
-		this.handleIsTimelineToggle = () => {
-			this.setState({
-				isTimelineToggleValue: !this.state.isTimelineToggleValue
-			});
-		}
 	}
 
 	render() {
@@ -60,7 +44,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 					draggable={false}
 				/>
 				<div className="TimelineNode-Editor-Container"
-					style={{height: '100%', width: '100%', visibility: visibilityString(this.props.open)}}>
+					style={{height: '100%', width: '100%'}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Editor-Content">
 						<div style={{display: 'flex'}}>
@@ -72,10 +56,6 @@ class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
-						<Toggle
-						label="isTimeline"
-						defaultToggled={true}
-						onToggle={this.handleIsTimelineToggle} />
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :
