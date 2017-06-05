@@ -1,15 +1,12 @@
 import * as actionTypes from '../constants/ActionTypes';
+import { combineReducers } from "redux";
+import timelineNodeReducer from './timelineNode';
 
 const initState = {
-	// id of which is being previewed/editted
-	previewId: null,
-
-	// the main timeline
-	mainTimeline: [], 
 };
 
 
-function rootReducer(state = initState, action) {
+function mainReducer(state = initState, action) {
 	switch (action.type) {
 		default:
 			return state;
@@ -17,5 +14,10 @@ function rootReducer(state = initState, action) {
 	
 }
 
+
+const rootReducer = combineReducers({
+	mainState: mainReducer,
+	timelineNodeState: timelineNodeReducer 
+});
 
 export default rootReducer;

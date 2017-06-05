@@ -31,3 +31,7 @@ export const typeOfNode = (node) => {
 
 	return 0;
 }
+
+export const isTimeline = (node) => (typeOfNode(node) === TIMELINE_TYPE);
+
+export const isTrial = (node) => (typeOfNode(node) === TRIAL_TYPE);
