@@ -10,8 +10,9 @@ import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
 	grey200,
-	grey400,
-	pink500 as CloseDrawerHoverColor
+	grey400 as DrawerHandleColor,
+	grey300 as CloseBackHighlightColor,
+	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
 const convertPercent = (number) => (number + '%'); 
@@ -36,7 +37,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						<div style={{display: 'flex'}}>
 							<Subheader>Timeline/Trial Organizer</Subheader>
 								<IconButton 
-		  							hoveredStyle={{backgroundColor: grey400}}
+		  							hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
 									disableTouchRipple={true}
 									onTouchTap={this.props.closeTimelineOrganizerDrawer}
 									>
@@ -73,19 +74,21 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   						className="TimelineNode-Organizer-Handle"
   						tooltip="Open Timeline/Trial Organizer"
   						hoveredStyle={{
-  							backgroundColor: grey400,
+  							backgroundColor: DrawerHandleColor,
+  							left: 0,
   						}}
   						onTouchTap={this.props.openTimelineOrganizerDrawer}
   						tooltipPosition="bottom-right"
   						style={{
 	  					position: 'fixed',
-	  					left: 0,
+	  					left: -8,
 	  					top: '50%',
 	  					width: 25,
 	  					backgroundColor: grey200,
 	  					padding: '12px 0',
 	  					zIndex: 1,
-  				}}><OpenDrawer /></IconButton>}
+  						}}
+  					><OpenDrawer /></IconButton>}
   			</div>
   			</MuiThemeProvider>
   			)

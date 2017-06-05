@@ -37,8 +37,8 @@ class Preview extends React.Component {
 	render() {
 
 		return (
-  			<div style={{paddingTop: 30, textAlign: 'center'}}>
-          <iframe srcDoc={s} disabled={true}/> 
+  			<div style={{paddingTop: 30, textAlign: 'center', height: "80%", overflowY: 'auto'}}>
+          <iframe width="80%" height="80%" srcDoc={s} disabled={true}/> 
         </div>
   		);
 	}

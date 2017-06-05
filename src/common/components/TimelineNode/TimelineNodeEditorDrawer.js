@@ -10,8 +10,9 @@ import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
 	grey200,
-	grey400,
-	pink500 as CloseDrawerHoverColor
+	grey400 as DrawerHandleColor,
+	grey300 as CloseBackHighlightColor,
+	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
 const visibilityString = (flag) => ((flag) ? 'visible' : 'hidden');
@@ -48,7 +49,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 						<div style={{display: 'flex'}}>
 							<IconButton 
 							disableTouchRipple={true}
-	  						hoveredStyle={{backgroundColor: grey400}}
+	  						hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
 							onTouchTap={this.props.closeTimelineEditorCallback}
 							>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
 							<Subheader>Timeline/Trial Editor</Subheader>
@@ -61,12 +62,15 @@ class TimelineNodeEditorDrawer extends React.Component {
   					<IconButton 
   						className="TimelineNode-Editor-Handle"
   						tooltip="Open Timeline/Trial Editor"
-  						hoveredStyle={{backgroundColor: grey400}}
+  						hoveredStyle={{
+  							backgroundColor: DrawerHandleColor,
+  							right: 0,
+  						}}
   						onTouchTap={this.props.openTimelineEditorCallback}
   						tooltipPosition="bottom-left"
   						style={{
 	  					position: 'fixed',
-	  					right: 0,
+	  					right: -8,
 	  					top: '50%',
 	  					width: 25,
 	  					backgroundColor: grey200,
