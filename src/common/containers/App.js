@@ -5,7 +5,6 @@ import App from '../components/App';
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		width: state.mainBodyWidth
 	}
 };
 
