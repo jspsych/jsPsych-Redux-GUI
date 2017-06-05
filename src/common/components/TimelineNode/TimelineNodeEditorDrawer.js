@@ -45,7 +45,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? '20%': '0%', 
 						right: '0px',
-						height: '100vh', 
+						height: '86.5vh', 
 						display: 'flex',
 						'WebkitTransition': 'all 0.3s ease',
 						'MozTransition': 'all 0.3s ease',
@@ -60,7 +60,7 @@ class TimelineNodeEditorDrawer extends React.Component {
 					draggable={false}
 				/>
 				<div className="TimelineNode-Editor-Container"
-					style={{height: '100vh', width: '100%', visibility: visibilityString(this.props.open)}}>
+					style={{height: '100%', width: '100%', visibility: visibilityString(this.props.open)}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Editor-Content">
 						<div style={{display: 'flex'}}>

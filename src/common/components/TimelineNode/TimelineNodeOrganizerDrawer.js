@@ -15,23 +15,73 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-const convertPercent = (number) => (number + '%'); 
+import { convertPercent } from '../App';
+
+const MIN_WIDTH = 20;
+const MAX_WIDTH = 60;
+
+var dragging = false;
+
+
+const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.3s ease');
+
+const getWidthFromDragging = (e) => {
+	let percent = (e.pageX / window.innerWidth) * 100;
+	if (percent < MIN_WIDTH) percent = MIN_WIDTH;
+	if (percent > MAX_WIDTH) percent = MAX_WIDTH;
+	return percent; 
+}
+
+function pauseEvent(e){
+    if(e.stopPropagation) e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+    e.cancelBubble=true;
+    e.returnValue=false;
+    return false;
+}
 
 class TimelineNodeOrganizerDrawer extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			dragging: false,
+		}
+
+		this.onDragStart = (e) => {
+			this.setState({
+				dragging: true,
+			});
+		}
+
+		this.onDragEnd = (e) => {
+			this.setState({
+				dragging: false,
+			});
+		}
+
+		this.onDrag = (e) => {
+			this.props.setWidthCallback(getWidthFromDragging(e));
+			pauseEvent(e)
+		}
+
+	}
+
+
 	render() {
 		return (
 			<MuiThemeProvider>
 			<div className="TimelineNode-Organizer"
-				 style={{width: convertPercent(this.props.width), 
+				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%", 
 						left: '0px',
-						height: '100vh', 
+						height: '86.5vh', 
 						display: 'flex',
-						'WebkitTransition': this.props.animation,
-						'MozTransition': this.props.animation,
-						transition: this.props.animation,
+						'WebkitTransition': enableAnimation(this.state.dragging),
+						'MozTransition': enableAnimation(this.state.dragging),
+						transition: enableAnimation(this.state.dragging),
 				}}>
 				<div className="TimelineNode-Organizer-Container"
-					style={{height: '100vh', width: '100%'}}>
+					style={{height: '100%', width: '100%'}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Organizer-Content">
 						<div style={{display: 'flex'}}>
@@ -39,7 +89,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 								<IconButton 
 		  							hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
 									disableTouchRipple={true}
-									onTouchTap={this.props.closeTimelineOrganizerDrawer}
+									onTouchTap={this.props.closeCallback}
 									>
 									<CloseDrawer hoverColor={CloseDrawerHoverColor}/>
 								</IconButton> 
@@ -55,10 +105,10 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 			        axis="x"
 			        handle=".TimelineNode-Organizer-Dragger"
 			        zIndex={100}
-			        position={this.props.width}
-			        onStart={this.props.onDragStart}
-			        onDrag={this.props.onDrag}
-			        onStop={this.props.onDragEnd}
+			        position={{x: this.props.width}}
+			        onStart={this.onDragStart}
+			        onDrag={this.onDrag}
+			        onStop={this.onDragEnd}
 			        >
   				<div 	className="TimelineNode-Organizer-Dragger"
   						style={{backgroundColor: 'black',
@@ -69,7 +119,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   							}}
   						/>
   				</Draggable>
-  				{(this.props.width > 0) ? null :
+  				{(this.props.open) ? null :
   					<IconButton 
   						className="TimelineNode-Organizer-Handle"
   						tooltip="Open Timeline/Trial Organizer"
@@ -77,7 +127,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   							backgroundColor: DrawerHandleColor,
   							left: 0,
   						}}
-  						onTouchTap={this.props.openTimelineOrganizerDrawer}
+  						onTouchTap={this.props.openCallback}
   						tooltipPosition="bottom-right"
   						style={{
 	  					position: 'fixed',

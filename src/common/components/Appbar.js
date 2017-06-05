@@ -30,7 +30,7 @@ class Appbar extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-        			<div className="Appbar" style={{width: "100%", margin: '0 auto', display: 'flex'}}>
+        			<div className="Appbar" style={{width: "100%", margin: '0 auto', display: 'flex', height: "20%", paddingBottom: 0}}>
   						<div style={{display: 'inline-block', minWidth:"6vw", width: "7%"}}>
   						<GridTile style={{height: 90, backgroundColor: cyan500}}>
   							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg'/>
