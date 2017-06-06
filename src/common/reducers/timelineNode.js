@@ -8,7 +8,6 @@ A timeline state = {
 	parent: string, 
 	childrenById: array,
 	level: function, 
-	collapsed: boolean,
 	enabled: boolean,
 	// for tree menu
 	
@@ -33,9 +32,6 @@ A trial state = {
 import * as actionTypes from '../constants/ActionTypes';
 import * as utils from '../constants/utils'; 
 
-var timelineId = 0;
-var trialId = 0;
-
 export const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 export const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 
@@ -44,8 +40,38 @@ const initState = {
 	previewId: null,
 
 	// the main timeline. array of ids
-	mainTimeline: [], 
+	mainTimeline: [utils.standardizeTimelineId(0)], 
 }
+
+initState[utils.standardizeTimelineId(0)] = {
+	id: utils.standardizeTimelineId(0),
+	name: DEFAULT_TIMELINE_NAME,
+	parent: null,
+	childrenById: [utils.standardizeTimelineId(1)],
+	level: function(state) { return getLevel(state, this) },
+	
+	enabled: true,
+	parameters: {}
+}
+initState[utils.standardizeTimelineId(1)] = {
+	id: utils.standardizeTimelineId(1),
+	name: DEFAULT_TIMELINE_NAME,
+	parent: utils.standardizeTimelineId(0),
+	childrenById: [utils.standardizeTrialId(0)],
+	level: function(state) { return getLevel(state, this) },
+	
+	enabled: true,
+	parameters: {}
+}
+initState[utils.standardizeTrialId(0)] = {
+	id: utils.standardizeTrialId(0),
+	name: DEFAULT_TRIAL_NAME,
+	parent: utils.standardizeTimelineId(1),
+	level: function(state) { return getLevel(state, this) },
+	enabled: true,
+	parameters: {}
+}
+
 
 export default function(state=initState, action) {
 	switch(action.type) {
@@ -61,6 +87,10 @@ export default function(state=initState, action) {
 			return deleteTrial(state, action);
 		case actionTypes.MOVE_TRIAL:
 			return moveTrial(state, action);
+		case actionTypes.ON_PREVIEW:
+			return onPreview(state, action);
+		case actionTypes.ON_TOGGLE:
+			return onToggle(state, action);
 		default:
 			return state;
 	}
@@ -78,7 +108,7 @@ export function getLevel(state, node) {
 	if (node.parent === null)
 		return 0;
 	else
-		return 1 + getLevel(state, getNodeById(node.parent));
+		return 1 + getLevel(state, getNodeById(state, node.parent));
 }
 
 /*
@@ -117,16 +147,14 @@ function canMoveUnder(state, sourceId, targetId) {
 
 
 function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null, 
-	childrenById=[], collapsed=false, 
-	enabled=true, parameters={}) {
+	childrenById=[], enabled=true, parameters={}) {
 
 	return {
 		id: id,
 		name: name,
 		parent: parent,
 		childrenById: childrenById,
-		level: getLevel,
-		collapsed: collapsed,
+		level: function(state) { return getLevel(state, this) },
 		enabled: enabled,
 		parameters: parameters
 	};
@@ -135,7 +163,7 @@ function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null,
 // define deep copy for parameters later
 function copyTimeline(timeline) {
 	return createTimeline(timeline.id, timeline.name, timeline.parent,
-		timeline.childrenById.slice(), timeline.collapsed,
+		timeline.childrenById.slice(),
 		timeline.enabled, timeline.parameters)
 }
 
@@ -146,7 +174,7 @@ function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
 		id: id,
 		name: name,
 		parent: parent,
-		level: getLevel,
+		level: function(state) { return getLevel(state, this) },
 		enabled: enabled,
 		parameters: parameters
 	};
@@ -158,14 +186,14 @@ function copyTrial(trial) {
 
 /*
 action = {
-	name: string,
+	id: id,
 	parent: string, 
 }
 */
 function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let id = utils.standardizeTimelineId(timelineId++);
+	let id = action.id;
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -187,14 +215,14 @@ function addTimeline(state, action) {
 
 /*
 action = {
-	name: string,
+	id: string,
 	parent: string, 
 }
 */
 function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let id = utils.standardizeTrialId(trialId++);
+	let id = action.id;
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -210,7 +238,6 @@ function addTrial(state, action) {
 	let trial = createTrial(id, action.name, action.parent)
 
 	new_state[id] = trial;
- 
 	return new_state;
 }
 
@@ -354,3 +381,25 @@ function moveTrial(state, action) {
 	return new_state;
 }
 
+function onPreview(state, action) {
+	return Object.assign({}, state, {
+		previewId: action.id
+	});
+}
+
+function onToggle(state, action) {
+	let node = getNodeById(state, action.id);
+
+	let new_state = Object.assign({}, state);
+
+	if (utils.isTimeline(node.id)) {
+		node = copyTimeline(node);
+	} else {
+		node = copyTrial(node);
+	}
+
+	node.enabled = !node.enabled;
+	new_state[node.id] = node;
+
+	return new_state;
+}

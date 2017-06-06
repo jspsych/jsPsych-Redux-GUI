@@ -1,17 +1,17 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function addTimelineAction(name, parent) {
+export function addTimelineAction(id, parent) {
 	return {
 		type: actionTypes.ADD_TIMELINE,
-		name: name,
+		id: id,
 		parent: parent, 
 	};
 }
 
-export function addTrialAction(name, parent) {
+export function addTrialAction(id, parent) {
 	return {
 		type: actionTypes.ADD_TRIAL,
-		name: name,
+		id: id,
 		parent: parent, 
 	};
 }
@@ -20,14 +20,14 @@ export function deleteTimelineAction(id) {
 	return {
 		type: actionTypes.DELETE_TIMELINE,
 		id: id
-	}
+	};
 }
 
 export function deleteTrialAction(id) {
 	return {
 		type: actionTypes.DELETE_TRIAL,
 		id: id
-	}
+	};
 }
 
 export function moveTimelineAction(sourceId, targetId, position) {
@@ -36,7 +36,7 @@ export function moveTimelineAction(sourceId, targetId, position) {
 		sourceId: sourceId,
 		targetId: targetId,
 		position: position
-	}
+	};
 }
 
 export function moveTrialAction(sourceId, targetId, position) {
@@ -45,5 +45,19 @@ export function moveTrialAction(sourceId, targetId, position) {
 		sourceId: sourceId,
 		targetId: targetId,
 		position: position
-	}
+	};
+}
+
+export function onPreviewAction(id) {
+	return {
+		type: actionTypes.ON_PREVIEW,
+		id: id
+	};
+}
+
+export function onToggleAction(id) {
+	return {
+		type: actionTypes.ON_TOGGLE,
+		id: id
+	};
 }

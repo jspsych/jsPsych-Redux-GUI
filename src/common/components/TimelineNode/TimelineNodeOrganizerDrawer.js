@@ -4,8 +4,13 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
+import { SpeedDial, SpeedDialItem } from 'react-mui-speeddial';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
+import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
@@ -16,12 +21,14 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
+import { isTimeline } from '../../constants/utils';
+import TrialItem from '../../containers/TimelineNode/OrganizerItem/TrialItem';
+import TimelineItem from '../../containers/TimelineNode/OrganizerItem/TimelineItem';
 
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 60;
 
 var dragging = false;
-
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
@@ -74,6 +81,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 			<div className="TimelineNode-Organizer"
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%", 
 						left: '0px',
+						overflowY: 'auto',
 						height: '86.5vh', 
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
@@ -95,10 +103,29 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 								</IconButton> 
 						</div>
 						<Divider />
-						<MenuItem primaryText="Maps" leftIcon={<OpenDrawer />} onTouchTap={this.props.openTimelineEditorCallback}/>
-						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
-						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
-						<MenuItem primaryText="Maps" onTouchTap={this.props.openTimelineEditorCallback}/>
+						<div className="TimelineNode-Sheet" style={{ overflowY: 'auto', minWidth: "100%"}}>
+							{this.props.mainTimeline.map((id) => {
+								if (isTimeline(id)) return (<TimelineItem id={id} key={id} />);
+								else return (<TrialItem id={id} key={id}/>);
+							})}
+						</div>
+						<div style={{bottom: 10, left: convertPercent(this.props.width-5),  position: 'absolute'}}>
+							<SpeedDial
+						      fabContentOpen={<ContentAdd />}
+						      fabContentClose={<NavigationClose />}
+						    >
+						      <SpeedDialItem
+						        label="New Timeline"
+						        fabContent={<NewTimelineIcon />}
+						        onTouchTap={this.props.addTimelineToMain}
+						      />
+						      <SpeedDialItem
+						        label="New Trial"
+						        fabContent={<NewTrialIcon/>}
+						        onTouchTap={this.props.addTrialToMain}
+						      />
+						    </SpeedDial>
+					    </div>
 					</div>: null}
 				</div>
 				<Draggable
