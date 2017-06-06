@@ -3,6 +3,7 @@ import Draggable from 'react-draggable';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
+import { List } from 'material-ui/List';
 import MenuItem from 'material-ui/MenuItem';
 import { SpeedDial, SpeedDialItem } from 'react-mui-speeddial';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -11,6 +12,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
+import Delete from 'material-ui/svg-icons/action/delete';
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
@@ -103,13 +105,24 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 								</IconButton> 
 						</div>
 						<Divider />
-						<div className="TimelineNode-Sheet" style={{ overflowY: 'auto', minWidth: "100%"}}>
+						<div className="TimelineNode-Sheet" style={{
+							overflowY: "auto", 
+							minWidth: "100%"
+						}}>
+						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
 							{this.props.mainTimeline.map((id) => {
 								if (isTimeline(id)) return (<TimelineItem id={id} key={id} />);
 								else return (<TrialItem id={id} key={id}/>);
 							})}
+						</List>
 						</div>
-						<div style={{bottom: 10, left: convertPercent(this.props.width-5),  position: 'absolute'}}>
+						<Divider />
+						<div style={{
+							bottom: 10, 
+							left: convertPercent(this.props.width-6),  
+							position: 'absolute',
+							zIndex: 200
+						}}>
 							<SpeedDial
 						      fabContentOpen={<ContentAdd />}
 						      fabContentClose={<NavigationClose />}
@@ -117,12 +130,17 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						      <SpeedDialItem
 						        label="New Timeline"
 						        fabContent={<NewTimelineIcon />}
-						        onTouchTap={this.props.addTimelineToMain}
+						        onTouchTap={this.props.insertTimeline}
 						      />
 						      <SpeedDialItem
 						        label="New Trial"
 						        fabContent={<NewTrialIcon/>}
-						        onTouchTap={this.props.addTrialToMain}
+						        onTouchTap={this.props.insertTrial}
+						      />
+						      <SpeedDialItem
+						        label="Delete"
+						        fabContent={<Delete/>}
+						        onTouchTap={this.props.deleteSelected}
 						      />
 						    </SpeedDial>
 					    </div>

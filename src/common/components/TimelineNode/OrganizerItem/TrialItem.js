@@ -7,9 +7,9 @@ import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import {
-	grey800 as normalColor,
-	cyan200 as highlightColor,
-	teal600 as iconHighlightColor,
+	grey400 as normalColor,
+	cyan400 as highlightColor,
+	indigo500 as iconHighlightColor,
 	green500 as checkColor,
 	grey300 as hoverColor,
 } from 'material-ui/styles/colors';

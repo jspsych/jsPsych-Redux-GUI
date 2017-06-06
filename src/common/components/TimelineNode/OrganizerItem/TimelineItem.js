@@ -8,7 +8,7 @@ import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import {
-	cyan200 as highlightColor,
+	cyan400 as highlightColor,
 	green500 as checkColor,
 } from 'material-ui/styles/colors';
 

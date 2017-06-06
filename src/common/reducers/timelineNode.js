@@ -40,37 +40,9 @@ const initState = {
 	previewId: null,
 
 	// the main timeline. array of ids
-	mainTimeline: [utils.standardizeTimelineId(0)], 
+	mainTimeline: [], 
 }
 
-initState[utils.standardizeTimelineId(0)] = {
-	id: utils.standardizeTimelineId(0),
-	name: DEFAULT_TIMELINE_NAME,
-	parent: null,
-	childrenById: [utils.standardizeTimelineId(1)],
-	level: function(state) { return getLevel(state, this) },
-	
-	enabled: true,
-	parameters: {}
-}
-initState[utils.standardizeTimelineId(1)] = {
-	id: utils.standardizeTimelineId(1),
-	name: DEFAULT_TIMELINE_NAME,
-	parent: utils.standardizeTimelineId(0),
-	childrenById: [utils.standardizeTrialId(0)],
-	level: function(state) { return getLevel(state, this) },
-	
-	enabled: true,
-	parameters: {}
-}
-initState[utils.standardizeTrialId(0)] = {
-	id: utils.standardizeTrialId(0),
-	name: DEFAULT_TRIAL_NAME,
-	parent: utils.standardizeTimelineId(1),
-	level: function(state) { return getLevel(state, this) },
-	enabled: true,
-	parameters: {}
-}
 
 
 export default function(state=initState, action) {
