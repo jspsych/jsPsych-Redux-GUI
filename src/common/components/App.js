@@ -4,6 +4,7 @@ import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawer';
 import TimelineNodeEditorDrawer from './TimelineNode/TimelineNodeEditorDrawer';
+//import TrialForm from './TimelineNode/TrialForm';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
@@ -17,6 +18,7 @@ class App extends React.Component {
 			timelineOrganizerDrawerToggle: true,
 			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
 			timelineEditorDrawerToggle: false,
+			pluginParameterValue: {},
 		}
 
 		this.setTimelineOrangizerWidth = (width) => {
@@ -46,6 +48,12 @@ class App extends React.Component {
 		this.closeTimelineEditorDrawer = () => {
 			this.setState({
 				timelineEditorDrawerToggle: false,
+			});
+		}
+
+		this.changeParameterValue = (newValue) => {
+			this.setState({
+				pluginParameterValue: {newValue},
 			});
 		}
 	}
