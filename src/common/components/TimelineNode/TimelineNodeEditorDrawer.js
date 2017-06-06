@@ -31,9 +31,9 @@ class TimelineNodeEditorDrawer extends React.Component {
 						right: '0px',
 						height: '86.5vh', 
 						display: 'flex',
-						'WebkitTransition': 'all 0.3s ease',
-						'MozTransition': 'all 0.3s ease',
-						transition: 'all 0.3s ease',
+						'WebkitTransition': 'all 0.4s ease',
+						'MozTransition': 'all 0.4s ease',
+						transition: 'all 0.4s ease',
 						}}>
 				<div className="TimelineNode-Editor-Divider"
 					style={{backgroundColor: 'black',

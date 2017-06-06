@@ -23,7 +23,7 @@ const MAX_WIDTH = 60;
 var dragging = false;
 
 
-const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.3s ease');
+const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
 const getWidthFromDragging = (e) => {
 	let percent = (e.pageX / window.innerWidth) * 100;
