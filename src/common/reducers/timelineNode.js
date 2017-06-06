@@ -36,8 +36,8 @@ import * as utils from '../constants/utils';
 var timelineId = 0;
 var trialId = 0;
 
-const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
-const DEFAULT_TRIAL_NAME = 'Untitled Trial';
+export const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
+export const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 
 const initState = {
 	// id of which is being previewed/editted
@@ -71,10 +71,10 @@ export default function(state=initState, action) {
 
 function getNodeById(state, id) {
 	if (id === null) return null;
-	return state.id;
+	return state[id];
 }
 
-function getLevel(state, node) {
+export function getLevel(state, node) {
 	if (node.parent === null)
 		return 0;
 	else
@@ -117,7 +117,7 @@ function canMoveUnder(state, sourceId, targetId) {
 
 
 function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null, 
-	childrenById=[], level=getLevel, collapsed=false, 
+	childrenById=[], collapsed=false, 
 	enabled=true, parameters={}) {
 
 	return {
@@ -125,7 +125,7 @@ function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null,
 		name: name,
 		parent: parent,
 		childrenById: childrenById,
-		level: level,
+		level: getLevel,
 		collapsed: collapsed,
 		enabled: enabled,
 		parameters: parameters
@@ -135,18 +135,18 @@ function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null,
 // define deep copy for parameters later
 function copyTimeline(timeline) {
 	return createTimeline(timeline.id, timeline.name, timeline.parent,
-		timeline.childrenById.slice(), timeline.level, timeline.collapsed,
+		timeline.childrenById.slice(), timeline.collapsed,
 		timeline.enabled, timeline.parameters)
 }
 
 function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
-	level=getLevel, enabled=true, parameters={}) {
+	enabled=true, parameters={}) {
 
 	return {
-		id: utils.standardizeTrialId(trialId++),
+		id: id,
 		name: name,
 		parent: parent,
-		level: level,
+		level: getLevel,
 		enabled: enabled,
 		parameters: parameters
 	};
@@ -156,18 +156,13 @@ function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
 action = {
 	name: string,
 	parent: string, 
-	childrenById: array,
-	level: number, 
-	collapsed: boolean,
-	enabled: boolean,
-	parameters: object,
 }
 */
 function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
 	let id = utils.standardizeTimelineId(timelineId++);
-	let parent = getNodeById(action.parent);
+	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
 		parent = copyTimeline(parent);
@@ -179,9 +174,7 @@ function addTimeline(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let timeline = createTimeline(id, action.name, action.parent, 
-		action.childrenById, action.level, action.collapsed,
-		action.enabled, action.parameters)
+	let timeline = createTimeline(id, action.name, action.parent)
 
 	new_state[id] = timeline;
  
@@ -192,16 +185,13 @@ function addTimeline(state, action) {
 action = {
 	name: string,
 	parent: string, 
-	level: number, 
-	enabled: boolean,
-	parameters: object,
 }
 */
 function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
 	let id = utils.standardizeTrialId(trialId++);
-	let parent = getNodeById(action.parent);
+	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
 		parent = copyTimeline(parent);
@@ -213,12 +203,38 @@ function addTrial(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let trial = createTrial(id, action.name, action.parent, 
-		action.level, action.enabled, action.parameters)
+	let trial = createTrial(id, action.name, action.parent)
 
 	new_state[id] = trial;
  
 	return new_state;
+}
+
+function deleteTimelineHelper(state, id) {
+	let timeline = getNodeById(state, id);
+
+	// delete its children
+	timeline['childrenById'].map((childId) => {
+		if (utils.isTimeline(childId)) {
+			state = deleteTimelineHelper(state, childId);
+		} else {
+			state = deleteTrialHelper(state, childId)
+		}
+	});
+
+	// delete itself
+	let parent = timeline.parent;
+	if (parent === null) { // that is, main timeline
+		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
+	} else {
+		parent =  getNodeById(state, parent)
+		parent = copyTimeline(parent);
+		state[parent.id] = parent;
+		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
+	}
+	delete state[id];
+
+	return state;
 }
 
 /*
@@ -229,19 +245,26 @@ action = {
 function deleteTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let timeline = getNodeById(action.id);
-	let parent = timeline.parent;
+	return deleteTimelineHelper(new_state, action.id);
+}
+
+
+
+function deleteTrialHelper(state, id) {
+	let trial = getNodeById(state, id);
+	let parent = trial.parent;
 
 	if (parent === null) { // that is, main timeline
-		new_state.mainTimeline = state.mainTimeline.filter((item) => (item !== action.id));
+		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
 	} else {
+		parent = getNodeById(state, parent);
 		parent = copyTimeline(parent);
-		new_state[parent.id] = parent;
-		parent.childrenById = parent.childrenById.filter((item) => (item !== action.id));
+		state[parent.id] = parent;
+		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
-	delete new_state[action.id];
+	delete state[id];
 
-	return timeline;
+	return state;
 }
 
 /*
@@ -252,19 +275,7 @@ action = {
 function deleteTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let trial = getNodeById(action.id);
-	let parent = trial.parent;
-
-	if (parent === null) { // that is, main timeline
-		new_state.mainTimeline = state.mainTimeline.filter((item) => (item !== action.id));
-	} else {
-		parent = copyTimeline(parent);
-		new_state[parent.id] = parent;
-		parent.childrenById = parent.childrenById.filter((item) => (item !== action.id));
-	}
-	delete new_state[action.id];
-
-	return new_state;
+	return deleteTrialHelper(new_state, action.id);
 }
 
 
@@ -279,13 +290,13 @@ action = {
 function moveTimeline(state, action) {
 	if (canMoveUnder(state, action.sourceId, action.targetId)) {
 		// create a deep copy
-		let source = copyTimeline(getNodeById(action.sourceId));
+		let source = copyTimeline(getNodeById(state, action.sourceId));
 
 		// delete it from original place
 		let new_state = deleteTimeline(state, {id: action.sourceId});
 
 		// update parent
-		let parent = getNodeById(action.targetId);
+		let parent = getNodeById(new_state, action.targetId);
 		if (parent === null) {
 			new_state.mainTimeline.splice(action.position, 0, action.sourceId); // already deep copied
 			// update itself
@@ -315,13 +326,13 @@ action = {
 
 */
 function moveTrial(state, action) {
-	let source = copyTimeline(getNodeById(action.sourceId));
+	let source = copyTimeline(getNodeById(state, action.sourceId));
 
 	// delete it from original place
 	let new_state = deleteTrial(state, {id: action.sourceId});
 
 	// update parent
-	let parent = getNodeById(action.targetId);
+	let parent = getNodeById(new_state, action.targetId);
 	if (parent === null) {
 		new_state.mainTimeline.splice(action.position, 0, action.sourceId); // already deep copied
 		// update itself

@@ -18,7 +18,7 @@ export const standardizeTrialId = (id) => {
 }
 
 export const typeOfNode = (node) => {
-	if (typeof node !== "string" || typeof node !== "object")
+	if (typeof node !== "string" && typeof node !== "object")
 		throw new TypeError("Should pass in a string or an object!");
 
 	if (typeof node === "object")

@@ -2,6 +2,9 @@
   "name": "jsPsych-Redux-GUI",
   "version": "0.1.0",
   "private": true,
+  "jest": {
+    "testPathIgnorePatterns": ["/node_modules/", "/jsPsych"]
+  },
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",
