@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { resizeTimelineOrganizerAction } from '../actions/mainViewActions';
 import App from '../components/App';
 
 
