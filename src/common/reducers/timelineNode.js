@@ -108,7 +108,7 @@ function canMoveUnder(state, sourceId, targetId) {
 	if (targetId === null) return true;
 
 	if (utils.isTrial(targetId) || 
-		isAncestor(sourceId, targetId)) {
+		isAncestor(state, sourceId, targetId)) {
 		return false;
 	}
 
@@ -150,6 +150,10 @@ function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
 		enabled: enabled,
 		parameters: parameters
 	};
+}
+
+function copyTrial(trial) {
+	return createTrial(trial.id, trial.name, trial.parent, trial.enabled, trial.parameters);
 }
 
 /*
@@ -300,7 +304,7 @@ function moveTimeline(state, action) {
 		if (parent === null) {
 			new_state.mainTimeline.splice(action.position, 0, action.sourceId); // already deep copied
 			// update itself
-			source.parent = parent;
+			source.parent = parent.id;
 		} else {
 			parent = copyTimeline(parent);
 			new_state[parent.id] = parent;
@@ -326,7 +330,7 @@ action = {
 
 */
 function moveTrial(state, action) {
-	let source = copyTimeline(getNodeById(state, action.sourceId));
+	let source = copyTrial(getNodeById(state, action.sourceId));
 
 	// delete it from original place
 	let new_state = deleteTrial(state, {id: action.sourceId});

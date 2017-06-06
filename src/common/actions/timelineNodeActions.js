@@ -41,7 +41,7 @@ export function moveTimelineAction(sourceId, targetId, position) {
 
 export function moveTrialAction(sourceId, targetId, position) {
 	return {
-		type: actionTypes.MOVE_TIMELINE,
+		type: actionTypes.MOVE_TRIAL,
 		sourceId: sourceId,
 		targetId: targetId,
 		position: position

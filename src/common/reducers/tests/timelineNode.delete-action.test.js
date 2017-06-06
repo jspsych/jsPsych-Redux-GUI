@@ -25,4 +25,3 @@ describe('Timeline Node Reducers for Deleting actions', () => {
 	})
 })
 
-
