@@ -10,6 +10,7 @@ import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import {
 	cyan400 as highlightColor,
 	green500 as checkColor,
+	grey300 as hoverColor
 } from 'material-ui/styles/colors';
 
 import { isTimeline } from '../../../constants/utils';
@@ -20,30 +21,24 @@ class TimelineItem extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			collapsed: false
-		}
-
-		this.toggleCollapsed = () => {
-			this.setState({
-				collapsed: !this.state.collapsed
-			})
-		}
 	}
 
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div className="Timeline-Item-Container" style={{paddingLeft: (20*this.props.level) }}>
+			<div className="Timeline-Item-Container" style={{paddingLeft: (20*this.props.level), overflow: 'hidden'}}>
 			<div className="Timeline-Item" style={{
-						display:'flex', 
+						display: 'flex',
 						minWidth: "100%",
-						overflowY: 'hidden',
+						overflow: 'hidden',
 						backgroundColor: (this.props.isSelected) ? highlightColor : null
 					}}>
-				<IconButton onTouchTap={this.toggleCollapsed} disableTouchRipple={true} >
-					{(this.state.collapsed || this.props.noChildren) ? <CollapsedIcon /> : <ExpandedIcon />}
+				<IconButton hoveredStyle={{backgroundColor: hoverColor}}
+							onTouchTap={this.props.toggleCollapsed} 
+							disableTouchRipple={true} >
+					{(this.props.collapsed) ? <CollapsedIcon /> : <ExpandedIcon />}
 				</IconButton>
+				<div style={{width: "100%"}}>
 				<ListItem 
 						primaryText={this.props.name}
 						onTouchTap={this.props.onClick} 
@@ -54,12 +49,18 @@ class TimelineItem extends React.Component {
 							>
 							{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 							</IconButton>
-						}/>
+						}/></div>
 			</div>
-			{(this.state.collapsed) ? null :
+			{(this.props.collapsed || this.props.noChildren) ? null :
 				(this.props.children.map((id) => {
-					if (isTimeline(id)) return (<TimelineItemWrapper id={id} key={id} />);
-					else return (<TrialItem id={id} key={id} />);
+					if (isTimeline(id)) return (<TimelineItemWrapper id={id} key={id} 
+						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+						/>);
+					else return (<TrialItem id={id} key={id} 
+						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+						/>);
 				}))}
 			</div>
 			</MuiThemeProvider>

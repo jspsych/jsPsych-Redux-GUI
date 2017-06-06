@@ -26,12 +26,16 @@ class TrialItem extends React.Component {
 						display:'flex', 
 						paddingLeft: (20*this.props.level), 
 						minWidth: "100%",
-						overflowY: 'hidden',
+						overflow: 'hidden',
 						backgroundColor: (this.props.isSelected) ? highlightColor : null
-					}}>
-					<IconButton disableTouchRipple={true} onTouchTap={this.props.onClick}>
+					}} >
+					<IconButton 
+						hoveredStyle={{backgroundColor: hoverColor}}
+						disableTouchRipple={true} 
+						onTouchTap={this.props.onClick}>
 						<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
 					</IconButton>
+					<div style={{width: "100%"}}>
 					<ListItem 
 						primaryText={this.props.name}
 						onTouchTap={this.props.onClick} 
@@ -39,7 +43,7 @@ class TrialItem extends React.Component {
 							<IconButton disableTouchRipple={true} onTouchTap={this.props.onToggle}>
 							{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 							</IconButton>}
-					/>
+					/></div>
 				</div>
 			</MuiThemeProvider>
 		)

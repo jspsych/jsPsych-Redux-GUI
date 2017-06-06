@@ -10,6 +10,13 @@ const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
 export const convertPercent = (number) => (number + '%'); 
 
+const mainBodyWidth = (leftDrawer, leftWidth, rightDrawer) => {
+	let width = 100;
+	if (leftDrawer) width -= leftWidth;
+	if (rightDrawer) width -= 20;
+	return convertPercent(width);
+}
+
 class App extends React.Component {
 	constructor(props) {
 		super(props);
@@ -70,10 +77,12 @@ class App extends React.Component {
 	  					closeCallback={this.closeTimelineOgranizerDrawer}
 	  					setWidthCallback={this.setTimelineOrangizerWidth}
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer}
+	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
 	  				<div className="main-body" 
-	  					style={{width: (this.state.timelineOrganizerDrawerToggle) ?
-	  									convertPercent(100-this.state.timelineOrganizerDrawerWidth) : "100%",
+	  					style={{width: mainBodyWidth(this.state.timelineOrganizerDrawerToggle, 
+	  												this.state.timelineOrganizerDrawerWidth, 
+	  												this.state.timelineEditorDrawerToggle),
 	  					 margin: '0 auto'
 	  					}}
 	  				>

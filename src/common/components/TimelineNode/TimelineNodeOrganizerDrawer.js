@@ -28,7 +28,7 @@ import TrialItem from '../../containers/TimelineNode/OrganizerItem/TrialItem';
 import TimelineItem from '../../containers/TimelineNode/OrganizerItem/TimelineItem';
 
 const MIN_WIDTH = 20;
-const MAX_WIDTH = 60;
+const MAX_WIDTH = 55;
 
 var dragging = false;
 
@@ -111,38 +111,44 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						}}>
 						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
 							{this.props.mainTimeline.map((id) => {
-								if (isTimeline(id)) return (<TimelineItem id={id} key={id} />);
-								else return (<TrialItem id={id} key={id}/>);
+								if (isTimeline(id)) return (<TimelineItem id={id} key={id} 
+									openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+									closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+									/>);
+								else return (<TrialItem id={id} key={id} 
+									openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+									closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+									/>);
 							})}
 						</List>
 						</div>
 						<Divider />
 						<div style={{
-							bottom: 10, 
-							left: convertPercent(this.props.width-6),  
-							position: 'absolute',
-							zIndex: 200
+							float: 'right',
+							paddingRight: 20,
+							paddingTop: 10,
+							zIndex: 200,
 						}}>
-							<SpeedDial
-						      fabContentOpen={<ContentAdd />}
-						      fabContentClose={<NavigationClose />}
-						    >
-						      <SpeedDialItem
-						        label="New Timeline"
-						        fabContent={<NewTimelineIcon />}
-						        onTouchTap={this.props.insertTimeline}
-						      />
-						      <SpeedDialItem
-						        label="New Trial"
-						        fabContent={<NewTrialIcon/>}
-						        onTouchTap={this.props.insertTrial}
-						      />
-						      <SpeedDialItem
-						        label="Delete"
-						        fabContent={<Delete/>}
-						        onTouchTap={this.props.deleteSelected}
-						      />
-						    </SpeedDial>
+						<SpeedDial
+					      fabContentOpen={<ContentAdd />}
+					      fabContentClose={<NavigationClose />}
+					    >
+					      <SpeedDialItem
+					        label="New Timeline"
+					        fabContent={<NewTimelineIcon />}
+					        onTouchTap={this.props.insertTimeline}
+					      />
+					      <SpeedDialItem
+					        label="New Trial"
+					        fabContent={<NewTrialIcon/>}
+					        onTouchTap={this.props.insertTrial}
+					      />
+					      <SpeedDialItem
+					        label="Delete"
+					        fabContent={<Delete/>}
+					        onTouchTap={this.props.deleteSelected}
+					      />
+					    </SpeedDial>
 					    </div>
 					</div>: null}
 				</div>

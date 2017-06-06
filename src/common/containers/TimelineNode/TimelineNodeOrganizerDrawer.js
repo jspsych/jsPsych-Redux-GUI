@@ -57,6 +57,7 @@ const deleteSelected = (dispatch) => {
 	})
 }
 
+
 const mapStateToProps = (state, ownProps) => {
 	let s1 = state.timelineNodeState;
 
@@ -69,7 +70,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTrial: () => { insertTrial(dispatch) },
 	insertTimeline: () => { insertTimeline(dispatch) },
-	deleteSelected: () => { deleteSelected(dispatch) }
+	deleteSelected: () => { deleteSelected(dispatch) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineNodeOrganizerDrawer);

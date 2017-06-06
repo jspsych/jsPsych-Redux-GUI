@@ -61,3 +61,10 @@ export function onToggleAction(id) {
 		id: id
 	};
 }
+
+export function setCollapsed(id, toggle=true) {
+	return {
+		type: actionTypes.SET_COLLAPSED,
+		id: id
+	}
+}

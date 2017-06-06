@@ -8,6 +8,7 @@ A timeline state = {
 	parent: string, 
 	childrenById: array,
 	level: function, 
+	collapsed: boolean,
 	enabled: boolean,
 	// for tree menu
 	
@@ -63,6 +64,8 @@ export default function(state=initState, action) {
 			return onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
 			return onToggle(state, action);
+		case actionTypes.SET_COLLAPSED:
+			return setCollapsed(state, action);
 		default:
 			return state;
 	}
@@ -118,15 +121,16 @@ function canMoveUnder(state, sourceId, targetId) {
 }
 
 
-function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null, 
-	childrenById=[], enabled=true, parameters={}) {
+function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
+	childrenById=[], collapsed=false, enabled=true, parameters={}) {
 
 	return {
 		id: id,
 		name: name,
 		parent: parent,
 		childrenById: childrenById,
-		level: function(state) { return getLevel(state, this) },
+		collapsed: collapsed,
+		level: function(state, self) { return getLevel(state, self) },
 		enabled: enabled,
 		parameters: parameters
 	};
@@ -134,12 +138,12 @@ function createTimeline(id, name=DEFAULT_TIMELINE_NAME, parent=null,
 
 // define deep copy for parameters later
 function copyTimeline(timeline) {
-	return createTimeline(timeline.id, timeline.name, timeline.parent,
-		timeline.childrenById.slice(),
+	return createTimeline(timeline.id, timeline.parent, timeline.name, 
+		timeline.childrenById.slice(), timeline.collapsed,
 		timeline.enabled, timeline.parameters)
 }
 
-function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
+function createTrial(id,  parent=null, name=DEFAULT_TRIAL_NAME,
 	enabled=true, parameters={}) {
 
 	return {
@@ -153,7 +157,7 @@ function createTrial(id, name=DEFAULT_TRIAL_NAME, parent=null,
 }
 
 function copyTrial(trial) {
-	return createTrial(trial.id, trial.name, trial.parent, trial.enabled, trial.parameters);
+	return createTrial(trial.id, trial.parent, trial.name, trial.enabled, trial.parameters);
 }
 
 /*
@@ -172,13 +176,14 @@ function addTimeline(state, action) {
 		parent = copyTimeline(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
+		parent.collapsed = false;
 	} else {
 		// update parent: childrenById
 		new_state.mainTimeline = state.mainTimeline.slice();
 		new_state.mainTimeline.push(id);
 	}
 
-	let timeline = createTimeline(id, action.name, action.parent)
+	let timeline = createTimeline(id, action.parent)
 
 	new_state[id] = timeline;
  
@@ -201,13 +206,14 @@ function addTrial(state, action) {
 		parent = copyTimeline(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
+		parent.collapsed = false;
 	} else {
 		// update parent: main timeline
 		new_state.mainTimeline = state.mainTimeline.slice();
 		new_state.mainTimeline.push(id);
 	}
 
-	let trial = createTrial(id, action.name, action.parent)
+	let trial = createTrial(id, action.parent)
 
 	new_state[id] = trial;
 	return new_state;
@@ -372,6 +378,19 @@ function onToggle(state, action) {
 
 	node.enabled = !node.enabled;
 	new_state[node.id] = node;
+
+	return new_state;
+}
+
+function setCollapsed(state, action) {
+	let timeline = getNodeById(state, action.id);
+
+	let new_state = Object.assign({}, state);
+
+	timeline = copyTimeline(timeline);
+ 	timeline.collapsed = !timeline.collapsed;
+
+	new_state[timeline.id] = timeline;
 
 	return new_state;
 }
