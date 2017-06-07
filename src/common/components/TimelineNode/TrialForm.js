@@ -3,6 +3,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
+import isTimeline from '../../constanst/utils'
 
 class TrialForm extends React.Component {
 	render(){
@@ -14,7 +15,7 @@ class TrialForm extends React.Component {
 			value={plugin} />
 			);
 		if(this.props.open){
-			//if(!this.props.isTimeline){
+			if(!utils.isTimeline(/*Some node */)){
 				var getParamVal=jsPsych.plugins[this.props.open].parameterValue;
 				console.log(getParamVal);
 				const plugForm = Object.keys(getParamVal.info.parameters).map((plug) => {
@@ -36,7 +37,7 @@ class TrialForm extends React.Component {
 			</SelectField>
 			{plugForm}
 			</div>
-		 //}
+		 }
 		return(
 			<div>
 			{form}

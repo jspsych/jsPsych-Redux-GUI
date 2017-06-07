@@ -38,7 +38,10 @@ class Appbar extends React.Component {
   						</div>
         				<div className="Appbar-main" style={{display: 'inline-block', width:"93%"}}>
         					<div style={{backgroundColor: 'white', marginLeft: 5}}>
-								<TextField value="Untitled Experiment" />
+								<TextField 
+								id="experiment_name"
+								defaultValue="Untitled Experiment" 
+								onChange={this.props.changeExperimentNameCallback}/>
 							</div>
   							<Toolbar style={{height: 40}}>
   							</Toolbar>

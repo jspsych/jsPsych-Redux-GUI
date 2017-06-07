@@ -25,7 +25,7 @@ class App extends React.Component {
 			timelineOrganizerDrawerToggle: true,
 			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
 			timelineEditorDrawerToggle: false,
-			pluginParameterValue: {},
+			experimentName: "Untitled Experiment",
 		}
 
 		this.setTimelineOrangizerWidth = (width) => {
@@ -58,17 +58,22 @@ class App extends React.Component {
 			});
 		}
 
-		this.changeParameterValue = (newValue) => {
+		this.changeExperimentName = (newName) => {
 			this.setState({
-				pluginParameterValue: {newValue},
+				experimentName: newName
 			});
 		}
 	}
 
 	render() {
 		return (
+<<<<<<< HEAD
 			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}><Appbar /></div>
+=======
+			<div className="App" style={{overflowX: 'hidden', height: "100%", overflowY: 'hidden'}}>
+				<Appbar changeExperimentNameCallBack={this.state.changeExperimentName}/>
+>>>>>>> 6cc1a869cf349c254b32a4847f49aee7aba1d511
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizerDrawer 
 	  					open={this.state.timelineOrganizerDrawerToggle}

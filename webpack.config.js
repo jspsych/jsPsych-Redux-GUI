@@ -23,13 +23,14 @@ module.exports = {
             container_editor_drawer:'src/common/containers/TimelineNode/TimelineNodeEditorDrawer.js',
             container_organizer_drawer:'src/common/containers/TimelineNode/TimelineNodeOrganizerDrawer.js',
             container_organizer_item:'src/common/containers/TimelineNode/TimelineNodeOrganizerItem.js',
-            actions: 'src/common/actions/mainViewActions.js',
+            actions: 'src/common/actions/timelineNodeActions.js',
             reducer_index: 'src/common/reducers/index.js',
             reducer_timeline_node: 'src/common/reducers/timelineNode.js'
         }
     },
     module: {
         loaders: [{
+            exclude: /node_modules/,
             loader: 'babel',
             query: { presets: ['es2015', 'react', 'stage-0'] }
         }]
