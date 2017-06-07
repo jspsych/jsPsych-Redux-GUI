@@ -4,10 +4,18 @@ import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawer';
 import TimelineNodeEditorDrawer from './TimelineNode/TimelineNodeEditorDrawer';
+//import TrialForm from './TimelineNode/TrialForm';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
 export const convertPercent = (number) => (number + '%'); 
+
+const mainBodyWidth = (leftDrawer, leftWidth, rightDrawer) => {
+	let width = 100;
+	if (leftDrawer) width -= leftWidth;
+	if (rightDrawer) width -= 20;
+	return convertPercent(width);
+}
 
 class App extends React.Component {
 	constructor(props) {
@@ -17,6 +25,7 @@ class App extends React.Component {
 			timelineOrganizerDrawerToggle: true,
 			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
 			timelineEditorDrawerToggle: false,
+			pluginParameterValue: {},
 		}
 
 		this.setTimelineOrangizerWidth = (width) => {
@@ -48,12 +57,18 @@ class App extends React.Component {
 				timelineEditorDrawerToggle: false,
 			});
 		}
+
+		this.changeParameterValue = (newValue) => {
+			this.setState({
+				pluginParameterValue: {newValue},
+			});
+		}
 	}
 
 	render() {
 		return (
-			<div className="App" style={{overflowX: 'hidden', height: "100%", overflowY: 'hidden'}}>
-				<Appbar />
+			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
+				<div className="appbar-container" style={{height: "20%"}}><Appbar /></div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizerDrawer 
 	  					open={this.state.timelineOrganizerDrawerToggle}
@@ -62,11 +77,13 @@ class App extends React.Component {
 	  					closeCallback={this.closeTimelineOgranizerDrawer}
 	  					setWidthCallback={this.setTimelineOrangizerWidth}
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer}
+	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
 	  				<div className="main-body" 
-	  					style={{width: (this.state.timelineOrganizerDrawerToggle) ?
-	  									convertPercent(100-this.state.timelineOrganizerDrawerWidth) : "100%",
-	  					 margin: '0 auto'
+	  					style={{width: mainBodyWidth(this.state.timelineOrganizerDrawerToggle, 
+	  												this.state.timelineOrganizerDrawerWidth, 
+	  												this.state.timelineEditorDrawerToggle),
+	  					 margin: '0 auto',
 	  					}}
 	  				>
 	  				<Preview />
