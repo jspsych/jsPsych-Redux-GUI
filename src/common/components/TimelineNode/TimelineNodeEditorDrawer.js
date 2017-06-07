@@ -15,7 +15,7 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-class TimelineNodeEditorDrawer extends React.Component {
+export default class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -76,5 +76,3 @@ class TimelineNodeEditorDrawer extends React.Component {
   			)
 	}
 }
-// 
-export default TimelineNodeEditorDrawer;

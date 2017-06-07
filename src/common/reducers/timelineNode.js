@@ -121,6 +121,7 @@ function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
 
 	return {
 		id: id,
+		type: utils.TIMELINE_TYPE,
 		name: name,
 		parent: parent,
 		childrenById: childrenById,
@@ -137,11 +138,12 @@ function copyTimeline(timeline) {
 		timeline.enabled, timeline.parameters)
 }
 
-function createTrial(id,  parent=null, name=DEFAULT_TRIAL_NAME,
+function createTrial(id, parent=null, name=DEFAULT_TRIAL_NAME,
 	enabled=true, parameters={}) {
 
 	return {
 		id: id,
+		type: utils.TRIAL_TYPE,
 		name: name,
 		parent: parent,
 		enabled: enabled,
@@ -217,7 +219,7 @@ function deleteTimelineHelper(state, id) {
 
 	// delete its children
 	timeline['childrenById'].map((childId) => {
-		if (utils.isTimeline(childId)) {
+		if (utils.isTimeline(state[childId])) {
 			state = deleteTimelineHelper(state, childId);
 		} else {
 			state = deleteTrialHelper(state, childId)
@@ -363,7 +365,7 @@ function onToggle(state, action) {
 
 	let new_state = Object.assign({}, state);
 
-	if (utils.isTimeline(node.id)) {
+	if (utils.isTimeline(node)) {
 		node = copyTimeline(node);
 	} else {
 		node = copyTrial(node);

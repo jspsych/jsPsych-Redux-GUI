@@ -28,7 +28,7 @@ var s = '<!doctype html>\
 \
 '
 
-class Preview extends React.Component {
+export default class Preview extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -43,5 +43,3 @@ class Preview extends React.Component {
   		);
 	}
 }
-
-export default Preview;

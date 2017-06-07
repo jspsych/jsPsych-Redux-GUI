@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "jest": {
-    "testPathIgnorePatterns": ["/node_modules/", "/jsPsych"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/jsPsych"
+    ]
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
@@ -28,14 +31,15 @@
     "webpack-preset-babel-stage-0": "^0.2.0"
   },
   "dependencies": {
-    "react": "^15.5.4",
-    "react-mui-speeddial": "0.0.6",
-    "material-ui": "^0.17.3",
     "body-parser": "^1.17.1",
+    "material-ui": "^0.17.3",
+    "react": "^15.5.4",
     "react-bootstrap": "^0.30.8",
     "react-dnd": "^2.4.0",
+    "react-dnd-html5-backend": "^2.4.1",
     "react-dom": "^15.4.2",
     "react-draggable": "^2.2.6",
+    "react-mui-speeddial": "0.0.6",
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.6",
     "react-tap-event-plugin": "^2.0.1",

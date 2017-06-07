@@ -14,7 +14,7 @@ import {
 	grey300 as hoverColor,
 } from 'material-ui/styles/colors';
 
-class TrialItem extends React.Component {
+export default class TrialItem extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -49,5 +49,3 @@ class TrialItem extends React.Component {
 		)
 	}
 }
-
-export default TrialItem;

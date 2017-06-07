@@ -13,12 +13,9 @@ import {
 	grey300 as hoverColor
 } from 'material-ui/styles/colors';
 
-import { isTimeline } from '../../../constants/utils';
-import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
-import TimelineItemWrapper from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
-import OrganizerItem from './index';
+import OrganizerItem from '../../../containers/TimelineNode/OrganizerItem';
 
-class TimelineItem extends React.Component {
+export default class TimelineItem extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -67,5 +64,3 @@ class TimelineItem extends React.Component {
 		)
 	}
 }
-
-export default TimelineItem;

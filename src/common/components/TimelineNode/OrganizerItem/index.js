@@ -1,8 +1,11 @@
 import React from 'react';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 import { isTimeline } from '../../../constants/utils';
 import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
 import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
+
 
 class OrganizerItem extends React.Component {
 	constructor(props) {
@@ -10,9 +13,9 @@ class OrganizerItem extends React.Component {
 	}
 
 	render() {
-
 		return (
-			isTimeline(this.props.id) ? 
+			<div>
+				{(this.props.isTimeline) ? 
 				(<TimelineItem id={this.props.id} key={this.props.id} 
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
@@ -20,10 +23,10 @@ class OrganizerItem extends React.Component {
 				(<TrialItem id={this.props.id} key={this.props.id} 
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-				/>)
+				/>)}
+			</div>
 		)
 	}
 }
 
-
-export default OrganizerItem;
+export default DragDropContext(HTML5Backend)(OrganizerItem);

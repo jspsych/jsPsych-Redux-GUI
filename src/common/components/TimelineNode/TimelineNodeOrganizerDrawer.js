@@ -23,8 +23,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
-import { isTimeline } from '../../constants/utils';
-import OrganizerItem from './OrganizerItem';
+import OrganizerItem from '../../containers/TimelineNode/OrganizerItem';
 
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 55;
@@ -48,7 +47,7 @@ function pauseEvent(e){
     return false;
 }
 
-class TimelineNodeOrganizerDrawer extends React.Component {
+export default class TimelineNodeOrganizerDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -198,5 +197,3 @@ class TimelineNodeOrganizerDrawer extends React.Component {
   			)
 	}
 }
-
-export default TimelineNodeOrganizerDrawer;
