@@ -24,8 +24,7 @@ import {
 
 import { convertPercent } from '../App';
 import { isTimeline } from '../../constants/utils';
-import TrialItem from '../../containers/TimelineNode/OrganizerItem/TrialItem';
-import TimelineItem from '../../containers/TimelineNode/OrganizerItem/TimelineItem';
+import OrganizerItem from './OrganizerItem';
 
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 55;
@@ -115,16 +114,13 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 							paddingLeft: 0,
 						}}>
 						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
-							{this.props.mainTimeline.map((id) => {
-								if (isTimeline(id)) return (<TimelineItem id={id} key={id} 
-									openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-									closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-									/>);
-								else return (<TrialItem id={id} key={id} 
-									openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-									closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-									/>);
-							})}
+							{this.props.mainTimeline.map((id) => (
+								<OrganizerItem id={id} 
+												key={id} 
+												openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+												closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+								/>
+							))}
 						</List>
 						</div>
 						<Divider />

@@ -16,6 +16,7 @@ import {
 import { isTimeline } from '../../../constants/utils';
 import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
 import TimelineItemWrapper from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
+import OrganizerItem from './index';
 
 class TimelineItem extends React.Component {
 	constructor(props) {
@@ -26,7 +27,7 @@ class TimelineItem extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div className="Timeline-Item-Container" style={{
+			<div className="Timeline-Item-Group" style={{
 				paddingLeft: 0,
 				overflow: 'hidden'
 			}}>
@@ -54,17 +55,13 @@ class TimelineItem extends React.Component {
 							</IconButton>
 						}/></div>
 			</div>
-			{(this.props.collapsed || this.props.noChildren) ? null :
-				(this.props.children.map((id) => {
-					if (isTimeline(id)) return (<TimelineItemWrapper id={id} key={id} 
-						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-						/>);
-					else return (<TrialItem id={id} key={id} 
-						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-						/>);
-				}))}
+			{(this.props.collapsed || this.props.noChildren) ? 
+				null :
+				(this.props.children.map((id) => (<OrganizerItem id={id} 
+																key={id} 
+																openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+																closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+												/>)))}
 			</div>
 			</MuiThemeProvider>
 		)
