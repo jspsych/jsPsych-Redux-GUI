@@ -30,23 +30,15 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveTimelineAction(sourceId, targetId, position) {
+export function moveNodeAction(sourceId, targetId, position) {
 	return {
-		type: actionTypes.MOVE_TIMELINE,
+		type: actionTypes.MOVE_NODE,
 		sourceId: sourceId,
 		targetId: targetId,
 		position: position
 	};
 }
 
-export function moveTrialAction(sourceId, targetId, position) {
-	return {
-		type: actionTypes.MOVE_TRIAL,
-		sourceId: sourceId,
-		targetId: targetId,
-		position: position
-	};
-}
 
 export function onPreviewAction(id) {
 	return {

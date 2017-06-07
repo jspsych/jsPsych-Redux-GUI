@@ -1,5 +1,4 @@
 import React from 'react';
-
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
 import Menu from 'material-ui/Menu';
@@ -7,6 +6,8 @@ import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import { ContextMenu, ContextMenuTrigger } from "react-contextmenu";
 
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
@@ -36,36 +37,7 @@ export const contextMenuStyle = {
 export default class TrialItem extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			contextMenuOpen: false,
-		}
-
-		this.openContextMenu = (event) => {
-			this.setState({
-				contextMenuOpen: true,
-				anchorEl: event.currentTarget, 
-			})
-		}
-
-		this.closeContextMenu = () => {
-			this.setState({
-				contextMenuOpen: false
-			})
-		}
-
-		this.preventDefault = (e) => {
-			e.preventDefault();
-		}
 	}
-
-	componentDidMount() {
-        document.addEventListener('contextmenu', this.preventDefault)
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('contextmenu', this.preventDefault)
-    }
 
 	render() {
 		return (
@@ -84,49 +56,40 @@ export default class TrialItem extends React.Component {
 						onTouchTap={this.props.onClick}>
 						<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
 					</IconButton>
-					<div style={{width: "100%"}} >
+					<div style={{width: "100%"}}>
+					<ContextMenuTrigger id={"Trial-Item-RightClick-Field-"+this.props.id}>
 						<ListItem 
 							primaryText={this.props.name}
-							onTouchTap={(e) => {
-								if (e.nativeEvent.which === 1) {
-									this.props.onClick();
-								} else {
-									e.preventDefault();
-									e.stopPropagation();
-									e.nativeEvent.preventDefault();
-									e.nativeEvent.stopPropagation();
-									this.openContextMenu(e);
-								}
-							}}
+							onClick={this.props.onClick} 
 							rightIconButton={
 								<IconButton disableTouchRipple={true} onTouchTap={this.props.onToggle}>
 								{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 								</IconButton>}
 						/>
+						</ContextMenuTrigger>
 					</div>
-						<Popover
-				          open={this.state.contextMenuOpen}
-				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-				          onRequestClose={this.closeContextMenu}
-				        >
-						<Menu>
+					<div style={contextMenuStyle.outerDiv} >
+						<ContextMenu id={"Trial-Item-RightClick-Field-"+this.props.id} >
+						<div style={contextMenuStyle.innerDiv}>
 							<MenuItem primaryText="New Timeline" 
 								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
+								onTouchTap={this.props.insertTimeline}
 							/>
+						</div>
+						<div style={contextMenuStyle.innerDiv}>
 							<MenuItem primaryText="New Trial"  
 								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
+								onTouchTap={this.props.insertTrial}
 							/>
+						</div>
+						<div style={contextMenuStyle.lastInnerDiv}>
 							<MenuItem primaryText="Delete"  
 								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
-							/>
-					    </Menu>
-					    </Popover>
+								onTouchTap={this.props.deleteItem}
+							/></div>
+					    </ContextMenu>
 					</div>
+				</div>
 			</MuiThemeProvider>
 			</div>
 		)

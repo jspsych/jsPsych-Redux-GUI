@@ -181,8 +181,8 @@ describe('Timeline Node Reducers for Moving actions', () => {
 		let s1 = reducer(initState, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), null));
-		s1 = reducer(s1, Actions.moveTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0), 0))
-		s1 = reducer(s1, Actions.moveTrialAction(standardizeTrialId(0), standardizeTimelineId(0), 0))
+		s1 = reducer(s1, Actions.moveNodeAction(standardizeTimelineId(1), standardizeTimelineId(0), 0))
+		s1 = reducer(s1, Actions.moveNodeAction(standardizeTrialId(0), standardizeTimelineId(0), 0))
 		expect(s1).toEqual(expected_move_timeline_to_another)
 	})
 })
