@@ -1,25 +1,22 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../actions/timelineNodeActions';
-import { standardizeTimelineId, standardizeTrialId } from '../../constants/utils';
 import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineNodeOrganizerDrawer';
-import { isTimeline } from '../../constants/utils';
+import { isTimeline, getTimelineId, getTrialId } from '../../constants/utils';
 
-var timelineId = 0;
-var trialId = 0;
 
 const insertTrial = (dispatch) => {
 	dispatch((dispatch, getState) => {
 		let timelineNodeState = getState().timelineNodeState;
 		let previewId = timelineNodeState.previewId;
 		if (previewId === null) {
-			dispatch(timelineNodeActions.addTrialAction(standardizeTrialId(trialId++), null));
+			dispatch(timelineNodeActions.addTrialAction(getTrialId(), null));
 			// its a timeline
 		} else if (isTimeline(timelineNodeState[previewId])) {
-			dispatch(timelineNodeActions.addTrialAction(standardizeTrialId(trialId++), previewId));
+			dispatch(timelineNodeActions.addTrialAction(getTrialId(), previewId));
 			// its a trial
 		} else {
 			let parent = timelineNodeState[previewId].parent;
-			dispatch(timelineNodeActions.addTrialAction(standardizeTrialId(trialId++), parent));
+			dispatch(timelineNodeActions.addTrialAction(getTrialId(), parent));
 		}
 	})
 }
@@ -29,14 +26,14 @@ const insertTimeline = (dispatch) => {
 		let timelineNodeState = getState().timelineNodeState;
 		let previewId = timelineNodeState.previewId;
 		if (previewId === null) {
-			dispatch(timelineNodeActions.addTimelineAction(standardizeTimelineId(timelineId++), null));
+			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), null));
 			// its a timeline
 		} else if (isTimeline(timelineNodeState[previewId])) {
-			dispatch(timelineNodeActions.addTimelineAction(standardizeTimelineId(timelineId++), previewId));
+			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), previewId));
 			// its a trial
 		} else {
 			let parent = timelineNodeState[previewId].parent;
-			dispatch(timelineNodeActions.addTimelineAction(standardizeTimelineId(timelineId++), parent));
+			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), parent));
 		}
 	})
 }

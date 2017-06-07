@@ -1,10 +1,11 @@
 import React from 'react';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 
 import { isTimeline } from '../../../constants/utils';
 import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
 import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
+
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 
 class OrganizerItem extends React.Component {
@@ -30,3 +31,4 @@ class OrganizerItem extends React.Component {
 }
 
 export default DragDropContext(HTML5Backend)(OrganizerItem);
+

@@ -1,9 +1,21 @@
+// track id
+var timelineId = 0;
+var trialId = 0;
+
+export function getTimelineId() {
+	return standardizeTimelineId(timelineId++);
+}
+
+export function getTrialId() {
+	return standardizeTrialId(trialId++);
+}
+
 export const TIMELINE_ID_PREFIX = "TIMELINE-";
 export const TRIAL_ID_PREFIX = "TRIAL-";
 
 // enum
-export const TIMELINE_TYPE = 1;
-export const TRIAL_TYPE = 2;
+export const TIMELINE_TYPE = "TIMELINE";
+export const TRIAL_TYPE = "TRIAL";
 
 export const standardizeTimelineId = (id) => {
 	if (isNaN(id))

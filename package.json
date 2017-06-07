@@ -14,6 +14,7 @@
     "babel-jest": "^18.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
     "babel-preset-es2015": "^6.3.13",
+    "babel-preset-es2017": "^6.24.1",
     "babel-preset-node6": "^11.0.0",
     "babel-preset-react": "^6.23.0",
     "babel-preset-react-hmre": "^1.1.1",
@@ -28,13 +29,16 @@
     "webpack-hot-middleware": "^2.9.1",
     "webpack-preset": "^0.2.0",
     "webpack-preset-babel": "^0.2.0",
-    "webpack-preset-babel-stage-0": "^0.2.0"
+    "webpack-preset-babel-stage-0": "^0.2.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-stage-1": "^6.24.1"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
+    "lodash.flow": "^3.5.0",
     "material-ui": "^0.17.3",
     "react": "^15.5.4",
-    "react-bootstrap": "^0.30.8",
+    "react-contextmenu": "^2.6.2",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
     "react-dom": "^15.4.2",

@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
 import { getLevel } from '../../../reducers/timelineNode';
+import { getTimelineId, getTrialId } from '../../../constants/utils';
 
 const onPreview = (dispatch, ownProps) => {
 	dispatch((dispatch, getState) => {
@@ -21,6 +22,26 @@ const onToggle = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.onToggleAction(ownProps.id));
 }
 
+const insertTimeline = (dispatch, ownProps) => {
+	dispatch((dispatch, getState) => {
+		let timelineNodeState = getState().timelineNodeState;
+		let parent = timelineNodeState[ownProps.id].parent;
+		dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), parent));
+	})
+}
+
+const insertTrial = (dispatch, ownProps) => {
+	dispatch((dispatch, getState) => {
+		let timelineNodeState = getState().timelineNodeState;
+		let parent = timelineNodeState[ownProps.id].parent;
+		dispatch(timelineNodeActions.addTrialAction(getTrialId(), parent));
+	})
+}
+
+const deleteItem = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.deleteTrialAction(ownProps.id));
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
@@ -36,7 +57,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	onClick: () => { onPreview(dispatch, ownProps) },
-	onToggle: () => { onToggle(dispatch, ownProps) }
+	onToggle: () => { onToggle(dispatch, ownProps) },
+	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
+	insertTrial: () => { insertTrial(dispatch, ownProps)},
+	deleteItem: () => { deleteItem(dispatch, ownProps)},
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);
