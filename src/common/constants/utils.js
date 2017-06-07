@@ -17,7 +17,7 @@ export const standardizeTrialId = (id) => {
 	return TRIAL_ID_PREFIX + id;
 }
 
-export const typeOfNode = (node) => {
+export const typeOfNodeById = (node) => {
 	if (typeof node !== "string" && typeof node !== "object")
 		throw new TypeError("Should pass in a string or an object!");
 
@@ -32,6 +32,6 @@ export const typeOfNode = (node) => {
 	return 0;
 }
 
-export const isTimeline = (node) => (typeOfNode(node) === TIMELINE_TYPE);
+export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 
-export const isTrial = (node) => (typeOfNode(node) === TRIAL_TYPE);
+export const isTrial = (node) => (node.type === TRIAL_TYPE);

@@ -22,7 +22,7 @@ var experimentTitleStyle = {
 }
 
 
-class Appbar extends React.Component {
+export default class Appbar extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -53,5 +53,4 @@ class Appbar extends React.Component {
 
 }
 
-export default Appbar;
 

@@ -14,7 +14,7 @@ const insertTrial = (dispatch) => {
 		if (previewId === null) {
 			dispatch(timelineNodeActions.addTrialAction(standardizeTrialId(trialId++), null));
 			// its a timeline
-		} else if (isTimeline(previewId)) {
+		} else if (isTimeline(timelineNodeState[previewId])) {
 			dispatch(timelineNodeActions.addTrialAction(standardizeTrialId(trialId++), previewId));
 			// its a trial
 		} else {
@@ -31,7 +31,7 @@ const insertTimeline = (dispatch) => {
 		if (previewId === null) {
 			dispatch(timelineNodeActions.addTimelineAction(standardizeTimelineId(timelineId++), null));
 			// its a timeline
-		} else if (isTimeline(previewId)) {
+		} else if (isTimeline(timelineNodeState[previewId])) {
 			dispatch(timelineNodeActions.addTimelineAction(standardizeTimelineId(timelineId++), previewId));
 			// its a trial
 		} else {
@@ -48,7 +48,7 @@ const deleteSelected = (dispatch) => {
 		if (previewId === null) { 
 			return;
 			// its a timeline
-		} else if (isTimeline(previewId)) {
+		} else if (isTimeline(timelineNodeState[previewId])) {
 			dispatch(timelineNodeActions.deleteTimelineAction(previewId));
 			// its a trial
 		} else {

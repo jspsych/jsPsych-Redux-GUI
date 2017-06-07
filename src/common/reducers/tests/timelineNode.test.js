@@ -1,6 +1,6 @@
 import reducer, { DEFAULT_TIMELINE_NAME, DEFAULT_TRIAL_NAME, getLevel } from '../timelineNode';
 import * as Actions from '../../actions/timelineNodeActions';
-import { standardizeTimelineId, standardizeTrialId } from '../../constants/utils'; 
+import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../../constants/utils'; 
 
 const initState = {
 	// id of which is being previewed/editted
@@ -17,6 +17,7 @@ let expected_add_timeline_to_main = {
 }
 expected_add_timeline_to_main[standardizeTimelineId(0)] = {
 	id: standardizeTimelineId(0),
+	type: TIMELINE_TYPE,
 	name: DEFAULT_TIMELINE_NAME,
 	parent: null,
 	childrenById: [],
@@ -32,6 +33,7 @@ let expected_add_timeline_to_another = {
 }
 expected_add_timeline_to_another[standardizeTimelineId(0)] = {
 	id: standardizeTimelineId(0),
+	type: TIMELINE_TYPE,
 	name: DEFAULT_TIMELINE_NAME,
 	parent: null,
 	childrenById: [standardizeTimelineId(1)],
@@ -42,6 +44,7 @@ expected_add_timeline_to_another[standardizeTimelineId(0)] = {
 }
 expected_add_timeline_to_another[standardizeTimelineId(1)] = {
 	id: standardizeTimelineId(1),
+	type: TIMELINE_TYPE,
 	name: DEFAULT_TIMELINE_NAME,
 	parent: standardizeTimelineId(0),
 	childrenById: [],
@@ -58,6 +61,7 @@ let expected_add_trial_to_main = {
 }
 expected_add_trial_to_main[standardizeTrialId(0)] = {
 	id: standardizeTrialId(0),
+	type: TRIAL_TYPE,
 	name: DEFAULT_TRIAL_NAME,
 	parent: null,
 	
@@ -72,6 +76,7 @@ let expected_add_trial_to_timeline = {
 expected_add_trial_to_timeline[standardizeTimelineId(2)] = {
 	id: standardizeTimelineId(2),
 	name: DEFAULT_TIMELINE_NAME,
+	type: TIMELINE_TYPE,
 	parent: null,
 	childrenById: [standardizeTrialId(1)],
 	collapsed: false,
@@ -81,6 +86,7 @@ expected_add_trial_to_timeline[standardizeTimelineId(2)] = {
 }
 expected_add_trial_to_timeline[standardizeTrialId(1)] = {
 	id: standardizeTrialId(1),
+	type: TRIAL_TYPE,
 	name: DEFAULT_TRIAL_NAME,
 	parent: standardizeTimelineId(2),
 	
@@ -140,6 +146,7 @@ let expected_move_timeline_to_another = {
 expected_move_timeline_to_another[standardizeTimelineId(0)] = {
 	id: standardizeTimelineId(0),
 	name: DEFAULT_TIMELINE_NAME,
+	type: TIMELINE_TYPE,
 	parent: null,
 	childrenById: [standardizeTrialId(0), standardizeTimelineId(1)],
 	collapsed: true,
@@ -150,6 +157,7 @@ expected_move_timeline_to_another[standardizeTimelineId(0)] = {
 expected_move_timeline_to_another[standardizeTimelineId(1)] = {
 	id: standardizeTimelineId(1),
 	name: DEFAULT_TIMELINE_NAME,
+	type: TIMELINE_TYPE,
 	parent: standardizeTimelineId(0),
 	childrenById: [],
 	collapsed: true,
@@ -160,6 +168,7 @@ expected_move_timeline_to_another[standardizeTimelineId(1)] = {
 expected_move_timeline_to_another[standardizeTrialId(0)] = {
 	id: standardizeTrialId(0),
 	name: DEFAULT_TRIAL_NAME,
+	type: TRIAL_TYPE,
 	parent: standardizeTimelineId(0),
 	
 	enabled: true,
