@@ -67,13 +67,10 @@ class App extends React.Component {
 
 	render() {
 		return (
-<<<<<<< HEAD
 			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
-				<div className="appbar-container" style={{height: "20%"}}><Appbar /></div>
-=======
-			<div className="App" style={{overflowX: 'hidden', height: "100%", overflowY: 'hidden'}}>
-				<Appbar changeExperimentNameCallBack={this.state.changeExperimentName}/>
->>>>>>> 6cc1a869cf349c254b32a4847f49aee7aba1d511
+				<div className="appbar-container" style={{height: "20%"}}>
+					<Appbar changeExperimentNameCallBack={this.state.changeExperimentName}/>
+				</div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizerDrawer 
 	  					open={this.state.timelineOrganizerDrawerToggle}

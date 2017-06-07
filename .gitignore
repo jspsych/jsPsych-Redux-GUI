@@ -43,4 +43,4 @@ tests\ and\ raw\ models
 
 *.duplicate.*
 
-bundle.js
+public/bundle.js
