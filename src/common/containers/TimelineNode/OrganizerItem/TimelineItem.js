@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNode/OrganizerItem/TimelineItem';
 import { getLevel } from '../../../reducers/timelineNode';
+import { getTimelineId, getTrialId } from '../../../constants/utils';
 
 const onPreview = (dispatch, ownProps) => {
 	dispatch((dispatch, getState) => {
@@ -25,6 +26,18 @@ const toggleCollapsed = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.setCollapsed(ownProps.id));
 }
 
+const insertTimeline = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), ownProps.id));
+}
+
+const insertTrial = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.addTrialAction(getTrialId(), ownProps.id));
+}
+
+const deleteItem = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.deleteTimelineAction(ownProps.id));
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
@@ -44,7 +57,10 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	onClick: () => { onPreview(dispatch, ownProps) },
 	onToggle: () => { onToggle(dispatch, ownProps) },
-	toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) }
+	toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) },
+	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
+	insertTrial: () => { insertTrial(dispatch, ownProps)},
+	deleteItem: () => { deleteItem(dispatch, ownProps)},
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);
