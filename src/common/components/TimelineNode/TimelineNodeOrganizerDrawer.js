@@ -129,7 +129,7 @@ export default class TimelineNodeOrganizerDrawer extends React.Component {
 							paddingTop: 10,
 						}}>
 						<SpeedDial
-							style={{zIndex: 1000}}
+							style={{zIndex: 15}}
 					      fabContentOpen={<ContentAdd />}
 					      fabContentClose={<NavigationClose />}
 					    >

@@ -1,11 +1,12 @@
 import React from 'react';
+
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
+import Menu from 'material-ui/Menu';
+import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
-import { ContextMenu, ContextMenuTrigger } from "react-contextmenu";
 
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
@@ -23,22 +24,6 @@ import {
 	grey300 as hoverColor,
 } from 'material-ui/styles/colors';
 
-import { DragSource } from 'react-dnd';
-import { TRIAL_TYPE } from '../../../constants/utils';
-
-const trialItemSource = {
-  beginDrag(props) {
-    return {};
-  }
-};
-
-function collect(connect, monitor) {
-  return {
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging()
-  }
-}
-
 export const contextMenuStyle = {
 	outerDiv: { position: 'absolute', zIndex: 20},
 	innerDiv: { backgroundColor: contextMenuBackgroundColor,
@@ -48,14 +33,42 @@ export const contextMenuStyle = {
 }
 
 
-class TrialItem extends React.Component {
+export default class TrialItem extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			contextMenuOpen: false,
+		}
+
+		this.openContextMenu = (event) => {
+			this.setState({
+				contextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
+
+		this.closeContextMenu = () => {
+			this.setState({
+				contextMenuOpen: false
+			})
+		}
+
+		this.preventDefault = (e) => {
+			e.preventDefault();
+		}
 	}
 
+	componentDidMount() {
+        document.addEventListener('contextmenu', this.preventDefault)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('contextmenu', this.preventDefault)
+    }
+
 	render() {
-		const { connectDragSource, isDragging } = this.props;
-		return connectDragSource(
+		return (
 			<div>
 			<MuiThemeProvider>
 				<div className="Timeline-Item" style={{
@@ -71,44 +84,52 @@ class TrialItem extends React.Component {
 						onTouchTap={this.props.onClick}>
 						<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
 					</IconButton>
-					<div style={{width: "100%"}}>
-					<ContextMenuTrigger id={"Trial-Item-RightClick-Field-"+this.props.id}>
+					<div style={{width: "100%"}} >
 						<ListItem 
 							primaryText={this.props.name}
-							onClick={this.props.onClick} 
+							onTouchTap={(e) => {
+								if (e.nativeEvent.which === 1) {
+									this.props.onClick();
+								} else {
+									e.preventDefault();
+									e.stopPropagation();
+									e.nativeEvent.preventDefault();
+									e.nativeEvent.stopPropagation();
+									this.openContextMenu(e);
+								}
+							}}
 							rightIconButton={
 								<IconButton disableTouchRipple={true} onTouchTap={this.props.onToggle}>
 								{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 								</IconButton>}
 						/>
-						</ContextMenuTrigger>
 					</div>
-					<div style={contextMenuStyle.outerDiv} >
-						<ContextMenu id={"Trial-Item-RightClick-Field-"+this.props.id} >
-						<div style={contextMenuStyle.innerDiv}>
+						<Popover
+				          open={this.state.contextMenuOpen}
+				          anchorEl={this.state.anchorEl}
+				          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+				          onRequestClose={this.closeContextMenu}
+				        >
+						<Menu>
 							<MenuItem primaryText="New Timeline" 
 								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-								onTouchTap={this.props.insertTimeline}
+								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
 							/>
-						</div>
-						<div style={contextMenuStyle.innerDiv}>
 							<MenuItem primaryText="New Trial"  
 								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-								onTouchTap={this.props.insertTrial}
+								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
 							/>
-						</div>
-						<div style={contextMenuStyle.lastInnerDiv}>
 							<MenuItem primaryText="Delete"  
 								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-								onTouchTap={this.props.deleteItem}
-							/></div>
-					    </ContextMenu>
+								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
+							/>
+					    </Menu>
+					    </Popover>
 					</div>
-				</div>
 			</MuiThemeProvider>
 			</div>
 		)
 	}
 }
 
-export default DragSource(TRIAL_TYPE, trialItemSource, collect)(TrialItem);

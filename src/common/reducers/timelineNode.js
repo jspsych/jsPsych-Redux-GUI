@@ -47,14 +47,12 @@ export default function(state=initState, action) {
 			return addTimeline(state, action);
 		case actionTypes.DELETE_TIMELINE:
 			return deleteTimeline(state, action);
-		case actionTypes.MOVE_TIMELINE:
-			return moveTimeline(state, action);
 		case actionTypes.ADD_TRIAL:
 			return addTrial(state, action);
 		case actionTypes.DELETE_TRIAL:
 			return deleteTrial(state, action);
-		case actionTypes.MOVE_TRIAL:
-			return moveTrial(state, action);
+		case actionTypes.MOVE_NODE:
+			return moveNode(state, action);
 		case actionTypes.ON_PREVIEW:
 			return onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
@@ -79,6 +77,14 @@ export function getLevel(state, node) {
 		return 0;
 	else
 		return 1 + getLevel(state, getNodeById(state, node.parent));
+}
+
+export function getIndex(state, node) {
+	if (node.parent === null) {
+		return state.mainTimeline.indexOf(node.id);
+	} else {
+		return state[node.parent].childrenById.indexOf(node.id);
+	}
 }
 
 /*
@@ -115,7 +121,7 @@ function canMoveUnder(state, sourceId, targetId) {
 	return true;
 }
 
-
+// let temp0 = 0; +" "+(temp0++)
 function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
 	childrenById=[], collapsed=true, enabled=true, parameters={}) {
 
@@ -138,6 +144,7 @@ function copyTimeline(timeline) {
 		timeline.enabled, timeline.parameters)
 }
 
+// let temp1 = 0; +" "+(temp1++)
 function createTrial(id, parent=null, name=DEFAULT_TRIAL_NAME,
 	enabled=true, parameters={}) {
 
@@ -236,6 +243,7 @@ function deleteTimelineHelper(state, id) {
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
+	if (state.previewId === id) state.previewId = null;
 	delete state[id];
 
 	return state;
@@ -266,6 +274,8 @@ function deleteTrialHelper(state, id) {
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
+
+	if (state.previewId === id) state.previewId = null;
 	delete state[id];
 
 	return state;
@@ -300,13 +310,21 @@ function moveTimeline(state, action) {
 		let new_state = deleteTimeline(state, {id: action.sourceId});
 
 		// update parent
-		let parent = getNodeById(new_state, action.targetId);
+		let target = getNodeById(new_state, action.targetId);
+		let parent;
+		if (target === null) {
+			parent = null;
+		} else if(utils.isTimeline(target)) {
+			parent = target.id;
+		} else {
+			parent = target.parent;
+		}
 		if (parent === null) {
 			new_state.mainTimeline.splice(action.position, 0, action.sourceId); // already deep copied
 			// update itself
 			source.parent = parent.id;
 		} else {
-			parent = copyTimeline(parent);
+			parent = copyTimeline(new_state[parent]);
 			new_state[parent.id] = parent;
 			parent.childrenById.splice(action.position, 0, action.sourceId);
 			// update itself
@@ -336,13 +354,21 @@ function moveTrial(state, action) {
 	let new_state = deleteTrial(state, {id: action.sourceId});
 
 	// update parent
-	let parent = getNodeById(new_state, action.targetId);
+	let target = getNodeById(new_state, action.targetId);
+	let parent;
+	if (target === null) {
+		parent = null;
+	} else if(utils.isTimeline(target)) {
+		parent = target.id;
+	} else {
+		parent = target.parent;
+	}
 	if (parent === null) {
 		new_state.mainTimeline.splice(action.position, 0, action.sourceId); // already deep copied
 		// update itself
 		source.parent = parent;
 	} else {
-		parent = copyTimeline(parent);
+		parent = copyTimeline(new_state[parent]);
 		new_state[parent.id] = parent;
 		parent.childrenById.splice(action.position, 0, action.sourceId);
 		// update itself
@@ -352,6 +378,14 @@ function moveTrial(state, action) {
 	new_state[action.sourceId] = source;
 
 	return new_state;
+}
+
+function moveNode(state, action) {
+	if (utils.isTimeline(getNodeById(state, action.sourceId))) {
+		return moveTimeline(state, action);
+	} else {
+		return moveTrial(state, action);
+	}
 }
 
 function onPreview(state, action) {

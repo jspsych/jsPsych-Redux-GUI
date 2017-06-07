@@ -1,11 +1,10 @@
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
+import Menu from 'material-ui/Menu';
+import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
-import { ContextMenu, ContextMenuTrigger } from "react-contextmenu";
-import { contextMenuStyle } from './TrialItem';
 
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
@@ -21,28 +20,44 @@ import {
 } from 'material-ui/styles/colors';
 
 import OrganizerItem from '../../../containers/TimelineNode/OrganizerItem';
+import { contextMenuStyle } from './TrialItem';
 
-import { DragSource } from 'react-dnd';
-import { TIMELINE_TYPE } from '../../../constants/utils';
+export default class TimelineItem extends React.Component {
+	constructor(props) {
+		super(props);
 
+		this.state = {
+			contextMenuOpen: false,
+		}
 
-const timelineItemSource = {
-  beginDrag(props) {
-    return {};
-  }
-};
+		this.openContextMenu = (event) => {
+			this.setState({
+				contextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
 
-function collect(connect, monitor) {
-  return {
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging()
-  }
-}
+		this.closeContextMenu = () => {
+			this.setState({
+				contextMenuOpen: false
+			})
+		}
 
-class TimelineItem extends React.Component {
+		this.preventDefault = (e) => {
+			e.preventDefault();
+		}
+	}
+
+	componentDidMount() {
+        document.addEventListener('contextmenu', this.preventDefault)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('contextmenu', this.preventDefault)
+    }
+
 	render() {
-		const { connectDragSource, isDragging } = this.props;
-		return connectDragSource(
+		return (
 			<div>
 			<MuiThemeProvider>
 				<div className="Timeline-Item-Group" style={{
@@ -61,10 +76,19 @@ class TimelineItem extends React.Component {
 							{(this.props.collapsed) ? <CollapsedIcon /> : <ExpandedIcon />}
 						</IconButton>
 						<div style={{width: "100%"}}>
-							<ContextMenuTrigger id={"Timeline-Item-RightClick-Field-"+this.props.id}>
 							<ListItem 
 									primaryText={this.props.name}
-									onClick={this.props.onClick} 
+									onTouchTap={(e) => {
+										if (e.nativeEvent.which === 1) {
+											this.props.onClick();
+										} else {
+											e.preventDefault();
+											e.stopPropagation();
+											e.nativeEvent.preventDefault();
+											e.nativeEvent.stopPropagation();
+											this.openContextMenu(e);
+										}
+									}}
 									rightIconButton={
 										<IconButton 
 											disableTouchRipple={true}
@@ -73,7 +97,6 @@ class TimelineItem extends React.Component {
 										{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 										</IconButton>
 									}/>
-							</ContextMenuTrigger>
 						</div>
 					</div>
 					{(this.props.collapsed || this.props.noChildren) ? 
@@ -83,32 +106,31 @@ class TimelineItem extends React.Component {
 																		openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 																		closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 														/>)))}
-					<div style={contextMenuStyle.outerDiv} >
-						<ContextMenu id={"Timeline-Item-RightClick-Field-"+this.props.id} >
-								<div style={contextMenuStyle.innerDiv}>
-									<MenuItem primaryText="New Timeline" 
-										leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-										onTouchTap={this.props.insertTimeline}
-									/>
-								</div>
-								<div style={contextMenuStyle.innerDiv}>
-									<MenuItem primaryText="New Trial"  
-										leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-										onTouchTap={this.props.insertTrial}
-									/>
-								</div>
-								<div style={contextMenuStyle.lastInnerDiv}>
-									<MenuItem primaryText="Delete"  
-										leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-										onTouchTap={this.props.deleteItem}
-									/></div>
-						</ContextMenu>
-					</div>
+						<Popover
+				          open={this.state.contextMenuOpen}
+				          anchorEl={this.state.anchorEl}
+				          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+				          onRequestClose={this.closeContextMenu}
+				        >
+				        <Menu>
+							<MenuItem primaryText="New Timeline" 
+								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
+								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
+							/>
+							<MenuItem primaryText="New Trial"  
+								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
+								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
+							/>
+							<MenuItem primaryText="Delete"  
+								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
+								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
+							/>
+						</Menu>
+						</Popover>
 				</div>
 			</MuiThemeProvider>
 			</div>
 		)
 	}
 }
-
-export default DragSource(TIMELINE_TYPE, timelineItemSource, collect)(TimelineItem);

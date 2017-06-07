@@ -1,10 +1,11 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
-import { getLevel } from '../../../reducers/timelineNode';
+import { getLevel, getIndex } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../constants/utils';
 
 const onPreview = (dispatch, ownProps) => {
+	// console.log(e.nativeEvent.which)
 	dispatch((dispatch, getState) => {
 		let timelineNodeState = getState().timelineNodeState;
 		let previewId = timelineNodeState.previewId;
@@ -42,6 +43,7 @@ const deleteItem = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.deleteTrialAction(ownProps.id));
 }
 
+
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
@@ -51,6 +53,8 @@ const mapStateToProps = (state, ownProps) => {
 		isEnabled: trial.enabled,
 		level: getLevel(timelineNodeState, trial),
 		name: trial.name,
+		index: getIndex(timelineNodeState, trial),
+		parent: trial.parent,
 	}
 };
 
