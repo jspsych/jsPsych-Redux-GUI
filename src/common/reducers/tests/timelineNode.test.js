@@ -20,7 +20,7 @@ expected_add_timeline_to_main[standardizeTimelineId(0)] = {
 	name: DEFAULT_TIMELINE_NAME,
 	parent: null,
 	childrenById: [],
-	collapsed: false,
+	collapsed: true,
 	
 	enabled: true,
 	parameters: {}
@@ -45,7 +45,7 @@ expected_add_timeline_to_another[standardizeTimelineId(1)] = {
 	name: DEFAULT_TIMELINE_NAME,
 	parent: standardizeTimelineId(0),
 	childrenById: [],
-	collapsed: false,
+	collapsed: true,
 	
 	enabled: true,
 	parameters: {}
@@ -142,7 +142,7 @@ expected_move_timeline_to_another[standardizeTimelineId(0)] = {
 	name: DEFAULT_TIMELINE_NAME,
 	parent: null,
 	childrenById: [standardizeTrialId(0), standardizeTimelineId(1)],
-	collapsed: false,
+	collapsed: true,
 	
 	enabled: true,
 	parameters: {}
@@ -152,7 +152,7 @@ expected_move_timeline_to_another[standardizeTimelineId(1)] = {
 	name: DEFAULT_TIMELINE_NAME,
 	parent: standardizeTimelineId(0),
 	childrenById: [],
-	collapsed: false,
+	collapsed: true,
 	
 	enabled: true,
 	parameters: {}

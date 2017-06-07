@@ -22,25 +22,25 @@
     "react-scripts": "0.8.5",
     "webpack": "^1.15.0",
     "webpack-dev-middleware": "^1.4.0",
-    "webpack-hot-middleware": "^2.9.1"
+    "webpack-hot-middleware": "^2.9.1",
+    "webpack-preset": "^0.2.0",
+    "webpack-preset-babel": "^0.2.0",
+    "webpack-preset-babel-stage-0": "^0.2.0"
   },
   "dependencies": {
-    "body-parser": "^1.17.1",
-    "material-ui": "^0.17.3",
     "react": "^15.5.4",
+    "react-mui-speeddial": "0.0.6",
+    "material-ui": "^0.17.3",
+    "body-parser": "^1.17.1",
     "react-bootstrap": "^0.30.8",
     "react-dnd": "^2.4.0",
     "react-dom": "^15.4.2",
     "react-draggable": "^2.2.6",
-    "react-mui-speeddial": "0.0.6",
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.6",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.2.0",
-    "webpack-preset": "^0.2.0",
-    "webpack-preset-babel": "^0.2.0",
-    "webpack-preset-babel-stage-0": "^0.2.0"
+    "redux-thunk": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -117,7 +117,7 @@ function canMoveUnder(state, sourceId, targetId) {
 
 
 function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
-	childrenById=[], collapsed=false, enabled=true, parameters={}) {
+	childrenById=[], collapsed=true, enabled=true, parameters={}) {
 
 	return {
 		id: id,
