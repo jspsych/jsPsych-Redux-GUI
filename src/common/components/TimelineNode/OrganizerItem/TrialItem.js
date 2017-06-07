@@ -24,7 +24,7 @@ class TrialItem extends React.Component {
 			<MuiThemeProvider>
 				<div className="Timeline-Item" style={{
 						display:'flex', 
-						paddingLeft: (20*this.props.level), 
+						paddingLeft: this.props.level * 20, 
 						minWidth: "100%",
 						overflow: 'hidden',
 						backgroundColor: (this.props.isSelected) ? highlightColor : null

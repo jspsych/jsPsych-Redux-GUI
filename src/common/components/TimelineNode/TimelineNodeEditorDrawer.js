@@ -34,15 +34,9 @@ class TimelineNodeEditorDrawer extends React.Component {
 						'WebkitTransition': 'all 0.4s ease',
 						'MozTransition': 'all 0.4s ease',
 						transition: 'all 0.4s ease',
+						borderLeft: (this.props.open) ? '3px solid black' : '0.1px solid black'
 						}}>
-				<div className="TimelineNode-Editor-Divider"
-					style={{backgroundColor: 'black',
-					   height:'100%',
-					   float: 'left',
-					   width: '3px',
-						}}
-					draggable={false}
-				/>
+
 				<div className="TimelineNode-Editor-Container"
 					style={{height: '100%', width: '100%'}}>
 					{(this.props.open) ? 

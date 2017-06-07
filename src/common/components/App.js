@@ -67,8 +67,8 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<div className="App" style={{overflowX: 'hidden', height: "100%", overflowY: 'hidden'}}>
-				<Appbar />
+			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
+				<div className="appbar-container" style={{height: "20%"}}><Appbar /></div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizerDrawer 
 	  					open={this.state.timelineOrganizerDrawerToggle}
@@ -83,7 +83,7 @@ class App extends React.Component {
 	  					style={{width: mainBodyWidth(this.state.timelineOrganizerDrawerToggle, 
 	  												this.state.timelineOrganizerDrawerWidth, 
 	  												this.state.timelineEditorDrawerToggle),
-	  					 margin: '0 auto'
+	  					 margin: '0 auto',
 	  					}}
 	  				>
 	  				<Preview />

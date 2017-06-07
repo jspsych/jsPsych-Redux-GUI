@@ -83,7 +83,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 			<div className="TimelineNode-Organizer"
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%", 
 						left: '0px',
-						overflowY: 'auto',
+						overflow: 'hidden',
 						height: '86.5vh', 
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
@@ -91,7 +91,11 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						transition: enableAnimation(this.state.dragging),
 				}}>
 				<div className="TimelineNode-Organizer-Container"
-					style={{height: '100%', width: '100%'}}>
+					style={{
+						height: '100%', 
+						width: '100%', 
+						borderRight: (this.props.open) ? '3px solid black' : '0.1px solid black'
+					}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Organizer-Content">
 						<div style={{display: 'flex'}}>
@@ -107,7 +111,8 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						<Divider />
 						<div className="TimelineNode-Sheet" style={{
 							overflowY: "auto", 
-							minWidth: "100%"
+							maxWidth: "100%",
+							paddingLeft: 0,
 						}}>
 						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
 							{this.props.mainTimeline.map((id) => {
@@ -152,21 +157,23 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 					    </div>
 					</div>: null}
 				</div>
+
 				<Draggable
 			        axis="x"
 			        handle=".TimelineNode-Organizer-Dragger"
-			        zIndex={100}
+			        zIndex={10}
 			        position={{x: this.props.width}}
 			        onStart={this.onDragStart}
 			        onDrag={this.onDrag}
 			        onStop={this.onDragEnd}
 			        >
   				<div 	className="TimelineNode-Organizer-Dragger"
-  						style={{backgroundColor: 'black',
+  						style={{
+  							   position: 'fixed',
 							   height:'100%',
-							   float: 'right',
-							   width: '3px',
+							   width: '10px',
 							   cursor: 'col-resize',
+							   left: convertPercent(this.props.width-0.3),
   							}}
   						/>
   				</Draggable>

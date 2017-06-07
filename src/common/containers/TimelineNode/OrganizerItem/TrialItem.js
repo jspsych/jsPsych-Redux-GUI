@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
+import { getLevel } from '../../../reducers/timelineNode';
 
 const onPreview = (dispatch, ownProps) => {
 	dispatch((dispatch, getState) => {
@@ -27,8 +28,8 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		isSelected: ownProps.id === timelineNodeState.previewId,
 		isEnabled: trial.enabled,
-		level: trial.level(timelineNodeState, trial),
-		name: trial.name
+		level: getLevel(timelineNodeState, trial),
+		name: trial.name,
 	}
 };
 

@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNode/OrganizerItem/TimelineItem';
+import { getLevel } from '../../../reducers/timelineNode';
 
 const onPreview = (dispatch, ownProps) => {
 	dispatch((dispatch, getState) => {
@@ -31,10 +32,11 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		isSelected: ownProps.id === timelineNodeState.previewId,
 		isEnabled: timeline.enabled,
-		level: timeline.level(timelineNodeState, timeline),
+		level: getLevel(timelineNodeState, timeline),
 		name: timeline.name,
 		children: timeline.childrenById,
-		collapsed: timeline.collapsed
+		collapsed: timeline.collapsed,
+		level: getLevel(timelineNodeState, timeline),
 	}
 };
 

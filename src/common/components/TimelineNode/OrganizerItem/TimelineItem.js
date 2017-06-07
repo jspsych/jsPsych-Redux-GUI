@@ -26,11 +26,13 @@ class TimelineItem extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-			<div className="Timeline-Item-Container" style={{paddingLeft: (20*this.props.level), overflow: 'hidden'}}>
+			<div className="Timeline-Item-Container" style={{
+				paddingLeft: 0,
+				overflow: 'hidden'
+			}}>
 			<div className="Timeline-Item" style={{
+						paddingLeft: 20 * this.props.level, 
 						display: 'flex',
-						minWidth: "100%",
-						overflow: 'hidden',
 						backgroundColor: (this.props.isSelected) ? highlightColor : null
 					}}>
 				<IconButton hoveredStyle={{backgroundColor: hoverColor}}

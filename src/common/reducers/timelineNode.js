@@ -7,11 +7,8 @@ A timeline state = {
 	// if its parent is mainTimeline, null
 	parent: string, 
 	childrenById: array,
-	level: function, 
 	collapsed: boolean,
 	enabled: boolean,
-	// for tree menu
-	
 	// jsPsych timeline properties
 	parameters: object,
 }
@@ -22,8 +19,6 @@ A trial state = {
 	// if its parent is mainTimeline, null
 	parent: string, 
 	enabled: boolean,
-	// for tree menu
-	level: function, 
 	// specific parameters decided by which plugin user chooses
 	parameters: object,
 }
@@ -130,7 +125,6 @@ function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
 		parent: parent,
 		childrenById: childrenById,
 		collapsed: collapsed,
-		level: function(state, self) { return getLevel(state, self) },
 		enabled: enabled,
 		parameters: parameters
 	};
@@ -150,7 +144,6 @@ function createTrial(id,  parent=null, name=DEFAULT_TRIAL_NAME,
 		id: id,
 		name: name,
 		parent: parent,
-		level: function(state) { return getLevel(state, this) },
 		enabled: enabled,
 		parameters: parameters
 	};

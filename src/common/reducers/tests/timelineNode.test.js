@@ -21,7 +21,7 @@ expected_add_timeline_to_main[standardizeTimelineId(0)] = {
 	parent: null,
 	childrenById: [],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -36,7 +36,7 @@ expected_add_timeline_to_another[standardizeTimelineId(0)] = {
 	parent: null,
 	childrenById: [standardizeTimelineId(1)],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -46,7 +46,7 @@ expected_add_timeline_to_another[standardizeTimelineId(1)] = {
 	parent: standardizeTimelineId(0),
 	childrenById: [],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -60,7 +60,7 @@ expected_add_trial_to_main[standardizeTrialId(0)] = {
 	id: standardizeTrialId(0),
 	name: DEFAULT_TRIAL_NAME,
 	parent: null,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -75,7 +75,7 @@ expected_add_trial_to_timeline[standardizeTimelineId(2)] = {
 	parent: null,
 	childrenById: [standardizeTrialId(1)],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -83,7 +83,7 @@ expected_add_trial_to_timeline[standardizeTrialId(1)] = {
 	id: standardizeTrialId(1),
 	name: DEFAULT_TRIAL_NAME,
 	parent: standardizeTimelineId(2),
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -143,7 +143,7 @@ expected_move_timeline_to_another[standardizeTimelineId(0)] = {
 	parent: null,
 	childrenById: [standardizeTrialId(0), standardizeTimelineId(1)],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -153,7 +153,7 @@ expected_move_timeline_to_another[standardizeTimelineId(1)] = {
 	parent: standardizeTimelineId(0),
 	childrenById: [],
 	collapsed: false,
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
@@ -161,7 +161,7 @@ expected_move_timeline_to_another[standardizeTrialId(0)] = {
 	id: standardizeTrialId(0),
 	name: DEFAULT_TRIAL_NAME,
 	parent: standardizeTimelineId(0),
-	level: function(state, self) { return getLevel(state, self) },
+	
 	enabled: true,
 	parameters: {}
 }
