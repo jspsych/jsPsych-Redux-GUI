@@ -31,9 +31,10 @@ class TimelineItem extends React.Component {
 				overflow: 'hidden'
 			}}>
 			<div className="Timeline-Item" style={{
-						paddingLeft: 20 * this.props.level, 
+						paddingLeft: 15 * this.props.level, 
 						display: 'flex',
-						backgroundColor: (this.props.isSelected) ? highlightColor : null
+						backgroundColor: (this.props.isSelected) ? highlightColor : null,
+						height: "50%"
 					}}>
 				<IconButton hoveredStyle={{backgroundColor: hoverColor}}
 							onTouchTap={this.props.toggleCollapsed} 
