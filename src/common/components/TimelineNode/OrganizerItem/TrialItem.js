@@ -85,7 +85,7 @@ export default class TrialItem extends React.Component {
 						<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
 					</IconButton>
 					<div style={{width: "100%"}} >
-						<ListItem 
+						<ListItem  
 							primaryText={this.props.name}
 							onTouchTap={(e) => {
 								if (e.nativeEvent.which === 1) {
@@ -107,8 +107,8 @@ export default class TrialItem extends React.Component {
 						<Popover
 				          open={this.state.contextMenuOpen}
 				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+				          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'right', vertical: 'top'}}
 				          onRequestClose={this.closeContextMenu}
 				        >
 						<Menu>
@@ -116,10 +116,12 @@ export default class TrialItem extends React.Component {
 								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
 								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
 							/>
+							<Divider />
 							<MenuItem primaryText="New Trial"  
 								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
 								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
 							/>
+							<Divider />
 							<MenuItem primaryText="Delete"  
 								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
 								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}

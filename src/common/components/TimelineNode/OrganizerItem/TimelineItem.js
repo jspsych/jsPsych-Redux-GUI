@@ -4,6 +4,7 @@ import { ListItem } from 'material-ui/List';
 import Menu from 'material-ui/Menu';
 import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
+import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
@@ -99,7 +100,7 @@ export default class TimelineItem extends React.Component {
 									}/>
 						</div>
 					</div>
-					{(this.props.collapsed || this.props.noChildren) ? 
+					{(this.props.collapsed) ? 
 						null :
 						(this.props.children.map((id) => (<OrganizerItem id={id} 
 																		key={id} 
@@ -109,8 +110,8 @@ export default class TimelineItem extends React.Component {
 						<Popover
 				          open={this.state.contextMenuOpen}
 				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+				          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'right', vertical: 'top'}}
 				          onRequestClose={this.closeContextMenu}
 				        >
 				        <Menu>
@@ -118,10 +119,12 @@ export default class TimelineItem extends React.Component {
 								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
 								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
 							/>
+							<Divider />
 							<MenuItem primaryText="New Trial"  
 								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
 								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
 							/>
+							<Divider />
 							<MenuItem primaryText="Delete"  
 								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
 								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
