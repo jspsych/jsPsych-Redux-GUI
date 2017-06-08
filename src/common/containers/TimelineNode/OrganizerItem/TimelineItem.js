@@ -3,6 +3,7 @@ import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNode/OrganizerItem/TimelineItem';
 import { getLevel, getIndex } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../constants/utils';
+import { moveNode } from './index';
 
 const onPreview = (dispatch, ownProps) => {
 	dispatch((dispatch, getState) => {
@@ -67,7 +68,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	moveTimeline: (sourceId, targetId, index) => { moveTimeline(dispatch, sourceId, targetId, index) }
+	moveTimeline: (sourceId, targetId, index) => { moveTimeline(dispatch, sourceId, targetId, index) },
+	moveNode: (sourceId, targetId, index) => { moveNode(dispatch, sourceId, targetId, index); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

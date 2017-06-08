@@ -23,7 +23,39 @@ import {
 import OrganizerItem from '../../../containers/TimelineNode/OrganizerItem';
 import { contextMenuStyle } from './TrialItem';
 
-export default class TimelineItem extends React.Component {
+import { DragSource, DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
+import flow from 'lodash/flow';
+
+const timelineSource = {
+  beginDrag(props) {
+    return {
+      id: props.id,
+      index: props.index,
+      parent: props.parent,
+    };
+  },
+};
+
+const timelineTarget = {
+  drop(props, monitor, component) {
+    const { index:dragIndex, id: sourceId } = monitor.getItem();
+    const { index: hoverIndex, id: targetId } = props;
+
+    props.moveNode(sourceId, targetId, hoverIndex);
+  },
+
+  hover(props, monitor, component) {
+  	const { index:dragIndex, id: sourceId } = monitor.getItem();
+    const { index: hoverIndex, id: targetId } = props;
+
+    if (dragIndex === hoverIndex) {
+      return;
+    }
+  }
+};
+
+class TimelineItem extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -32,6 +64,8 @@ export default class TimelineItem extends React.Component {
 		}
 
 		this.openContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
 			this.setState({
 				contextMenuOpen: true,
 				anchorEl: event.currentTarget, 
@@ -43,35 +77,27 @@ export default class TimelineItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
-
-		this.preventDefault = (e) => {
-			e.preventDefault();
-		}
 	}
 
-	componentDidMount() {
-        document.addEventListener('contextmenu', this.preventDefault)
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('contextmenu', this.preventDefault)
-    }
-
 	render() {
-		return (
+		const { isDragging, connectDragSource, connectDropTarget } = this.props;
+		const opacity = isDragging ? 0 : 1;
+
+		return connectDragSource(connectDropTarget(
 			<div>
 			<MuiThemeProvider>
 				<div className="Timeline-Item-Group" style={{
 					paddingLeft: 0,
 					overflow: 'hidden'
 				}}>
-					<div className="Timeline-Item" style={{
+					<div className="Organizer-Item" style={{
 								paddingLeft: 15 * this.props.level, 
 								display: 'flex',
 								backgroundColor: (this.props.isSelected) ? highlightColor : null,
 								height: "50%"
 							}}>
-						<IconButton hoveredStyle={{backgroundColor: hoverColor}}
+						<IconButton className="Organizer-Item-Drag-Area"
+									hoveredStyle={{backgroundColor: hoverColor}}
 									onTouchTap={this.props.toggleCollapsed} 
 									disableTouchRipple={true} >
 							{(this.props.collapsed) ? <CollapsedIcon /> : <ExpandedIcon />}
@@ -79,15 +105,10 @@ export default class TimelineItem extends React.Component {
 						<div style={{width: "100%"}}>
 							<ListItem 
 									primaryText={this.props.name}
+									onContextMenu={this.openContextMenu}
 									onTouchTap={(e) => {
 										if (e.nativeEvent.which === 1) {
 											this.props.onClick();
-										} else {
-											e.preventDefault();
-											e.stopPropagation();
-											e.nativeEvent.preventDefault();
-											e.nativeEvent.stopPropagation();
-											this.openContextMenu(e);
 										}
 									}}
 									rightIconButton={
@@ -110,8 +131,8 @@ export default class TimelineItem extends React.Component {
 						<Popover
 				          open={this.state.contextMenuOpen}
 				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'right', vertical: 'top'}}
+				          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
 				          onRequestClose={this.closeContextMenu}
 				        >
 				        <Menu>
@@ -134,6 +155,16 @@ export default class TimelineItem extends React.Component {
 				</div>
 			</MuiThemeProvider>
 			</div>
-		)
+		))
 	}
 }
+
+export default flow(
+  DragSource("Organizer-Item-Drag-Area", timelineSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging(),
+})),
+  DropTarget("Organizer-Item-Drag-Area", timelineTarget, connect => ({
+  connectDropTarget: connect.dropTarget(),
+}))
+)(TimelineItem);

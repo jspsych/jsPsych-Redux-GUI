@@ -6,3 +6,7 @@ export const MOVE_NODE = "MOVE_NODE";
 export const ON_PREVIEW = "ON_PREVIEW";
 export const ON_TOGGLE = "ON_TOGGLE";
 export const SET_COLLAPSED = "SET_COLLAPSED";
+
+
+// main 
+export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
