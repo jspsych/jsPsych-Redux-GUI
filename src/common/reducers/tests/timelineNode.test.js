@@ -1,4 +1,4 @@
-import reducer, { DEFAULT_TIMELINE_NAME, DEFAULT_TRIAL_NAME, getLevel } from '../timelineNode';
+import reducer, { createTimeline, createTrial } from '../timelineNode';
 import * as Actions from '../../actions/timelineNodeActions';
 import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../../constants/utils'; 
 
@@ -15,84 +15,34 @@ let expected_add_timeline_to_main = {
 	previewId: null,
 	mainTimeline: [standardizeTimelineId(0)]
 }
-expected_add_timeline_to_main[standardizeTimelineId(0)] = {
-	id: standardizeTimelineId(0),
-	type: TIMELINE_TYPE,
-	name: DEFAULT_TIMELINE_NAME,
-	parent: null,
-	childrenById: [],
-	collapsed: true,
-	
-	enabled: true,
-	parameters: {}
-}
+expected_add_timeline_to_main[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 
 let expected_add_timeline_to_another = {
 	previewId: null,
 	mainTimeline: [standardizeTimelineId(0)]
 }
-expected_add_timeline_to_another[standardizeTimelineId(0)] = {
-	id: standardizeTimelineId(0),
-	type: TIMELINE_TYPE,
-	name: DEFAULT_TIMELINE_NAME,
-	parent: null,
-	childrenById: [standardizeTimelineId(1)],
-	collapsed: false,
-	
-	enabled: true,
-	parameters: {}
-}
-expected_add_timeline_to_another[standardizeTimelineId(1)] = {
-	id: standardizeTimelineId(1),
-	type: TIMELINE_TYPE,
-	name: DEFAULT_TIMELINE_NAME,
-	parent: standardizeTimelineId(0),
-	childrenById: [],
-	collapsed: true,
-	
-	enabled: true,
-	parameters: {}
-}
+expected_add_timeline_to_another[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
+expected_add_timeline_to_another[standardizeTimelineId(0)].collapsed = false ;									  
+expected_add_timeline_to_another[standardizeTimelineId(0)].childrenById = [standardizeTimelineId(1)];
 
+expected_add_timeline_to_another[standardizeTimelineId(1)] = createTimeline(standardizeTimelineId(1));
+expected_add_timeline_to_another[standardizeTimelineId(1)].parent = standardizeTimelineId(0);
 
 let expected_add_trial_to_main = {
 	previewId: null,
 	mainTimeline: [standardizeTrialId(0)]
 }
-expected_add_trial_to_main[standardizeTrialId(0)] = {
-	id: standardizeTrialId(0),
-	type: TRIAL_TYPE,
-	name: DEFAULT_TRIAL_NAME,
-	parent: null,
-	
-	enabled: true,
-	parameters: {}
-}
+expected_add_trial_to_main[standardizeTrialId(0)] = createTrial(standardizeTrialId(0));
 
 let expected_add_trial_to_timeline = {
 	previewId: null,
 	mainTimeline: [standardizeTimelineId(2)]
 }
-expected_add_trial_to_timeline[standardizeTimelineId(2)] = {
-	id: standardizeTimelineId(2),
-	name: DEFAULT_TIMELINE_NAME,
-	type: TIMELINE_TYPE,
-	parent: null,
-	childrenById: [standardizeTrialId(1)],
-	collapsed: false,
-	
-	enabled: true,
-	parameters: {}
-}
-expected_add_trial_to_timeline[standardizeTrialId(1)] = {
-	id: standardizeTrialId(1),
-	type: TRIAL_TYPE,
-	name: DEFAULT_TRIAL_NAME,
-	parent: standardizeTimelineId(2),
-	
-	enabled: true,
-	parameters: {}
-}
+expected_add_trial_to_timeline[standardizeTimelineId(2)] = createTimeline(standardizeTimelineId(2));
+expected_add_trial_to_timeline[standardizeTimelineId(2)].collapsed = false;
+expected_add_trial_to_timeline[standardizeTimelineId(2)].childrenById = [standardizeTrialId(1)];
+expected_add_trial_to_timeline[standardizeTrialId(1)] = createTrial(standardizeTrialId(1));
+expected_add_trial_to_timeline[standardizeTrialId(1)].parent = standardizeTimelineId(2);
 
 describe('Timeline Node Reducers for Adding actions', () => {
 	it('should handle add actions of timeline', () => {
@@ -143,37 +93,21 @@ let expected_move_timeline_to_another = {
 	previewId: null,
 	mainTimeline: [standardizeTimelineId(0)]
 }
-expected_move_timeline_to_another[standardizeTimelineId(0)] = {
-	id: standardizeTimelineId(0),
-	name: DEFAULT_TIMELINE_NAME,
-	type: TIMELINE_TYPE,
-	parent: null,
-	childrenById: [standardizeTrialId(0), standardizeTimelineId(1)],
-	collapsed: true,
-	
-	enabled: true,
-	parameters: {}
-}
-expected_move_timeline_to_another[standardizeTimelineId(1)] = {
-	id: standardizeTimelineId(1),
-	name: DEFAULT_TIMELINE_NAME,
-	type: TIMELINE_TYPE,
-	parent: standardizeTimelineId(0),
-	childrenById: [],
-	collapsed: true,
-	
-	enabled: true,
-	parameters: {}
-}
-expected_move_timeline_to_another[standardizeTrialId(0)] = {
-	id: standardizeTrialId(0),
-	name: DEFAULT_TRIAL_NAME,
-	type: TRIAL_TYPE,
-	parent: standardizeTimelineId(0),
-	
-	enabled: true,
-	parameters: {}
-}
+expected_move_timeline_to_another[standardizeTimelineId(0)] = createTimeline(
+	standardizeTimelineId(0)
+	);
+expected_move_timeline_to_another[standardizeTimelineId(0)].childrenById = [standardizeTrialId(0), standardizeTimelineId(1)];
+expected_move_timeline_to_another[standardizeTimelineId(0)].collapsed = false;
+
+expected_move_timeline_to_another[standardizeTimelineId(1)] = createTimeline(
+	standardizeTimelineId(1),
+);
+expected_move_timeline_to_another[standardizeTimelineId(1)].parent = standardizeTimelineId(0);
+
+expected_move_timeline_to_another[standardizeTrialId(0)] = createTrial(
+	standardizeTrialId(0),
+)
+expected_move_timeline_to_another[standardizeTrialId(0)].parent = standardizeTimelineId(0);
 
 describe('Timeline Node Reducers for Moving actions', () => {
 	it('should handle move actions', () => {

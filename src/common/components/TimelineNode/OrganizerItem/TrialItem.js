@@ -7,7 +7,7 @@ import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
+ 
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
@@ -32,8 +32,38 @@ export const contextMenuStyle = {
 	iconColor: contextMenuIconColor,
 }
 
+import { DragSource, DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
+import flow from 'lodash/flow';
 
-export default class TrialItem extends React.Component {
+const trialSource = {
+  beginDrag(props) {
+    return {
+      id: props.id,
+      index: props.index,
+      parent: props.parent,
+    };
+  },
+};
+
+const trialTarget = {
+  drop(props, monitor, component) {
+    const { index:dragIndex, id: sourceId } = monitor.getItem();
+    const { index: hoverIndex, id: targetId } = props;
+    props.moveNode(sourceId, targetId, hoverIndex);
+  },
+
+  hover(props, monitor, component) {
+  	const { index:dragIndex, id: sourceId } = monitor.getItem();
+    const { index: hoverIndex, id: targetId } = props;
+
+    if (dragIndex === hoverIndex) {
+      return;
+    }
+  }
+};
+
+class TrialItem extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -42,6 +72,8 @@ export default class TrialItem extends React.Component {
 		}
 
 		this.openContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
 			this.setState({
 				contextMenuOpen: true,
 				anchorEl: event.currentTarget, 
@@ -53,25 +85,16 @@ export default class TrialItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
-
-		this.preventDefault = (e) => {
-			e.preventDefault();
-		}
 	}
 
-	componentDidMount() {
-        document.addEventListener('contextmenu', this.preventDefault)
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('contextmenu', this.preventDefault)
-    }
-
 	render() {
-		return (
+		const { isDragging, connectDragSource, connectDropTarget } = this.props;
+		const opacity = isDragging ? 0 : 1;
+
+		return connectDragSource(connectDropTarget(
 			<div>
 			<MuiThemeProvider>
-				<div className="Timeline-Item" style={{
+				<div className="Organizer-Item" style={{
 						display:'flex', 
 						paddingLeft: this.props.level * 15, 
 						minWidth: "100%",
@@ -79,6 +102,7 @@ export default class TrialItem extends React.Component {
 						backgroundColor: (this.props.isSelected) ? highlightColor : null
 					}} >
 					<IconButton 
+						className="Organizer-Item-Drag-Area"
 						hoveredStyle={{backgroundColor: hoverColor}}
 						disableTouchRipple={true} 
 						onTouchTap={this.props.onClick}>
@@ -87,15 +111,10 @@ export default class TrialItem extends React.Component {
 					<div style={{width: "100%"}} >
 						<ListItem  
 							primaryText={this.props.name}
+							onContextMenu={this.openContextMenu}
 							onTouchTap={(e) => {
 								if (e.nativeEvent.which === 1) {
 									this.props.onClick();
-								} else {
-									e.preventDefault();
-									e.stopPropagation();
-									e.nativeEvent.preventDefault();
-									e.nativeEvent.stopPropagation();
-									this.openContextMenu(e);
 								}
 							}}
 							rightIconButton={
@@ -107,8 +126,8 @@ export default class TrialItem extends React.Component {
 						<Popover
 				          open={this.state.contextMenuOpen}
 				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'right', vertical: 'top'}}
+				          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
+				          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
 				          onRequestClose={this.closeContextMenu}
 				        >
 						<Menu>
@@ -131,7 +150,16 @@ export default class TrialItem extends React.Component {
 					</div>
 			</MuiThemeProvider>
 			</div>
-		)
+		))
 	}
 }
 
+export default flow(
+  DragSource("Organizer-Item-Drag-Area", trialSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging(),
+})),
+  DropTarget("Organizer-Item-Drag-Area", trialTarget, connect => ({
+  connectDropTarget: connect.dropTarget(),
+}))
+)(TrialItem);

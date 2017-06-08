@@ -48,9 +48,9 @@ export default class Appbar extends React.Component {
         				<div className="Appbar-main" style={{display: 'inline-block', width:"93%"}}>
         					<div style={{backgroundColor: 'white', marginLeft: 5}}>
 								<TextField 
-								id="experiment_name"
-								defaultValue="Untitled Experiment" 
-								onChange={this.props.changeExperimentNameCallback}/>
+								id="ExperimentNameTextfield"
+                value={this.props.experimentName}
+								onChange={this.props.changeExperimentName}/>
 							</div>
   							<Toolbar style={{height: 40}}>
   							</Toolbar>

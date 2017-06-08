@@ -25,6 +25,9 @@ import {
 import { convertPercent } from '../App';
 import OrganizerItem from '../../containers/TimelineNode/OrganizerItem';
 
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 55;
 
@@ -47,7 +50,7 @@ function pauseEvent(e){
     return false;
 }
 
-export default class TimelineNodeOrganizerDrawer extends React.Component {
+class TimelineNodeOrganizerDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -197,3 +200,6 @@ export default class TimelineNodeOrganizerDrawer extends React.Component {
   			)
 	}
 }
+
+
+export default DragDropContext(HTML5Backend)(TimelineNodeOrganizerDrawer);
