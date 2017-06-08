@@ -3,6 +3,7 @@ This file is the reducers for timelineNode class from jsPsych (timeline, trial)
 
 A timeline state = {
 	id: string,
+	type: string,
 	name: string,
 	// if its parent is mainTimeline, null
 	parent: string, 
@@ -15,6 +16,7 @@ A timeline state = {
 
 A trial state = {
 	id: string,
+	type: string,
 	name: string,
 	// if its parent is mainTimeline, null
 	parent: string, 

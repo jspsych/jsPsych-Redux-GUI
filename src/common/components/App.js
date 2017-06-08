@@ -3,7 +3,7 @@ import React from 'react';
 import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawer';
-import TimelineNodeEditorDrawer from './TimelineNode/TimelineNodeEditorDrawer';
+import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
 //import TrialForm from './TimelineNode/TrialForm';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
