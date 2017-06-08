@@ -116,7 +116,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 							paddingLeft: 0,
 						}}>
 						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
-							{this.props.mainTimeline.map((id) => (
+							{this.props.presentedIds.map((id) => (
 								<OrganizerItem id={id} 
 												key={id} 
 												openTimelineEditorCallback={this.props.openTimelineEditorCallback}

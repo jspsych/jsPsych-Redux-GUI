@@ -53,6 +53,7 @@ const mapStateToProps = (state, ownProps) => {
 		level: getLevel(timelineNodeState, timeline),
 		name: timeline.name,
 		children: timeline.childrenById,
+		hasNoChild: timeline.childrenById.length === 0,
 		collapsed: timeline.collapsed,
 		level: getLevel(timelineNodeState, timeline),
 		index: getIndex(timelineNodeState, timeline),

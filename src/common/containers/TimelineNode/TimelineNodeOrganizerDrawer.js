@@ -3,6 +3,25 @@ import * as timelineNodeActions from '../../actions/timelineNodeActions';
 import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineNodeOrganizerDrawer';
 import { isTimeline, getTimelineId, getTrialId } from '../../constants/utils';
 
+function preOrderTraversal(state) {
+	let presentedIds = [];
+	preOrderTraversalHelper(state, state.mainTimeline, presentedIds);
+	return presentedIds;
+}
+
+function preOrderTraversalHelper(state, childrenById, presentedIds) {
+	let len = childrenById.length;
+	if (len === 0)
+		return;
+	let node, nodeId;
+	for (let i = 0; i < len; i++) {
+		nodeId = childrenById[i];
+		node = state[nodeId];
+		presentedIds.push(nodeId);
+		if (isTimeline(node) && node.collapsed === false)
+			preOrderTraversalHelper(state, state[nodeId].childrenById, presentedIds);
+	}
+}
 
 const insertTrial = (dispatch) => {
 	dispatch((dispatch, getState) => {
@@ -56,10 +75,10 @@ const deleteSelected = (dispatch) => {
 
 
 const mapStateToProps = (state, ownProps) => {
-	let s1 = state.timelineNodeState;
+	let timelineNodeState = state.timelineNodeState;
 
 	return {
-		mainTimeline: s1.mainTimeline
+		presentedIds: preOrderTraversal(timelineNodeState)
 	}
 };
 
