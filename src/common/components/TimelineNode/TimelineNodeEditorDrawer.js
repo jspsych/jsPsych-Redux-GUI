@@ -47,9 +47,13 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							onTouchTap={this.props.closeTimelineEditorCallback}
 							>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
 							<Subheader>Timeline/Trial Editor</Subheader>
+<<<<<<< HEAD
 							<TrialForm id={this.props.id} pluginType={this.props.pluginType} />
+=======
+>>>>>>> pluginType now recognized
 						</div>
 						<Divider />
+						<TrialForm pluginType={this.props.pluginType} />
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :

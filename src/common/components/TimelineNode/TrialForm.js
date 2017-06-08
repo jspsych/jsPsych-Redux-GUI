@@ -3,7 +3,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
-import isTimeline from '../../constants/utils'
+import isTrial from '../../constants/utils'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -31,18 +31,18 @@ class TrialForm extends React.Component {
 			var form = <div><SelectField
 			value={this.props.pluginType}
 			autoWidth={true}
-			floatingLabelText="Trial Type"
+			floatingLabelText="Plugin Type"
 			maxHeight={300}
 			onChange={this.props.onChange} >
 			{pluginItems}
-			</SelectField>
-			</div>
-		 }
+			</SelectField>;
+		} else {
+			console.log("not open and not a trial");
+			var form = <div></div>;
+		}
 		return(
 			<MuiThemeProvider>
-			<div>
 			{form}
-			</div>
 			</MuiThemeProvider>
 			)
 	}
