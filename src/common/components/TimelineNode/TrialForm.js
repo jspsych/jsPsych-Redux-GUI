@@ -3,7 +3,9 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
-import isTimeline from '../../constanst/utils'
+import isTimeline from '../../constants/utils'
+
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 class TrialForm extends React.Component {
 	render(){
@@ -14,33 +16,34 @@ class TrialForm extends React.Component {
 			key={i++}
 			value={plugin} />
 			);
-		if(this.props.open){
-			if(!utils.isTimeline(/*Some node */)){
+
+		if(this.props.open && this.props.isTrial){
 				var getParamVal=jsPsych.plugins[this.props.open].parameterValue;
 				const plugForm = Object.keys(getParamVal.info.parameters).map((plug) => {
 					switch(getParamVal.info.parameters[plug].type[0]) {
 						case 0:
-						return(<Toggle id={plug} label={plug} defaultToggled={true} onToggle={this.props.handleParamChange} />);
+						return(<Toggle id={plug} label={plug} defaultToggled={true} />);
 						break;
 						default:
-						return(<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} onChange={this.props.handleParamChange} />);
-					}
+						return(<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
 				});
 			}
 			var form = <div><SelectField
-			value="value"
+			value={this.props.pluginType}
 			autoWidth={true}
 			floatingLabelText="Trial Type"
-			maxHeight={300} >
+			maxHeight={300}
+			onChange={this.props.onChange} >
 			{pluginItems}
 			</SelectField>
-			{plugForm}
 			</div>
 		 }
 		return(
+			<MuiThemeProvider>
 			<div>
 			{form}
 			</div>
+			</MuiThemeProvider>
 			)
 	}
 }

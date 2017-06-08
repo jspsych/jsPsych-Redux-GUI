@@ -6,6 +6,7 @@ import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNode
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
 //import TrialForm from './TimelineNode/TrialForm';
 
+
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
 export const convertPercent = (number) => (number + '%'); 
@@ -94,6 +95,7 @@ export default class App extends React.Component {
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
+	  				<TrialForm open={this.state.timelineEditorDrawerToggle} />
 	  			</div>
   			</div>
   		);
