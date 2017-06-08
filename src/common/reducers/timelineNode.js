@@ -119,9 +119,9 @@ Two case it can't:
 If targetId is null, always true
 */ 
 function canMoveUnder(state, sourceId, targetId) {
-	if (targetId === null) return true;
+	if (!targetId) return true;
 
-	if (utils.isTrial(getNodeById(state, targetId)) || 
+	if (utils.isTrial(state[targetId]) || 
 		isAncestor(state, sourceId, targetId)) {
 		return false;
 	}
@@ -129,9 +129,14 @@ function canMoveUnder(state, sourceId, targetId) {
 	return true;
 }
 
-// let temp0 = 0; +" "+(temp0++)
-export function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
-	childrenById=[], collapsed=true, enabled=true, parameters={}) {
+let timeline = 0;
+export function createTimeline(id,  
+	parent=null, 
+	name=DEFAULT_TIMELINE_NAME+" "+(timeline++),
+	childrenById=[], 
+	collapsed=true, 
+	enabled=true, 
+	parameters={}) {
 
 	return {
 		id: id,
@@ -147,14 +152,21 @@ export function createTimeline(id,  parent=null, name=DEFAULT_TIMELINE_NAME,
 
 // define deep copy for parameters later
 function copyTimeline(timeline) {
-	return createTimeline(timeline.id, timeline.parent, timeline.name, 
-		timeline.childrenById.slice(), timeline.collapsed,
-		timeline.enabled, timeline.parameters)
+	return createTimeline(timeline.id, 
+		timeline.parent, 
+		timeline.name, 
+		timeline.childrenById.slice(), 
+		timeline.collapsed,
+		timeline.enabled, 
+		timeline.parameters)
 }
 
-// let temp1 = 0; +" "+(temp1++)
-export function createTrial(id, parent=null, name=DEFAULT_TRIAL_NAME,
-	enabled=true, parameters={}) {
+let trial = 0; 
+export function createTrial(id, 
+	parent=null, 
+	name=DEFAULT_TRIAL_NAME+" "+(trial++),	
+	enabled=true, 
+	parameters={}) {
 
 	return {
 		id: id,
@@ -364,58 +376,62 @@ action = {
 
 */
 function moveNodeToTrial(state, action) {
-	let source = getNodeById(state, action.sourceId);
-	if (utils.isTimeline(source)) {
-		source = copyTimeline(source);
-	} else {
-		source = copyTrial(source);
-	}
-
-	let new_state = Object.assign({}, state);
-
-	let target = getNodeById(new_state, action.targetId);
-	let oldParentId = source.parent;
-	let newParentId = target.parent;
-
-	// if under same parent
-	if (oldParentId === newParentId) {
-		let from;
-		if (oldParentId === null) {
-			from = new_state.mainTimeline.indexOf(source.id);
-			new_state.mainTimeline = state.mainTimeline.slice();
-			new_state.mainTimeline.move(from, new_state.mainTimeline.indexOf(target.id)+1);
+	if (canMoveUnder(state, action.sourceId, action.targetId)) {
+		let source = getNodeById(state, action.sourceId);
+		if (utils.isTimeline(source)) {
+			source = copyTimeline(source);
 		} else {
-			let newParent = copyTimeline(new_state[newParentId]);
-			from = newParent.childrenById.indexOf(source.id);
-			newParent.childrenById.move(from, newParent.childrenById.indexOf(target.id)+1);
-			new_state[newParent.id] = newParent;
+			source = copyTrial(source);
 		}
 
+		let new_state = Object.assign({}, state);
+
+		let target = getNodeById(new_state, action.targetId);
+		let oldParentId = source.parent;
+		let newParentId = target.parent;
+
+		// if under same parent
+		if (oldParentId === newParentId) {
+			let from;
+			if (oldParentId === null) {
+				from = new_state.mainTimeline.indexOf(source.id);
+				new_state.mainTimeline = state.mainTimeline.slice();
+				new_state.mainTimeline.move(from, new_state.mainTimeline.indexOf(target.id)+1);
+			} else {
+				let newParent = copyTimeline(new_state[newParentId]);
+				from = newParent.childrenById.indexOf(source.id);
+				newParent.childrenById.move(from, newParent.childrenById.indexOf(target.id)+1);
+				new_state[newParent.id] = newParent;
+			}
+
+			return new_state;
+		}
+
+		// if source was in the main timeline
+		if (oldParentId === null) {
+			new_state.mainTimeline = state.mainTimeline.slice();
+			new_state.mainTimeline = new_state.mainTimeline.filter((item) => (item !== source.id));
+		}
+
+		// if target trial is in the main timeline
+		let index;
+		if (newParentId === null) {
+			index = new_state.mainTimeline.indexOf(target.id) + 1;
+			new_state.mainTimeline.splice(index, 0, source.id);
+		} else {
+			let newParent = copyTimeline(getNodeById(new_state, newParentId));
+			index = newParent.childrenById.indexOf(target.id) + 1;
+			newParent.childrenById.splice(index, 0, source.id);
+			new_state[newParent.id] = newParent; 
+		}
+
+		source.parent = newParentId;
+		new_state[source.id] = source;
+
 		return new_state;
-	}
-
-	// if source was in the main timeline
-	if (oldParentId === null) {
-		new_state.mainTimeline = state.mainTimeline.slice();
-		new_state.mainTimeline = new_state.mainTimeline.filter((item) => (item !== source.id));
-	}
-
-	// if target trial is in the main timeline
-	let index;
-	if (newParentId === null) {
-		index = new_state.mainTimeline.indexOf(target.id) + 1;
-		new_state.mainTimeline.splice(index, 0, source.id);
 	} else {
-		let newParent = copyTimeline(getNodeById(new_state, newParentId));
-		index = newParent.childrenById.indexOf(target.id) + 1;
-		newParent.childrenById.splice(index, 0, source.id);
-		new_state[newParent.id] = newParent; 
+		return state;
 	}
-
-	source.parent = newParentId;
-	new_state[source.id] = source;
-
-	return new_state;
 }
 
 function moveNodeToMainTimeline(state, action) {

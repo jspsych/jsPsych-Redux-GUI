@@ -32,36 +32,6 @@ export const contextMenuStyle = {
 	iconColor: contextMenuIconColor,
 }
 
-import { DragSource, DropTarget } from 'react-dnd';
-import { findDOMNode } from 'react-dom';
-import flow from 'lodash/flow';
-
-const trialSource = {
-  beginDrag(props) {
-    return {
-      id: props.id,
-      index: props.index,
-      parent: props.parent,
-    };
-  },
-};
-
-const trialTarget = {
-  drop(props, monitor, component) {
-    const { index:dragIndex, id: sourceId } = monitor.getItem();
-    const { index: hoverIndex, id: targetId } = props;
-    props.moveNode(sourceId, targetId, hoverIndex);
-  },
-
-  hover(props, monitor, component) {
-  	const { index:dragIndex, id: sourceId } = monitor.getItem();
-    const { index: hoverIndex, id: targetId } = props;
-
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-  }
-};
 
 class TrialItem extends React.Component {
 	constructor(props) {
@@ -88,13 +58,9 @@ class TrialItem extends React.Component {
 	}
 
 	render() {
-		const { isDragging, connectDragSource, connectDropTarget } = this.props;
-		const opacity = isDragging ? 0 : 1;
-
-		return connectDragSource(connectDropTarget(
-			<div>
+		return (
 			<MuiThemeProvider>
-				<div className="Organizer-Item" style={{
+				<div className="Trial-Item" style={{
 						display:'flex', 
 						paddingLeft: this.props.level * 15, 
 						minWidth: "100%",
@@ -102,7 +68,6 @@ class TrialItem extends React.Component {
 						backgroundColor: (this.props.isSelected) ? highlightColor : null
 					}} >
 					<IconButton 
-						className="Organizer-Item-Drag-Area"
 						hoveredStyle={{backgroundColor: hoverColor}}
 						disableTouchRipple={true} 
 						onTouchTap={this.props.onClick}>
@@ -149,17 +114,8 @@ class TrialItem extends React.Component {
 					    </Popover>
 					</div>
 			</MuiThemeProvider>
-			</div>
-		))
+		)
 	}
 }
 
-export default flow(
-  DragSource("Organizer-Item-Drag-Area", trialSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
-})),
-  DropTarget("Organizer-Item-Drag-Area", trialTarget, connect => ({
-  connectDropTarget: connect.dropTarget(),
-}))
-)(TrialItem);
+export default TrialItem;
