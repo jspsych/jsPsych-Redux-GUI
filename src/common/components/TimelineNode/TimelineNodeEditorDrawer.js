@@ -53,7 +53,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 >>>>>>> pluginType now recognized
 						</div>
 						<Divider />
-						<TrialForm pluginType={this.props.pluginType} />
+						<TrialForm trialId={this.props.id} pluginType={this.props.pluginType} />
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :

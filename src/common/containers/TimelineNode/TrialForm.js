@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { isTrial } from '../../constants/utils';
 import TrialForm from '../../components/TimelineNode/TrialForm';
+import * as trialFormActions from '../../actions/trialFormActions';
 
 const onChangePluginType = (dispatch, key) => {
 	dispatch(trialFormActions.onPluginTypeChange(key));
