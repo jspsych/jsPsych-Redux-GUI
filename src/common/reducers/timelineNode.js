@@ -35,18 +35,18 @@ Array.prototype.move = function(from,to){
 import * as actionTypes from '../constants/ActionTypes';
 import * as utils from '../constants/utils'; 
 
-export const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
-export const DEFAULT_TRIAL_NAME = 'Untitled Trial';
+const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
+const DEFAULT_TRIAL_NAME = 'Untitled Trial';
+var timeline = 0;
+var trial = 0; 
 
-const initState = {
+export const initState = {
 	// id of which is being previewed/editted
 	previewId: null,
 
 	// the main timeline. array of ids
 	mainTimeline: [], 
 }
-
-
 
 export default function(state=initState, action) {
 	switch(action.type) {
@@ -74,8 +74,14 @@ export default function(state=initState, action) {
 
 /**************************  Helper functions  ********************************/
 
+var __TEST__ = 0;
+export function enterTest() {
+	__TEST__ = 1;
+}
+
 function getNodeById(state, id) {
-	if (id === null) return null;
+	if (id === null) 
+		return null;
 	return state[id];
 }
 
@@ -93,6 +99,17 @@ export function getIndex(state, node) {
 		return state[node.parent].childrenById.indexOf(node.id);
 	}
 }
+
+const getDefaultTimelineName = () => {
+	if (__TEST__)
+		return DEFAULT_TIMELINE_NAME;
+	return DEFAULT_TIMELINE_NAME + " " + (timeline++);
+};
+const getDefaultTrialName = () => {
+	if (__TEST__)
+		return DEFAULT_TRIAL_NAME;
+	return DEFAULT_TRIAL_NAME + " " + (trial++);
+};
 
 /*
 Decides if source node is ancestor of target node 
@@ -129,10 +146,10 @@ function canMoveUnder(state, sourceId, targetId) {
 	return true;
 }
 
-let timeline = 0;
+
 export function createTimeline(id,  
 	parent=null, 
-	name=DEFAULT_TIMELINE_NAME+" "+(timeline++),
+	name=getDefaultTimelineName(),
 	childrenById=[], 
 	collapsed=true, 
 	enabled=true, 
@@ -161,10 +178,10 @@ function copyTimeline(timeline) {
 		timeline.parameters)
 }
 
-let trial = 0; 
+
 export function createTrial(id, 
 	parent=null, 
-	name=DEFAULT_TRIAL_NAME+" "+(trial++),	
+	name=getDefaultTrialName(),	
 	enabled=true, 
 	parameters={}) {
 
@@ -314,168 +331,166 @@ function deleteTrial(state, action) {
 
 
 /*
+Move Node
+
 action = {
 	sourceId: string,
 	targetId: string,
-	position: number, 
+	up: boolean, 
 }
 
 */
-function moveNodeToTimeline(state, action) {
-	if (canMoveUnder(state, action.sourceId, action.targetId)) {
-		let source = getNodeById(state, action.sourceId);
-		if (utils.isTimeline(source)) {
-			source = copyTimeline(source);
-		} else {
-			source = copyTrial(source);
-		}
+export const DRAG_TYPE = {
+	// source and target have the same parent
+	DISPLACEMENT: 1, 
+	// source takes target as new parent
+	TRANSPLANT: 2, 
+	// different level displacement
+	JUMP: 3, 
+}
 
-		let target = copyTimeline(getNodeById(state, action.targetId));
+function moveNode(state, action) {
+	if (action.sourceId === action.targetId) return state;
 
-		let new_state = Object.assign({}, state);
-		let oldParentId = source.parent;
-		if (oldParentId === target.id) {
-			let from = target.childrenById.indexOf(source.id);
-			target.childrenById.move(from, 0);
-			new_state[target.id] = target;
-			return new_state;
-		}
-
-		// remove from old parent children array
-		// if source was in the main timeline
-		if (oldParentId === null) {
-			new_state.mainTimeline = state.mainTimeline.slice();
-			new_state.mainTimeline = new_state.mainTimeline.filter((item) => (item !== source.id));
-		} else {
-			let newOldParent = copyTimeline(getNodeById(new_state, oldParentId));
-			newOldParent.childrenById = newOldParent.childrenById.filter((item) => (item !== source.id));
-			new_state[newOldParent.id] = newOldParent;
-			console.log(newOldParent)
-		}
-
-		// add to new parent children array
-		if (target.childrenById.indexOf(source.id) === -1)
-			target.childrenById.unshift(source.id);
-		target.collapsed = false;
-		new_state[target.id] = target;
-
-		source.parent = target.id;
-		new_state[source.id] = source;
-		return new_state;
-	} else {
-		return state;
+	switch (action.dragType) {
+		case DRAG_TYPE.TRANSPLANT:
+			return nodeTransplant(state, action);
+		case DRAG_TYPE.DISPLACEMENT:
+			return nodeDisplacement(state, action);
+		case DRAG_TYPE.JUMP:
+			return nodeJump(state, action);
 	}
 }
 
-/*
-action = {
-	sourceId: string,
-	targetId: string,
-	position: number,
+function handleIndex(up, index) {
+	if (up) index--;
+	else index++;
+	return (index < 0) ? 0 : index;
 }
 
-*/
-function moveNodeToTrial(state, action) {
-	if (canMoveUnder(state, action.sourceId, action.targetId)) {
-		let source = getNodeById(state, action.sourceId);
-		if (utils.isTimeline(source)) {
-			source = copyTimeline(source);
-		} else {
-			source = copyTrial(source);
-		}
-
-		let new_state = Object.assign({}, state);
-
-		let target = getNodeById(new_state, action.targetId);
-		let oldParentId = source.parent;
-		let newParentId = target.parent;
-
-		// if under same parent
-		if (oldParentId === newParentId) {
-			let from;
-			if (oldParentId === null) {
-				from = new_state.mainTimeline.indexOf(source.id);
-				new_state.mainTimeline = state.mainTimeline.slice();
-				new_state.mainTimeline.move(from, new_state.mainTimeline.indexOf(target.id)+1);
-			} else {
-				let newParent = copyTimeline(new_state[newParentId]);
-				from = newParent.childrenById.indexOf(source.id);
-				newParent.childrenById.move(from, newParent.childrenById.indexOf(target.id)+1);
-				new_state[newParent.id] = newParent;
-			}
-
-			return new_state;
-		}
-
-		// if source was in the main timeline
-		if (oldParentId === null) {
-			new_state.mainTimeline = state.mainTimeline.slice();
-			new_state.mainTimeline = new_state.mainTimeline.filter((item) => (item !== source.id));
-		}
-
-		// if target trial is in the main timeline
-		let index;
-		if (newParentId === null) {
-			index = new_state.mainTimeline.indexOf(target.id) + 1;
-			new_state.mainTimeline.splice(index, 0, source.id);
-		} else {
-			let newParent = copyTimeline(getNodeById(new_state, newParentId));
-			index = newParent.childrenById.indexOf(target.id) + 1;
-			newParent.childrenById.splice(index, 0, source.id);
-			new_state[newParent.id] = newParent; 
-		}
-
-		source.parent = newParentId;
-		new_state[source.id] = source;
-
-		return new_state;
-	} else {
-		return state;
-	}
-}
-
-function moveNodeToMainTimeline(state, action) {
-	let source = getNodeById(state, action.sourceId);
+// source and target have the same parent
+function nodeDisplacement(state, action) {
+	let source = state[action.sourceId];
 	if (utils.isTimeline(source)) {
 		source = copyTimeline(source);
 	} else {
 		source = copyTrial(source);
 	}
+	let target = state[action.targetId];
+	let targetIndex = getIndex(state, target);
 
-	let new_state = Object.assign({}, state, {
-		mainTimeline: state.mainTimeline.slice(),
-	});
-	
-	// it is not already in the main timeline
-	if (source.parent !== null) {
-		let oldParent = copyTimeline(getNodeById(new_state, source.parent));
-		oldParent.childrenById.filter((item) => (item !== source.id));
-		source.parent = null;
+	let new_state = Object.assign({}, state);
 
-		if (new_state.mainTimeline.indexOf(source.id) === -1) {
-			new_state.mainTimeline.push(source.id)
-		}
+	let arr;
+	// source was in the main timeline
+	if (source.parent === null) {
+		new_state.mainTimeline = state.mainTimeline.slice();
+		arr = new_state.mainTimeline;
+	} else {
+		let parent = copyTimeline(new_state[source.parent]);
+		new_state[parent.id] = parent;
+		arr = parent.childrenById;
 	}
 
-	new_state.mainTimeline.move(new_state.mainTimeline.indexOf(source.id), 0);
+	let from = arr.indexOf(source.id);
+	let to = handleIndex(action.up, targetIndex);
+	arr.move(from, to);
 
 	return new_state;
 }
 
-function moveNode(state, action) {
-	if (action.sourceId === action.targetId || !action.sourceId) return state;
-	
-	if (action.targetId === null) {
-		return moveNodeToMainTimeline(state, action);
-	}
+// source takes target as new parent
+function nodeTransplant(state, action) {
+	if (canMoveUnder(state, action.sourceId, action.targetId)) {
+		let new_state = Object.assign({}, state);
 
-	let target = getNodeById(state, action.targetId);
-	if (utils.isTimeline(target)) {
-		return moveNodeToTimeline(state, action);
+		let source = new_state[action.sourceId];
+		if (utils.isTimeline(source)) {
+			source = copyTimeline(source);
+		} else {
+			source = copyTrial(source);
+		}
+		let target = copyTimeline(new_state[action.targetId]);
+
+		new_state[source.id] = source;
+		new_state[target.id] = target;
+		target.collapsed = false;
+
+		if (source.parent === target.id)
+			return new_state;
+
+		// source was in the main timeline
+		if (source.parent === null) {
+			new_state.mainTimeline = state.mainTimeline.slice();
+			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== source.id));
+		} else {
+			let oldParent = copyTimeline(new_state[source.parent]);
+			new_state[oldParent.id] = oldParent;
+			oldParent.childrenById = oldParent.childrenById.filter((id) => (id !== source.id));
+		}
+
+		source.parent = target.id;
+		if (target.childrenById.indexOf(source.id) === -1) {
+			target.childrenById.push(source.id);
+		}
+
+		return new_state;
 	} else {
-		return moveNodeToTrial(state, action);
+		return state;
 	}
 }
+
+// different level displacement
+// that is, two items have different parent
+function nodeJump(state, action) {
+	if (canMoveUnder(state, action.sourceId, action.targetId)) {
+		let new_state = Object.assign({}, state);
+
+		let source = new_state[action.sourceId];
+		if (utils.isTimeline(source)) {
+			source = copyTimeline(source);
+		} else {
+			source = copyTrial(source);
+		}
+		let target = new_state[action.targetId];
+
+		new_state[source.id] = source;
+
+		let targetParentId = target.parent;
+		// source was in the main timeline
+		// delete itself from old parent
+		if (source.parent === null) {
+			new_state.mainTimeline = state.mainTimeline.slice();
+			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== source.id));
+		} else {
+			let oldParent = copyTimeline(new_state[source.parent]);
+			new_state[oldParent.id] = oldParent;
+			oldParent.childrenById = oldParent.childrenById.filter((id) => (id !== source.id));
+		}
+
+		// add source to new parent
+		source.parent = targetParentId;
+		// target parent is main timeline
+		let targetIndex, arr;
+		if (targetParentId === null) {
+			new_state.mainTimeline = state.mainTimeline.slice();
+			arr = new_state.mainTimeline;
+		} else {
+			let targetParent = copyTimeline(new_state[targetParentId]);
+			new_state[targetParentId] = targetParent;
+			arr = targetParent.childrenById;
+		}
+
+		targetIndex = handleIndex(action.up, arr.indexOf(target.id))
+		arr.splice(targetIndex, 0, source.id);
+
+		return new_state;
+
+	} else {
+		return state;
+	}
+}
+
 
 function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
@@ -486,7 +501,7 @@ function onPreview(state, action) {
 }
 
 function onToggle(state, action) {
-	let node = getNodeById(state, action.id);
+	let node = state[action.id];
 
 	let new_state = Object.assign({}, state);
 
@@ -503,7 +518,7 @@ function onToggle(state, action) {
 }
 
 function setCollapsed(state, action) {
-	let timeline = getNodeById(state, action.id);
+	let timeline = state[action.id];
 
 	let new_state = Object.assign({}, state);
 

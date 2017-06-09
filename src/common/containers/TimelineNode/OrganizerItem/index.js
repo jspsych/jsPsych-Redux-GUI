@@ -4,10 +4,8 @@ import OrganizerItem from '../../../components/TimelineNode/OrganizerItem';
 import { isTimeline } from '../../../constants/utils';
 import { getLevel, getIndex } from '../../../reducers/timelineNode';
 
-
-
-export const moveNode = (dispatch, sourceId, targetId, index) => {
-	dispatch(timelineNodeActions.moveNodeAction(sourceId, targetId, index));
+export const moveNode = (dispatch, sourceId, targetId, up, dragType) => {
+	dispatch(timelineNodeActions.moveNodeAction(sourceId, targetId, up, dragType));
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -17,14 +15,13 @@ const mapStateToProps = (state, ownProps) => {
 	
 	return {
 		isTimeline: isTimeline(node),
-		index: getIndex(timelineNodeState, node),
 		parent: node.parent,
 	}
 };
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	moveNode: (sourceId, targetId, index) => { moveNode(dispatch, sourceId, targetId, index); }
+	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrganizerItem);

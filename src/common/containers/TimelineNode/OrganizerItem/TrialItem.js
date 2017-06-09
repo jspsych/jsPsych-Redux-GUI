@@ -3,7 +3,6 @@ import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
 import { getLevel, getIndex } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../constants/utils';
-import { moveNode } from './index';
 
 const onPreview = (dispatch, ownProps) => {
 	// console.log(e.nativeEvent.which)
@@ -54,7 +53,6 @@ const mapStateToProps = (state, ownProps) => {
 		isEnabled: trial.enabled,
 		level: getLevel(timelineNodeState, trial),
 		name: trial.name,
-		index: getIndex(timelineNodeState, trial),
 		parent: trial.parent,
 	}
 };
@@ -66,7 +64,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	moveNode: (sourceId, targetId, index) => { moveNode(dispatch, sourceId, targetId, index); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);
