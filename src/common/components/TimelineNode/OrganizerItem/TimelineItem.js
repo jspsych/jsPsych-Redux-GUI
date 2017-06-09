@@ -22,7 +22,6 @@ import {
 	grey900 as normalColor,
 } from 'material-ui/styles/colors';
 
-import OrganizerItem from '../../../containers/TimelineNode/OrganizerItem';
 import { contextMenuStyle } from './TrialItem';
 
 import { DropTarget } from 'react-dnd';

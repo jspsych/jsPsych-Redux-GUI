@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { isTimeline } from '../../../constants/utils';
 import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
 import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
 import DropAboveArea from '../../../containers/TimelineNode/OrganizerItem/DropAboveArea';
-import DropUnderArea from '../../../containers/TimelineNode/OrganizerItem/DropUnderArea';
 
 import { DragSource } from 'react-dnd';
 
@@ -20,10 +18,7 @@ const itemSource = {
 
 
 class OrganizerItem extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
+	
 	render() {
 		const { connectDragSource } = this.props;
 

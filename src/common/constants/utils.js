@@ -2,20 +2,12 @@
 var timelineId = 0;
 var trialId = 0;
 
-export function getTimelineId() {
-	return standardizeTimelineId(timelineId++);
-}
+const TIMELINE_ID_PREFIX = "TIMELINE-";
+const TRIAL_ID_PREFIX = "TRIAL-";
 
-export function getTrialId() {
-	return standardizeTrialId(trialId++);
-}
-
-export const TIMELINE_ID_PREFIX = "TIMELINE-";
-export const TRIAL_ID_PREFIX = "TRIAL-";
-
-// enum
 export const TIMELINE_TYPE = "TIMELINE";
 export const TRIAL_TYPE = "TRIAL";
+
 
 export const standardizeTimelineId = (id) => {
 	if (isNaN(id))
@@ -29,19 +21,12 @@ export const standardizeTrialId = (id) => {
 	return TRIAL_ID_PREFIX + id;
 }
 
-export const typeOfNodeById = (node) => {
-	if (typeof node !== "string" && typeof node !== "object")
-		throw new TypeError("Should pass in a string or an object!");
+export function getTimelineId() {
+	return standardizeTimelineId(timelineId++);
+}
 
-	if (typeof node === "object")
-		node = node.id;
-
-	if (node.startsWith(TIMELINE_ID_PREFIX))
-		return TIMELINE_TYPE;
-	else if (node.startsWith(TRIAL_ID_PREFIX))
-		return TRIAL_TYPE;
-
-	return 0;
+export function getTrialId() {
+	return standardizeTrialId(trialId++);
 }
 
 export const isTimeline = (node) => (node.type === TIMELINE_TYPE);

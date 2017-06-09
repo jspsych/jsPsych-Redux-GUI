@@ -4,7 +4,6 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
-import MenuItem from 'material-ui/MenuItem';
 import { SpeedDial, SpeedDialItem } from 'react-mui-speeddial';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -25,15 +24,12 @@ import {
 import { convertPercent } from '../App';
 import OrganizerItem from '../../containers/TimelineNode/OrganizerItem';
 import DropUnderArea from '../../containers/TimelineNode/OrganizerItem/DropUnderArea';
-import DropAboveArea from '../../containers/TimelineNode/OrganizerItem/DropAboveArea';
 
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 55;
-
-var dragging = false;
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
