@@ -17,7 +17,6 @@ class TrialForm extends React.Component {
 		if(this.props.open){
 			if(!utils.isTimeline(/*Some node */)){
 				var getParamVal=jsPsych.plugins[this.props.open].parameterValue;
-				console.log(getParamVal);
 				const plugForm = Object.keys(getParamVal.info.parameters).map((plug) => {
 					switch(getParamVal.info.parameters[plug].type[0]) {
 						case 0:

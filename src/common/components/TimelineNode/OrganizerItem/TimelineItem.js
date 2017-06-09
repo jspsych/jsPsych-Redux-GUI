@@ -17,11 +17,33 @@ import Delete from 'material-ui/svg-icons/action/delete';
 import {
 	cyan400 as highlightColor,
 	green500 as checkColor,
-	grey300 as hoverColor
+	indigo500 as iconHighlightColor,
+	grey300 as hoverColor,
+	grey900 as normalColor,
 } from 'material-ui/styles/colors';
 
 import OrganizerItem from '../../../containers/TimelineNode/OrganizerItem';
 import { contextMenuStyle } from './TrialItem';
+
+import { DropTarget } from 'react-dnd';
+import { DRAG_TYPE } from '../../../reducers/timelineNode';
+
+
+const expandTarget = {
+  // drop(props, monitor, component) {
+  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
+  //   const { index: hoverIndex, id: targetId } = props;
+
+  //   props.moveNode(sourceId, targetId, hoverIndex);
+  // },
+
+  drop(props, monitor, component) {
+  	const { id: sourceId } = monitor.getItem();
+    const { id: targetId } = props;
+
+    props.moveNode(sourceId, targetId, undefined, DRAG_TYPE.TRANSPLANT);
+  }
+};
 
 
 class TimelineItem extends React.Component {
@@ -49,23 +71,35 @@ class TimelineItem extends React.Component {
 	}
 
 	render() {
-		const { isDragging, connectDragSource, connectDropTarget } = this.props;
-		const opacity = isDragging ? 0 : 1;
+		const { isOver, connectDropTarget } = this.props;
 
-		return (
-			<MuiThemeProvider>
-					<div className="Timeline-Item" style={{
+		const colorSelector = (isOver, isSelected) => {
+			if (isOver)
+				return "blue";
+
+			if (isSelected)
+				return highlightColor;
+
+			return null;
+		} 
+		return connectDropTarget(
+				<div  className="Timeline-Item-Container">
+				<MuiThemeProvider>
+				<div className="Timeline-Item" style={{
 								paddingLeft: 15 * this.props.level, 
 								display: 'flex',
-								backgroundColor: (this.props.isSelected) ? highlightColor : null,
+								backgroundColor: colorSelector(isOver, this.props.isSelected),
 								height: "50%"
 							}}>
-						<IconButton hoveredStyle={{backgroundColor: hoverColor}}
+						<IconButton className="Timeline-Collapse-Icon"
+									hoveredStyle={{backgroundColor: hoverColor}}
 									onTouchTap={this.props.toggleCollapsed} 
 									disableTouchRipple={true} 
-									disabled={this.props.hasNoChild}
 						>
-							{(this.props.collapsed || this.props.hasNoChild) ? <CollapsedIcon /> : <ExpandedIcon />}
+							{(this.props.collapsed || this.props.hasNoChild) ? 
+								<CollapsedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} /> : 
+								<ExpandedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} />
+							}
 						</IconButton>
 						<div style={{width: "100%"}}>
 							<ListItem 
@@ -109,10 +143,17 @@ class TimelineItem extends React.Component {
 							/>
 						</Menu>
 						</Popover>
-					</div>
-			</MuiThemeProvider>
+				</div>
+				</MuiThemeProvider>
+				</div>
 		)
 	}
 }
 
-export default TimelineItem;
+export default DropTarget(
+  	"Organizer-Item",
+   	expandTarget, 
+   	(connect, monitor) => ({
+   		connectDropTarget: connect.dropTarget(),
+   		isOver: monitor.isOver(),
+	}))(TimelineItem);

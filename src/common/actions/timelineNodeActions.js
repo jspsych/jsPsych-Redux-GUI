@@ -30,12 +30,13 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveNodeAction(sourceId, targetId, position) {
+export function moveNodeAction(sourceId, targetId, up, dragType) {
 	return {
 		type: actionTypes.MOVE_NODE,
 		sourceId: sourceId,
 		targetId: targetId,
-		position: position
+		up: up,
+		dragType: dragType
 	};
 }
 

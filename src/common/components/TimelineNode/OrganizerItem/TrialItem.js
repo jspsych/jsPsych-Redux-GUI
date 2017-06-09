@@ -24,6 +24,58 @@ import {
 	grey300 as hoverColor,
 } from 'material-ui/styles/colors';
 
+import { DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
+import { DRAG_TYPE } from '../../../reducers/timelineNode';
+
+
+const trialTarget = {
+  // drop(props, monitor, component) {
+  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
+  //   const { index: hoverIndex, id: targetId } = props;
+
+  //   props.moveNode(sourceId, targetId, hoverIndex);
+  // },
+
+  drop(props, monitor, component) {
+  	const { id: sourceId, parent: sourceParent } = monitor.getItem();
+    const { id: targetId, parent: targetParent } = props;
+
+    // Determine rectangle on screen
+    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+
+    // Get vertical middle
+    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+    // Determine mouse position
+    const clientOffset = monitor.getClientOffset();
+
+    // Get pixels to the top
+    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+    // Only perform the move when the mouse has crossed half of the items height
+    // When dragging downwards, only move when the cursor is below 50%
+    // When dragging upwards, only move when the cursor is above 50%
+
+    // Dragging downwards
+    let up = true;
+    if (hoverClientY < hoverMiddleY) {
+      up = false;
+    }
+
+    let dragType;
+    if (sourceParent === targetParent) {
+      dragType = DRAG_TYPE.DISPLACEMENT;
+    } else {
+      dragType = DRAG_TYPE.JUMP;
+    }
+
+
+    props.moveNode(sourceId, targetId, up, dragType);
+  }
+};
+
+
 export const contextMenuStyle = {
 	outerDiv: { position: 'absolute', zIndex: 20},
 	innerDiv: { backgroundColor: contextMenuBackgroundColor,
@@ -58,7 +110,9 @@ class TrialItem extends React.Component {
 	}
 
 	render() {
-		return (
+		const { isOver, connectDropTarget } = this.props;
+		return connectDropTarget(
+			<div>
 			<MuiThemeProvider>
 				<div className="Trial-Item" style={{
 						display:'flex', 
@@ -114,8 +168,15 @@ class TrialItem extends React.Component {
 					    </Popover>
 					</div>
 			</MuiThemeProvider>
+			</div>
 		)
 	}
 }
 
-export default TrialItem;
+export default DropTarget(
+  	"Organizer-Item",
+   	trialTarget, 
+   	(connect, monitor) => ({
+   		connectDropTarget: connect.dropTarget(),
+   		isOver: monitor.isOver(),
+	}))(TrialItem);

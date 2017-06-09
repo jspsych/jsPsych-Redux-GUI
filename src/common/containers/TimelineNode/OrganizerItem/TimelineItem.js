@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNode/OrganizerItem/TimelineItem';
-import { getLevel, getIndex } from '../../../reducers/timelineNode';
+import { getLevel } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../constants/utils';
 import { moveNode } from './index';
 
@@ -39,9 +39,6 @@ const deleteItem = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.deleteTimelineAction(ownProps.id));
 }
 
-const moveTimeline = (dispatch, sourceId, targetId, index) => {
-	dispatch(timelineNodeActions.moveTimelineAction(sourceId, targetId, index));
-}
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
@@ -56,8 +53,6 @@ const mapStateToProps = (state, ownProps) => {
 		hasNoChild: timeline.childrenById.length === 0,
 		collapsed: timeline.collapsed,
 		level: getLevel(timelineNodeState, timeline),
-		index: getIndex(timelineNodeState, timeline),
-		parent: timeline.parent,
 	}
 };
 
@@ -69,8 +64,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	moveTimeline: (sourceId, targetId, index) => { moveTimeline(dispatch, sourceId, targetId, index) },
-	moveNode: (sourceId, targetId, index) => { moveNode(dispatch, sourceId, targetId, index); }
+	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);
