@@ -42,7 +42,6 @@ class OrganizerItem extends React.Component {
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>)}
 			</div>
-			<DropUnderArea id={this.props.id} />
 			</div>
 		)
 	}

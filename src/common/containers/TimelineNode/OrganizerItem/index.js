@@ -12,7 +12,14 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	let node = timelineNodeState[ownProps.id];
-	
+
+	let parentChildrenArr;
+	if (node.parent === null) {
+		parentChildrenArr = timelineNodeState.mainTimeline;
+	} else {
+		parentChildrenArr = timelineNodeState[node.parent].childrenById;
+	}
+
 	return {
 		isTimeline: isTimeline(node),
 		parent: node.parent,
