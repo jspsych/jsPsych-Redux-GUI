@@ -11,6 +11,11 @@ class TrialForm extends React.Component {
 	constructor(props) {
 		super(props);
 	}
+
+	handlePluginChange(e, key, newPluginValue) {
+		this.props.changePluginType(newPluginValue);
+	}
+
 	render(){
 		var i = 0;
 		const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
@@ -21,22 +26,23 @@ class TrialForm extends React.Component {
 			);
 
 		if(this.props.open && this.props.isTrial){
-			
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
-		
-			const pluginParameters = Object.keys(jsPsych.plugins[this.props.pluginType].info.parameters).map((plug) => {
-				switch(jsPsych.plugins[this.props.pluginType].info.parameters[plug].type[0]) {
-					case 0: return (<Toggle id={plug} label={plug} defaultToggled={true} />);
+
+			console.log(this.props.pluginType);
+
+			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
+				switch(getPluginType.info.parameters[plug].type[0]) {
+					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={true} onToggle={this.props.onToggle} />);
 					break;
 					case 1:
-					case 2:
-					case 3:
-					case 4: 
-					case 5: return (<TextField id={plug} key={plug} defaultValue={this.props.parameterValue} floatingLabelText={plug} />);
+					case 2: 
+					case 3: 
+					case 4:
+					case 5: return (<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
 					break;
-					case 6: return (<SelectField id={plug} defaultValue={this.props.parameterValue} floatingLabelText={plug} />);
+					case 6: return (<SelectField id={plug} defaultValue={plug} floatingLabelText={plug} />);
 					break;
-					default: return (<TextField id={plug} key={plug} defaultValue={this.props.parameterValue} floatingLabelText={plug} />);
+					default: return (<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
 				}
 			});
 			var form = <div><SelectField

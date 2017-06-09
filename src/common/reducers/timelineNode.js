@@ -182,7 +182,7 @@ export function createTrial(id,
 	parent=null, 
 	name=getDefaultTrialName(),	
 	enabled=true, 
-	parameters={}
+	parameters={},
 	pluginType=DEFAULT_PLUGIN_TYPE) {
 
 	return {
@@ -191,14 +191,18 @@ export function createTrial(id,
 		name: name,
 		parent: parent,
 		enabled: enabled,
-		parameter: parameter,
+		parameters: parameters,
 		pluginType: pluginType
 	};
 }
 
 function copyTrial(trial) {
-	return createTrial(trial.id, trial.parent, trial.name, 
-		trial.enabled, trial.parameterValue, trial.pluginType);
+	return createTrial(trial.id, 
+		trial.parent, 
+		trial.name, 
+		trial.enabled, 
+		trial.parameters, 
+		trial.pluginType)
 }
 
 /*
@@ -508,7 +512,6 @@ function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
 		previewId: action.id
 	});
-	console.log(new_state)
 	return new_state;
 }
 

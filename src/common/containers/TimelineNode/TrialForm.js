@@ -8,14 +8,18 @@ const onChangePluginType = (dispatch, key) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	console.log("In maps");
 	let timelineNodeState = state.timelineNodeState;
 
 	let trial = timelineNodeState[timelineNodeState.previewId];
 	return {
 		isTrial: isTrial(trial);
 		id: ownProps.id === timelineNodeState.previewId,
+		parameters: trial.parameters,
 		pluginType: trial.pluginType,
+		}
+	} else {
+		return {
+		}
 	}
 };
 
