@@ -29,6 +29,8 @@ const dropAboveTarget = {
   drop(props, monitor, component) {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
     const { id: targetId, parent: targetParent } = props;
+    
+    if (sourceId === targetId) return;
 
     let dragType;
     if (sourceParent === targetParent) {

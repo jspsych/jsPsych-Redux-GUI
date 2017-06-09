@@ -41,27 +41,6 @@ const trialTarget = {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
     const { id: targetId, parent: targetParent } = props;
 
-    // Determine rectangle on screen
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    // Get pixels to the top
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-    // Only perform the move when the mouse has crossed half of the items height
-    // When dragging downwards, only move when the cursor is below 50%
-    // When dragging upwards, only move when the cursor is above 50%
-
-    // Dragging downwards
-    let up = true;
-    if (hoverClientY < hoverMiddleY) {
-      up = false;
-    }
 
     let dragType;
     if (sourceParent === targetParent) {
@@ -71,7 +50,7 @@ const trialTarget = {
     }
 
 
-    props.moveNode(sourceId, targetId, up, dragType);
+    props.moveNode(sourceId, targetId, false, dragType);
   }
 };
 
@@ -111,6 +90,16 @@ class TrialItem extends React.Component {
 
 	render() {
 		const { isOver, connectDropTarget } = this.props;
+		const colorSelector = (isOver, isSelected) => {
+			if (isOver)
+				return "blue";
+
+			if (isSelected)
+				return highlightColor;
+
+			return null;
+		} 
+
 		return connectDropTarget(
 			<div>
 			<MuiThemeProvider>
@@ -119,7 +108,7 @@ class TrialItem extends React.Component {
 						paddingLeft: this.props.level * 15, 
 						minWidth: "100%",
 						overflow: 'hidden',
-						backgroundColor: (this.props.isSelected) ? highlightColor : null
+						backgroundColor: colorSelector(isOver, this.props.isSelected),
 					}} >
 					<IconButton 
 						hoveredStyle={{backgroundColor: hoverColor}}

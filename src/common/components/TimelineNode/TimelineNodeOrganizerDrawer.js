@@ -24,6 +24,8 @@ import {
 
 import { convertPercent } from '../App';
 import OrganizerItem from '../../containers/TimelineNode/OrganizerItem';
+import DropUnderArea from '../../containers/TimelineNode/OrganizerItem/DropUnderArea';
+import DropAboveArea from '../../containers/TimelineNode/OrganizerItem/DropAboveArea';
 
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -123,6 +125,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 												closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 								/>
 							))}
+							{(this.props.lastRoot) ? <DropUnderArea id={this.props.lastRoot} /> : null}
 						</List>
 						</div>
 						<Divider />

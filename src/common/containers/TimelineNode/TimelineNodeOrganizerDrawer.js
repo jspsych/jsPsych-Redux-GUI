@@ -77,8 +77,11 @@ const deleteSelected = (dispatch) => {
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
+	let presentedIds = preOrderTraversal(timelineNodeState);
+
 	return {
-		presentedIds: preOrderTraversal(timelineNodeState)
+		presentedIds: presentedIds,
+		lastRoot: timelineNodeState.mainTimeline[timelineNodeState.mainTimeline.length-1],
 	}
 };
 

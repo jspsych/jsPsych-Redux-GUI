@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
-import { getLevel, getIndex } from '../../../reducers/timelineNode';
+import { getLevel } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../constants/utils';
+import { moveNode } from './index';
 
 const onPreview = (dispatch, ownProps) => {
 	// console.log(e.nativeEvent.which)
@@ -64,6 +65,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
+	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);

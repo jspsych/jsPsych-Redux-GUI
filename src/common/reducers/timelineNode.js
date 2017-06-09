@@ -351,7 +351,7 @@ export const DRAG_TYPE = {
 
 function moveNode(state, action) {
 	if (action.sourceId === action.targetId) return state;
-
+	console.log(action)
 	switch (action.dragType) {
 		case DRAG_TYPE.TRANSPLANT:
 			return nodeTransplant(state, action);
@@ -443,7 +443,12 @@ function nodeTransplant(state, action) {
 // different level displacement
 // that is, two items have different parent
 function nodeJump(state, action) {
-	if (canMoveUnder(state, action.sourceId, action.targetId)) {
+	let canJump = true;
+	if (utils.isTimeline(state[action.sourceId])) {
+		canJump = !isAncestor(state, action.sourceId, action.targetId);
+	}
+
+	if (canJump) {
 		let new_state = Object.assign({}, state);
 
 		let source = new_state[action.sourceId];
@@ -481,7 +486,8 @@ function nodeJump(state, action) {
 			arr = targetParent.childrenById;
 		}
 
-		targetIndex = handleIndex(action.up, arr.indexOf(target.id))
+		targetIndex = arr.indexOf(target.id)
+		if (!action.up) targetIndex++;
 		arr.splice(targetIndex, 0, source.id);
 
 		return new_state;
