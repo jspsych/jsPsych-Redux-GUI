@@ -2,7 +2,6 @@ import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import OrganizerItem from '../../../components/TimelineNode/OrganizerItem';
 import { isTimeline } from '../../../constants/utils';
-import { getLevel, getIndex } from '../../../reducers/timelineNode';
 
 export const moveNode = (dispatch, sourceId, targetId, up, dragType) => {
 	dispatch(timelineNodeActions.moveNodeAction(sourceId, targetId, up, dragType));
@@ -12,13 +11,6 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	let node = timelineNodeState[ownProps.id];
-
-	let parentChildrenArr;
-	if (node.parent === null) {
-		parentChildrenArr = timelineNodeState.mainTimeline;
-	} else {
-		parentChildrenArr = timelineNodeState[node.parent].childrenById;
-	}
 
 	return {
 		isTimeline: isTimeline(node),

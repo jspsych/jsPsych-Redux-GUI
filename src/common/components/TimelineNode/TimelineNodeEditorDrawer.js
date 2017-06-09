@@ -2,8 +2,6 @@ import React from 'react';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
-import MenuItem from 'material-ui/MenuItem';
-import Drawer from 'material-ui/Drawer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';

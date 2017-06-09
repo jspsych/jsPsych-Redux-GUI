@@ -26,11 +26,6 @@ A trial state = {
 }
 
 */
-Array.prototype.move = function(from,to){
-  this.splice(to,0,this.splice(from,1)[0]);
-  return this;
-};
-
 
 import * as actionTypes from '../constants/ActionTypes';
 import * as utils from '../constants/utils'; 
@@ -262,7 +257,7 @@ function deleteTimelineHelper(state, id) {
 	let timeline = getNodeById(state, id);
 
 	// delete its children
-	timeline['childrenById'].map((childId) => {
+	timeline.childrenById.map((childId) => {
 		if (utils.isTimeline(state[childId])) {
 			state = deleteTimelineHelper(state, childId);
 		} else {
@@ -351,7 +346,9 @@ export const DRAG_TYPE = {
 
 function moveNode(state, action) {
 	if (action.sourceId === action.targetId) return state;
+
 	console.log(action)
+	
 	switch (action.dragType) {
 		case DRAG_TYPE.TRANSPLANT:
 			return nodeTransplant(state, action);
@@ -359,6 +356,8 @@ function moveNode(state, action) {
 			return nodeDisplacement(state, action);
 		case DRAG_TYPE.JUMP:
 			return nodeJump(state, action);
+		default:
+			return state;
 	}
 }
 

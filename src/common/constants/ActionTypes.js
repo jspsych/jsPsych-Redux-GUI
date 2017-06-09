@@ -1,3 +1,4 @@
+// organizer
 export const ADD_TIMELINE = "ADD_TIMELINE";
 export const DELETE_TIMELINE = "DELETE_TIMELINE";
 export const ADD_TRIAL = "ADD_TRIAL";

@@ -25,7 +25,6 @@ import {
 } from 'material-ui/styles/colors';
 
 import { DropTarget } from 'react-dnd';
-import { findDOMNode } from 'react-dom';
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 
 

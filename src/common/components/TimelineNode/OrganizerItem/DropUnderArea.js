@@ -30,9 +30,6 @@ const dropUnderTarget = {
 };
 
 class DropUnderArea extends React.Component {
-	constructor(props) {
-		super(props);
-	}
 
 	render() {
 		const { connectDropTarget, isOver } = this.props;

@@ -2,7 +2,6 @@ import React from 'react';
 
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { DropTarget } from 'react-dnd';
-import flow from 'lodash/flow';
 
 export const style = (isOver, level) => (
   (isOver) ?
@@ -44,10 +43,6 @@ const dropAboveTarget = {
 };
 
 class DropAboveArea extends React.Component {
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
 		const { connectDropTarget, isOver } = this.props;
 
