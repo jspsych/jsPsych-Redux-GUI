@@ -23,7 +23,9 @@ module.exports = {
             container_editor_drawer:'src/common/containers/TimelineNode/TimelineNodeEditorDrawer.js',
             container_organizer_drawer:'src/common/containers/TimelineNode/TimelineNodeOrganizerDrawer.js',
             container_organizer_item:'src/common/containers/TimelineNode/TimelineNodeOrganizerItem.js',
+            container_trial_form: 'src/common/containers/TimelineNode/TrialForm/js',
             actions: 'src/common/actions/timelineNodeActions.js',
+            actions_trial_form: 'src/common/actions/trialFormActions.js',
             reducer_index: 'src/common/reducers/index.js',
             reducer_timeline_node: 'src/common/reducers/timelineNode.js'
         }
