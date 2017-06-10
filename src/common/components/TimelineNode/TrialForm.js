@@ -12,10 +12,6 @@ class TrialForm extends React.Component {
 		super(props);
 	}
 
-	handlePluginChange(e, key, newPluginValue) {
-		this.props.changePluginType(newPluginValue);
-	}
-
 	render(){
 		var i = 0;
 		const pluginItems = Object.keys(jsPsych.plugins).map((plugin) =>
@@ -26,9 +22,9 @@ class TrialForm extends React.Component {
 			);
 
 		if(this.props.open && this.props.isTrial){
+			console.log("this is open and a trial");
+			console.log("is a trial" + this.props.isTrial);
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
-
-			console.log(this.props.pluginType);
 
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
 				switch(getPluginType.info.parameters[plug].type[0]) {
@@ -45,6 +41,7 @@ class TrialForm extends React.Component {
 					default: return (<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
 				}
 			});
+			console.log("Before form" + this.props.pluginType);
 			var form = <div><SelectField
 			value={this.props.pluginType}
 			autoWidth={true}

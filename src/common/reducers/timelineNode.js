@@ -545,7 +545,7 @@ function setCollapsed(state, action) {
 	return new_state;
 }
 
-pluginType = (type) => {
+const pluginType = (type) => {
 	switch(type) {
 		case 1: return ('text');
 		break;
@@ -555,15 +555,14 @@ pluginType = (type) => {
 	}
 }
 
-function changePlugin(state, id, pluginType) {
-	let node = state[action.previewId];
-
+function changePlugin(state, action) {
+	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
 	node = copyTrial(node);
 	
 	node.pluginType = pluginType(action.key); 
-	new_state[action.id] = node; 
-
+	new_state[state.previewId] = node; 
+	
 	return new_state;
 }
