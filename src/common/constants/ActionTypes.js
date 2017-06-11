@@ -11,6 +11,8 @@ export const SET_COLLAPSED = "SET_COLLAPSED";
 // main 
 export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
 
-/**TrialForm Actions */
+//TrialForm Actions 
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";
+export const TOGGLE_PARAM_VALUE = "TOGGLE_PARAM_VALUE";
+export const CHANGE_PARAM_TEXT = "CHANGE_PARAM_TEXT";
 
