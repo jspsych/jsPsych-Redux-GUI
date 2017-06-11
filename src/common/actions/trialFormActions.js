@@ -6,3 +6,19 @@ export function onPluginTypeChange(key) {
 		key: key
 	};
 }
+
+export function onToggleValue(newVal) {
+	return {
+		type: actionTypes.TOGGLE_PARAM_VALUE,
+		newVal: newVal
+	};
+}
+
+export function onParamTextChange(paramId, newVal) {
+	return {
+		type: actionTypes.CHANGE_PARAM_TEXT,
+		paramId: paramId,
+		newVal: newVal
+	};
+}
+

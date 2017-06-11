@@ -65,6 +65,10 @@ export default function(state=initState, action) {
 			return setCollapsed(state, action);
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return changePlugin(state, action);
+		case actionTypes.TOGGLE_PARAM_VAL:
+			return changeToggleValue(state, action);
+		case actionTypes.CHANGE_PARAM_TEXT:
+			return changeParamText(state, action);
 		default:
 			return state;
 	}
@@ -145,7 +149,6 @@ function canMoveUnder(state, sourceId, targetId) {
 	return true;
 }
 
-
 export function createTimeline(id,  
 	parent=null, 
 	name=getDefaultTimelineName(),
@@ -182,7 +185,7 @@ export function createTrial(id,
 	parent=null, 
 	name=getDefaultTrialName(),	
 	enabled=true, 
-	parameters={},
+	parameters={text: '', choices: ''},
 	pluginType=DEFAULT_PLUGIN_TYPE) {
 
 	return {
@@ -555,6 +558,18 @@ const pluginType = (type) => {
 	}
 }
 
+const pluginParam = (pluginType) => {
+	switch(pluginType) {
+		case 1: return ({text: '', choices: ''});
+		break;
+		case 2: return ({stimulus: '', is_html: false,
+						 choices: '', prompt: '', timing_stim: '',
+						 timing_response: '', response_ends_trial: false});
+		break;
+		default: return ({text: '', choices: ''});
+	}
+}
+
 function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -562,7 +577,36 @@ function changePlugin(state, action) {
 	node = copyTrial(node);
 	
 	node.pluginType = pluginType(action.key); 
+	node.parameters = pluginParam(action.key);
 	new_state[state.previewId] = node; 
 	
 	return new_state;
 }
+
+function changeToggleValue(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+
+	parameters: [node.parameters, action.newVal]
+	new_state[state.previewId] = node;
+
+	return new_state;
+}
+
+function changeParamText(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+
+	console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
+
+	delete node.parameters[action.paramId];
+	node.parameters[action.paramId] = action.newVal;
+	new_state[state.previewId] = node;
+
+	return new_state;
+}
+

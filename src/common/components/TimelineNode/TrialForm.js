@@ -10,6 +10,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 class TrialForm extends React.Component {
 	constructor(props) {
 		super(props);
+
 	}
 
 	render(){
@@ -22,23 +23,22 @@ class TrialForm extends React.Component {
 			);
 
 		if(this.props.open && this.props.isTrial){
-			console.log("this is open and a trial");
-			console.log("is a trial" + this.props.isTrial);
+			
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
-
+			var j = 0; 
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
 				switch(getPluginType.info.parameters[plug].type[0]) {
-					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={true} onToggle={this.props.onToggle} />);
+					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={false} onToggle={(event, newValue) => this.props.onChange(event.target.id, newValue)} />);
 					break;
 					case 1:
 					case 2: 
 					case 3: 
 					case 4:
-					case 5: return (<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
+					case 5: return (<TextField id={plug} key={plug} value={this.props.parameters[plug]} floatingLabelText={plug} onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 					break;
-					case 6: return (<SelectField id={plug} defaultValue={plug} floatingLabelText={plug} />);
+					case 6: return (<SelectField id={plug} value={this.props.parameters[plug]} floatingLabelText={plug} onChange={this.props.onChange({plug})} />);
 					break;
-					default: return (<TextField id={plug} key={plug} defaultValue={plug} floatingLabelText={plug} />);
+					default: return (<TextField id={plug} key={plug} value={this.props.parameters[plug]} floatingLabelText={plug} onChange={(even, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 				}
 			});
 			console.log("Before form" + this.props.pluginType);
