@@ -22,13 +22,17 @@ import {
 	grey900 as normalColor,
 } from 'material-ui/styles/colors';
 
+import PreviewOrganizerItem from '../../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewOrganizerItemContainer';
 
+import { TREE_MENU_INDENT as INDENT } from '../../TimelineNodeOrganizerDrawer';
 
 class PreviewTimelineItem extends React.Component {
 
 	render() {
 		return (
+			<div>
 				<MuiThemeProvider>
+				<div>
 				<div className="Preview-Timeline-Item" style={{
 								display: 'flex',
 								height: "50%",
@@ -54,7 +58,14 @@ class PreviewTimelineItem extends React.Component {
 									}/>
 						</div>
 				</div>
+				{this.props.childrenById.map((id) => (
+					<div key={"Container-Preview-"+id} style={{paddingLeft: INDENT}} >
+						<PreviewOrganizerItem id={id} key={"Preview-"+id} />
+					</div>
+				))}
+				</div>
 				</MuiThemeProvider>
+			</div>
 		)
 	}
 }

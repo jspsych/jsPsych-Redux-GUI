@@ -373,6 +373,7 @@ function moveNode(state, action) {
 	}
 }
 
+
 function hoverNode(state, action) {
 	// console.log(action);
 
@@ -388,11 +389,6 @@ function hoverNode(state, action) {
 	}
 }
 
-function handleIndex(up, index) {
-	if (up) index--;
-	else index++;
-	return (index < 0) ? 0 : index;
-}
 
 // source and target have the same parent
 function nodeDisplacement(state, action) {
@@ -414,27 +410,10 @@ function nodeDisplacement(state, action) {
 	}
 
 	let from = arr.indexOf(source.id);
-	let to = handleIndex(action.up, targetIndex);
-	arr.move(from, to);
+	if (!action.up) targetIndex++;
+	arr.move(from, targetIndex);
 
 	return new_state;
-}
-
-function predictChildrenLevel(state, root, rootLevel) {
-	let len = root.childrenById.length;
-	if (len === 0)
-		return;
-	let node;
-	let nodeId;
-	for (let i = 0; i < len; i++) {
-		nodeId = root.childrenById[i];
-		node = state[nodeId];
-		state[nodeId] = node;
-
-		node.predictedLevel = rootLevel + 1;
-		if (utils.isTimeline(node))
-			predictChildrenLevel(state, node, node.predictedLevel);
-	}
 }
 
 function nodeHoverDisplacement(state, action) {
@@ -444,8 +423,6 @@ function nodeHoverDisplacement(state, action) {
 	new_state[source.id] = source;
 
 	source.predictedLevel = getLevel(state, source);
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
 
 	return new_state;
 }
@@ -462,8 +439,10 @@ function nodeTransplant(state, action) {
 		new_state[target.id] = target;
 		target.collapsed = false;
 
-		if (source.parent === target.id)
+		if (source.parent === target.id) {
+			target.childrenById.move(target.childrenById.indexOf(source.id), 0);
 			return new_state;
+		}
 
 		// source was in the main timeline
 		if (source.parent === null) {
@@ -497,8 +476,7 @@ function nodeHoverTransplant(state, action) {
 	target.collapsed = false;
 
 	source.predictedLevel = getLevel(state, target) + 1;
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
+
 	return new_state;
 }
 
@@ -564,8 +542,6 @@ function nodeHoverJump(state, action) {
 
 	source.predictedLevel = getLevel(state, target);
 
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
 	return new_state;
 }
 

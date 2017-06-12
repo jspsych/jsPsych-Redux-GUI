@@ -5,17 +5,20 @@ import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Gho
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { DropTarget } from 'react-dnd';
 
-import { getHoveredId, setHoveredId } from './DropAboveArea';
+import {setLastAreaType, getLastAreaType} from './DropAboveArea';
 
 const dropUnderAreaStyle = {
-  height: 60,
-  border: '1px solid black',
+  height: 20,
+  border: 'none', // 
 }
 
 const dropUnderTarget = {
    hover(props, monitor, component) {
     const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent } = props;
+    const { id: targetId, parent: targetParent, areaType: areaType } = props;
+
+    if (areaType === getLastAreaType()) return;
+    setLastAreaType(areaType);
 
     let dragType;
     if (sourceParent === targetParent) {

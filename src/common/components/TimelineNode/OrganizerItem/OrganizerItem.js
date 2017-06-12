@@ -2,7 +2,7 @@ import React from 'react';
 
 import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItemContainer';
 import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItemContainer';
-import DropAboveArea from '../../../containers/TimelineNode/OrganizerItem/DropAboveAreaContainer';
+import DropUnderArea from '../../../containers/TimelineNode/OrganizerItem/DropUnderAreaContainer';
 
 import { isAncestor } from '../../../reducers/timelineNode';
 
@@ -14,6 +14,7 @@ const itemSource = {
     return {
       id: props.id,
       parent: props.parent,
+      areaType: props.areaType
     };
   },
 };
@@ -33,22 +34,21 @@ class OrganizerItem extends React.Component {
 
 		return connectDragSource(
 			(hide) ? <div /> :
-			(<div>
-			<DropAboveArea id={this.props.id} isDragging={isDragging}/>
-			<div className="Organizer-Item" 
-			>
+			(
+			<div className="Organizer-Item">
 				{(this.props.isTimeline) ? 
 				(<TimelineItem 
 					id={this.props.id} 
+					areaType={this.props.areaType}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>) :
 				(<TrialItem 
 					id={this.props.id} 
+					areaType={this.props.areaType}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>)}
-			</div>
 			</div>)
 		)
 	}

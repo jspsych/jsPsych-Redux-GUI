@@ -17,11 +17,20 @@ const mapStateToProps = (state, ownProps) => {
 	let node = timelineNodeState[ownProps.id];
 
 	let isTimelineNode = isTimeline(node);
+	let nodeParentId = node.parent;
+	let isLast = false;
+	let arr;
+	if (nodeParentId === null) 
+		arr = [false];
+	else
+		arr = timelineNodeState[nodeParentId].childrenById;
+
 	return {
 		isTimeline: isTimelineNode,
 		parent: node.parent,
 		childrenById: (isTimelineNode) ? node.childrenById : [],
-		state: timelineNodeState
+		state: timelineNodeState,
+		isLast: arr[arr.length-1] === ownProps.id
 	}
 };
 

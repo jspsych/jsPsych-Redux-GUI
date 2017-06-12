@@ -25,17 +25,24 @@ import {
 import { contextMenuStyle } from './TrialItem';
 
 import { DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
 
 import { TREE_MENU_INDENT as INDENT } from '../TimelineNodeOrganizerDrawer';
+import {setLastAreaType, getLastAreaType} from './DropAboveArea';
+
 
 const expandTarget = {
   hover(props, monitor, component) {
     const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent } = props;
+    const { id: targetId, parent: targetParent, areaType: areaType } = props;
 
-    props.hoverNode(sourceId, targetId, DRAG_TYPE.TRANSPLANT)
+
+    if (areaType === getLastAreaType()) return;
+   	setLastAreaType(areaType);
+
+    props.hoverNode(sourceId, targetId, DRAG_TYPE.TRANSPLANT);
   },
 
   drop(props, monitor, component) {
@@ -76,7 +83,7 @@ class TimelineItem extends React.Component {
 
 		const colorSelector = (isOver, isSelected) => {
 			if (isOver)
-				return "blue";
+				return null;
 
 			if (isSelected)
 				return highlightColor;
