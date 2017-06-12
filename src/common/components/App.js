@@ -4,7 +4,8 @@ import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawerContainer';
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
-//import TrialForm from './TimelineNode/TrialForm';
+import TrialForm from '../containers/TimelineNode/TrialForm';
+
 
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
@@ -26,7 +27,6 @@ class App extends React.Component {
 			timelineOrganizerDrawerToggle: true,
 			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
 			timelineEditorDrawerToggle: false,
-			experimentName: "Untitled Experiment",
 		}
 
 		this.setTimelineOrangizerWidth = (width) => {
@@ -59,18 +59,13 @@ class App extends React.Component {
 			});
 		}
 
-		this.changeExperimentName = (newName) => {
-			this.setState({
-				experimentName: newName
-			});
-		}
 	}
 
 	render() {
 		return (
 			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
-					<Appbar changeExperimentNameCallBack={this.state.changeExperimentName}/>
+					<Appbar />
 				</div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizerDrawer 
@@ -95,6 +90,7 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
+	  				<TrialForm open={this.state.timelineEditorDrawerToggle} />
 	  			</div>
   			</div>
   		);
