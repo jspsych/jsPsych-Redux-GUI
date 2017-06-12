@@ -26,30 +26,38 @@ import {
 
 import { DropTarget } from 'react-dnd';
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
+import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
 
+import { TREE_MENU_INDENT as INDENT } from '../TimelineNodeOrganizerDrawer';
 
 const trialTarget = {
-  // drop(props, monitor, component) {
-  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
-  //   const { index: hoverIndex, id: targetId } = props;
+  hover(props, monitor, component) {
+  	const { id: sourceId, parent: sourceParent } = monitor.getItem();
+    const { id: targetId, parent: targetParent, ghost: ghost } = props;
+   
 
-  //   props.moveNode(sourceId, targetId, hoverIndex);
-  // },
+    let dragType;
+	if (sourceParent === targetParent) {
+		dragType = DRAG_TYPE.DISPLACEMENT;
+	} else {
+		dragType = DRAG_TYPE.JUMP;
+	}
+
+	props.hoverNode(sourceId, targetId, dragType);
+  },
 
   drop(props, monitor, component) {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent } = props;
-
+    const { id: targetId, parent: targetParent, ghost: ghost } = props;
 
     let dragType;
-    if (sourceParent === targetParent) {
-      dragType = DRAG_TYPE.DISPLACEMENT;
-    } else {
-      dragType = DRAG_TYPE.JUMP;
-    }
+	if (sourceParent === targetParent) {
+		dragType = DRAG_TYPE.DISPLACEMENT;
+	} else {
+		dragType = DRAG_TYPE.JUMP;
+	}
 
-
-    props.moveNode(sourceId, targetId, false, dragType);
+	props.moveNode(sourceId, targetId, false, dragType);
   }
 };
 
@@ -88,7 +96,7 @@ class TrialItem extends React.Component {
 	}
 
 	render() {
-		const { isOver, connectDropTarget } = this.props;
+		const { isOver, connectDropTarget, source } = this.props;
 		const colorSelector = (isOver, isSelected) => {
 			if (isOver)
 				return "blue";
@@ -102,12 +110,13 @@ class TrialItem extends React.Component {
 		return connectDropTarget(
 			<div>
 			<MuiThemeProvider>
+			<div>
 				<div className="Trial-Item" style={{
 						display:'flex', 
-						paddingLeft: this.props.level * 15, 
 						minWidth: "100%",
 						overflow: 'hidden',
 						backgroundColor: colorSelector(isOver, this.props.isSelected),
+						paddingLeft: INDENT * this.props.level,
 					}} >
 					<IconButton 
 						hoveredStyle={{backgroundColor: hoverColor}}
@@ -155,6 +164,8 @@ class TrialItem extends React.Component {
 					    </Menu>
 					    </Popover>
 					</div>
+					{(isOver) ? <PreviewItemGroup id={source.id} /> : null}
+				</div>
 			</MuiThemeProvider>
 			</div>
 		)
@@ -167,4 +178,5 @@ export default DropTarget(
    	(connect, monitor) => ({
    		connectDropTarget: connect.dropTarget(),
    		isOver: monitor.isOver(),
+   		source: monitor.getItem(),
 	}))(TrialItem);

@@ -6,7 +6,7 @@ import reducer,
 	DRAG_TYPE
 } from '../timelineNode';
 import * as Actions from '../../actions/timelineNodeActions';
-import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../../constants/utils'; 
+import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../timelineNodeUtils'; 
 
 enterTest();
 

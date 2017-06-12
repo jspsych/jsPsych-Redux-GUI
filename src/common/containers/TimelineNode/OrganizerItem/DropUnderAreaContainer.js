@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import DropUnderArea from '../../../components/TimelineNode/OrganizerItem/DropUnderArea';
-import { moveNode } from './index';
-import { getLevel } from '../../../reducers/timelineNode';
+import { moveNode, hoverNode } from './OrganizerItemContainer';
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
@@ -10,13 +9,13 @@ const mapStateToProps = (state, ownProps) => {
 	
 	return {
 		parent: node.parent,
-		level: getLevel(timelineNodeState, node),
 	}
 };
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); }
+	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); },
+	hoverNode: (sourceId, targetId, dragType) => { hoverNode(dispatch, sourceId, targetId, dragType); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DropUnderArea);

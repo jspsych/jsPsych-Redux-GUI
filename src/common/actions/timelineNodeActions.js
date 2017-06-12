@@ -40,6 +40,14 @@ export function moveNodeAction(sourceId, targetId, up, dragType) {
 	};
 }
 
+export function hoverNodeAction(sourceId, targetId, dragType) {
+	return {
+		type: actionTypes.HOVER_NODE,
+		sourceId: sourceId,
+		targetId: targetId,
+		dragType: dragType
+	};
+}
 
 export function onPreviewAction(id) {
 	return {

@@ -26,22 +26,24 @@ import { contextMenuStyle } from './TrialItem';
 
 import { DropTarget } from 'react-dnd';
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
+import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
 
+import { TREE_MENU_INDENT as INDENT } from '../TimelineNodeOrganizerDrawer';
 
 const expandTarget = {
-  // drop(props, monitor, component) {
-  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
-  //   const { index: hoverIndex, id: targetId } = props;
+  hover(props, monitor, component) {
+    const { id: sourceId, parent: sourceParent } = monitor.getItem();
+    const { id: targetId, parent: targetParent } = props;
 
-  //   props.moveNode(sourceId, targetId, hoverIndex);
-  // },
+    props.hoverNode(sourceId, targetId, DRAG_TYPE.TRANSPLANT)
+  },
 
   drop(props, monitor, component) {
   	const { id: sourceId } = monitor.getItem();
     const { id: targetId } = props;
 
     props.moveNode(sourceId, targetId, undefined, DRAG_TYPE.TRANSPLANT);
-  }
+  },
 };
 
 
@@ -70,7 +72,7 @@ class TimelineItem extends React.Component {
 	}
 
 	render() {
-		const { isOver, connectDropTarget } = this.props;
+		const { isOver, connectDropTarget, source } = this.props;
 
 		const colorSelector = (isOver, isSelected) => {
 			if (isOver)
@@ -84,11 +86,12 @@ class TimelineItem extends React.Component {
 		return connectDropTarget(
 				<div  className="Timeline-Item-Container">
 				<MuiThemeProvider>
+				<div>
 				<div className="Timeline-Item" style={{
-								paddingLeft: 15 * this.props.level, 
 								display: 'flex',
 								backgroundColor: colorSelector(isOver, this.props.isSelected),
-								height: "50%"
+								height: "50%",
+								paddingLeft: INDENT * this.props.level,
 							}}>
 						<IconButton className="Timeline-Collapse-Icon"
 									hoveredStyle={{backgroundColor: hoverColor}}
@@ -142,6 +145,8 @@ class TimelineItem extends React.Component {
 							/>
 						</Menu>
 						</Popover>
+					</div>
+					{(isOver) ? <PreviewItemGroup id={source.id} /> : null}
 				</div>
 				</MuiThemeProvider>
 				</div>
@@ -155,4 +160,5 @@ export default DropTarget(
    	(connect, monitor) => ({
    		connectDropTarget: connect.dropTarget(),
    		isOver: monitor.isOver(),
+   		source: monitor.getItem(),
 	}))(TimelineItem);

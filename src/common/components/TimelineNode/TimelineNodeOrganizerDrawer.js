@@ -22,11 +22,13 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
-import OrganizerItem from '../../containers/TimelineNode/OrganizerItem';
-import DropUnderArea from '../../containers/TimelineNode/OrganizerItem/DropUnderArea';
+import OrganizerItem from '../../containers/TimelineNode/OrganizerItem/OrganizerItemContainer';
+import DropUnderArea from '../../containers/TimelineNode/OrganizerItem/DropUnderAreaContainer';
 
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+
+export const TREE_MENU_INDENT = 20;
 
 const MIN_WIDTH = 20;
 const MAX_WIDTH = 55;
@@ -113,7 +115,9 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 							maxWidth: "100%",
 							paddingLeft: 0,
 						}}>
-						<List style={{maxHeight: "68vh", minHeight: "68vh"}}>
+						<List style={{maxHeight: "68vh", 
+									minHeight: "68vh", 
+  								}}>
 							{this.props.presentedIds.map((id) => (
 								<OrganizerItem id={id} 
 												key={id} 

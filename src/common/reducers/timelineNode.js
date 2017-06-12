@@ -28,7 +28,7 @@ A trial state = {
 */
 
 import * as actionTypes from '../constants/ActionTypes';
-import * as utils from '../constants/utils'; 
+import * as utils from './timelineNodeUtils'; 
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
@@ -61,6 +61,8 @@ export default function(state=initState, action) {
 			return onToggle(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return setCollapsed(state, action);
+		case actionTypes.HOVER_NODE:
+			return hoverNode(state, action);
 		default:
 			return state;
 	}
@@ -110,13 +112,13 @@ const getDefaultTrialName = () => {
 Decides if source node is ancestor of target node 
 
 */ 
-function isAncestor(state, sourceId, targetId) {
+export function isAncestor(state, sourceId, targetId) {
 	let target = getNodeById(state, targetId);
 
 	while (target && target.parent !== null) {
 		if (target.parent === sourceId)
 			return true;
-		target = getNodeById(target.parent);
+		target = state[target.parent];
 	}
 
 	return false;
@@ -158,6 +160,7 @@ export function createTimeline(id,
 		childrenById: childrenById,
 		collapsed: collapsed,
 		enabled: enabled,
+		predictedLevel: null,
 		parameters: parameters
 	};
 }
@@ -186,12 +189,21 @@ export function createTrial(id,
 		name: name,
 		parent: parent,
 		enabled: enabled,
+		predictedLevel: null,
 		parameters: parameters
 	};
 }
 
 function copyTrial(trial) {
 	return createTrial(trial.id, trial.parent, trial.name, trial.enabled, trial.parameters);
+}
+
+function copyNode(node) {
+	if (utils.isTimeline(node)) {
+		return copyTimeline(node);
+	} else {
+		return copyTrial(node);
+	}
 }
 
 /*
@@ -347,7 +359,7 @@ export const DRAG_TYPE = {
 function moveNode(state, action) {
 	if (action.sourceId === action.targetId) return state;
 
-	console.log(action)
+	// console.log(action);
 	
 	switch (action.dragType) {
 		case DRAG_TYPE.TRANSPLANT:
@@ -356,6 +368,21 @@ function moveNode(state, action) {
 			return nodeDisplacement(state, action);
 		case DRAG_TYPE.JUMP:
 			return nodeJump(state, action);
+		default:
+			return state;
+	}
+}
+
+function hoverNode(state, action) {
+	// console.log(action);
+
+	switch (action.dragType) {
+		case DRAG_TYPE.TRANSPLANT:
+			return nodeHoverTransplant(state, action);
+		case DRAG_TYPE.DISPLACEMENT:
+			return nodeHoverDisplacement(state, action);
+		case DRAG_TYPE.JUMP:
+			return nodeHoverJump(state, action);
 		default:
 			return state;
 	}
@@ -370,11 +397,6 @@ function handleIndex(up, index) {
 // source and target have the same parent
 function nodeDisplacement(state, action) {
 	let source = state[action.sourceId];
-	if (utils.isTimeline(source)) {
-		source = copyTimeline(source);
-	} else {
-		source = copyTrial(source);
-	}
 	let target = state[action.targetId];
 	let targetIndex = getIndex(state, target);
 
@@ -398,17 +420,42 @@ function nodeDisplacement(state, action) {
 	return new_state;
 }
 
+function predictChildrenLevel(state, root, rootLevel) {
+	let len = root.childrenById.length;
+	if (len === 0)
+		return;
+	let node;
+	let nodeId;
+	for (let i = 0; i < len; i++) {
+		nodeId = root.childrenById[i];
+		node = state[nodeId];
+		state[nodeId] = node;
+
+		node.predictedLevel = rootLevel + 1;
+		if (utils.isTimeline(node))
+			predictChildrenLevel(state, node, node.predictedLevel);
+	}
+}
+
+function nodeHoverDisplacement(state, action) {
+	let new_state = Object.assign({}, state);
+
+	let source = copyNode(state[action.sourceId]);
+	new_state[source.id] = source;
+
+	source.predictedLevel = getLevel(state, source);
+	if (utils.isTimeline(source))
+		predictChildrenLevel(new_state, source, source.predictedLevel);
+
+	return new_state;
+}
+
 // source takes target as new parent
 function nodeTransplant(state, action) {
 	if (canMoveUnder(state, action.sourceId, action.targetId)) {
 		let new_state = Object.assign({}, state);
 
-		let source = new_state[action.sourceId];
-		if (utils.isTimeline(source)) {
-			source = copyTimeline(source);
-		} else {
-			source = copyTrial(source);
-		}
+		let source = copyNode(new_state[action.sourceId]);
 		let target = copyTimeline(new_state[action.targetId]);
 
 		new_state[source.id] = source;
@@ -430,13 +477,29 @@ function nodeTransplant(state, action) {
 
 		source.parent = target.id;
 		if (target.childrenById.indexOf(source.id) === -1) {
-			target.childrenById.push(source.id);
+			target.childrenById.unshift(source.id);
 		}
 
 		return new_state;
 	} else {
 		return state;
 	}
+}
+
+function nodeHoverTransplant(state, action) {
+	let new_state = Object.assign({}, state);
+
+	let source = copyNode(state[action.sourceId]);
+	let target = copyTimeline(state[action.targetId]);
+	new_state[source.id] = source;
+	new_state[target.id] = target;
+
+	target.collapsed = false;
+
+	source.predictedLevel = getLevel(state, target) + 1;
+	if (utils.isTimeline(source))
+		predictChildrenLevel(new_state, source, source.predictedLevel);
+	return new_state;
 }
 
 // different level displacement
@@ -446,16 +509,10 @@ function nodeJump(state, action) {
 	if (utils.isTimeline(state[action.sourceId])) {
 		canJump = !isAncestor(state, action.sourceId, action.targetId);
 	}
-
 	if (canJump) {
 		let new_state = Object.assign({}, state);
 
-		let source = new_state[action.sourceId];
-		if (utils.isTimeline(source)) {
-			source = copyTimeline(source);
-		} else {
-			source = copyTrial(source);
-		}
+		let source = copyNode(new_state[action.sourceId]);
 		let target = new_state[action.targetId];
 
 		new_state[source.id] = source;
@@ -485,9 +542,11 @@ function nodeJump(state, action) {
 			arr = targetParent.childrenById;
 		}
 
-		targetIndex = arr.indexOf(target.id)
+		targetIndex = arr.indexOf(target.id);
 		if (!action.up) targetIndex++;
-		arr.splice(targetIndex, 0, source.id);
+		if (arr.indexOf(source.id) === -1) {
+			arr.splice(targetIndex, 0, source.id);
+		}
 
 		return new_state;
 
@@ -496,6 +555,19 @@ function nodeJump(state, action) {
 	}
 }
 
+function nodeHoverJump(state, action) {
+	let new_state = Object.assign({}, state);
+
+	let source = copyNode(state[action.sourceId]);
+	let target = state[action.targetId];
+	new_state[source.id] = source;
+
+	source.predictedLevel = getLevel(state, target);
+
+	if (utils.isTimeline(source))
+		predictChildrenLevel(new_state, source, source.predictedLevel);
+	return new_state;
+}
 
 function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
