@@ -600,23 +600,37 @@ function setCollapsed(state, action) {
 
 const pluginType = (type) => {
 	switch(type) {
-		case 1: return ('text');
-		break;
-		case 2: return ('single-stim');
-		break;
-		default: return ('text');
+		case 1: 
+			return 'text';
+		case 2: 
+			return 'single-stim';
+		default: 
+			return 'text';
 	}
 }
 
 const pluginParam = (pluginType) => {
-	switch(pluginType) {
-		case 1: return ({text: '', choices: ''});
-		break;
-		case 2: return ({stimulus: '', is_html: false,
-						 choices: '', prompt: '', timing_stim: '',
-						 timing_response: '', response_ends_trial: false});
-		break;
-		default: return ({text: '', choices: ''});
+	switch (pluginType) {
+		case 1:
+			return {
+				text: '',
+				choices: ''
+			};
+		case 2:
+			return {
+				stimulus: '',
+				is_html: false,
+				choices: '',
+				prompt: '',
+				timing_stim: '',
+				timing_response: '',
+				response_ends_trial: false
+			};
+		default:
+			return {
+				text: '',
+				choices: ''
+			};
 	}
 }
 
