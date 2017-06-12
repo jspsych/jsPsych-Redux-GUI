@@ -6,7 +6,7 @@ A timeline state = {
 	type: string,
 	name: string,
 	// if its parent is mainTimeline, null
-	parent: string, 
+	parent: string,
 	childrenById: array,
 	collapsed: boolean,
 	enabled: boolean,
@@ -19,7 +19,7 @@ A trial state = {
 	type: string,
 	name: string,
 	// if its parent is mainTimeline, null
-	parent: string, 
+	parent: string,
 	enabled: boolean,
 	// specific parameters decided by which plugin user chooses
 	parameters: object,
@@ -28,19 +28,23 @@ A trial state = {
 */
 
 import * as actionTypes from '../constants/ActionTypes';
+
 import * as utils from './timelineNodeUtils'; 
+
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
+const DEFAULT_PLUGIN_TYPE = 'text';
+
 var timeline = 0;
-var trial = 0; 
+var trial = 0;
 
 export const initState = {
 	// id of which is being previewed/editted
 	previewId: null,
 
 	// the main timeline. array of ids
-	mainTimeline: [], 
+	mainTimeline: [],
 }
 
 export default function(state=initState, action) {
@@ -63,10 +67,16 @@ export default function(state=initState, action) {
 			return setCollapsed(state, action);
 		case actionTypes.HOVER_NODE:
 			return hoverNode(state, action);
+		case actionTypes.CHANGE_PLUGIN_TYPE:
+			return changePlugin(state, action);
+		case actionTypes.TOGGLE_PARAM_VAL:
+			return changeToggleValue(state, action);
+		case actionTypes.CHANGE_PARAM_TEXT:
+			return changeParamText(state, action);
 		default:
 			return state;
 	}
-} 
+}
 
 
 /**************************  Helper functions  ********************************/
@@ -77,7 +87,7 @@ export function enterTest() {
 }
 
 function getNodeById(state, id) {
-	if (id === null) 
+	if (id === null)
 		return null;
 	return state[id];
 }
@@ -109,7 +119,8 @@ const getDefaultTrialName = () => {
 };
 
 /*
-Decides if source node is ancestor of target node 
+Decides if source node is ancestor of target node
+
 
 */ 
 export function isAncestor(state, sourceId, targetId) {
@@ -128,14 +139,14 @@ export function isAncestor(state, sourceId, targetId) {
 Decides if source node can be moved under target node
 Two case it can't:
 1. target node is a trial
-2. source node is ancestor of target node 
+2. source node is ancestor of target node
 
 If targetId is null, always true
-*/ 
+*/
 function canMoveUnder(state, sourceId, targetId) {
 	if (!targetId) return true;
 
-	if (utils.isTrial(state[targetId]) || 
+	if (utils.isTrial(state[targetId]) ||
 		isAncestor(state, sourceId, targetId)) {
 		return false;
 	}
@@ -143,13 +154,12 @@ function canMoveUnder(state, sourceId, targetId) {
 	return true;
 }
 
-
-export function createTimeline(id,  
-	parent=null, 
+export function createTimeline(id,
+	parent=null,
 	name=getDefaultTimelineName(),
-	childrenById=[], 
-	collapsed=true, 
-	enabled=true, 
+	childrenById=[],
+	collapsed=true,
+	enabled=true,
 	parameters={}) {
 
 	return {
@@ -167,21 +177,22 @@ export function createTimeline(id,
 
 // define deep copy for parameters later
 function copyTimeline(timeline) {
-	return createTimeline(timeline.id, 
-		timeline.parent, 
-		timeline.name, 
-		timeline.childrenById.slice(), 
+	return createTimeline(timeline.id,
+		timeline.parent,
+		timeline.name,
+		timeline.childrenById.slice(),
 		timeline.collapsed,
-		timeline.enabled, 
+		timeline.enabled,
 		timeline.parameters)
 }
 
 
-export function createTrial(id, 
-	parent=null, 
-	name=getDefaultTrialName(),	
-	enabled=true, 
-	parameters={}) {
+export function createTrial(id,
+	parent=null,
+	name=getDefaultTrialName(),
+	enabled=true,
+	parameters={text: '', choices: ''},
+	pluginType=DEFAULT_PLUGIN_TYPE) {
 
 	return {
 		id: id,
@@ -190,12 +201,17 @@ export function createTrial(id,
 		parent: parent,
 		enabled: enabled,
 		predictedLevel: null,
-		parameters: parameters
+		pluginType: pluginType
 	};
 }
 
 function copyTrial(trial) {
-	return createTrial(trial.id, trial.parent, trial.name, trial.enabled, trial.parameters);
+	return createTrial(trial.id,
+		trial.parent,
+		trial.name,
+		trial.enabled,
+		trial.parameters,
+		trial.pluginType)
 }
 
 function copyNode(node) {
@@ -209,7 +225,7 @@ function copyNode(node) {
 /*
 action = {
 	id: id,
-	parent: string, 
+	parent: string,
 }
 */
 function addTimeline(state, action) {
@@ -232,14 +248,14 @@ function addTimeline(state, action) {
 	let timeline = createTimeline(id, action.parent)
 
 	new_state[id] = timeline;
- 
+
 	return new_state;
 }
 
 /*
 action = {
 	id: string,
-	parent: string, 
+	parent: string,
 }
 */
 function addTrial(state, action) {
@@ -343,17 +359,17 @@ Move Node
 action = {
 	sourceId: string,
 	targetId: string,
-	up: boolean, 
+	up: boolean,
 }
 
 */
 export const DRAG_TYPE = {
 	// source and target have the same parent
-	DISPLACEMENT: 1, 
+	DISPLACEMENT: 1,
 	// source takes target as new parent
-	TRANSPLANT: 2, 
+	TRANSPLANT: 2,
 	// different level displacement
-	JUMP: 3, 
+	JUMP: 3,
 }
 
 function moveNode(state, action) {
@@ -573,7 +589,6 @@ function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
 		previewId: action.id
 	});
-	console.log(new_state)
 	return new_state;
 }
 
@@ -603,6 +618,71 @@ function setCollapsed(state, action) {
  	timeline.collapsed = !timeline.collapsed;
 
 	new_state[timeline.id] = timeline;
+
+	return new_state;
+}
+
+const pluginType = (type) => {
+	switch(type) {
+		case 1: return ('text');
+		break;
+		case 2: return ('single-stim');
+		break;
+		default: return ('text');
+	}
+}
+
+const pluginParam = (pluginType) => {
+	switch(pluginType) {
+		case 1: return ({text: '', choices: ''});
+		break;
+		case 2: return ({stimulus: '', is_html: false,
+						 choices: '', prompt: '', timing_stim: '',
+						 timing_response: '', response_ends_trial: false});
+		break;
+		default: return ({text: '', choices: ''});
+	}
+}
+
+function changePlugin(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+
+	node.pluginType = pluginType(action.key);
+	node.parameters = pluginParam(action.key);
+	new_state[state.previewId] = node;
+
+	return new_state;
+}
+
+function changeToggleValue(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+
+	parameters: [node.parameters, action.newVal]
+	new_state[state.previewId] = node;
+
+	return new_state;
+}
+
+function changeParamText(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	//console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
+	node.parameters[action.paramId] = action.newVal;
+
+	console.log('INSIDE REDUCER:')
+	console.log(new_state);
 
 	return new_state;
 }
