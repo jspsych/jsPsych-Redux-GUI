@@ -20,6 +20,7 @@ const onAddToParam = (dispatch, id, val) =>  {
 }
 
 const onChangeTextParam = (dispatch, e, newVal) => {
+	console.log('change text param '+e+' '+newVal);
 	dispatch(trialFormActions.onParamTextChange(e, newVal));
 }
 

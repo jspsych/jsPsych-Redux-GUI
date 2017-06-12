@@ -23,16 +23,19 @@ class TrialForm extends React.Component {
 			);
 
 		if(this.props.open && this.props.isTrial){
-			
+
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
-			var j = 0; 
+			var j = 0;
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
+				console.log('INSIDE RENDER: ' + this.props.parameters[plug]);
+				console.log(plug);
+				console.log(this.props.parameters);
 				switch(getPluginType.info.parameters[plug].type[0]) {
 					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={false} onToggle={(event, newValue) => this.props.onChange(event.target.id, newValue)} />);
 					break;
 					case 1:
-					case 2: 
-					case 3: 
+					case 2:
+					case 3:
 					case 4:
 					case 5: return (<TextField id={plug} key={plug} value={this.props.parameters[plug]} floatingLabelText={plug} onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 					break;
