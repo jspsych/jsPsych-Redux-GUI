@@ -394,6 +394,7 @@ function moveNode(state, action) {
 	}
 }
 
+
 function hoverNode(state, action) {
 	// console.log(action);
 
@@ -409,11 +410,6 @@ function hoverNode(state, action) {
 	}
 }
 
-function handleIndex(up, index) {
-	if (up) index--;
-	else index++;
-	return (index < 0) ? 0 : index;
-}
 
 // source and target have the same parent
 function nodeDisplacement(state, action) {
@@ -435,27 +431,10 @@ function nodeDisplacement(state, action) {
 	}
 
 	let from = arr.indexOf(source.id);
-	let to = handleIndex(action.up, targetIndex);
-	arr.move(from, to);
+	if (!action.up) targetIndex++;
+	arr.move(from, targetIndex);
 
 	return new_state;
-}
-
-function predictChildrenLevel(state, root, rootLevel) {
-	let len = root.childrenById.length;
-	if (len === 0)
-		return;
-	let node;
-	let nodeId;
-	for (let i = 0; i < len; i++) {
-		nodeId = root.childrenById[i];
-		node = state[nodeId];
-		state[nodeId] = node;
-
-		node.predictedLevel = rootLevel + 1;
-		if (utils.isTimeline(node))
-			predictChildrenLevel(state, node, node.predictedLevel);
-	}
 }
 
 function nodeHoverDisplacement(state, action) {
@@ -465,8 +444,6 @@ function nodeHoverDisplacement(state, action) {
 	new_state[source.id] = source;
 
 	source.predictedLevel = getLevel(state, source);
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
 
 	return new_state;
 }
@@ -483,8 +460,10 @@ function nodeTransplant(state, action) {
 		new_state[target.id] = target;
 		target.collapsed = false;
 
-		if (source.parent === target.id)
+		if (source.parent === target.id) {
+			target.childrenById.move(target.childrenById.indexOf(source.id), 0);
 			return new_state;
+		}
 
 		// source was in the main timeline
 		if (source.parent === null) {
@@ -518,8 +497,7 @@ function nodeHoverTransplant(state, action) {
 	target.collapsed = false;
 
 	source.predictedLevel = getLevel(state, target) + 1;
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
+
 	return new_state;
 }
 
@@ -585,8 +563,6 @@ function nodeHoverJump(state, action) {
 
 	source.predictedLevel = getLevel(state, target);
 
-	if (utils.isTimeline(source))
-		predictChildrenLevel(new_state, source, source.predictedLevel);
 	return new_state;
 }
 
@@ -627,6 +603,41 @@ function setCollapsed(state, action) {
 	return new_state;
 }
 
+
+const pluginType = (type) => {
+	switch(type) {
+		case 1: 
+			return 'text';
+		case 2: 
+			return 'single-stim';
+		default: 
+			return 'text';
+	}
+}
+
+const pluginParam = (pluginType) => {
+	switch (pluginType) {
+		case 1:
+			return {
+				text: '',
+				choices: ''
+			};
+		case 2:
+			return {
+				stimulus: '',
+				is_html: false,
+				choices: '',
+				prompt: '',
+				timing_stim: '',
+				timing_response: '',
+				response_ends_trial: false
+			};
+		default:
+			return {
+				text: '',
+				choices: ''
+			};
+
 function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -639,6 +650,7 @@ function changePlugin(state, action) {
 
 	for(let i=0; i<paramKeys.length; i++) {
 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+
 	}
 
 	node = copyTrial(node);

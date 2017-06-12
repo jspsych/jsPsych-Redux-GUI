@@ -4,12 +4,14 @@ import PreviewOrganizerItem from '../../../../containers/TimelineNode/OrganizerI
 
 import { TREE_MENU_INDENT as INDENT } from '../../TimelineNodeOrganizerDrawer';
 
-
 class PreviewItemGroup extends React.Component {
 	
 	render() {
 		return (
-			<div className="Organizer-Item-Group">
+			<div className="Organizer-Item-Group" style={{
+				paddingLeft: INDENT * this.props.predictedLevel
+			}}
+			>
 				{this.props.presentedIds.map((id) => (<PreviewOrganizerItem id={id} key={"Ghost-"+id} />))}
 			</div>
 		)

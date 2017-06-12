@@ -6,12 +6,10 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	let presentedIds = [ownProps.id];
-	let startNode = timelineNodeState[ownProps.id];
-	if (isTimeline(startNode))
-		presentedIds = preOrderTraversal(timelineNodeState, startNode, presentedIds);
 
 	return {
-		presentedIds: presentedIds
+		presentedIds: presentedIds,
+		predictedLevel: timelineNodeState[ownProps.id].predictedLevel
 	}
 };
 

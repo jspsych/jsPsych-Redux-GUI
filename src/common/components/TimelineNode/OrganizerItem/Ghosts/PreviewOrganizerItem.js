@@ -3,7 +3,6 @@ import React from 'react';
 import PreviewTrialItem from '../../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewTrialItemContainer';
 import PreviewTimelineItem from '../../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewTimelineItemContainer';
 
-import { TREE_MENU_INDENT as INDENT } from '../../TimelineNodeOrganizerDrawer';
 
 
 class PreviewOrganizerItem extends React.Component {
@@ -11,10 +10,8 @@ class PreviewOrganizerItem extends React.Component {
 	render() {
 		return (
 			<div className="Preview-Organizer-Item" style={{
-				opacity: 0.9,
-				paddingLeft: INDENT * this.props.predictedLevel
-			}}
-			>
+				opacity: 0.7,
+			}}>
 				{(this.props.isTimeline) ? 
 				(<PreviewTimelineItem id={this.props.id} />) :
 				(<PreviewTrialItem id={this.props.id} />)}

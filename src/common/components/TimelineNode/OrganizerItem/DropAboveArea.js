@@ -6,17 +6,25 @@ import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { DropTarget } from 'react-dnd';
 
 
+export var lastAreaType = null;
+export const setLastAreaType = (t) => {
+  lastAreaType = t;
+}
+
+export const getLastAreaType = () => (lastAreaType);
+
 const dropAboveAreaStyle = () => ({
-    height: 4,
-    border: '1px solid black',
+    height: 7,
+    border: 'none', //'1px solid black'
 })
 
 const dropAboveTarget = {
   hover(props, monitor, component) {
     const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent } = props;
+    const { id: targetId, parent: targetParent, areaType: areaType } = props;
 
-    if (sourceId === targetId) return;
+    if (areaType === getLastAreaType()) return;
+    setLastAreaType(areaType);
 
     let dragType;
     if (sourceParent === targetParent) {
@@ -50,13 +58,13 @@ class DropAboveArea extends React.Component {
 		const { connectDropTarget, isOver, source } = this.props;
 
 		return connectDropTarget(
-			<div className="Drop-Above-Area">
+			<div className="Drop-Above-Area" >
       {(isOver) ? <PreviewItemGroup id={source.id} />: <div style={dropAboveAreaStyle()} />}
 			</div>
 		)
 	}
 }
-
+//style={{backgroundColor: (isOver)?'blue': null}}
 export default DropTarget(
     "Organizer-Item", 
     dropAboveTarget, 

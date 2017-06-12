@@ -29,12 +29,15 @@ import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
 
 import { TREE_MENU_INDENT as INDENT } from '../TimelineNodeOrganizerDrawer';
+import {setLastAreaType, getLastAreaType} from './DropAboveArea';
 
 const trialTarget = {
   hover(props, monitor, component) {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent, ghost: ghost } = props;
-   
+    const { id: targetId, parent: targetParent, areaType: areaType } = props;
+   	
+   	if (areaType === getLastAreaType()) return;
+   	setLastAreaType(areaType);
 
     let dragType;
 	if (sourceParent === targetParent) {
@@ -99,7 +102,7 @@ class TrialItem extends React.Component {
 		const { isOver, connectDropTarget, source } = this.props;
 		const colorSelector = (isOver, isSelected) => {
 			if (isOver)
-				return "blue";
+				return null;
 
 			if (isSelected)
 				return highlightColor;

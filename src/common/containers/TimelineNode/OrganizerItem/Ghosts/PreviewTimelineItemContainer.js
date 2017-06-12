@@ -15,6 +15,7 @@ const mapStateToProps = (state, ownProps) => {
 		name: timeline.name,
 		hasNoChild: timeline.childrenById.length === 0,
 		collapsed: timeline.collapsed,
+		childrenById: timeline.childrenById
 	}
 };
 
