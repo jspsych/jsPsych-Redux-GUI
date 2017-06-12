@@ -8,14 +8,19 @@ const onChangePluginType = (dispatch, newPluginVal) => {
 }
 
 const onToggleParam = (dispatch, e, newVal) => {
-	console.log(e);
-	console.log(newVal);
 	dispatch(trialFormActions.onToggleValue(e, newVal));
 }
 
 const onChangeTextParam = (dispatch, e, newVal) => {
-	console.log('change text param '+e+' '+newVal);
 	dispatch(trialFormActions.onParamTextChange(e, newVal));
+}
+
+const onChangeIntParam = (dispatch, e, newVal) => {
+		dispatch(trialFormActions.onParamIntChange(e, newVal));
+}
+
+const onChangeFloatParam = (dispatch, e, newVal) => {
+	dispatch(trialFormAction.onParamFloatChange(e, newVal));
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -37,8 +42,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
 	onChange: (newPluginVal) => { onChangePluginType(dispatch, newPluginVal) },
-	onChangeText: (e, newVal) => { onChangeTextParam(dispatch, e, newVal)},
 	onToggle: (e, newVal) => { onToggleParam(dispatch, e, newVal) },
+	onChangeText: (e, newVal) => { onChangeTextParam(dispatch, e, newVal) },
+	onChangeInt: (e, newVal) => { onChangeIntParam(dispatch, e, newVal) },
+	onChangeFloat: (e, newVal) => { onChangeFloatParam(dispatch, e, newVal) },
 	onChangeParamSelect: (key) => { onParamSelectChange(dispatch, key) },
 })
 

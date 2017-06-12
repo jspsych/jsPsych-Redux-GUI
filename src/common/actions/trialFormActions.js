@@ -8,6 +8,8 @@ export function onPluginTypeChange(newPluginVal) {
 }
 
 export function onToggleValue(paramId, newVal) {
+	console.log("paramId" + paramId);
+	console.log("newVal" + newVal);
 	return {
 		type: actionTypes.TOGGLE_PARAM_VALUE,
 		paramId: paramId,
@@ -23,3 +25,18 @@ export function onParamTextChange(paramId, newVal) {
 	};
 }
 
+export function onParamIntChange(paramId, newVal) {
+	return {
+		type: actionTypes.CHANGE_PARAM_INT,
+		paramId: paramId,
+		newVal: newVal
+	};
+}
+
+export function onParamFloatChange(paramId, newVal) {
+	return {
+		type: actionTypes.CHANGE_PARAM_FLOAT,
+		paramId: paramId,
+		newVal: newVal
+	};
+}

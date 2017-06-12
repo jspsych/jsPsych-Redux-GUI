@@ -65,10 +65,14 @@ export default function(state=initState, action) {
 			return setCollapsed(state, action);
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return changePlugin(state, action);
-		case actionTypes.TOGGLE_PARAM_VAL:
+		case actionTypes.TOGGLE_PARAM_VALUE:
 			return changeToggleValue(state, action);
 		case actionTypes.CHANGE_PARAM_TEXT:
 			return changeParamText(state, action);
+		case actionTypes.CHANGE_PARAM_INT: 
+			return changeParamInt(state, action);
+		case actionTypes.CHANGE_PARAM_FLOAT:
+			return changeParamFloat(state, action);
 		default:
 			return state;
 	}
@@ -572,15 +576,17 @@ function changePlugin(state, action) {
 }
 
 function changeToggleValue(state, action) {
-	console.log("in change toggle value"); 
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
 	node = copyTrial(node);
-	console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
-	console.log("action.newVal " + action.newVal);
-	node.parameters[action.paramId] = action.newVal;
 	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	console.log("action.paramId " + action.paramId);
+	console.log("newVal " + action.newVal);
+	node.parameters[action.paramId] = action.newVal;
 
 	return new_state;
 }
@@ -594,11 +600,35 @@ function changeParamText(state, action) {
 
 	node.parameters = Object.assign({}, node.parameters);
 
-	//console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
 	node.parameters[action.paramId] = action.newVal;
 
-	console.log('INSIDE REDUCER:')
-	console.log(new_state);
-
 	return new_state;
+}
+
+function changeParamInt(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	node.parameters[action.paramId] = action.newVal;
+
+	return new_state; 
+}
+
+function changeParamFloat(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	node.parameters[action.paramId] = action.newVal;
+
+	return new_state; 
 }
