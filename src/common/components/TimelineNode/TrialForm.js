@@ -3,7 +3,6 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
-import isTrial from '../../constants/utils'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -23,9 +22,8 @@ class TrialForm extends React.Component {
 		});
 
 		if(this.props.open && this.props.isTrial){
-
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
-
+			console.log("parameters" + this.props.parameters);
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
 				switch(getPluginType.info.parameters[plug].type[0]) {
 					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={this.props.parameters[plug]} onToggle={(event, newValue) => this.props.onToggle(event.target.id, newValue)} />);

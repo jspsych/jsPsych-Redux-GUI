@@ -205,6 +205,7 @@ export function createTrial(id,
 		parent: parent,
 		enabled: enabled,
 		predictedLevel: null,
+		parameters: parameters,
 		pluginType: pluginType
 	};
 }

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { isTrial } from '../../constants/utils';
+import { isTrial } from '../../reducers/timelineNodeUtils';
 import TrialForm from '../../components/TimelineNode/TrialForm';
 import * as trialFormActions from '../../actions/trialFormActions';
 
