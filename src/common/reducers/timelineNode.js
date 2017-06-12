@@ -548,48 +548,38 @@ function setCollapsed(state, action) {
 	return new_state;
 }
 
-const pluginType = (type) => {
-	switch(type) {
-		case 1: return ('text');
-		break;
-		case 2: return ('single-stim');
-		break;
-		default: return ('text');
-	}
-}
-
-const pluginParam = (pluginType) => {
-	switch(pluginType) {
-		case 1: return ({text: '', choices: ''});
-		break;
-		case 2: return ({stimulus: '', is_html: false,
-						 choices: '', prompt: '', timing_stim: '',
-						 timing_response: '', response_ends_trial: false});
-		break;
-		default: return ({text: '', choices: ''});
-	}
-}
-
 function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
+
+	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
+	let paramKeys = Object.keys(params);
+
+	var paramsObject = {};
+
+	for(let i=0; i<paramKeys.length; i++) {
+		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+	}
+
 	node = copyTrial(node);
 
-	node.pluginType = pluginType(action.key);
-	node.parameters = pluginParam(action.key);
-	new_state[state.previewId] = node;
-
+	node.pluginType = action.newPluginVal; 
+	node.parameters = paramsObject;
+	new_state[state.previewId] = node; 
+	
 	return new_state;
 }
 
 function changeToggleValue(state, action) {
+	console.log("in change toggle value"); 
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
 	node = copyTrial(node);
-
-	parameters: [node.parameters, action.newVal]
+	console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
+	console.log("action.newVal " + action.newVal);
+	node.parameters[action.paramId] = action.newVal;
 	new_state[state.previewId] = node;
 
 	return new_state;

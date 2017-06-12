@@ -1,15 +1,16 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function onPluginTypeChange(key) {
+export function onPluginTypeChange(newPluginVal) {
 	return {
 		type: actionTypes.CHANGE_PLUGIN_TYPE,
-		key: key
+		newPluginVal: newPluginVal
 	};
 }
 
-export function onToggleValue(newVal) {
+export function onToggleValue(paramId, newVal) {
 	return {
 		type: actionTypes.TOGGLE_PARAM_VALUE,
+		paramId: paramId,
 		newVal: newVal
 	};
 }
