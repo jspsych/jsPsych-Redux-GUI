@@ -1,16 +1,18 @@
 import React from 'react';
 
-import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItem';
-import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItem';
-import DropAboveArea from '../../../containers/TimelineNode/OrganizerItem/DropAboveArea';
+import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItemContainer';
+import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItemContainer';
+import DropAboveArea from '../../../containers/TimelineNode/OrganizerItem/DropAboveAreaContainer';
+
+import { isAncestor } from '../../../reducers/timelineNode';
 
 import { DragSource } from 'react-dnd';
+
 
 const itemSource = {
   beginDrag(props) {
     return {
       id: props.id,
-      index: props.index,
       parent: props.parent,
     };
   },
@@ -20,24 +22,34 @@ const itemSource = {
 class OrganizerItem extends React.Component {
 	
 	render() {
-		const { connectDragSource } = this.props;
+		const { isDragging, connectDragSource, draggedItem } = this.props;
+
+		let hide = isDragging;
+		let draggedItemId = null;
+		if (draggedItem) {
+			draggedItemId = draggedItem.id;
+			hide = isDragging || isAncestor(this.props.state, draggedItemId, this.props.id);
+		}
 
 		return connectDragSource(
-			<div>
-			<DropAboveArea id={this.props.id} />
+			(hide) ? <div /> :
+			(<div>
+			<DropAboveArea id={this.props.id} isDragging={isDragging}/>
 			<div className="Organizer-Item" 
 			>
 				{(this.props.isTimeline) ? 
-				(<TimelineItem id={this.props.id} key={this.props.id} 
+				(<TimelineItem 
+					id={this.props.id} 
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>) :
-				(<TrialItem id={this.props.id} key={this.props.id} 
+				(<TrialItem 
+					id={this.props.id} 
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>)}
 			</div>
-			</div>
+			</div>)
 		)
 	}
 }
@@ -48,6 +60,7 @@ export default DragSource(
   	(connect, monitor) => ({
   		connectDragSource: connect.dragSource(),
   		isDragging: monitor.isDragging(),
+  		draggedItem: monitor.getItem()
 	}))(OrganizerItem);
 
 

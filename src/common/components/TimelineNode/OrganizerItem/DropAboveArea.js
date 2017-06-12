@@ -1,29 +1,32 @@
 import React from 'react';
 
+import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
+
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { DropTarget } from 'react-dnd';
 
-export const style = (isOver, level) => (
-  (isOver) ?
-  {
-    height: 40,
+
+const dropAboveAreaStyle = () => ({
+    height: 4,
     border: '1px solid black',
-    backgroundColor: "blue",
-    paddingLeft: 15 * level, 
-  } :
-  {
-    height: 2,
-    paddingLeft: 15 * level, 
-  }
-)
+})
 
 const dropAboveTarget = {
-  // drop(props, monitor, component) {
-  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
-  //   const { index: hoverIndex, id: targetId } = props;
+  hover(props, monitor, component) {
+    const { id: sourceId, parent: sourceParent } = monitor.getItem();
+    const { id: targetId, parent: targetParent } = props;
 
-  //   props.moveNode(sourceId, targetId, hoverIndex);
-  // },
+    if (sourceId === targetId) return;
+
+    let dragType;
+    if (sourceParent === targetParent) {
+      dragType = DRAG_TYPE.DISPLACEMENT;
+    } else {
+      dragType = DRAG_TYPE.JUMP;
+    }
+
+    props.hoverNode(sourceId, targetId, dragType);
+  },
 
   drop(props, monitor, component) {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
@@ -44,12 +47,11 @@ const dropAboveTarget = {
 
 class DropAboveArea extends React.Component {
 	render() {
-		const { connectDropTarget, isOver } = this.props;
+		const { connectDropTarget, isOver, source } = this.props;
 
 		return connectDropTarget(
-			<div className="Drop-Above-Area"
-            style={style(isOver, this.props.level)}
-      >
+			<div className="Drop-Above-Area">
+      {(isOver) ? <PreviewItemGroup id={source.id} />: <div style={dropAboveAreaStyle()} />}
 			</div>
 		)
 	}
@@ -60,5 +62,6 @@ export default DropTarget(
     dropAboveTarget, 
     (connect, monitor) => ({
       connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver()
+      isOver: monitor.isOver(),
+      source: monitor.getItem()
     }))(DropAboveArea);

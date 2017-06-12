@@ -1,16 +1,31 @@
 import React from 'react';
 
+import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
+
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { DropTarget } from 'react-dnd';
-import { style } from './DropAboveArea';
+
+import { getHoveredId, setHoveredId } from './DropAboveArea';
+
+const dropUnderAreaStyle = {
+  height: 60,
+  border: '1px solid black',
+}
 
 const dropUnderTarget = {
-  // drop(props, monitor, component) {
-  //   const { index:dragIndex, id: sourceId } = monitor.getItem();
-  //   const { index: hoverIndex, id: targetId } = props;
+   hover(props, monitor, component) {
+    const { id: sourceId, parent: sourceParent } = monitor.getItem();
+    const { id: targetId, parent: targetParent } = props;
 
-  //   props.moveNode(sourceId, targetId, hoverIndex);
-  // },
+    let dragType;
+    if (sourceParent === targetParent) {
+      dragType = DRAG_TYPE.DISPLACEMENT;
+    } else {
+      dragType = DRAG_TYPE.JUMP;
+    }
+
+    props.hoverNode(sourceId, targetId, dragType);
+  },
 
   drop(props, monitor, component) {
   	const { id: sourceId, parent: sourceParent } = monitor.getItem();
@@ -32,12 +47,11 @@ const dropUnderTarget = {
 class DropUnderArea extends React.Component {
 
 	render() {
-		const { connectDropTarget, isOver } = this.props;
+		const { connectDropTarget, isOver, source } = this.props;
 
 		return connectDropTarget(
-			<div className="Drop-Under-Area"
-            style={style(isOver, this.props.level)}
-      >
+			<div className="Drop-Under-Area" >
+      {(isOver) ? <PreviewItemGroup id={source.id} />: <div style={dropUnderAreaStyle} />}
       </div>
 		)
 	}
@@ -48,5 +62,6 @@ export default DropTarget(
     dropUnderTarget, 
     (connect, monitor) => ({
       connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver()
+      isOver: monitor.isOver(),
+      source: monitor.getItem(),
     }))(DropUnderArea);

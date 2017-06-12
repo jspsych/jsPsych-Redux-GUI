@@ -2,9 +2,10 @@ import React from 'react';
 
 import Preview from './Preview';
 import Appbar from '../containers/Appbar';
-import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawer';
+import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawerContainer';
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
 import TrialForm from '../containers/TimelineNode/TrialForm';
+
 
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
@@ -18,7 +19,7 @@ const mainBodyWidth = (leftDrawer, leftWidth, rightDrawer) => {
 	return convertPercent(width);
 }
 
-export default class App extends React.Component {
+class App extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -97,3 +98,4 @@ export default class App extends React.Component {
 }
 
 
+export default App;
