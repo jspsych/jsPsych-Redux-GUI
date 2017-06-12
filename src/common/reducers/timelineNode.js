@@ -584,8 +584,6 @@ function changeToggleValue(state, action) {
 
 	node.parameters = Object.assign({}, node.parameters);
 
-	console.log("action.paramId " + action.paramId);
-	console.log("newVal " + action.newVal);
 	node.parameters[action.paramId] = action.newVal;
 
 	return new_state;

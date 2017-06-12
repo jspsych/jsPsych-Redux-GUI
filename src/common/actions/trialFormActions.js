@@ -8,8 +8,6 @@ export function onPluginTypeChange(newPluginVal) {
 }
 
 export function onToggleValue(paramId, newVal) {
-	console.log("paramId" + paramId);
-	console.log("newVal" + newVal);
 	return {
 		type: actionTypes.TOGGLE_PARAM_VALUE,
 		paramId: paramId,

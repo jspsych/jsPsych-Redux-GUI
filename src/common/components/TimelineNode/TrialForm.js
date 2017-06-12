@@ -27,9 +27,6 @@ class TrialForm extends React.Component {
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
 
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
-				console.log('INSIDE RENDER: ' + this.props.parameters[plug]);
-				console.log(plug);
-				console.log(this.props.parameters);
 				switch(getPluginType.info.parameters[plug].type[0]) {
 					case 0: return (<Toggle id={plug} key={plug} label={plug} defaultToggled={this.props.parameters[plug]} onToggle={(event, newValue) => this.props.onToggle(event.target.id, newValue)} />);
 					break;
