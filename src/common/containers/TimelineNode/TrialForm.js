@@ -1,27 +1,26 @@
 import { connect } from 'react-redux';
-import { isTrial } from '../../constants/utils';
+import { isTrial } from '../../reducers/timelineNodeUtils';
 import TrialForm from '../../components/TimelineNode/TrialForm';
 import * as trialFormActions from '../../actions/trialFormActions';
 
-const onChangePluginType = (dispatch, key) => {
-	dispatch(trialFormActions.onPluginTypeChange(key));
+const onChangePluginType = (dispatch, newPluginVal) => {
+	dispatch(trialFormActions.onPluginTypeChange(newPluginVal));
 }
 
-const onToggleParam = (dispatch, newVal) => {
-	dispatch(trialFormActions.onToggleValue(newVal));
-}
-
-const onChangeParam = (dispatch, newVal) => {
-	dispatch(trialFormActions.onChangeText(newVal));
-}
-
-const onAddToParam = (dispatch, id, val) =>  {
-	dispatch(trialFormActions.addingToParam(id, val));
+const onToggleParam = (dispatch, e, newVal) => {
+	dispatch(trialFormActions.onToggleValue(e, newVal));
 }
 
 const onChangeTextParam = (dispatch, e, newVal) => {
-	console.log('change text param '+e+' '+newVal);
 	dispatch(trialFormActions.onParamTextChange(e, newVal));
+}
+
+const onChangeIntParam = (dispatch, e, newVal) => {
+		dispatch(trialFormActions.onParamIntChange(e, newVal));
+}
+
+const onChangeFloatParam = (dispatch, e, newVal) => {
+	dispatch(trialFormAction.onParamFloatChange(e, newVal));
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -42,11 +41,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-	onChange: (e, key, newPluginVal) => { onChangePluginType(dispatch, key) },
-	onChangeText: (e, newVal) => { onChangeTextParam(dispatch, e, newVal)},
-	addToParameters: (id, val) => { onAddToParam(dispatch, id, val) },
-	onToggleParam: (e, newVal) => { onToggleParam(dispatch, newVal) },
-	onChangeTextField: (newVal) => { onChangeParam(dispatch, newVal) },
+	onChange: (newPluginVal) => { onChangePluginType(dispatch, newPluginVal) },
+	onToggle: (e, newVal) => { onToggleParam(dispatch, e, newVal) },
+	onChangeText: (e, newVal) => { onChangeTextParam(dispatch, e, newVal) },
+	onChangeInt: (e, newVal) => { onChangeIntParam(dispatch, e, newVal) },
+	onChangeFloat: (e, newVal) => { onChangeFloatParam(dispatch, e, newVal) },
 	onChangeParamSelect: (key) => { onParamSelectChange(dispatch, key) },
 })
 

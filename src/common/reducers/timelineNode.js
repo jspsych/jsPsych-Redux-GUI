@@ -69,10 +69,14 @@ export default function(state=initState, action) {
 			return hoverNode(state, action);
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return changePlugin(state, action);
-		case actionTypes.TOGGLE_PARAM_VAL:
+		case actionTypes.TOGGLE_PARAM_VALUE:
 			return changeToggleValue(state, action);
 		case actionTypes.CHANGE_PARAM_TEXT:
 			return changeParamText(state, action);
+		case actionTypes.CHANGE_PARAM_INT: 
+			return changeParamInt(state, action);
+		case actionTypes.CHANGE_PARAM_FLOAT:
+			return changeParamFloat(state, action);
 		default:
 			return state;
 	}
@@ -201,6 +205,7 @@ export function createTrial(id,
 		parent: parent,
 		enabled: enabled,
 		predictedLevel: null,
+		parameters: parameters,
 		pluginType: pluginType
 	};
 }
@@ -598,6 +603,7 @@ function setCollapsed(state, action) {
 	return new_state;
 }
 
+
 const pluginType = (type) => {
 	switch(type) {
 		case 1: 
@@ -631,19 +637,28 @@ const pluginParam = (pluginType) => {
 				text: '',
 				choices: ''
 			};
-	}
-}
 
 function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
+
+	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
+	let paramKeys = Object.keys(params);
+
+	var paramsObject = {};
+
+	for(let i=0; i<paramKeys.length; i++) {
+		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+
+	}
+
 	node = copyTrial(node);
 
-	node.pluginType = pluginType(action.key);
-	node.parameters = pluginParam(action.key);
-	new_state[state.previewId] = node;
-
+	node.pluginType = action.newPluginVal; 
+	node.parameters = paramsObject;
+	new_state[state.previewId] = node; 
+	
 	return new_state;
 }
 
@@ -652,9 +667,11 @@ function changeToggleValue(state, action) {
 	let new_state = Object.assign({}, state);
 
 	node = copyTrial(node);
-
-	parameters: [node.parameters, action.newVal]
 	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	node.parameters[action.paramId] = action.newVal;
 
 	return new_state;
 }
@@ -668,11 +685,35 @@ function changeParamText(state, action) {
 
 	node.parameters = Object.assign({}, node.parameters);
 
-	//console.log("node.parameters[action.paramId] " + node.parameters[action.paramId]);
 	node.parameters[action.paramId] = action.newVal;
 
-	console.log('INSIDE REDUCER:')
-	console.log(new_state);
-
 	return new_state;
+}
+
+function changeParamInt(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	node.parameters[action.paramId] = action.newVal;
+
+	return new_state; 
+}
+
+function changeParamFloat(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = copyTrial(node);
+	new_state[state.previewId] = node;
+
+	node.parameters = Object.assign({}, node.parameters);
+
+	node.parameters[action.paramId] = action.newVal;
+
+	return new_state; 
 }
