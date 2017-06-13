@@ -17,9 +17,6 @@ import {
 export default class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-		};
 	}
 
 	render() {
@@ -35,7 +32,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						transition: 'all 0.4s ease',
 						borderLeft: (this.props.open) ? '3px solid black' : '0.1px solid black'
 						}}>
-
 				<div className="TimelineNode-Editor-Container"
 					style={{height: '100%', width: '100%'}}>
 					{(this.props.open) ? 
@@ -49,7 +45,9 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
-						<TrialForm trialId={this.props.id} pluginType={this.props.pluginType} />
+						<div style={{height: '50px'}} >
+						<TrialForm id={this.props.id} pluginType={this.props.pluginType} />
+						</div>
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :

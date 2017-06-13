@@ -603,41 +603,6 @@ function setCollapsed(state, action) {
 	return new_state;
 }
 
-
-const pluginType = (type) => {
-	switch(type) {
-		case 1: 
-			return 'text';
-		case 2: 
-			return 'single-stim';
-		default: 
-			return 'text';
-	}
-}
-
-const pluginParam = (pluginType) => {
-	switch (pluginType) {
-		case 1:
-			return {
-				text: '',
-				choices: ''
-			};
-		case 2:
-			return {
-				stimulus: '',
-				is_html: false,
-				choices: '',
-				prompt: '',
-				timing_stim: '',
-				timing_response: '',
-				response_ends_trial: false
-			};
-		default:
-			return {
-				text: '',
-				choices: ''
-			};
-
 function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);

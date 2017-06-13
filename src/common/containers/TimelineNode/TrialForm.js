@@ -30,6 +30,7 @@ const mapStateToProps = (state, ownProps) => {
 	console.log(trial);
 	if(trial != null) {
 	return {
+		id: trial.id,
 		isTrial: isTrial(trial),
 		parameters: trial.parameters,
 		pluginType: trial.pluginType,
