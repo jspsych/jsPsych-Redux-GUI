@@ -68,16 +68,22 @@ export default function(state=initState, action) {
 			return setCollapsed(state, action);
 		case actionTypes.MOVE_INTO:
 			return moveInto(state, action);
-		// case actionTypes.CHANGE_PLUGIN_TYPE:
-		// 	return changePlugin(state, action);
-		// case actionTypes.TOGGLE_PARAM_VALUE:
-		// 	return changeToggleValue(state, action);
-		// case actionTypes.CHANGE_PARAM_TEXT:
-		// 	return changeParamText(state, action);
-		// case actionTypes.CHANGE_PARAM_INT: 
-		// 	return changeParamInt(state, action);
-		// case actionTypes.CHANGE_PARAM_FLOAT:
-		// 	return changeParamFloat(state, action);
+
+		case actionTypes.HOVER_NODE:
+			return hoverNode(state, action);
+		case actionTypes.CHANGE_PLUGIN_TYPE:
+			return changePlugin(state, action);
+		case actionTypes.TOGGLE_PARAM_VALUE:
+			return changeToggleValue(state, action);
+		case actionTypes.CHANGE_PARAM_TEXT:
+			return changeParamText(state, action);
+		case actionTypes.CHANGE_PARAM_INT: 
+			return changeParamInt(state, action);
+		case actionTypes.CHANGE_PARAM_FLOAT:
+			return changeParamFloat(state, action);
+		case actionTypes.CHANGE_HEADER:
+			return changeHeader(state, action);
+
 		default:
 			return state;
 	}
@@ -115,7 +121,7 @@ export function createTimeline(id,
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
-	parameters={}) {
+	parameters={},) {
 
 	return {
 		id: id,
@@ -125,7 +131,7 @@ export function createTimeline(id,
 		childrenById: childrenById,
 		collapsed: collapsed,
 		enabled: enabled,
-		parameters: parameters
+		parameters: parameters,
 	};
 }
 
@@ -166,6 +172,29 @@ function copyTrial(trial) {
 		trial.enabled,
 		trial.parameters,
 		trial.pluginType)
+}
+
+export function createTable(id,
+	timelineId,
+	headerId,
+	rowId,
+	cellValue={}) {
+
+	return {
+		id: id,
+		timelineId: utils.getTimelineId(),
+		headerId: utils.getHeaderId(),
+		rowId: utils.getRowId(),
+		cellValue: cellValue
+	};
+}
+
+function copyTable(table) {
+	return createTable(table.id,
+		table.timelineId,
+		table.headerId,
+		table.rowId,
+		table.cellValue)
 }
 
 function copyNode(node) {
@@ -445,6 +474,7 @@ function setCollapsed(state, action) {
 }
 
 
+
 const pluginType = (type) => {
 	switch(type) {
 		case 1: 
@@ -456,107 +486,26 @@ const pluginType = (type) => {
 	}
 }
 
-// const pluginParam = (pluginType) => {
-// 	switch (pluginType) {
-// 		case 1:
-// 			return {
-// 				text: '',
-// 				choices: ''
-// 			};
-// 		case 2:
-// 			return {
-// 				stimulus: '',
-// 				is_html: false,
-// 				choices: '',
-// 				prompt: '',
-// 				timing_stim: '',
-// 				timing_response: '',
-// 				response_ends_trial: false
-// 			};
-// 		default:
-// 			return {
-// 				text: '',
-// 				choices: ''
-// 			};
-// 	}
-// }
-
-// function changePlugin(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
+function changePlugin(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
 
 
-// 	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
-// 	let paramKeys = Object.keys(params);
+	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
+	let paramKeys = Object.keys(params);
 
-// 	var paramsObject = {};
+	var paramsObject = {};
 
-// 	for(let i=0; i<paramKeys.length; i++) {
-// 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+	for(let i=0; i<paramKeys.length; i++) {
+		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
 
-// 	}
+	}
 
-// 	node = copyTrial(node);
+	node = copyTrial(node);
 
-// 	node.pluginType = action.newPluginVal; 
-// 	node.parameters = paramsObject;
-// 	new_state[state.previewId] = node; 
-	
-// 	return new_state;
-// }
+	node.pluginType = action.newPluginVal; 
+	node.parameters = paramsObject;
+	new_state[state.previewId] = node; 
 
-// function changeToggleValue(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-// 	node = copyTrial(node);
-// 	new_state[state.previewId] = node;
-
-// 	node.parameters = Object.assign({}, node.parameters);
-
-// 	node.parameters[action.paramId] = action.newVal;
-
-// 	return new_state;
-// }
-
-// function changeParamText(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-// 	node = copyTrial(node);
-// 	new_state[state.previewId] = node;
-
-// 	node.parameters = Object.assign({}, node.parameters);
-
-// 	node.parameters[action.paramId] = action.newVal;
-
-// 	return new_state;
-// }
-
-// function changeParamInt(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-// 	node = copyTrial(node);
-// 	new_state[state.previewId] = node;
-
-// 	node.parameters = Object.assign({}, node.parameters);
-
-// 	node.parameters[action.paramId] = action.newVal;
-
-// 	return new_state; 
-// }
-
-// function changeParamFloat(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-// 	node = copyTrial(node);
-// 	new_state[state.previewId] = node;
-
-// 	node.parameters = Object.assign({}, node.parameters);
-
-// 	node.parameters[action.paramId] = action.newVal;
-
-// 	return new_state; 
-// }
+	return new_state; 
+}
