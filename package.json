@@ -1,6 +1,8 @@
 {
   "name": "jsPsych-Redux-GUI",
   "version": "0.1.0",
+  "babel": { 
+    },
   "private": true,
   "jest": {
     "testPathIgnorePatterns": [
@@ -12,12 +14,14 @@
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",
     "babel-jest": "^18.0.0",
-    "babel-plugin-transform-object-rest-spread": "^6.22.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-node6": "^11.0.0",
     "babel-preset-react": "^6.23.0",
     "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.24.0",
     "babel-runtime": "^6.3.13",
     "eslint": "^3.19.0",
@@ -29,11 +33,10 @@
     "webpack-hot-middleware": "^2.9.1",
     "webpack-preset": "^0.2.0",
     "webpack-preset-babel": "^0.2.0",
-    "webpack-preset-babel-stage-0": "^0.2.0",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-preset-stage-1": "^6.24.1"
+    "webpack-preset-babel-stage-0": "^0.2.0"
   },
   "dependencies": {
+    "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.17.1",
     "lodash.flow": "^3.5.0",
     "material-ui": "^0.17.3",
