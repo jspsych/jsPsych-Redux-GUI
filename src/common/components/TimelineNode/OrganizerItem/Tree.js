@@ -1,32 +1,12 @@
 import React from 'react';
-import { DropTarget } from 'react-dnd'
+
 import TreeNode from '../../../containers/TimelineNode/OrganizerItem/TreeNodeContainer';
-import { updateTreeAction } from '../../../actions/timelineNodeActions';
 
-const treeTarget = {
-
-  hover(props, monitor) {
-    const {id: draggedId, parent, children: items} = monitor.getItem();
-
-    if (!monitor.isOver({shallow: true})) return;
-    const descendantNode = props.find(props.parent, items);
-    if (descendantNode) return;
-    if (parent == props.parent || draggedId == props.parent) return;
-    props.move(draggedId, props.id, props.parent);
-    props.dispatch(updateTreeAction(props.treeData));
-  }
-}
-
-const targetCollector = (connect, monitor) => ({
-	connectDropTarget: connect.dropTarget(),
-	isOver: monitor.isOver({shallow: true})
-})
 
 class Tree extends React.Component {
 	
 	render() {
 		const {
-			connectDropTarget,
 			children,
 			parent,
 			collapsed,
@@ -36,13 +16,8 @@ class Tree extends React.Component {
 			isOver
 		} = this.props;
 
-		return connectDropTarget(
-			<div className="Sortable-Tree" 
-				 style={{
-				 	minHeight: 15,
-			        paddingTop: 10,
-			        marginTop: -5,
-			     }}>
+		return (
+			<div className="Sortable-Tree"  >
 				{(collapsed) ?
 					null:
 					(children.map((item) => (
@@ -63,9 +38,6 @@ class Tree extends React.Component {
 	}
 }
 
-export default DropTarget(
-	"Organizer-Item",
-	treeTarget,
-	targetCollector)(Tree);
+export default Tree;
 
 

@@ -44,7 +44,6 @@ const removeNode = (id, items) => {
 
 function findItem(id, items) {
 	if (!items) return false;
-
 	for (const node of items) {
 		if (node.id == id)
 			return node;
@@ -56,7 +55,7 @@ function findItem(id, items) {
 		}
 	}
 
-	return false;
+	return false
 }
 
 class SortableTreeMenu extends React.Component {
@@ -77,6 +76,7 @@ class SortableTreeMenu extends React.Component {
 					  move={moveItem}
        				  find={findItem}
        				  treeData={treeData}
+       				  isFirst={true}
 			    />
 			</div>
 		)

@@ -28,7 +28,7 @@ import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import { findDOMNode } from 'react-dom';
 import { DRAG_TYPE } from '../../../reducers/timelineNode';
-import { updateTreeAction } from '../../../actions/timelineNodeActions';
+import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
 import Tree from '../../../containers/TimelineNode/OrganizerItem/TreeContainer';
 
@@ -55,11 +55,17 @@ const timelineTarget = {
 	  	const {id: draggedId } = monitor.getItem()
 	    const {id: overId } = props
 
-	    if (draggedId === overId || draggedId === props.parent) return;
+	    if (draggedId === props.parent) return;
+
+	    if (draggedId === overId) {
+			let offset = monitor.getDifferenceFromInitialOffset();
+			if (offset.x > 32 && draggedId)
+				props.dispatch(moveIntoAction(draggedId));
+			return;
+		}
 	    if (!monitor.isOver({shallow: true})) return;
 
-	    props.move(draggedId, overId, props.parent);
-	    props.dispatch(updateTreeAction(props.treeData));
+	    props.dispatch(moveToAction(draggedId, overId));
 	},
 };
 

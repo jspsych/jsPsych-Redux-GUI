@@ -30,10 +30,11 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function updateTreeAction(tree) {
+export function moveToAction(sourceId, targetId) {
 	return {
-		type: actionTypes.UPDATE_TREE,
-		tree: tree
+		type: actionTypes.MOVE_TO,
+		sourceId: sourceId,
+		targetId: targetId,
 	};
 }
 
@@ -55,5 +56,12 @@ export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,
 		id: id
+	};
+}
+
+export function moveIntoAction(id) {
+	return {
+		type: actionTypes.MOVE_INTO,
+		id: id,
 	};
 }

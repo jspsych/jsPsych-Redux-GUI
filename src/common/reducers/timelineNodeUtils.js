@@ -74,3 +74,4 @@ function preOrderTraversalHelper(state, childrenById, presentedIds) {
 			preOrderTraversalHelper(state, state[nodeId].childrenById, presentedIds);
 	}
 }
+
