@@ -274,8 +274,6 @@ function deleteTimeline(state, action) {
 	return deleteTimelineHelper(new_state, action.id);
 }
 
-
-
 function deleteTrialHelper(state, id) {
 	let trial = getNodeById(state, id);
 	let parent = trial.parent;
@@ -306,8 +304,23 @@ function deleteTrial(state, action) {
 	return deleteTrialHelper(new_state, action.id);
 }
 
+function isAncestor(state, sourceId, targetId) {
+	let target = getNodeById(state, targetId);
+
+	while (target && target.parent !== null) {
+		if (target.parent === sourceId)
+			return true;
+		target = state[target.parent];
+	}
+
+	return false;
+}
+
 function moveTo(state, action) {
-	if (action.sourceId === action.targetId)
+	if (action.sourceId === action.targetId ||
+		!action.sourceId ||
+		!action.targetId ||
+		isAncestor(state, action.sourceId, action.targetId))
 		return state;
 
 	let source = state[action.sourceId];
