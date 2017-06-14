@@ -77,6 +77,8 @@ export default function(state=initState, action) {
 			return changeParamInt(state, action);
 		case actionTypes.CHANGE_PARAM_FLOAT:
 			return changeParamFloat(state, action);
+		case actionTypes.CHANGE_HEADER:
+			return changeHeader(state, action);
 		default:
 			return state;
 	}
@@ -164,7 +166,7 @@ export function createTimeline(id,
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
-	parameters={}) {
+	parameters={},) {
 
 	return {
 		id: id,
@@ -175,7 +177,7 @@ export function createTimeline(id,
 		collapsed: collapsed,
 		enabled: enabled,
 		predictedLevel: null,
-		parameters: parameters
+		parameters: parameters,
 	};
 }
 
@@ -217,6 +219,29 @@ function copyTrial(trial) {
 		trial.enabled,
 		trial.parameters,
 		trial.pluginType)
+}
+
+export function createTable(id,
+	timelineId,
+	headerId,
+	rowId,
+	cellValue={}) {
+
+	return {
+		id: id,
+		timelineId: utils.getTimelineId(),
+		headerId: utils.getHeaderId(),
+		rowId: utils.getRowId(),
+		cellValue: cellValue
+	};
+}
+
+function copyTable(table) {
+	return createTable(table.id,
+		table.timelineId,
+		table.headerId,
+		table.rowId,
+		table.cellValue)
 }
 
 function copyNode(node) {
@@ -682,3 +707,13 @@ function changeParamFloat(state, action) {
 
 	return new_state; 
 }
+
+// function changeHeader(state, action) {
+// 	let table = state[state.previewId];
+// 	let new_state = Object.assign({}, state);
+
+// 	let cellId = action.cellId;
+
+// 	table = copyTable(table);
+// 	new_state[] = action.cellId
+// }
