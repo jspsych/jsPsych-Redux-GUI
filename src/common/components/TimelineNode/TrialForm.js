@@ -7,7 +7,9 @@ import SelectField from 'material-ui/SelectField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const pluginStyle = {
-		width: '50%',
+		//top: 20,
+		height:'15vh',
+		width: '100%',
 		left: '0px',
 	}
 
@@ -24,8 +26,8 @@ class TrialForm extends React.Component {
 		const pluginItems = plugins.map((plugin) => {
 			return (<MenuItem primaryText={plugin} key={plugin} value={plugin} />);	
 		});
-
-		if(this.props.open && this.props.isTrial){
+		var form;
+		if(this.props.isTrial){
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
 			console.log("parameters " + this.props.parameters);
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
@@ -46,18 +48,16 @@ class TrialForm extends React.Component {
 					default: return (<TextField id={plug} key={plug} value={this.props.parameters[plug]} floatingLabelText={plug} onChange={(even, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 				}
 			});
-			var form = <div className="trialForm">
-			<SelectField
+			var form = <div className="trialForm"><SelectField
 			value={this.props.pluginType}
 			floatingLabelText="Plugin Type"
-			autoWidth={true}
 			maxHeight={300}
 			style={pluginStyle}
 			onChange={(event, key) => this.props.onChange(plugins[key])} >
 			{pluginItems}
 			</SelectField>
 			{pluginParameters}
-			</div>;
+			</div>
 		} else {
 			var form = <div></div>;
 		}

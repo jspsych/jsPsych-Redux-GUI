@@ -1,11 +1,10 @@
 import React from 'react';
-
 import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawerContainer';
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
 import TrialForm from '../containers/TimelineNode/TrialForm';
-
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
@@ -63,6 +62,8 @@ class App extends React.Component {
 
 	render() {
 		return (
+			<div>
+			<MuiThemeProvider>
 			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
@@ -88,10 +89,10 @@ class App extends React.Component {
 	  				</div>
 	  				<TimelineNodeEditorDrawer open={this.state.timelineEditorDrawerToggle} 
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
-	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
-	  				/>
-	  				<TrialForm open={this.state.timelineEditorDrawerToggle} />
+	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer} />
 	  			</div>
+  			</div>
+  			</MuiThemeProvider>
   			</div>
   		);
 	}
