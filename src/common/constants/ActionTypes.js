@@ -19,3 +19,7 @@ export const CHANGE_PARAM_TEXT = "CHANGE_PARAM_TEXT";
 export const CHANGE_PARAM_INT = "CHANGE_PARAM_INT";
 export const CHANGE_PARAM_FLOAT = "CHANGE_PARAM_FLOAT";
 
+//EditableTable Actions
+export const CHANGE_HEADER = "CHANGE_HEADER";
+
+

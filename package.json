@@ -1,8 +1,7 @@
 {
   "name": "jsPsych-Redux-GUI",
   "version": "0.1.0",
-  "babel": { 
-    },
+  "babel": {},
   "private": true,
   "jest": {
     "testPathIgnorePatterns": [
@@ -38,6 +37,7 @@
   "dependencies": {
     "babel-preset-stage-2": "^6.24.1",
     "body-parser": "^1.17.1",
+    "google-spreadsheets": "^0.5.1",
     "lodash.flow": "^3.5.0",
     "material-ui": "^0.17.3",
     "react": "^15.5.4",

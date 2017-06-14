@@ -3,7 +3,10 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-// import TrialForm from '../../containers/TimelineNode/TrialForm';
+
+import TrialForm from '../../containers/TimelineNode/TrialForm';
+import TimelineForm from '../../containers/TimelineNode/TimelineForm';
+
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
@@ -17,14 +20,11 @@ import {
 export default class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-		};
 	}
 
 	render() {
 		return (
-			<MuiThemeProvider>		
+			<MuiThemeProvider>	
 			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? '20%': '0%', 
 						right: '0px',
@@ -35,7 +35,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						transition: 'all 0.4s ease',
 						borderLeft: (this.props.open) ? '3px solid black' : '0.1px solid black'
 						}}>
-
 				<div className="TimelineNode-Editor-Container"
 					style={{height: '100%', width: '100%'}}>
 					{(this.props.open) ? 
@@ -49,7 +48,10 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
-						
+
+						<TrialForm id={this.props.id} pluginType={this.props.pluginType} />
+						<TimelineForm id={this.props.id} />
+
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :
