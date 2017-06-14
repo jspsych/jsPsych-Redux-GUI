@@ -1,9 +1,7 @@
 import React from 'react';
 
-import TrialItem from '../../../containers/TimelineNode/OrganizerItem/TrialItemContainer';
-import TimelineItem from '../../../containers/TimelineNode/OrganizerItem/TimelineItemContainer';
-
-import Tree from './Tree';
+import TrialItem from '../../../containers/TimelineNode/SortableTreeMenu/TrialItemContainer';
+import TimelineItem from '../../../containers/TimelineNode/SortableTreeMenu/TimelineItemContainer';
 
 class TreeNode extends React.Component {
 	
@@ -11,9 +9,6 @@ class TreeNode extends React.Component {
 		const {
 			item: { id, children },
 			parent,
-			move,
-			find,
-			treeData,
 		} = this.props;
 
 		return (
@@ -23,9 +18,6 @@ class TreeNode extends React.Component {
 					id={id} 
 					parent={parent}
 					children={children}
-					move={move}
-					find={find}
-					treeData={treeData}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>) :
@@ -33,9 +25,6 @@ class TreeNode extends React.Component {
 					id={id} 
 					parent={parent}
 					children={children}
-					move={move}
-					find={find}
-					treeData={treeData}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>)}

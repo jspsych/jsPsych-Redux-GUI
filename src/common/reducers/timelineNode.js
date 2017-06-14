@@ -405,44 +405,6 @@ function moveInto(state, action) {
 
 }
 
-function updateTree(state, action) {
-	let tree = action.tree;
-
-	let new_state = Object.assign({}, state, {
-		mainTimeline: []
-	});
-
-	let treeNode;
-	let len = tree.length;
-	for (let i = 0; i < len; i++) {
-		treeNode = tree[i];
-		new_state.mainTimeline.push(treeNode.id);
-		normalizeTree(new_state, treeNode, null);
-	}
-
-	return new_state;
-}
-
-function normalizeTree(state, treeNode, parent) {
-	let timelineNode = copyNode(state[treeNode.id]);
-	state[timelineNode.id] = timelineNode;
-	timelineNode.parent = parent;
-
-	if (utils.isTimeline(timelineNode)) {
-		let len = treeNode.children.length;
-		timelineNode.childrenById = treeNode.children.map((t) => (t.id));
-		if (timelineNode.childrenById.length > 0)
-			timelineNode.collapsed = false;
-		
-		let child;
-		for (let i = 0; i < len; i++) {
-			child = treeNode.children[i];
-			normalizeTree(state, child, treeNode.id);
-		}
-	}
-
-}
-
 
 function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {

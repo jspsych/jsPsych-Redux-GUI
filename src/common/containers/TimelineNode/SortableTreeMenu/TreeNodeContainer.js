@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../../actions/timelineNodeActions';
-import TreeNode from '../../../components/TimelineNode/OrganizerItem/TreeNode';
+import TreeNode from '../../../components/TimelineNode/SortableTreeMenu/TreeNode';
 import { isTimeline } from '../../../reducers/timelineNodeUtils';
 
 

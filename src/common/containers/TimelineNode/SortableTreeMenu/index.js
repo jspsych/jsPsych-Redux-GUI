@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../../actions/timelineNodeActions';
-import SortableTreeMenu from '../../../components/TimelineNode/OrganizerItem/SortableTreeMenu';
-
+import SortableTreeMenu from '../../../components/TimelineNode/SortableTreeMenu/SortableTreeMenu';
 import { convertToNestedTree } from '../../../reducers/timelineNodeUtils';
+
+// import * as timelineNodeActions from '../../../actions/timelineNodeActions';
+
 
 
 const mapStateToProps = (state, ownProps) => {

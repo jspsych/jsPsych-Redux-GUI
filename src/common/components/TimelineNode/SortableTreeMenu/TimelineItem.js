@@ -26,11 +26,9 @@ import { contextMenuStyle } from './TrialItem';
 
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
-import { findDOMNode } from 'react-dom';
-import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
-import Tree from '../../../containers/TimelineNode/OrganizerItem/TreeContainer';
+import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
 
 const timelineSource = {
   beginDrag(props) {
@@ -127,8 +125,6 @@ class TimelineItem extends React.Component {
 			return null;
 		} 
 
-		let key = 0;
-
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
@@ -196,9 +192,6 @@ class TimelineItem extends React.Component {
 					<div style={{paddingLeft: 32}}>
 						<Tree parent={this.props.id}
 							  children={this.props.children}
-							  move={this.props.move}
-							  find={this.props.find}
-							  treeData={this.props.treeData}
 							  collapsed={this.props.collapsed}
 							  openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 							  closeTimelineEditorCallback={this.props.closeTimelineEditorCallback} />

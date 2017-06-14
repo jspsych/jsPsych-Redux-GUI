@@ -22,7 +22,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
-import SortableTreeMenu from '../../containers/TimelineNode/OrganizerItem';
+import SortableTreeMenu from '../../containers/TimelineNode/SortableTreeMenu';
 
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -78,7 +78,6 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 
 
 	render() {
-		let key = 0;
 		return (
 			<MuiThemeProvider>
 			<div className="TimelineNode-Organizer"

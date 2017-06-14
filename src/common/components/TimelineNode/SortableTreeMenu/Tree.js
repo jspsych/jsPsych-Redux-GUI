@@ -1,6 +1,6 @@
 import React from 'react';
 
-import TreeNode from '../../../containers/TimelineNode/OrganizerItem/TreeNodeContainer';
+import TreeNode from '../../../containers/TimelineNode/SortableTreeMenu/TreeNodeContainer';
 
 
 class Tree extends React.Component {
@@ -10,10 +10,6 @@ class Tree extends React.Component {
 			children,
 			parent,
 			collapsed,
-			move,
-			find,
-			treeData,
-			isOver
 		} = this.props;
 
 		return (
@@ -26,9 +22,6 @@ class Tree extends React.Component {
 						key={item.id}
 						parent={parent}
 						item={item}
-						move={move}
-						find={find}
-						treeData={treeData}
 						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}/>
 					)))

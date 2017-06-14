@@ -26,8 +26,6 @@ import {
 
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
-import { findDOMNode } from 'react-dom';
-import { DRAG_TYPE } from '../../../reducers/timelineNode';
 import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
 
