@@ -57,6 +57,25 @@ export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 
 export const isTrial = (node) => (node.type === TRIAL_TYPE);
 
+export function convertToNestedTree(state) {
+	return state.mainTimeline.map((id) => (createTreeNode(state, state[id])));
+}
+
+function createTreeNode(state, node) {
+	let children = [];
+	
+	if (isTimeline(node)) {
+		children = node.childrenById.map((id) => (
+			createTreeNode(state, state[id])
+		));
+	}
+
+	return {
+		id: node.id,
+		children: children,
+	};
+}
+
 export function preOrderTraversal(state, from=null, presentedIds=[]) {
 	let childrenById = state.mainTimeline;
 	if (from && isTimeline(from))
@@ -79,3 +98,4 @@ function preOrderTraversalHelper(state, childrenById, presentedIds) {
 			preOrderTraversalHelper(state, state[nodeId].childrenById, presentedIds);
 	}
 }
+

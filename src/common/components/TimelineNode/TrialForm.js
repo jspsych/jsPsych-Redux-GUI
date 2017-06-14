@@ -3,8 +3,14 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
+import { isTrial } from '../../reducers/timelineNodeUtils';
+
+// import jsPsych from '../../../../public/jsPsych/jspsych';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
+let jsPsych = {}; 
 
 const pluginStyle = {
 		//top: 20,
@@ -12,6 +18,7 @@ const pluginStyle = {
 		width: '100%',
 		left: '0px',
 	}
+
 
 class TrialForm extends React.Component {
 	constructor(props) {

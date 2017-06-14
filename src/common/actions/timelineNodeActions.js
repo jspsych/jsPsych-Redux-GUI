@@ -30,22 +30,11 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveNodeAction(sourceId, targetId, up, dragType) {
+export function moveToAction(sourceId, targetId) {
 	return {
-		type: actionTypes.MOVE_NODE,
+		type: actionTypes.MOVE_TO,
 		sourceId: sourceId,
 		targetId: targetId,
-		up: up,
-		dragType: dragType
-	};
-}
-
-export function hoverNodeAction(sourceId, targetId, dragType) {
-	return {
-		type: actionTypes.HOVER_NODE,
-		sourceId: sourceId,
-		targetId: targetId,
-		dragType: dragType
 	};
 }
 
@@ -67,5 +56,12 @@ export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,
 		id: id
-	}
+	};
+}
+
+export function moveIntoAction(id) {
+	return {
+		type: actionTypes.MOVE_INTO,
+		id: id,
+	};
 }

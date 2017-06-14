@@ -1,12 +1,9 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
-import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
-import { getLevel, isAncestor } from '../../../reducers/timelineNode';
+import TimelineItem from '../../../components/TimelineNode/SortableTreeMenu/TimelineItem';
 import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
-import { moveNode, hoverNode } from './OrganizerItemContainer';
 
 const onPreview = (dispatch, ownProps) => {
-	// console.log(e.nativeEvent.which)
 	dispatch((dispatch, getState) => {
 		let timelineNodeState = getState().timelineNodeState;
 		let previewId = timelineNodeState.previewId;
@@ -24,38 +21,34 @@ const onToggle = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.onToggleAction(ownProps.id));
 }
 
+const toggleCollapsed = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.setCollapsed(ownProps.id));
+}
+
 const insertTimeline = (dispatch, ownProps) => {
-	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let parent = timelineNodeState[ownProps.id].parent;
-		dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), parent));
-	})
+	dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), ownProps.id));
 }
 
 const insertTrial = (dispatch, ownProps) => {
-	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let parent = timelineNodeState[ownProps.id].parent;
-		dispatch(timelineNodeActions.addTrialAction(getTrialId(), parent));
-	})
+	dispatch(timelineNodeActions.addTrialAction(getTrialId(), ownProps.id));
 }
 
 const deleteItem = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.deleteTrialAction(ownProps.id));
+	dispatch(timelineNodeActions.deleteTimelineAction(ownProps.id));
 }
 
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
-	let trial = timelineNodeState[ownProps.id];
+	let node = timelineNodeState[ownProps.id];
 
 	return {
 		isSelected: ownProps.id === timelineNodeState.previewId,
-		isEnabled: trial.enabled,
-		name: trial.name,
-		parent: trial.parent,
-		level: getLevel(timelineNodeState, trial),
+		isEnabled: node.enabled,
+		name: node.name,
+		collapsed: node.collapsed,
+		hasNoChildren: node.childrenById.length === 0,
 	}
 };
 
@@ -63,11 +56,11 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	onClick: () => { onPreview(dispatch, ownProps) },
 	onToggle: () => { onToggle(dispatch, ownProps) },
+	toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) },
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); },
-	hoverNode: (sourceId, targetId, dragType) => { hoverNode(dispatch, sourceId, targetId, dragType); }
+	dispatch: dispatch
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);
+export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

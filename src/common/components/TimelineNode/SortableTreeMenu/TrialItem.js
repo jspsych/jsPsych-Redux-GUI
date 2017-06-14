@@ -24,45 +24,60 @@ import {
 	grey300 as hoverColor,
 } from 'material-ui/styles/colors';
 
-import { DropTarget } from 'react-dnd';
-import { DRAG_TYPE } from '../../../reducers/timelineNode';
-import PreviewItemGroup from '../../../containers/TimelineNode/OrganizerItem/Ghosts/PreviewItemGroupContainer';
+import { DropTarget, DragSource } from 'react-dnd';
+import flow from 'lodash/flow';
+import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
-import { TREE_MENU_INDENT as INDENT } from '../TimelineNodeOrganizerDrawer';
-import {setLastAreaType, getLastAreaType} from './DropAboveArea';
 
-const trialTarget = {
-  hover(props, monitor, component) {
-  	const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent, areaType: areaType } = props;
-   	
-   	if (areaType === getLastAreaType()) return;
-   	setLastAreaType(areaType);
-
-    let dragType;
-	if (sourceParent === targetParent) {
-		dragType = DRAG_TYPE.DISPLACEMENT;
-	} else {
-		dragType = DRAG_TYPE.JUMP;
-	}
-
-	props.hoverNode(sourceId, targetId, dragType);
+const trialSource = {
+  beginDrag(props) {
+    return {
+      id: props.id,
+      parent: props.parent,
+    };
   },
 
-  drop(props, monitor, component) {
-  	const { id: sourceId, parent: sourceParent } = monitor.getItem();
-    const { id: targetId, parent: targetParent, ghost: ghost } = props;
-
-    let dragType;
-	if (sourceParent === targetParent) {
-		dragType = DRAG_TYPE.DISPLACEMENT;
-	} else {
-		dragType = DRAG_TYPE.JUMP;
-	}
-
-	props.moveNode(sourceId, targetId, false, dragType);
+  isDragging(props, monitor) {
+    return props.id === monitor.getItem().id;
   }
 };
+
+
+const trialTarget = {
+	canDrop() {
+		return false
+	},
+
+	hover(props, monitor, component) {
+		const { id: draggedId } = monitor.getItem()
+		const { id: overId } = props
+		
+		if (draggedId === props.parent) return;
+
+	    if (draggedId === overId) {
+			let offset = monitor.getDifferenceFromInitialOffset();
+			if (offset.x > 32 && draggedId)
+				props.dispatch(moveIntoAction(draggedId));
+			return;
+		}
+		if (!monitor.isOver({ shallow: true })) return;
+
+		props.dispatch(moveToAction(draggedId, overId));
+	},
+};
+
+const sourceCollector = (connect, monitor) => ({
+	connectDragSource: connect.dragSource(),
+	connectDragPreview: connect.dragPreview(),
+	isDragging: monitor.isDragging(),
+	draggedItem: monitor.getItem()
+})
+
+const targetCollector = (connect, monitor) => ({
+	connectDropTarget: connect.dropTarget(),
+	isOver: monitor.isOver(),
+	isOverCurrent: monitor.isOver({ shallow: true }),
+})
 
 
 export const contextMenuStyle = {
@@ -99,9 +114,18 @@ class TrialItem extends React.Component {
 	}
 
 	render() {
-		const { isOver, connectDropTarget, source } = this.props;
-		const colorSelector = (isOver, isSelected) => {
-			if (isOver)
+		const {
+			connectDropTarget,
+			connectDragPreview,
+			connectDragSource,
+			isOver,
+			isOverCurrent
+		} = this.props;
+
+		let hovered = isOver && isOverCurrent;
+
+		const colorSelector = (hovered, isSelected) => {
+			if (hovered)
 				return null;
 
 			if (isSelected)
@@ -110,23 +134,24 @@ class TrialItem extends React.Component {
 			return null;
 		} 
 
-		return connectDropTarget(
+		return connectDragPreview(connectDropTarget(
 			<div>
 			<MuiThemeProvider>
 			<div>
-				<div className="Trial-Item" style={{
+				<div className="Organizer-Item" style={{
 						display:'flex', 
-						minWidth: "100%",
+						width: "100%",
 						overflow: 'hidden',
-						backgroundColor: colorSelector(isOver, this.props.isSelected),
-						paddingLeft: INDENT * this.props.level,
+						backgroundColor: colorSelector(hovered, this.props.isSelected),
 					}} >
-					<IconButton 
-						hoveredStyle={{backgroundColor: hoverColor}}
-						disableTouchRipple={true} 
-						onTouchTap={this.props.onClick}>
-						<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
-					</IconButton>
+					{connectDragSource(<div className="Drag-Handle">
+						<IconButton 
+							hoveredStyle={{backgroundColor: hoverColor}}
+							disableTouchRipple={true} 
+							onTouchTap={this.props.onClick}>
+							<TrialIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor}/>
+						</IconButton>
+					</div>)}
 					<div style={{width: "100%"}} >
 						<ListItem  
 							primaryText={this.props.name}
@@ -167,19 +192,19 @@ class TrialItem extends React.Component {
 					    </Menu>
 					    </Popover>
 					</div>
-					{(isOver) ? <PreviewItemGroup id={source.id} /> : null}
 				</div>
 			</MuiThemeProvider>
 			</div>
-		)
+		))
 	}
 }
 
-export default DropTarget(
-  	"Organizer-Item",
-   	trialTarget, 
-   	(connect, monitor) => ({
-   		connectDropTarget: connect.dropTarget(),
-   		isOver: monitor.isOver(),
-   		source: monitor.getItem(),
-	}))(TrialItem);
+export default flow(
+	DragSource(
+		"Organizer-Item",
+		trialSource,
+		sourceCollector),
+	DropTarget(
+		"Organizer-Item",
+		trialTarget,
+		targetCollector))(TrialItem)
