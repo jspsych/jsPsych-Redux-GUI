@@ -3,8 +3,7 @@ import * as timelineNodeActions from '../../actions/timelineNodeActions';
 import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineNodeOrganizerDrawer';
 import { isTimeline, 
 		getTimelineId, 
-		getTrialId,
-		preOrderTraversal, } from '../../reducers/timelineNodeUtils';
+		getTrialId, } from '../../reducers/timelineNodeUtils';
 
 
 const insertTrial = (dispatch) => {
@@ -61,11 +60,7 @@ const deleteSelected = (dispatch) => {
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
-	let presentedIds = preOrderTraversal(timelineNodeState);
-
 	return {
-		presentedIds: presentedIds,
-		lastRoot: timelineNodeState.mainTimeline[timelineNodeState.mainTimeline.length-1],
 	}
 };
 

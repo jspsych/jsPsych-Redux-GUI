@@ -22,9 +22,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
-import OrganizerItem from '../../containers/TimelineNode/OrganizerItem/OrganizerItemContainer';
-import DropAboveArea from '../../containers/TimelineNode/OrganizerItem/DropAboveAreaContainer';
-import DropUnderArea from '../../containers/TimelineNode/OrganizerItem/DropUnderAreaContainer';
+import SortableTreeMenu from '../../containers/TimelineNode/OrganizerItem';
 
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -80,6 +78,7 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 
 
 	render() {
+		let key = 0;
 		return (
 			<MuiThemeProvider>
 			<div className="TimelineNode-Organizer"
@@ -119,22 +118,10 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 						<List style={{maxHeight: "68vh", 
 									minHeight: "68vh", 
   								}}>
-  								<div style={{display: 'flex'}}>
-  								<div id="test" style={{zIndex: 2, width: 20}} />
-  								<div id="test2" style={{zIndex: 2, width: 20}} />
-  								</div>
-							{this.props.presentedIds.map((id) => (
-								<div key={"Container-"+id}>
-								<DropAboveArea id={id} key={"Drop-Above-"+id} areaType={id+"-Above-Area"}/>
-								<OrganizerItem id={id} 
-												key={id} 
-												areaType={id+"-Item"}
-												openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-												closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-								/>
-								</div>
-							))}
-							{(this.props.lastRoot) ? <DropUnderArea id={this.props.lastRoot} areaType="Drop-Under-Area" /> : null}
+							<SortableTreeMenu 
+								openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+								closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+							/>
 						</List>
 						</div>
 						<Divider />

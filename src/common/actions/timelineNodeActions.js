@@ -30,22 +30,10 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveNodeAction(sourceId, targetId, up, dragType) {
+export function updateTreeAction(tree) {
 	return {
-		type: actionTypes.MOVE_NODE,
-		sourceId: sourceId,
-		targetId: targetId,
-		up: up,
-		dragType: dragType
-	};
-}
-
-export function hoverNodeAction(sourceId, targetId, dragType) {
-	return {
-		type: actionTypes.HOVER_NODE,
-		sourceId: sourceId,
-		targetId: targetId,
-		dragType: dragType
+		type: actionTypes.UPDATE_TREE,
+		tree: tree
 	};
 }
 
@@ -67,5 +55,5 @@ export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,
 		id: id
-	}
+	};
 }

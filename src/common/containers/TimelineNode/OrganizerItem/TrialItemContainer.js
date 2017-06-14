@@ -3,7 +3,6 @@ import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/OrganizerItem/TrialItem';
 import { getLevel, isAncestor } from '../../../reducers/timelineNode';
 import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
-import { moveNode, hoverNode } from './OrganizerItemContainer';
 
 const onPreview = (dispatch, ownProps) => {
 	// console.log(e.nativeEvent.which)
@@ -48,14 +47,12 @@ const deleteItem = (dispatch, ownProps) => {
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
-	let trial = timelineNodeState[ownProps.id];
+	let node = timelineNodeState[ownProps.id];
 
 	return {
 		isSelected: ownProps.id === timelineNodeState.previewId,
-		isEnabled: trial.enabled,
-		name: trial.name,
-		parent: trial.parent,
-		level: getLevel(timelineNodeState, trial),
+		isEnabled: node.enabled,
+		name: node.name,
 	}
 };
 
@@ -66,8 +63,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	moveNode: (sourceId, targetId, up, dragType) => { moveNode(dispatch, sourceId, targetId, up, dragType); },
-	hoverNode: (sourceId, targetId, dragType) => { hoverNode(dispatch, sourceId, targetId, dragType); }
+	dispatch: dispatch
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);

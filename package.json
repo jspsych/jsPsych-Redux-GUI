@@ -50,7 +50,7 @@
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "react-scripts start",
     "build": "webpack",
     "eject": "react-scripts eject",
     "test": "jest",

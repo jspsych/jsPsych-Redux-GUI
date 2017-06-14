@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { isTrial } from '../../constants/utils';
+import { isTrial } from '../../reducers/timelineNodeUtils';
 import TrialForm from '../../components/TimelineNode/TrialForm';
 import * as trialFormActions from '../../actions/trialFormActions';
 
@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	addToParameters: (id, val) => { onAddToParam(dispatch, id, val) },
 	onToggleParam: (e, newVal) => { onToggleParam(dispatch, newVal) },
 	onChangeTextField: (newVal) => { onChangeParam(dispatch, newVal) },
-	onChangeParamSelect: (key) => { onParamSelectChange(dispatch, key) },
+	onChangeParamSelect: (key) => {  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialForm);

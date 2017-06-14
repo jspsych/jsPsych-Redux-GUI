@@ -4,8 +4,6 @@ import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawerContainer';
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
-import TrialForm from '../containers/TimelineNode/TrialForm';
-
 
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
@@ -90,7 +88,6 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
-	  				<TrialForm open={this.state.timelineEditorDrawerToggle} />
 	  			</div>
   			</div>
   		);

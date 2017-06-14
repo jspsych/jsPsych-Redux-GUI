@@ -3,7 +3,7 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import TrialForm from '../../containers/TimelineNode/TrialForm';
+// import TrialForm from '../../containers/TimelineNode/TrialForm';
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
@@ -49,7 +49,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
-						<TrialForm trialId={this.props.id} pluginType={this.props.pluginType} />
+						
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :
