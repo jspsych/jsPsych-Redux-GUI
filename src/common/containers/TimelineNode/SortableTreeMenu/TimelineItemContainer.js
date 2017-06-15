@@ -55,8 +55,12 @@ const duplicateTimeline = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
 }
 
-export const listenKey = (e, dispatch, ownProps) => {
+export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
 	e.preventDefault();
+	if (getKeyboardFocusId() !== ownProps.id) {
+		return;
+	}
+
 	switch(e.which) {
 		// left
 		case 37:
@@ -103,7 +107,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	toggleAll: () => { toggleAll(dispatch) },
 	untoggleAll: () => { untoggleAll(dispatch) },
 	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
-	listenKey: (e) => { listenKey(e, dispatch, ownProps) },
+	listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

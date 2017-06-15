@@ -189,7 +189,7 @@ class TimelineItem extends React.Component {
 								<ListItem 
 										ref={this.props.id}
 										primaryText={this.props.name}
-										onKeyDown={this.props.listenKey}
+										onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
 										onContextMenu={this.openContextMenu}
 										onTouchTap={(e) => {
 											if (e.nativeEvent.which === 1) {

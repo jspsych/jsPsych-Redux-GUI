@@ -71,7 +71,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	toggleAll: () => { toggleAll(dispatch) },
 	untoggleAll: () => { untoggleAll(dispatch) },
 	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
-	listenKey: (e) => { listenKey(e, dispatch, ownProps) },
+	listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);
