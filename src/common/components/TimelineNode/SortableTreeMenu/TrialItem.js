@@ -16,7 +16,6 @@ import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
 import {
 	grey400 as normalColor,
-	cyan400 as highlightColor,
 	indigo500 as iconHighlightColor,
 	green500 as checkColor,
 	grey300 as hoverColor,
@@ -26,6 +25,7 @@ import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import {
 	contextMenuStyle,
+	colorSelector,
 	ITEM_TYPE,
 	treeNodeDnD
 } from './TimelineItem';
@@ -60,31 +60,16 @@ class TrialItem extends React.Component {
 			connectDropTarget,
 			connectDragPreview,
 			connectDragSource,
-			isOver,
 			isOverCurrent
 		} = this.props;
-
-		let hovered = isOver && isOverCurrent;
-
-		const colorSelector = (hovered, isSelected) => {
-			if (hovered)
-				return null;
-
-			if (isSelected)
-				return highlightColor;
-
-			return null;
-		} 
-
+		
 		return connectDragPreview(connectDropTarget(
 			<div>
 			<MuiThemeProvider>
 			<div>
 				<div className={ITEM_TYPE} style={{
 						display:'flex', 
-						width: "100%",
-						overflow: 'hidden',
-						backgroundColor: colorSelector(hovered, this.props.isSelected),
+						backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 					}} >
 					{connectDragSource(<div className="Drag-Handle">
 						<IconButton 

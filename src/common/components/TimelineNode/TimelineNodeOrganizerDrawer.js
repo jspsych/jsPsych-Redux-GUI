@@ -24,9 +24,6 @@ import {
 import { convertPercent } from '../App';
 import SortableTreeMenu from '../../containers/TimelineNode/SortableTreeMenu';
 
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-
 export const TREE_MENU_INDENT = 20;
 
 const MIN_WIDTH = 20;
@@ -200,4 +197,4 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 }
 
 
-export default DragDropContext(HTML5Backend)(TimelineNodeOrganizerDrawer);
+export default TimelineNodeOrganizerDrawer;

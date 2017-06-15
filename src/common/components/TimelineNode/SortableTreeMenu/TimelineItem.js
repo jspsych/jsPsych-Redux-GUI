@@ -32,23 +32,22 @@ import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActio
 
 export const INDENT = 32;
 
-var lastAction = null;
-
-const setLastAction = (a) => { lastAction = a };
-
-const canDispatchMoveToAction = (current) => {
-	return !lastAction || 
-		current.type !== lastAction.type ||
-		current.sourceId !== lastAction.sourceId ||
-		current.targetId !== lastAction.targetId;
-}
-
 export const contextMenuStyle = {
 	outerDiv: { position: 'absolute', zIndex: 20},
 	innerDiv: { backgroundColor: contextMenuBackgroundColor,
 				borderBottom: '1px solid #BDBDBD' },
 	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
 	iconColor: contextMenuIconColor,
+}
+
+export const colorSelector = (hovered, isSelected) => {
+	if (hovered)
+		return null;
+
+	if (isSelected)
+		return highlightColor;
+
+	return null;
 }
 
 export const ITEM_TYPE = "Organizer-Item";
@@ -69,6 +68,7 @@ export const treeNodeDnD = {
 	},
 
 	itemTarget: {
+		// better this way since we always want hover (for preview effects)
 		canDrop() {
 			return false;
 		},
@@ -77,8 +77,15 @@ export const treeNodeDnD = {
 		  	const {id: draggedId } = monitor.getItem()
 		    const {id: overId } = props
 
-		    if (draggedId === props.parent) return;
+		    // leave
+		    // if parent dragged into its children (will check more in redux)
+		    // or if source is not over current target
+		    if (draggedId === props.parent ||       
+		    	!monitor.isOver({shallow: true})) { 
+		    	return;
+			}
 
+			// allow move into
 		    if (draggedId === overId) {
 				let offset = monitor.getDifferenceFromInitialOffset();
 				if (offset.x > INDENT && draggedId) {
@@ -87,13 +94,9 @@ export const treeNodeDnD = {
 				}
 				return;
 			}
-		    if (!monitor.isOver({shallow: true})) return;
 
-		    let action = moveToAction(draggedId, overId);
-		    if (canDispatchMoveToAction) {
-		    	props.dispatch(action);
-		    	setLastAction(action);
-		    }
+			// replace
+		    props.dispatch(moveToAction(draggedId, overId));
 		}
 	},
 
@@ -101,12 +104,10 @@ export const treeNodeDnD = {
 		connectDragSource: connect.dragSource(),
 		connectDragPreview: connect.dragPreview(),
 		isDragging: monitor.isDragging(),
-		draggedItem: monitor.getItem()
 	}),
 
 	targetCollector: (connect, monitor) => ({
 		connectDropTarget: connect.dropTarget(),
-		isOver: monitor.isOver(),
 		isOverCurrent: monitor.isOver({
 			shallow: true
 		}),
@@ -143,29 +144,15 @@ class TimelineItem extends React.Component {
 			connectDropTarget,
 			connectDragPreview,
 			connectDragSource,
-			isOver,
 			isOverCurrent,
 		} = this.props;
-		
-		let hovered = isOver && isOverCurrent;
-
-		const colorSelector = (hovered, isSelected) => {
-			if (hovered)
-				return null;
-
-			if (isSelected)
-				return highlightColor;
-
-			return null;
-		} 
 
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
 					<div className={ITEM_TYPE} style={{
 									display: 'flex',
-									backgroundColor: colorSelector(hovered, this.props.isSelected),
-									height: "50%",
+									backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 								}}>
 							{connectDragSource(<div>
 								<IconButton className="Timeline-Collapse-Icon"

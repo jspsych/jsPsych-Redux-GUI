@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
 
 
@@ -19,6 +22,6 @@ class SortableTreeMenu extends React.Component {
 	}
 }
 
-export default SortableTreeMenu;
+export default DragDropContext(HTML5Backend)(SortableTreeMenu);
 
 
