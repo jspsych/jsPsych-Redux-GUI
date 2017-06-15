@@ -162,7 +162,7 @@ class TimelineItem extends React.Component {
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
-					<div className="Organizer-Item" style={{
+					<div className={ITEM_TYPE} style={{
 									display: 'flex',
 									backgroundColor: colorSelector(hovered, this.props.isSelected),
 									height: "50%",
