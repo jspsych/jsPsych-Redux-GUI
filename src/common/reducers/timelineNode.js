@@ -508,6 +508,9 @@ function moveTo(state, action) {
 		let targetIndex = arr.indexOf(target.id);
 		source.parent = target.parent;
 		if (arr.indexOf(source.id) === -1) {
+			if (action.isLast) {
+				targetIndex++;
+			}
 			arr.splice(targetIndex, 0, source.id);
 		}
 	}
@@ -570,22 +573,30 @@ function onPreview(state, action) {
 	return new_state;
 }
 
-function onToggle(state, action) {
-	let node = state[action.id];
 
+function onToggleHelper(state, id, spec=null) {
+	let node = copyNode(state[id]);
+	state[node.id] = node;
+	if (spec === null) {
+		node.enabled = !node.enabled;
+	} else {
+		node.enabled = spec;
+	}
+	if (utils.isTimeline(node)) {
+		for (let cid of node.childrenById) {
+			onToggleHelper(state, cid, node.enabled)
+		}
+	}
+}
+
+function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
-	if (utils.isTimeline(node)) {
-		node = copyTimeline(node);
-	} else {
-		node = copyTrial(node);
-	}
-
-	node.enabled = !node.enabled;
-	new_state[node.id] = node;
+	onToggleHelper(new_state, action.id, null);
 
 	return new_state;
 }
+
 
 function setCollapsed(state, action) {
 	let timeline = state[action.id];

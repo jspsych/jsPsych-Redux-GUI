@@ -30,17 +30,10 @@ import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 
 import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
+import NestedContextMenus from './NestedContextMenus';
 import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
 export const INDENT = 32;
-
-export const contextMenuStyle = {
-	outerDiv: { position: 'absolute', zIndex: 20},
-	innerDiv: { backgroundColor: contextMenuBackgroundColor,
-				borderBottom: '1px solid #BDBDBD' },
-	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
-	iconColor: contextMenuIconColor,
-}
 
 export const colorSelector = (hovered, isSelected) => {
 	if (hovered)
@@ -52,9 +45,9 @@ export const colorSelector = (hovered, isSelected) => {
 	return null;
 }
 
-export const ITEM_TYPE = "Organizer-Item";
-
 export const treeNodeDnD = {
+	ITEM_TYPE: "Organizer-Item",
+
 	itemSource: {
 		beginDrag(props) {
 			return {
@@ -77,7 +70,7 @@ export const treeNodeDnD = {
 
 	  	hover(props, monitor, component) {
 		  	const {id: draggedId } = monitor.getItem()
-		    const {id: overId } = props
+		    const {id: overId, lastItem } = props
 
 		    // leave
 		    // if parent dragged into its children (will check more in redux)
@@ -88,17 +81,22 @@ export const treeNodeDnD = {
 			}
 
 			// allow move into
+			let offset = monitor.getDifferenceFromInitialOffset();
 		    if (draggedId === overId) {
-				let offset = monitor.getDifferenceFromInitialOffset();
-				if (offset.x > INDENT && draggedId) {
+				if (offset.x >= INDENT && draggedId) {
 					let action = moveIntoAction(draggedId);
 					props.dispatch(action);
 				}
 				return;
 			}
 
+			let isLast = lastItem === draggedId;
+			if (offset.x < 0 && !isLast) {
+				return;
+			}
+
 			// replace
-		    props.dispatch(moveToAction(draggedId, overId));
+		    props.dispatch(moveToAction(draggedId, overId, isLast));
 		}
 	},
 
@@ -123,6 +121,7 @@ class TimelineItem extends React.Component {
 
 		this.state = {
 			contextMenuOpen: false,
+			toggleContextMenuOpen: false,
 		}
 
 		this.openContextMenu = (event) => {
@@ -139,6 +138,21 @@ class TimelineItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
+
+		this.openToggleContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			this.setState({
+				toggleContextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
+
+		this.closeToggleContextMenu = () => {
+			this.setState({
+				toggleContextMenuOpen: false
+			})
+		}
 	}
 
 	render() {
@@ -152,7 +166,7 @@ class TimelineItem extends React.Component {
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
-					<div className={ITEM_TYPE} style={{
+					<div className={treeNodeDnD.ITEM_TYPE} style={{
 									display: 'flex',
 									backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 								}}>
@@ -179,41 +193,33 @@ class TimelineItem extends React.Component {
 										}}
 										rightIconButton={
 											<IconButton 
+												onContextMenu={this.openToggleContextMenu}
 												disableTouchRipple={true}
-												onTouchTap={this.props.onToggle} 
+												onTouchTap={(e) => {
+															if (e.nativeEvent.which === 1) {
+																this.props.onToggle();
+																}
+															}} 
 											>
 											{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 											</IconButton>
 										}/>
 							</div>
-							<Popover
-					          open={this.state.contextMenuOpen}
-					          anchorEl={this.state.anchorEl}
-					          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-					          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
-					          onRequestClose={this.closeContextMenu}
-					        >
-					        <Menu>
-								<MenuItem primaryText="New Timeline" 
-									leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-									onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
-								/>
-								<Divider />
-								<MenuItem primaryText="New Trial"  
-									leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
-								/><Divider />
-								<MenuItem primaryText="Duplicate"  
-									leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.duplicateTimeline(); this.closeContextMenu()}}
-								/>
-								<Divider />
-								<MenuItem primaryText="Delete"  
-									leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.deleteTimeline(); this.closeContextMenu()}}
-								/>
-							</Menu>
-							</Popover>
+							<NestedContextMenus
+								openItemMenu={this.state.contextMenuOpen}
+								anchorEl={this.state.anchorEl}
+								onRequestCloseItemMenu={this.closeContextMenu}
+								insertTimeline={this.props.insertTimeline}
+								insertTrial={this.props.insertTrial}
+								deleteNode={this.props.deleteTimeline}
+								duplicateNode={this.props.duplicateTimeline} 
+
+								openToggleMenu={this.state.toggleContextMenuOpen}
+								onRequestCloseToggleMenu={this.closeToggleContextMenu}
+								toggleAll={this.props.toggleAll}
+								unToggleAll={this.props.unToggleAll}
+								toggleThisOnly={this.props.toggleThisOnly}
+							/>
 					</div>	
 					</MuiThemeProvider>
 					<div style={{paddingLeft: INDENT}}>
@@ -229,10 +235,10 @@ class TimelineItem extends React.Component {
 
 export default flow(
 	DragSource(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemSource,
 		treeNodeDnD.sourceCollector),
 	DropTarget(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemTarget,
 		treeNodeDnD.targetCollector))(TimelineItem);

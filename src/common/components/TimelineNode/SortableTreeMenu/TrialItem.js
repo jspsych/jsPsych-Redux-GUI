@@ -26,11 +26,11 @@ import {
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import {
-	contextMenuStyle,
 	colorSelector,
-	ITEM_TYPE,
 	treeNodeDnD
 } from './TimelineItem';
+
+import NestedContextMenus from './NestedContextMenus';
 
 
 class TrialItem extends React.Component {
@@ -39,6 +39,7 @@ class TrialItem extends React.Component {
 
 		this.state = {
 			contextMenuOpen: false,
+			toggleContextMenuOpen: false,
 		}
 
 		this.openContextMenu = (event) => {
@@ -55,6 +56,21 @@ class TrialItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
+
+		this.openToggleContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			this.setState({
+				toggleContextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
+
+		this.closeToggleContextMenu = () => {
+			this.setState({
+				toggleContextMenuOpen: false
+			})
+		}
 	}
 
 	render() {
@@ -69,7 +85,7 @@ class TrialItem extends React.Component {
 			<div>
 			<MuiThemeProvider>
 			<div>
-				<div className={ITEM_TYPE} style={{
+				<div className={treeNodeDnD.ITEM_TYPE} style={{
 						display:'flex', 
 						backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 					}} >
@@ -91,40 +107,34 @@ class TrialItem extends React.Component {
 								}
 							}}
 							rightIconButton={
-								<IconButton disableTouchRipple={true} onTouchTap={this.props.onToggle}>
+								<IconButton 
+									onContextMenu={this.openToggleContextMenu}
+									disableTouchRipple={true}
+									onTouchTap={(e) => {
+												if (e.nativeEvent.which === 1) {
+													this.props.onToggle();
+													}
+												}} 
+									>
 								{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 								</IconButton>}
 						/>
 					</div>
-						<Popover
-				          open={this.state.contextMenuOpen}
-				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
-				          onRequestClose={this.closeContextMenu}
-				        >
-						<Menu>
-							<MenuItem primaryText="New Timeline" 
-								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
+						<NestedContextMenus
+								openItemMenu={this.state.contextMenuOpen}
+								anchorEl={this.state.anchorEl}
+								onRequestCloseItemMenu={this.closeContextMenu}
+								insertTimeline={this.props.insertTimeline}
+								insertTrial={this.props.insertTrial}
+								deleteNode={this.props.deleteTrial}
+								duplicateNode={this.props.duplicateTrial} 
+
+								openToggleMenu={this.state.toggleContextMenuOpen}
+								onRequestCloseToggleMenu={this.closeToggleContextMenu}
+								toggleAll={this.props.toggleAll}
+								unToggleAll={this.props.unToggleAll}
+								toggleThisOnly={this.props.toggleThisOnly}
 							/>
-							<Divider />
-							<MenuItem primaryText="New Trial"  
-								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
-							/>
-							<Divider />
-							<MenuItem primaryText="Duplicate"  
-								leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.duplicateTrial(); this.closeContextMenu()}}
-							/>
-							<Divider />
-							<MenuItem primaryText="Delete"  
-								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.deleteTrial(); this.closeContextMenu()}}
-							/>
-					    </Menu>
-					    </Popover>
 					</div>
 				</div>
 			</MuiThemeProvider>
@@ -135,10 +145,10 @@ class TrialItem extends React.Component {
 
 export default flow(
 	DragSource(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemSource,
 		treeNodeDnD.sourceCollector),
 	DropTarget(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemTarget,
 		treeNodeDnD.targetCollector))(TrialItem)

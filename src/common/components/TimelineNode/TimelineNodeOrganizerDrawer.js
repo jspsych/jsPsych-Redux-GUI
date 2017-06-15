@@ -144,14 +144,14 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 					        onTouchTap={this.props.insertTrial}
 					      />
 					      <SpeedDialItem
-					        label="Duplicate"
-					        fabContent={<Duplicate/>}
-					        onTouchTap={this.props.duplicateNode}
-					      />
-					      <SpeedDialItem
 					        label="Delete"
 					        fabContent={<Delete/>}
 					        onTouchTap={this.props.deleteSelected}
+					      />
+					      <SpeedDialItem
+					        label="Duplicate"
+					        fabContent={<Duplicate/>}
+					        onTouchTap={this.props.duplicateNode}
 					      />
 					    </SpeedDial>
 					    </div>

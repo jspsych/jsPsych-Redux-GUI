@@ -30,11 +30,12 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveToAction(sourceId, targetId) {
+export function moveToAction(sourceId, targetId, isLast) {
 	return {
 		type: actionTypes.MOVE_TO,
 		sourceId: sourceId,
 		targetId: targetId,
+		isLast: isLast,
 	};
 }
 

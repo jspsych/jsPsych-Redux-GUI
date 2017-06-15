@@ -45,15 +45,16 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	let node = timelineNodeState[ownProps.id];
-
+	let len = node.childrenById.length;
 	return {
 		isSelected: ownProps.id === timelineNodeState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
 		collapsed: node.collapsed,
-		hasNoChildren: node.childrenById.length === 0,
+		hasNoChildren: len === 0,
 		childrenById: node.childrenById,
 		parent: node.parent,
+		lastItem: (len > 0) ? node.childrenById[len-1] : null
 	}
 };
 
