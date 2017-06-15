@@ -48,6 +48,7 @@ export const initState = {
 }
 
 export default function(state=initState, action) {
+	// console.log(action)
 
 	switch(action.type) {
 		case actionTypes.ADD_TIMELINE:
@@ -69,20 +70,18 @@ export default function(state=initState, action) {
 		case actionTypes.MOVE_INTO:
 			return moveInto(state, action);
 
-		case actionTypes.HOVER_NODE:
-			return hoverNode(state, action);
-		case actionTypes.CHANGE_PLUGIN_TYPE:
-			return changePlugin(state, action);
-		case actionTypes.TOGGLE_PARAM_VALUE:
-			return changeToggleValue(state, action);
-		case actionTypes.CHANGE_PARAM_TEXT:
-			return changeParamText(state, action);
-		case actionTypes.CHANGE_PARAM_INT: 
-			return changeParamInt(state, action);
-		case actionTypes.CHANGE_PARAM_FLOAT:
-			return changeParamFloat(state, action);
-		case actionTypes.CHANGE_HEADER:
-			return changeHeader(state, action);
+		// case actionTypes.CHANGE_PLUGIN_TYPE:
+		// 	return changePlugin(state, action);
+		// case actionTypes.TOGGLE_PARAM_VALUE:
+		// 	return changeToggleValue(state, action);
+		// case actionTypes.CHANGE_PARAM_TEXT:
+		// 	return changeParamText(state, action);
+		// case actionTypes.CHANGE_PARAM_INT: 
+		// 	return changeParamInt(state, action);
+		// case actionTypes.CHANGE_PARAM_FLOAT:
+		// 	return changeParamFloat(state, action);
+		// case actionTypes.CHANGE_HEADER:
+		// 	return changeHeader(state, action);
 
 		default:
 			return state;
@@ -303,8 +302,6 @@ function deleteTimeline(state, action) {
 	return deleteTimelineHelper(new_state, action.id);
 }
 
-
-
 function deleteTrialHelper(state, id) {
 	let trial = getNodeById(state, id);
 	let parent = trial.parent;
@@ -335,10 +332,25 @@ function deleteTrial(state, action) {
 	return deleteTrialHelper(new_state, action.id);
 }
 
-function moveTo(state, action) {
-	if (action.sourceId === action.targetId)
-		return state;
+function isAncestor(state, sourceId, targetId) {
+	let target = getNodeById(state, targetId);
 
+	while (target && target.parent !== null) {
+		if (target.parent === sourceId)
+			return true;
+		target = state[target.parent];
+	}
+
+	return false;
+}
+
+function moveTo(state, action) {
+	if (action.sourceId === action.targetId ||
+		!action.sourceId ||
+		!action.targetId ||
+		isAncestor(state, action.sourceId, action.targetId))
+		return state;
+	
 	let source = state[action.sourceId];
 	let target = state[action.targetId];
 	let new_state = Object.assign({}, state);
@@ -371,6 +383,7 @@ function moveTo(state, action) {
 		let targetParent = target.parent;
 		let arr;
 		if (targetParent === null) {
+			new_state.mainTimeline = new_state.mainTimeline.slice();
 			arr = new_state.mainTimeline;
 		} else {
 			targetParent = copyTimeline(new_state[targetParent]);
@@ -380,10 +393,10 @@ function moveTo(state, action) {
 
 		let targetIndex = arr.indexOf(target.id);
 		source.parent = target.parent;
-		if (arr.indexOf(source.id) === -1)
+		if (arr.indexOf(source.id) === -1) {
 			arr.splice(targetIndex, 0, source.id);
+		}
 	}
-
 	return new_state;
 }
 
@@ -475,37 +488,37 @@ function setCollapsed(state, action) {
 
 
 
-const pluginType = (type) => {
-	switch(type) {
-		case 1: 
-			return 'text';
-		case 2: 
-			return 'single-stim';
-		default: 
-			return 'text';
-	}
-}
+// const pluginType = (type) => {
+// 	switch(type) {
+// 		case 1: 
+// 			return 'text';
+// 		case 2: 
+// 			return 'single-stim';
+// 		default: 
+// 			return 'text';
+// 	}
+// }
 
-function changePlugin(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
+// function changePlugin(state, action) {
+// 	let node = state[state.previewId];
+// 	let new_state = Object.assign({}, state);
 
 
-	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
-	let paramKeys = Object.keys(params);
+// 	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
+// 	let paramKeys = Object.keys(params);
 
-	var paramsObject = {};
+// 	var paramsObject = {};
 
-	for(let i=0; i<paramKeys.length; i++) {
-		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+// 	for(let i=0; i<paramKeys.length; i++) {
+// 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
 
-	}
+// 	}
 
-	node = copyTrial(node);
+// 	node = copyTrial(node);
 
-	node.pluginType = action.newPluginVal; 
-	node.parameters = paramsObject;
-	new_state[state.previewId] = node; 
+// 	node.pluginType = action.newPluginVal; 
+// 	node.parameters = paramsObject;
+// 	new_state[state.previewId] = node; 
 
-	return new_state; 
-}
+// 	return new_state; 
+// }

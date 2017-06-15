@@ -15,6 +15,8 @@ import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
 import {
+	pink500 as contextMenuIconColor,
+	grey100 as contextMenuBackgroundColor,
 	cyan400 as highlightColor,
 	green500 as checkColor,
 	indigo500 as iconHighlightColor,
@@ -22,63 +24,95 @@ import {
 	grey900 as normalColor,
 } from 'material-ui/styles/colors';
 
-import { contextMenuStyle } from './TrialItem';
-
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
-import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
 import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
+import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
-const timelineSource = {
-  beginDrag(props) {
-    return {
-      id: props.id,
-      parent: props.parent,
-      children: props.children
-    };
-  },
+export const INDENT = 32;
 
-  isDragging(props, monitor) {
-    return props.id === monitor.getItem().id;
-  }
-};
+var lastAction = null;
 
-const timelineTarget = {
-	canDrop() {
-		return false;
-	},
+const setLastAction = (a) => { lastAction = a };
 
-  	hover(props, monitor, component) {
-	  	const {id: draggedId } = monitor.getItem()
-	    const {id: overId } = props
+const canDispatchMoveToAction = (current) => {
+	return !lastAction || 
+		current.type !== lastAction.type ||
+		current.sourceId !== lastAction.sourceId ||
+		current.targetId !== lastAction.targetId;
+}
 
-	    if (draggedId === props.parent) return;
+export const contextMenuStyle = {
+	outerDiv: { position: 'absolute', zIndex: 20},
+	innerDiv: { backgroundColor: contextMenuBackgroundColor,
+				borderBottom: '1px solid #BDBDBD' },
+	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
+	iconColor: contextMenuIconColor,
+}
 
-	    if (draggedId === overId) {
-			let offset = monitor.getDifferenceFromInitialOffset();
-			if (offset.x > 32 && draggedId)
-				props.dispatch(moveIntoAction(draggedId));
-			return;
+export const ITEM_TYPE = "Organizer-Item";
+
+export const treeNodeDnD = {
+	itemSource: {
+		beginDrag(props) {
+			return {
+				id: props.id,
+				parent: props.parent,
+				children: props.children
+			};
+		},
+
+		isDragging(props, monitor) {
+			return props.id === monitor.getItem().id;
 		}
-	    if (!monitor.isOver({shallow: true})) return;
-
-	    props.dispatch(moveToAction(draggedId, overId));
 	},
-};
 
-const sourceCollector = (connect, monitor) => ({
-	connectDragSource: connect.dragSource(),
-	connectDragPreview: connect.dragPreview(),
-	isDragging: monitor.isDragging(),
-	draggedItem: monitor.getItem()
-})
+	itemTarget: {
+		canDrop() {
+			return false;
+		},
 
-const targetCollector = (connect, monitor) => ({
-	connectDropTarget: connect.dropTarget(),
-	isOver: monitor.isOver(),
-	isOverCurrent: monitor.isOver({ shallow: true }),
-})
+	  	hover(props, monitor, component) {
+		  	const {id: draggedId } = monitor.getItem()
+		    const {id: overId } = props
+
+		    if (draggedId === props.parent) return;
+
+		    if (draggedId === overId) {
+				let offset = monitor.getDifferenceFromInitialOffset();
+				if (offset.x > INDENT && draggedId) {
+					let action = moveIntoAction(draggedId);
+					props.dispatch(action);
+				}
+				return;
+			}
+		    if (!monitor.isOver({shallow: true})) return;
+
+		    let action = moveToAction(draggedId, overId);
+		    if (canDispatchMoveToAction) {
+		    	props.dispatch(action);
+		    	setLastAction(action);
+		    }
+		}
+	},
+
+	sourceCollector: (connect, monitor) => ({
+		connectDragSource: connect.dragSource(),
+		connectDragPreview: connect.dragPreview(),
+		isDragging: monitor.isDragging(),
+		draggedItem: monitor.getItem()
+	}),
+
+	targetCollector: (connect, monitor) => ({
+		connectDropTarget: connect.dropTarget(),
+		isOver: monitor.isOver(),
+		isOverCurrent: monitor.isOver({
+			shallow: true
+		}),
+	})
+}
+
 
 class TimelineItem extends React.Component {
 	constructor(props) {
@@ -128,7 +162,7 @@ class TimelineItem extends React.Component {
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
-					<div className="Organizer-Item" style={{
+					<div className={ITEM_TYPE} style={{
 									display: 'flex',
 									backgroundColor: colorSelector(hovered, this.props.isSelected),
 									height: "50%",
@@ -189,9 +223,8 @@ class TimelineItem extends React.Component {
 							</Popover>
 					</div>	
 					</MuiThemeProvider>
-					<div style={{paddingLeft: 32}}>
-						<Tree parent={this.props.id}
-							  children={this.props.children}
+					<div style={{paddingLeft: INDENT}}>
+						<Tree children={this.props.childrenById}
 							  collapsed={this.props.collapsed}
 							  openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 							  closeTimelineEditorCallback={this.props.closeTimelineEditorCallback} />
@@ -203,10 +236,10 @@ class TimelineItem extends React.Component {
 
 export default flow(
 	DragSource(
-		"Organizer-Item",
-		timelineSource,
-		sourceCollector),
+		ITEM_TYPE,
+		treeNodeDnD.itemSource,
+		treeNodeDnD.sourceCollector),
 	DropTarget(
-		"Organizer-Item",
-		timelineTarget,
-		targetCollector))(TimelineItem);
+		ITEM_TYPE,
+		treeNodeDnD.itemTarget,
+		treeNodeDnD.targetCollector))(TimelineItem);

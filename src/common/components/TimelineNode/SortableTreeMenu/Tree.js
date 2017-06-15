@@ -8,7 +8,6 @@ class Tree extends React.Component {
 	render() {
 		const {
 			children,
-			parent,
 			collapsed,
 		} = this.props;
 
@@ -16,12 +15,10 @@ class Tree extends React.Component {
 			<div className="Sortable-Tree"  >
 				{(collapsed) ?
 					null:
-					(children.map((item) => (
+					(children.map((id) => (
 					<TreeNode 
-						id={item.id}
-						key={item.id}
-						parent={parent}
-						item={item}
+						id={id}
+						key={id}
 						openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 						closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}/>
 					)))

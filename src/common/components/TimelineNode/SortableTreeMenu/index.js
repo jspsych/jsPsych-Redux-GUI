@@ -10,8 +10,7 @@ class SortableTreeMenu extends React.Component {
 
 		return (
 			<div className="Tree-Menu">
-				<Tree parent={null}
-					  children={this.props.treeData}
+				<Tree children={this.props.children}
 					  openTimelineEditorCallback={openTimelineEditorCallback}
 					  closeTimelineEditorCallback={closeTimelineEditorCallback}
 			    />

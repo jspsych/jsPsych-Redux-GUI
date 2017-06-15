@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import SortableTreeMenu from '../../../components/TimelineNode/SortableTreeMenu/SortableTreeMenu';
-import { convertToNestedTree } from '../../../reducers/timelineNodeUtils';
+import SortableTreeMenu from '../../../components/TimelineNode/SortableTreeMenu';
 
 // import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 
@@ -10,7 +9,7 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	return {
-		treeData: convertToNestedTree(timelineNodeState),
+		children: timelineNodeState.mainTimeline,
 	}
 };
 

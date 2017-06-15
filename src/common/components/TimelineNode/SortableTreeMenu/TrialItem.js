@@ -15,8 +15,6 @@ import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
 import {
-	pink500 as contextMenuIconColor,
-	grey100 as contextMenuBackgroundColor,
 	grey400 as normalColor,
 	cyan400 as highlightColor,
 	indigo500 as iconHighlightColor,
@@ -26,67 +24,11 @@ import {
 
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
-import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
-
-
-const trialSource = {
-  beginDrag(props) {
-    return {
-      id: props.id,
-      parent: props.parent,
-    };
-  },
-
-  isDragging(props, monitor) {
-    return props.id === monitor.getItem().id;
-  }
-};
-
-
-const trialTarget = {
-	canDrop() {
-		return false
-	},
-
-	hover(props, monitor, component) {
-		const { id: draggedId } = monitor.getItem()
-		const { id: overId } = props
-		
-		if (draggedId === props.parent) return;
-
-	    if (draggedId === overId) {
-			let offset = monitor.getDifferenceFromInitialOffset();
-			if (offset.x > 32 && draggedId)
-				props.dispatch(moveIntoAction(draggedId));
-			return;
-		}
-		if (!monitor.isOver({ shallow: true })) return;
-
-		props.dispatch(moveToAction(draggedId, overId));
-	},
-};
-
-const sourceCollector = (connect, monitor) => ({
-	connectDragSource: connect.dragSource(),
-	connectDragPreview: connect.dragPreview(),
-	isDragging: monitor.isDragging(),
-	draggedItem: monitor.getItem()
-})
-
-const targetCollector = (connect, monitor) => ({
-	connectDropTarget: connect.dropTarget(),
-	isOver: monitor.isOver(),
-	isOverCurrent: monitor.isOver({ shallow: true }),
-})
-
-
-export const contextMenuStyle = {
-	outerDiv: { position: 'absolute', zIndex: 20},
-	innerDiv: { backgroundColor: contextMenuBackgroundColor,
-				borderBottom: '1px solid #BDBDBD' },
-	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
-	iconColor: contextMenuIconColor,
-}
+import {
+	contextMenuStyle,
+	ITEM_TYPE,
+	treeNodeDnD
+} from './TimelineItem';
 
 
 class TrialItem extends React.Component {
@@ -138,7 +80,7 @@ class TrialItem extends React.Component {
 			<div>
 			<MuiThemeProvider>
 			<div>
-				<div className="Organizer-Item" style={{
+				<div className={ITEM_TYPE} style={{
 						display:'flex', 
 						width: "100%",
 						overflow: 'hidden',
@@ -201,10 +143,10 @@ class TrialItem extends React.Component {
 
 export default flow(
 	DragSource(
-		"Organizer-Item",
-		trialSource,
-		sourceCollector),
+		ITEM_TYPE,
+		treeNodeDnD.itemSource,
+		treeNodeDnD.sourceCollector),
 	DropTarget(
-		"Organizer-Item",
-		trialTarget,
-		targetCollector))(TrialItem)
+		ITEM_TYPE,
+		treeNodeDnD.itemTarget,
+		treeNodeDnD.targetCollector))(TrialItem)
