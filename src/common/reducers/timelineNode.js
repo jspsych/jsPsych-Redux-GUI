@@ -106,13 +106,6 @@ export function enterTest() {
 	__TEST__ = 1;
 }
 
-if (!Array.prototype.move) {
-  Array.prototype.move = function(from,to){
-    this.splice(to,0,this.splice(from,1)[0]);
-    return this;
-  };
-}
-
 function getNodeById(state, id) {
 	if (id === null)
 		return null;

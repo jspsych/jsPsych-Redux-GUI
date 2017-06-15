@@ -9,6 +9,12 @@ import * as Actions from '../../actions/timelineNodeActions';
 import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../timelineNodeUtils'; 
 
 enterTest();
+if (!Array.prototype.move) {
+  Array.prototype.move = function(from,to){
+    this.splice(to,0,this.splice(from,1)[0]);
+    return this;
+  };
+}
 
 /*********** Add Actions **************/
 let expected_add_timeline_to_main = {
@@ -361,6 +367,144 @@ describe('Timeline Node Reducers for Duplicating actions', () => {
 		s1 = reducer(s1, Actions.addTimelineAction(getTimelineId(), null));
 		s1 = reducer(s1, Actions.duplicateTimelineAction(getTimelineId(), standardizeTimelineId(0), getTimelineId, getTrialId));
 		expect(s1).toEqual(expect_dup3);
+	})
+
+})
+
+/*********** Toggle actions **************/
+
+// toggle off single trial 1
+/*
+timeline 0 true
+	timeline 1 true
+		trial 0 true
+trial 1 false
+*/
+let expect_toggle1 = {
+	previewId: null,
+	mainTimeline: []
+};
+expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(0), null));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(standardizeTrialId(1), null));
+expect_toggle1[standardizeTrialId(1)].enabled = false;
+
+// toggle off top most timeline
+/*
+timeline 0 false
+	timeline 1 false
+		trial 0 false
+trial 1 true
+*/
+let expect_toggle2 = {
+	previewId: null,
+	mainTimeline: []
+};
+expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(0), null));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(standardizeTrialId(1), null));
+expect_toggle2[standardizeTimelineId(0)].enabled = false;
+expect_toggle2[standardizeTimelineId(1)].enabled = false;
+expect_toggle2[standardizeTrialId(0)].enabled = false;
+
+
+// deselect option
+/*
+timeline 0 false
+	timeline 1 false
+		trial 0 false
+trial 1 false
+*/
+let expect_toggle3 = {
+	previewId: null,
+	mainTimeline: []
+};
+expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(0), null));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(standardizeTrialId(1), null));
+expect_toggle3[standardizeTimelineId(0)].enabled = false;
+expect_toggle3[standardizeTimelineId(1)].enabled = false;
+expect_toggle3[standardizeTrialId(0)].enabled = false;
+expect_toggle3[standardizeTrialId(1)].enabled = false;
+
+// toggle only timeline 1 on
+/*
+timeline 0 false
+	timeline 1 true
+		trial 0 true
+trial 1 false
+*/
+let expect_toggle4 = {
+	previewId: null,
+	mainTimeline: []
+};
+expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(0), null));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(standardizeTrialId(1), null));
+expect_toggle4[standardizeTimelineId(0)].enabled = false;
+expect_toggle4[standardizeTimelineId(1)].enabled = true;
+expect_toggle4[standardizeTrialId(0)].enabled = true;
+expect_toggle4[standardizeTrialId(1)].enabled = false;
+
+describe('Timeline Node Reducers for Toggle actions', () => {
+	it('should handle toggling off single trial', () => {
+		let s1 = {
+			previewId: null,
+			mainTimeline: []
+		};
+
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(1), null));
+		s1 = reducer(s1, Actions.onToggleAction(standardizeTrialId(1)));
+		expect(s1).toEqual(expect_toggle1);
+	})
+
+	it('should handle toggle of nested timeline', () => {
+		let s1 = {
+			previewId: null,
+			mainTimeline: []
+		};
+
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(1), null));
+		s1 = reducer(s1, Actions.onToggleAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expect_toggle2);
+	})
+
+	it('should handle deselect option', () => {
+		let s1 = {
+			previewId: null,
+			mainTimeline: []
+		};
+
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(1), null));
+		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false));
+		expect(s1).toEqual(expect_toggle3);
+	})
+
+	it('should handle selecting only one', () => {
+		let s1 = {
+			previewId: null,
+			mainTimeline: []
+		};
+
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(1), null));
+		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false, standardizeTimelineId(1)));
+		expect(s1).toEqual(expect_toggle4);
 	})
 
 })
