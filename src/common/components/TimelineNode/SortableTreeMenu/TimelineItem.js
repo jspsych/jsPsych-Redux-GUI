@@ -11,9 +11,11 @@ import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
+
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import {
 	pink500 as contextMenuIconColor,
 	grey100 as contextMenuBackgroundColor,
@@ -200,11 +202,15 @@ class TimelineItem extends React.Component {
 								<MenuItem primaryText="New Trial"  
 									leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
 									onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
+								/><Divider />
+								<MenuItem primaryText="Duplicate"  
+									leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
+									onTouchTap={()=>{ this.props.duplicateTimeline(); this.closeContextMenu()}}
 								/>
 								<Divider />
 								<MenuItem primaryText="Delete"  
 									leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
+									onTouchTap={()=>{ this.props.deleteTimeline(); this.closeContextMenu()}}
 								/>
 							</Menu>
 							</Popover>

@@ -59,16 +59,22 @@ export default function(state=initState, action) {
 			return addTrial(state, action);
 		case actionTypes.DELETE_TRIAL:
 			return deleteTrial(state, action);
+		case actionTypes.INSERT_NODE_AFTER_TRIAL:
+			return insertNodeAfterTrial(state, action);
+		case actionTypes.DUPLICATE_TRIAL:
+			return duplicateTrial(state, action);
+		case actionTypes.DUPLICATE_TIMELINE:
+			return duplicateTimeline(state, action);
 		case actionTypes.MOVE_TO:
 			return moveTo(state, action);
+		case actionTypes.MOVE_INTO:
+			return moveInto(state, action);
 		case actionTypes.ON_PREVIEW:
 			return onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
 			return onToggle(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return setCollapsed(state, action);
-		case actionTypes.MOVE_INTO:
-			return moveInto(state, action);
 
 		// case actionTypes.CHANGE_PLUGIN_TYPE:
 		// 	return changePlugin(state, action);
@@ -263,6 +269,27 @@ function addTrial(state, action) {
 	return new_state;
 }
 
+function insertNodeAfterTrial(state, action) {
+	let targetParent = state[action.targetId].parent;
+	let new_state;
+	if (action.isTimeline) {
+		new_state = addTimeline(state, {id: action.id, parent: targetParent});
+	} else {
+		new_state = addTrial(state, {id: action.id, parent: targetParent});
+	}
+
+	let arr;
+	if (targetParent === null) {
+		arr = new_state.mainTimeline;
+	} else {
+		arr = new_state[targetParent].childrenById;
+	}
+
+	arr.move(arr.indexOf(action.id), arr.indexOf(action.targetId)+1);
+
+	return new_state;
+}
+
 function deleteTimelineHelper(state, id) {
 	let timeline = getNodeById(state, id);
 
@@ -331,6 +358,93 @@ function deleteTrial(state, action) {
 
 	return deleteTrialHelper(new_state, action.id);
 }
+
+function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrialId) {
+
+	// find target
+	let target = state[targetId];
+	// deep copy it but with different id
+	let dup = copyTimeline(target);
+	dup.id = dupId;
+
+	// clear dup children array
+	dup.childrenById = [];
+	// populate it
+	let dupTargetId;
+	let dupTarget;
+	let dupChild;
+	let newId;
+	for (let i = 0; i < target.childrenById.length; i++) {
+		dupTargetId = target.childrenById[i];
+		dupTarget = state[dupTargetId];
+		if (utils.isTimeline(dupTarget)) {
+			newId = getTimelineId();
+			dupChild = duplicateTimelineHelper(state, newId, dupTargetId, getTimelineId, getTrialId);
+		} else {
+			newId = getTrialId();
+			dupChild = copyTrial(dupTarget);
+		}
+
+		// add dup child to dup and state
+		dup.childrenById.push(newId);
+		state[newId] = dupChild;
+		dupChild.id = newId;
+		dupChild.parent = dupId;
+	}
+
+	return dup;
+}
+
+function duplicateTimeline(state, action) {
+	const { dupId, targetId, getTimelineId, getTrialId } = action;
+
+	let new_state = Object.assign({}, state);
+
+	let dup = duplicateTimelineHelper(new_state, dupId, targetId, getTimelineId, getTrialId);
+	new_state[dup.id] = dup;
+	let target = state[targetId];
+	let parent = target.parent;
+
+	let arr;
+	if (parent === null) {
+		new_state.mainTimeline = new_state.mainTimeline.slice();
+		arr = new_state.mainTimeline;
+	} else {
+		parent = copyTimeline(new_state[parent]);
+		new_state[parent.id] = parent;
+		arr = parent.childrenById;
+	}
+
+	arr.splice(arr.indexOf(targetId)+1, 0, dupId);
+
+	return new_state;
+}
+
+function duplicateTrial(state, action) {
+	const { dupId, targetId } = action;
+
+	let target = state[targetId];
+	let parent = target.parent;
+
+	let new_state = Object.assign({}, state);
+	let dup = copyTrial(target);
+	dup.id = dupId;
+	new_state[dupId] = dup;
+
+	let arr;
+	if (parent === null) {
+		new_state.mainTimeline = new_state.mainTimeline.slice();
+		arr = new_state.mainTimeline;
+	} else {
+		parent = copyTimeline(new_state[parent]);
+		new_state[parent.id] = parent;
+		arr = parent.childrenById;
+	}
+
+	arr.splice(arr.indexOf(targetId)+1, 0, dupId);
+
+	return new_state;
+} 
 
 function isAncestor(state, sourceId, targetId) {
 	let target = getNodeById(state, targetId);

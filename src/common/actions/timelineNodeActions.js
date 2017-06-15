@@ -65,3 +65,30 @@ export function moveIntoAction(id) {
 		id: id,
 	};
 }
+
+export function insertNodeAfterTrialAction(id, targetId, isTimeline=false) {
+	return {
+		type: actionTypes.INSERT_NODE_AFTER_TRIAL,
+		id: id,
+		targetId: targetId,
+		isTimeline: isTimeline
+	};
+}
+
+export function duplicateTimelineAction(dupId, targetId, getTimelineIdCallback, getTrialIdCallback) {
+	return {
+		type: actionTypes.DUPLICATE_TIMELINE,
+		dupId: dupId,
+		targetId: targetId,
+		getTimelineId: getTimelineIdCallback,
+		getTrialId: getTrialIdCallback,
+	};
+}
+
+export function duplicateTrialAction(dupId, targetId) {
+	return {
+		type: actionTypes.DUPLICATE_TRIAL,
+		dupId: dupId,
+		targetId: targetId,
+	};
+}

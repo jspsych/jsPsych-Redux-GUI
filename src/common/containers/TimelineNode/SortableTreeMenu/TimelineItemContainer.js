@@ -33,10 +33,13 @@ const insertTrial = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.addTrialAction(getTrialId(), ownProps.id));
 }
 
-const deleteItem = (dispatch, ownProps) => {
+const deleteTimeline = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.deleteTimelineAction(ownProps.id));
 }
 
+const duplicateTimeline = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
+}
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
@@ -56,13 +59,14 @@ const mapStateToProps = (state, ownProps) => {
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+	dispatch: dispatch,
 	onClick: () => { onPreview(dispatch, ownProps) },
 	onToggle: () => { onToggle(dispatch, ownProps) },
 	toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) },
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
-	deleteItem: () => { deleteItem(dispatch, ownProps)},
-	dispatch: dispatch
+	deleteTimeline: () => { deleteTimeline(dispatch, ownProps)},
+	duplicateTimeline: () => { duplicateTimeline(dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

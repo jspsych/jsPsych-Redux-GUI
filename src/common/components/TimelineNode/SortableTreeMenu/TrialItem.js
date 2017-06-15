@@ -11,9 +11,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
+
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import {
 	grey400 as normalColor,
 	indigo500 as iconHighlightColor,
@@ -112,9 +114,14 @@ class TrialItem extends React.Component {
 								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
 							/>
 							<Divider />
+							<MenuItem primaryText="Duplicate"  
+								leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
+								onTouchTap={()=>{ this.props.duplicateTrial(); this.closeContextMenu()}}
+							/>
+							<Divider />
 							<MenuItem primaryText="Delete"  
 								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
+								onTouchTap={()=>{ this.props.deleteTrial(); this.closeContextMenu()}}
 							/>
 					    </Menu>
 					    </Popover>

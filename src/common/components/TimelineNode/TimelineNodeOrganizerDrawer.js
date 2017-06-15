@@ -12,6 +12,8 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Duplicate from 'material-ui/svg-icons/content/content-copy';
+
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
@@ -140,6 +142,11 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 					        label="New Trial"
 					        fabContent={<NewTrialIcon/>}
 					        onTouchTap={this.props.insertTrial}
+					      />
+					      <SpeedDialItem
+					        label="Duplicate"
+					        fabContent={<Duplicate/>}
+					        onTouchTap={this.props.duplicateNode}
 					      />
 					      <SpeedDialItem
 					        label="Delete"
