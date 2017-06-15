@@ -52,6 +52,7 @@ const mapStateToProps = (state, ownProps) => {
 		isSelected: ownProps.id === timelineNodeState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
+		parent: node.parent,
 	}
 };
 

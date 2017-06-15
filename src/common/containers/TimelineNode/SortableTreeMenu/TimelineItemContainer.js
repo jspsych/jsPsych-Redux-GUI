@@ -49,6 +49,8 @@ const mapStateToProps = (state, ownProps) => {
 		name: node.name,
 		collapsed: node.collapsed,
 		hasNoChildren: node.childrenById.length === 0,
+		childrenById: node.childrenById,
+		parent: node.parent,
 	}
 };
 

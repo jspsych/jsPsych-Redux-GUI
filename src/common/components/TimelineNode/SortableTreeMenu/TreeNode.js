@@ -7,8 +7,8 @@ class TreeNode extends React.Component {
 	
 	render() {
 		const {
-			item: { id, children },
-			parent,
+			id,
+			children,
 		} = this.props;
 
 		return (
@@ -16,15 +16,12 @@ class TreeNode extends React.Component {
 				{(this.props.isTimeline) ? 
 				(<TimelineItem 
 					id={id} 
-					parent={parent}
 					children={children}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>) :
 				(<TrialItem 
 					id={id} 
-					parent={parent}
-					children={children}
 					openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 					closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 				/>)}

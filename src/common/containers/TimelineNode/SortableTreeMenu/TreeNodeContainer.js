@@ -11,6 +11,7 @@ const mapStateToProps = (state, ownProps) => {
 
 	return {
 		isTimeline: isTimelineNode,
+		children: (isTimelineNode) ? node.childrenById : []
 	}
 };
 
