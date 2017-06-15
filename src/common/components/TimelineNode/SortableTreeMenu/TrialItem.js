@@ -2,20 +2,12 @@ import React from 'react';
 
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
-import Menu from 'material-ui/Menu';
-import Popover from 'material-ui/Popover';
-import MenuItem from 'material-ui/MenuItem';
-import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
  
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
-import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
-import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
-import Delete from 'material-ui/svg-icons/action/delete';
-import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import {
 	grey400 as normalColor,
 	indigo500 as iconHighlightColor,
@@ -27,7 +19,9 @@ import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import {
 	colorSelector,
-	treeNodeDnD
+	treeNodeDnD,
+	setKeyboardFocusId,
+	getKeyboardFocusId
 } from './TimelineItem';
 
 import NestedContextMenus from './NestedContextMenus';
@@ -73,6 +67,12 @@ class TrialItem extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		if (getKeyboardFocusId() === this.props.id) {
+			this.refs[this.props.id].applyFocusState('keyboard-focused');
+		}
+	}
+
 	render() {
 		const {
 			connectDropTarget,
@@ -99,11 +99,13 @@ class TrialItem extends React.Component {
 					</div>)}
 					<div style={{width: "100%"}} >
 						<ListItem  
+							ref={this.props.id}
 							primaryText={this.props.name}
+							onKeyDown={this.props.listenKey}
 							onContextMenu={this.openContextMenu}
 							onTouchTap={(e) => {
 								if (e.nativeEvent.which === 1) {
-									this.props.onClick();
+									this.props.onClick(setKeyboardFocusId);
 								}
 							}}
 							rightIconButton={
@@ -132,7 +134,7 @@ class TrialItem extends React.Component {
 								openToggleMenu={this.state.toggleContextMenuOpen}
 								onRequestCloseToggleMenu={this.closeToggleContextMenu}
 								toggleAll={this.props.toggleAll}
-								unToggleAll={this.props.unToggleAll}
+								untoggleAll={this.props.untoggleAll}
 								toggleThisOnly={this.props.toggleThisOnly}
 							/>
 					</div>

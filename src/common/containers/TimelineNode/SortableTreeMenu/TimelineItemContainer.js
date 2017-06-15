@@ -3,22 +3,36 @@ import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNode/SortableTreeMenu/TimelineItem';
 import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
 
-const onPreview = (dispatch, ownProps) => {
+const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	dispatch((dispatch, getState) => {
 		let timelineNodeState = getState().timelineNodeState;
 		let previewId = timelineNodeState.previewId;
 		if (previewId === null || previewId !== ownProps.id) {
 			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
+			setKeyboardFocusId(ownProps.id);
 		} else {
 			dispatch(timelineNodeActions.onPreviewAction(null));
 			ownProps.closeTimelineEditorCallback();
+			setKeyboardFocusId(null);
 		}
 	})
 }
 
 const onToggle = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.onToggleAction(ownProps.id));
+}
+
+export const toggleAll = (dispatch) => {
+	dispatch(timelineNodeActions.setToggleCollectivelyAction(true));
+}
+
+export const untoggleAll = (dispatch) => {
+	dispatch(timelineNodeActions.setToggleCollectivelyAction(false));
+}
+
+export const toggleThisOnly = (dispatch, ownProps) => {
+	dispatch(timelineNodeActions.setToggleCollectivelyAction(false, ownProps.id));
 }
 
 const toggleCollapsed = (dispatch, ownProps) => {
@@ -41,6 +55,24 @@ const duplicateTimeline = (dispatch, ownProps) => {
 	dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
 }
 
+export const listenKey = (e, dispatch, ownProps) => {
+	e.preventDefault();
+	switch(e.which) {
+		// left
+		case 37:
+		// up
+		case 38:
+		// down
+		case 40:
+		// right
+		case 39:
+			dispatch(timelineNodeActions.moveByKeyboardAction(ownProps.id, e.which));
+			break;
+		default:
+			return;
+	}
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
@@ -61,13 +93,17 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	dispatch: dispatch,
-	onClick: () => { onPreview(dispatch, ownProps) },
+	onClick: (setKeyboardFocusId) => { onPreview(dispatch, ownProps, setKeyboardFocusId) },
 	onToggle: () => { onToggle(dispatch, ownProps) },
 	toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) },
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteTimeline: () => { deleteTimeline(dispatch, ownProps)},
 	duplicateTimeline: () => { duplicateTimeline(dispatch, ownProps) },
+	toggleAll: () => { toggleAll(dispatch) },
+	untoggleAll: () => { untoggleAll(dispatch) },
+	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
+	listenKey: (e) => { listenKey(e, dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

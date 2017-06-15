@@ -2,8 +2,14 @@ import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNode/SortableTreeMenu/TrialItem';
 import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
+import {
+	toggleAll,
+	untoggleAll,
+	toggleThisOnly,
+	listenKey
+} from './TimelineItemContainer';
 
-const onPreview = (dispatch, ownProps) => {
+const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	// console.log(e.nativeEvent.which)
 	dispatch((dispatch, getState) => {
 		let timelineNodeState = getState().timelineNodeState;
@@ -11,9 +17,11 @@ const onPreview = (dispatch, ownProps) => {
 		if (previewId === null || previewId !== ownProps.id) {
 			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
+			setKeyboardFocusId(ownProps.id);
 		} else {
 			dispatch(timelineNodeActions.onPreviewAction(null));
 			ownProps.closeTimelineEditorCallback();
+			setKeyboardFocusId(null);
 		}
 	})
 }
@@ -54,12 +62,16 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	dispatch: dispatch,
-	onClick: () => { onPreview(dispatch, ownProps) },
+	onClick: (setKeyboardFocusId) => { onPreview(dispatch, ownProps, setKeyboardFocusId) },
 	onToggle: () => { onToggle(dispatch, ownProps) },
 	insertTimeline: () => { insertTimeline(dispatch, ownProps)},
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteTrial: () => { deleteTrial(dispatch, ownProps)},
 	duplicateTrial: () => { duplicateTrial(dispatch, ownProps) },
+	toggleAll: () => { toggleAll(dispatch) },
+	untoggleAll: () => { untoggleAll(dispatch) },
+	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
+	listenKey: (e) => { listenKey(e, dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialItem);

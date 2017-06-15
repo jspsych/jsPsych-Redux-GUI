@@ -39,6 +39,21 @@ export function moveToAction(sourceId, targetId, isLast) {
 	};
 }
 
+export function moveIntoAction(id) {
+	return {
+		type: actionTypes.MOVE_INTO,
+		id: id,
+	};
+}
+
+export function moveByKeyboardAction(id, key) {
+	return {
+		type: actionTypes.MOVE_BY_KEYBOARD,
+		id: id,
+		key: key,
+	};
+}
+
 export function onPreviewAction(id) {
 	return {
 		type: actionTypes.ON_PREVIEW,
@@ -53,17 +68,19 @@ export function onToggleAction(id) {
 	};
 }
 
+
+export function setToggleCollectivelyAction(flag, spec=null) {
+	return {
+		type: actionTypes.SET_TOGGLE_COLLECTIVELY,
+		flag: flag,
+		spec: spec,
+	};
+}
+
 export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,
 		id: id
-	};
-}
-
-export function moveIntoAction(id) {
-	return {
-		type: actionTypes.MOVE_INTO,
-		id: id,
 	};
 }
 

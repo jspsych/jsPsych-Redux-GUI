@@ -69,10 +69,14 @@ export default function(state=initState, action) {
 			return moveTo(state, action);
 		case actionTypes.MOVE_INTO:
 			return moveInto(state, action);
+		case actionTypes.MOVE_BY_KEYBOARD:
+			return moveByKeyboard(state, action);
 		case actionTypes.ON_PREVIEW:
 			return onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
 			return onToggle(state, action);
+		case actionTypes.SET_TOGGLE_COLLECTIVELY:
+			return setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return setCollapsed(state, action);
 
@@ -564,6 +568,57 @@ function moveInto(state, action) {
 
 }
 
+function moveByKeyboard(state, action) {
+	const { id, key } = action;
+
+	let current = state[id];
+	let parent = current.parent;
+	if (parent === null) {
+		parent = state.mainTimeline;
+	} else {
+		parent = state[parent].childrenById;
+	}
+
+	let currentIndex = parent.indexOf(current.id);
+	let targetId;
+	let isLast = false;
+	switch (key) {
+		// up
+		case 38:
+			if (currentIndex === 0) {
+				return state;
+			} else {
+				targetId = parent[currentIndex - 1];
+			}
+			break;
+		// down
+		case 40:
+			if (currentIndex === parent.length - 1) {
+				return state; 
+			} else {
+				targetId = parent[currentIndex + 1];
+			}
+			break;
+		// left
+		case 37:
+			if (current.parent === null ||
+				current.id !== parent[parent.length - 1]) {
+				return state;
+			} else {
+				targetId = current.parent;
+				isLast = true;
+			}
+			break;
+		// right
+		case 39:
+			return moveInto(state, { id: id });
+		default:
+			return state;
+	}
+
+	return moveTo(state, { sourceId: id, targetId: targetId, isLast: isLast });
+}
+
 
 function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
@@ -593,6 +648,31 @@ function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
 	onToggleHelper(new_state, action.id, null);
+
+	return new_state;
+}
+
+/*
+action = {
+	flag: bool, // whether enable or not
+	spec: id, // toggle one only option
+}
+
+*/
+function setToggleCollectively(state, action) {
+	const { flag, spec } = action;
+	let new_state = Object.assign({}, state);
+
+	for (let id of new_state.mainTimeline) {
+		if (id === spec) {
+			continue;
+		}
+		onToggleHelper(new_state, id, flag);
+	}
+
+	if (spec) {
+		onToggleHelper(new_state, spec, true);
+	}
 
 	return new_state;
 }

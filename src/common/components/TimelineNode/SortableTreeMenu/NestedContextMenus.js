@@ -70,17 +70,17 @@ export default class NestedContextMenus extends React.Component {
 			          onRequestClose={this.props.onRequestCloseToggleMenu}
 			          >
 			          <Menu>
-			          	<MenuItem primaryText="Select All" 
+			          	<MenuItem primaryText="Toggle All" 
 							leftIcon={<SelectAllIcon color={contextMenuStyle.iconColor} />}
 							onTouchTap={()=>{ this.props.toggleAll(); this.props.onRequestCloseToggleMenu()}}
 						/>
 						<Divider />
-						<MenuItem primaryText="Deselect All" 
+						<MenuItem primaryText="Untoggle All" 
 							leftIcon={<DeselectAllIcon color={contextMenuStyle.iconColor} />}
-							onTouchTap={()=>{ this.props.unToggleAll(); this.props.onRequestCloseToggleMenu()}}
+							onTouchTap={()=>{ this.props.untoggleAll(); this.props.onRequestCloseToggleMenu()}}
 						/>
 						<Divider />
-						<MenuItem primaryText="Select This Only" 
+						<MenuItem primaryText="Toggle This Only" 
 							leftIcon={<SelectThisOnlyIcon color={contextMenuStyle.iconColor} />}
 							onTouchTap={()=>{ this.props.toggleThisOnly(); this.props.onRequestCloseToggleMenu()}}
 						/>
