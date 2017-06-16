@@ -57,23 +57,11 @@ const duplicateTimeline = (dispatch, ownProps) => {
 
 export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
 	e.preventDefault();
-	if (getKeyboardFocusId() !== ownProps.id) {
-		return;
-	}
 
-	switch(e.which) {
-		// left
-		case 37:
-		// up
-		case 38:
-		// down
-		case 40:
-		// right
-		case 39:
-			dispatch(timelineNodeActions.moveByKeyboardAction(ownProps.id, e.which));
-			break;
-		default:
-			return;
+	if (getKeyboardFocusId() === ownProps.id &&
+		 e.which >= 37 && 
+		 e.which <= 40) {
+		dispatch(timelineNodeActions.moveByKeyboardAction(ownProps.id, e.which));
 	}
 }
 
