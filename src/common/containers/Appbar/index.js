@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import * as mainActions from '../actions/mainActions';
-import Appbar from '../components/Appbar';
+import * as mainActions from '../../actions/mainActions';
+import Appbar from '../../components/Appbar';
 
 const changeExperimentName = (dispatch, text) => {
 	dispatch(mainActions.setExperimentNameAction(text));

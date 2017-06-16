@@ -2,8 +2,9 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'eval-source-map',
   entry: [
+    'webpack-hot-middleware/client',
     path.resolve(__dirname, '../src/client/index.js')
   ],
   output: {
@@ -24,9 +25,7 @@ module.exports = {
       query: {
         presets: ['es2015', 'react']
       }
-    }, {
-      test: /\.css$/,
-      loader: "style-loader!css-loader"
-    }]
+    },
+    ]
   }
 }

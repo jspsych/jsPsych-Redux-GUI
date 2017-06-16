@@ -8,15 +8,13 @@ import { GridTile } from 'material-ui/GridList';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
 import {
-	grey50,
-	grey900,
-	cyan500
+	grey900 as deepGrey,
 } from 'material-ui/styles/colors';
-import OpenDrawer from 'material-ui/svg-icons/hardware/device-hub';
 
+import InitEditor from '../../containers/Appbar/jsPsychInitEditorContainer';
 
 var experimentTitleStyle = {
-	color: grey900,
+	color: deepGrey,
 	fontSize: 18,
 	fontFamily: 'Roboto',
 }
@@ -40,19 +38,30 @@ export default class Appbar extends React.Component {
         				}}
         				draggable={false}
         				>
-  						<div style={{display: 'inline-block', minWidth:"6vw", width: "7%"}}>
-  						<GridTile style={{height: 90, backgroundColor: cyan500}}>
-  							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg'/>
-  							</GridTile>
+  						<div style={{
+                minWidth:"6vw", 
+                width: "7%",
+              }}>
+    						<GridTile style={{ height: 88 }}>
+    							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg'/>
+    						</GridTile>
   						</div>
-        				<div className="Appbar-main" style={{display: 'inline-block', width:"93%"}}>
-        					<div style={{backgroundColor: 'white', marginLeft: 5}}>
+        			<div className="Appbar-main" style={{
+                display: 'inline-block', width:"93%"
+              }}>
+        			<div style={{
+                    backgroundColor: 'white', 
+                    marginLeft: 5
+                  }}>
 								<TextField 
 								id="ExperimentNameTextfield"
                 value={this.props.experimentName}
 								onChange={this.props.changeExperimentName}/>
 							</div>
   							<Toolbar style={{height: 40}}>
+                  <ToolbarGroup firstChild={true}>
+                    <InitEditor />
+                  </ToolbarGroup>
   							</Toolbar>
   						</div>
   					</div>

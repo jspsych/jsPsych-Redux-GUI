@@ -1,6 +1,6 @@
 import * as actionTypes from '../constants/ActionTypes';
 import { combineReducers } from "redux";
-import timelineNodeReducer from './timelineNode';
+import timelineNodeReducer from './TimelineNode';
 
 const initState = {
 	experimentName: "Untitled Experiment"

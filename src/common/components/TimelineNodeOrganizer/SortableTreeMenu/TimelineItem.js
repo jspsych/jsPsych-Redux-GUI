@@ -19,7 +19,7 @@ import {
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 
-import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
+import Tree from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TreeContainer';
 import NestedContextMenus from './NestedContextMenus';
 import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 

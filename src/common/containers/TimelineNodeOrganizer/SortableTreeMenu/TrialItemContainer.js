@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
-import TrialItem from '../../../components/TimelineNode/SortableTreeMenu/TrialItem';
-import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
+import TrialItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TrialItem';
+import { getTimelineId, getTrialId } from '../../../reducers/TimelineNode/utils';
 import {
 	toggleAll,
 	untoggleAll,

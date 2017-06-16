@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../actions/timelineNodeActions';
-import TimelineNodeOrganizerDrawer from '../../components/TimelineNode/TimelineNodeOrganizerDrawer';
+import TimelineNodeOrganizer from '../../components/TimelineNodeOrganizer';
 import { isTimeline, 
 		getTimelineId, 
-		getTrialId, } from '../../reducers/timelineNodeUtils';
+		getTrialId, } from '../../reducers/TimelineNode/utils';
 
 
 const insertTrial = (dispatch) => {
@@ -87,4 +87,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	duplicateNode: () => { duplicateNode(dispatch) },
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(TimelineNodeOrganizerDrawer);
+export default connect(mapStateToProps, mapDispatchToProps)(TimelineNodeOrganizer);

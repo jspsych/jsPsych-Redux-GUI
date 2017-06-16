@@ -3,7 +3,7 @@ import React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
+import Tree from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TreeContainer';
 
 
 class SortableTreeMenu extends React.Component {

@@ -5,7 +5,7 @@ import { createStore , applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import rootReducer from '../common/reducers';
-import App from '../common/containers/App';
+import App from '../common/containers/AppContainer';
 
 const preloadedState = window.__PRELOADED_STATE__;
 

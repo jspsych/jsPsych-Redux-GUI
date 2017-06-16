@@ -27,10 +27,9 @@ A trial state = {
 
 */
 
-import * as actionTypes from '../constants/ActionTypes';
 
-import * as utils from './timelineNodeUtils'; 
 
+import * as utils from './utils'; 
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
@@ -38,65 +37,6 @@ const DEFAULT_PLUGIN_TYPE = 'text';
 
 var timeline = 0;
 var trial = 0;
-
-export const initState = {
-	// id of which is being previewed/editted
-	previewId: null,
-
-	// the main timeline. array of ids
-	mainTimeline: [],
-}
-
-export default function(state=initState, action) {
-	// console.log(action)
-
-	switch(action.type) {
-		case actionTypes.ADD_TIMELINE:
-			return addTimeline(state, action);
-		case actionTypes.DELETE_TIMELINE:
-			return deleteTimeline(state, action);
-		case actionTypes.ADD_TRIAL:
-			return addTrial(state, action);
-		case actionTypes.DELETE_TRIAL:
-			return deleteTrial(state, action);
-		case actionTypes.INSERT_NODE_AFTER_TRIAL:
-			return insertNodeAfterTrial(state, action);
-		case actionTypes.DUPLICATE_TRIAL:
-			return duplicateTrial(state, action);
-		case actionTypes.DUPLICATE_TIMELINE:
-			return duplicateTimeline(state, action);
-		case actionTypes.MOVE_TO:
-			return moveTo(state, action);
-		case actionTypes.MOVE_INTO:
-			return moveInto(state, action);
-		case actionTypes.MOVE_BY_KEYBOARD:
-			return moveByKeyboard(state, action);
-		case actionTypes.ON_PREVIEW:
-			return onPreview(state, action);
-		case actionTypes.ON_TOGGLE:
-			return onToggle(state, action);
-		case actionTypes.SET_TOGGLE_COLLECTIVELY:
-			return setToggleCollectively(state, action);
-		case actionTypes.SET_COLLAPSED:
-			return setCollapsed(state, action);
-
-		// case actionTypes.CHANGE_PLUGIN_TYPE:
-		// 	return changePlugin(state, action);
-		// case actionTypes.TOGGLE_PARAM_VALUE:
-		// 	return changeToggleValue(state, action);
-		// case actionTypes.CHANGE_PARAM_TEXT:
-		// 	return changeParamText(state, action);
-		// case actionTypes.CHANGE_PARAM_INT: 
-		// 	return changeParamInt(state, action);
-		// case actionTypes.CHANGE_PARAM_FLOAT:
-		// 	return changeParamFloat(state, action);
-		// case actionTypes.CHANGE_HEADER:
-		// 	return changeHeader(state, action);
-
-		default:
-			return state;
-	}
-}
 
 
 /**************************  Helper functions  ********************************/
@@ -219,7 +159,7 @@ action = {
 	parent: string,
 }
 */
-function addTimeline(state, action) {
+export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
 	let id = action.id;
@@ -249,7 +189,7 @@ action = {
 	parent: string,
 }
 */
-function addTrial(state, action) {
+export function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
 	let id = action.id;
@@ -272,7 +212,7 @@ function addTrial(state, action) {
 	return new_state;
 }
 
-function insertNodeAfterTrial(state, action) {
+export function insertNodeAfterTrial(state, action) {
 	let targetParent = state[action.targetId].parent;
 	let new_state;
 
@@ -330,7 +270,7 @@ action = {
 	id: string
 }
 */
-function deleteTimeline(state, action) {
+export function deleteTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
 	return deleteTimelineHelper(new_state, action.id);
@@ -360,7 +300,7 @@ action = {
 	id: string
 }
 */
-function deleteTrial(state, action) {
+export function deleteTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
 	return deleteTrialHelper(new_state, action.id);
@@ -412,7 +352,7 @@ action = {
 	targetId: id, // target to be copyed 
 }
 */
-function duplicateTimeline(state, action) {
+export function duplicateTimeline(state, action) {
 	const { dupId, targetId, getTimelineId, getTrialId } = action;
 
 	let new_state = Object.assign({}, state);
@@ -444,7 +384,7 @@ action = {
 	targetId: id, // target to be copyed 
 }
 */
-function duplicateTrial(state, action) {
+export function duplicateTrial(state, action) {
 	const { dupId, targetId } = action;
 
 	let target = state[targetId];
@@ -495,7 +435,7 @@ action = {
 	targetId: id, // target
 }
 */
-function moveTo(state, action) {
+export function moveTo(state, action) {
 	// can't move if
 	// 1. it is moving to itself
 	// 2. self or target is null
@@ -579,7 +519,7 @@ action = {
 	id: id, // source
 }
 */
-function moveInto(state, action) {
+export function moveInto(state, action) {
 	let node = state[action.id];
 	let parent = node.parent;
 	let parentChildren;
@@ -641,7 +581,7 @@ action = {
 	key: number, // denote arrow keys
 }
 */
-function moveByKeyboard(state, action) {
+export function moveByKeyboard(state, action) {
 	const { id, key } = action;
 
 	let current = state[id];
@@ -698,7 +638,7 @@ function moveByKeyboard(state, action) {
 }
 
 
-function onPreview(state, action) {
+export function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
 		previewId: action.id
 	});
@@ -733,7 +673,7 @@ function onToggleHelper(state, id, spec=null) {
 	}
 }
 
-function onToggle(state, action) {
+export function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
 	onToggleHelper(new_state, action.id, null);
@@ -747,7 +687,7 @@ action = {
 	spec: id, // toggle one only option
 }
 */
-function setToggleCollectively(state, action) {
+export function setToggleCollectively(state, action) {
 	const { flag, spec } = action;
 	let new_state = Object.assign({}, state);
 
@@ -766,7 +706,7 @@ function setToggleCollectively(state, action) {
 }
 
 
-function setCollapsed(state, action) {
+export function setCollapsed(state, action) {
 	let timeline = state[action.id];
 
 	let new_state = Object.assign({}, state);
@@ -781,37 +721,3 @@ function setCollapsed(state, action) {
 
 
 
-// const pluginType = (type) => {
-// 	switch(type) {
-// 		case 1: 
-// 			return 'text';
-// 		case 2: 
-// 			return 'single-stim';
-// 		default: 
-// 			return 'text';
-// 	}
-// }
-
-// function changePlugin(state, action) {
-// 	let node = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-
-// 	let params = jsPsych.plugins[action.newPluginVal].info.parameters;
-// 	let paramKeys = Object.keys(params);
-
-// 	var paramsObject = {};
-
-// 	for(let i=0; i<paramKeys.length; i++) {
-// 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
-
-// 	}
-
-// 	node = copyTrial(node);
-
-// 	node.pluginType = action.newPluginVal; 
-// 	node.parameters = paramsObject;
-// 	new_state[state.previewId] = node; 
-
-// 	return new_state; 
-// }
