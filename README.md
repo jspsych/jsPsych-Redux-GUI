@@ -1,10 +1,10 @@
 # jsPsych-Redux-GUI
 A browser-based interface for creating experiments with jsPsych
 
-#Install
+##Install
 npm install
-#React Script Development Server (auto-refresh): 
+##React Script Development Server (auto-refresh): 
 npm run-script react
-#Express Development Server: 
+##Express Development Server: 
 npm start<br>
 or babel-node ./src/server/dev-server.js
