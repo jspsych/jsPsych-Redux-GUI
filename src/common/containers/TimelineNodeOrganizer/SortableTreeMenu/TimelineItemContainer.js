@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
-import TimelineItem from '../../../components/TimelineNode/SortableTreeMenu/TimelineItem';
+import TimelineItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TimelineItem';
 import { getTimelineId, getTrialId } from '../../../reducers/timelineNodeUtils';
 
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {

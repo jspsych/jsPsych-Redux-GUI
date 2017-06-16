@@ -24,7 +24,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertPercent } from '../App';
-import SortableTreeMenu from '../../containers/TimelineNode/SortableTreeMenu';
+import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
 export const TREE_MENU_INDENT = 20;
 
@@ -48,7 +48,7 @@ function pauseEvent(e){
     return false;
 }
 
-class TimelineNodeOrganizerDrawer extends React.Component {
+class TimelineNodeOrganizer extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -204,4 +204,4 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 }
 
 
-export default TimelineNodeOrganizerDrawer;
+export default TimelineNodeOrganizer;

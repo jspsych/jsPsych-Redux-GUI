@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import TreeNode from '../../../components/TimelineNode/SortableTreeMenu/TreeNode';
+import TreeNode from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TreeNode';
 import { isTimeline } from '../../../reducers/timelineNodeUtils';
 
 

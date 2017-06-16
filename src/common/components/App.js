@@ -1,10 +1,9 @@
 import React from 'react';
 import Preview from './Preview';
 import Appbar from '../containers/Appbar';
-import TimelineNodeOrganizerDrawer from '../containers/TimelineNode/TimelineNodeOrganizerDrawerContainer';
+import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
 
-import TrialForm from '../containers/TimelineNode/TrialForm';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 
@@ -71,7 +70,7 @@ class App extends React.Component {
 					<Appbar />
 				</div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
-	  				<TimelineNodeOrganizerDrawer 
+	  				<TimelineNodeOrganizer 
 	  					open={this.state.timelineOrganizerDrawerToggle}
 	  					width={this.state.timelineOrganizerDrawerWidth}
 	  					openCallback={this.openTimelineOgranizerDrawer}

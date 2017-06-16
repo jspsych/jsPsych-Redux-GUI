@@ -1,7 +1,7 @@
 import React from 'react';
 
-import TrialItem from '../../../containers/TimelineNode/SortableTreeMenu/TrialItemContainer';
-import TimelineItem from '../../../containers/TimelineNode/SortableTreeMenu/TimelineItemContainer';
+import TrialItem from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TrialItemContainer';
+import TimelineItem from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TimelineItemContainer';
 
 class TreeNode extends React.Component {
 	

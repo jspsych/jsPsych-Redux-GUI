@@ -7,8 +7,6 @@ class Rows extends React.Component {
 
 	render() {
 		return (
-			render() {
-				return (
 					<div className="cellContainer">
 						<tr>
 						{
@@ -16,8 +14,8 @@ class Rows extends React.Component {
 						}
 						</tr>
 					)
-			}
-			)
+			
+	
 	}
 }
 
