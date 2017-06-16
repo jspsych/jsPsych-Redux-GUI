@@ -3,7 +3,7 @@ import * as timelineNodeActions from '../../actions/timelineNodeActions';
 import TimelineNodeOrganizer from '../../components/TimelineNodeOrganizer';
 import { isTimeline, 
 		getTimelineId, 
-		getTrialId, } from '../../reducers/timelineNodeUtils';
+		getTrialId, } from '../../reducers/TimelineNode/utils';
 
 
 const insertTrial = (dispatch) => {

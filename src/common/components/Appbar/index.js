@@ -8,11 +8,10 @@ import { GridTile } from 'material-ui/GridList';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 
 import {
-	grey50,
 	grey900 as deepGrey,
-	cyan500 as iconHighlightColor
 } from 'material-ui/styles/colors';
-import InitSettingIcon from 'material-ui/svg-icons/action/settings';
+
+import InitEditor from '../../containers/Appbar/jsPsychInitEditorContainer';
 
 var experimentTitleStyle = {
 	color: deepGrey,
@@ -24,22 +23,6 @@ var experimentTitleStyle = {
 export default class Appbar extends React.Component {
 	constructor(props) {
 		super(props);
-
-    this.state = {
-      initEditPaneOpen: false,
-    }
-
-    this.toggleInitEditPane = (flag=null) => {
-      if (flag !== null) {
-        this.setState({
-          initEditPaneOpen: flag,
-        });
-      } else {
-        this.setState({
-          initEditPaneOpen: !this.state.initEditPaneOpen,
-        });
-      }
-    }
 	}
 
 	render() {
@@ -77,15 +60,7 @@ export default class Appbar extends React.Component {
 							</div>
   							<Toolbar style={{height: 40}}>
                   <ToolbarGroup firstChild={true}>
-                    <IconButton 
-                        tooltip="Click to set jsPsych.init properties"
-                        onTouchTap={() => { this.toggleInitEditPane(); }}
-                    >
-                        <InitSettingIcon 
-                          color={(this.state.initEditPaneOpen) ? iconHighlightColor : deepGrey}
-                          hoverColor={iconHighlightColor}
-                        />
-                    </IconButton>
+                    <InitEditor />
                   </ToolbarGroup>
   							</Toolbar>
   						</div>

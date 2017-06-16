@@ -1,12 +1,11 @@
-import reducer, 
-{ 	enterTest,
+import reducer, { initState } from '../';
+import { 	
+	enterTest,
 	createTimeline, 
 	createTrial,
-	initState,
-	DRAG_TYPE
-} from '../timelineNode';
-import * as Actions from '../../actions/timelineNodeActions';
-import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../timelineNodeUtils'; 
+} from '../organizer';
+import * as Actions from '../../../actions/timelineNodeActions';
+import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../utils'; 
 
 enterTest();
 if (!Array.prototype.move) {
@@ -17,16 +16,12 @@ if (!Array.prototype.move) {
 }
 
 /*********** Add Actions **************/
-let expected_add_timeline_to_main = {
-	previewId: null,
-	mainTimeline: [standardizeTimelineId(0)]
-}
+let expected_add_timeline_to_main = Object.assign({}, initState);
+expected_add_timeline_to_main.mainTimeline = [standardizeTimelineId(0)];
 expected_add_timeline_to_main[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 
-let expected_add_timeline_to_another = {
-	previewId: null,
-	mainTimeline: [standardizeTimelineId(0)]
-}
+let expected_add_timeline_to_another = Object.assign({}, initState);
+expected_add_timeline_to_another.mainTimeline = [standardizeTimelineId(0)];
 expected_add_timeline_to_another[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 expected_add_timeline_to_another[standardizeTimelineId(0)].collapsed = false ;									  
 expected_add_timeline_to_another[standardizeTimelineId(0)].childrenById = [standardizeTimelineId(1)];
@@ -34,16 +29,12 @@ expected_add_timeline_to_another[standardizeTimelineId(0)].childrenById = [stand
 expected_add_timeline_to_another[standardizeTimelineId(1)] = createTimeline(standardizeTimelineId(1));
 expected_add_timeline_to_another[standardizeTimelineId(1)].parent = standardizeTimelineId(0);
 
-let expected_add_trial_to_main = {
-	previewId: null,
-	mainTimeline: [standardizeTrialId(0)]
-}
+let expected_add_trial_to_main = Object.assign({}, initState);
+expected_add_trial_to_main.mainTimeline = [standardizeTrialId(0)];
 expected_add_trial_to_main[standardizeTrialId(0)] = createTrial(standardizeTrialId(0));
 
-let expected_add_trial_to_timeline = {
-	previewId: null,
-	mainTimeline: [standardizeTimelineId(2)]
-}
+let expected_add_trial_to_timeline = Object.assign({}, initState);
+expected_add_trial_to_timeline.mainTimeline = [standardizeTimelineId(2)];
 expected_add_trial_to_timeline[standardizeTimelineId(2)] = createTimeline(standardizeTimelineId(2));
 expected_add_trial_to_timeline[standardizeTimelineId(2)].collapsed = false;
 expected_add_trial_to_timeline[standardizeTimelineId(2)].childrenById = [standardizeTrialId(1)];
@@ -101,10 +92,7 @@ timeline 0
 		timeline 3
 timeline 1
 */
-let base_move = {
-	previewId: null,
-	mainTimeline: []
-};
+let base_move = Object.assign({}, initState);
 base_move = reducer(base_move, Actions.addTimelineAction(standardizeTimelineId(0), null));
 base_move = reducer(base_move, Actions.addTimelineAction(standardizeTimelineId(1), null));
 base_move = reducer(base_move, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -119,10 +107,7 @@ timeline 0
 		timeline 3
 timeline 1
 */
-let expected_move1 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expected_move1 = Object.assign({}, initState);
 expected_move1 = reducer(expected_move1, Actions.addTrialAction(standardizeTrialId(0), null));
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(1), null));
@@ -137,10 +122,7 @@ timeline 0
 	trial 0
 timeline 1
 */
-let expected_move2 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expected_move2 = Object.assign({}, initState);
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(standardizeTimelineId(1), null));
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(standardizeTimelineId(2), standardizeTimelineId(0)));
@@ -155,10 +137,7 @@ timeline 0
 		timeline 3
 	timeline 1
 */
-let expected_move3 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expected_move3 = Object.assign({}, initState);
 expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expected_move3 = reducer(expected_move3, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
 expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(2), standardizeTimelineId(0)));
@@ -173,10 +152,7 @@ timeline 2
 	timeline 3
 timeline 1
 */
-let expected_move4 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expected_move4 = Object.assign({}, initState);
 expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTimelineId(2), null));
 expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTimelineId(3), standardizeTimelineId(2)));
@@ -185,10 +161,7 @@ expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTi
 
 describe('Timeline Node Reducers for Moving actions', () => {
 	it('should handle node jump', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -199,10 +172,7 @@ describe('Timeline Node Reducers for Moving actions', () => {
 	})
 
 	it('should handle node displacement', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -213,10 +183,7 @@ describe('Timeline Node Reducers for Moving actions', () => {
 	})
 
 	it('should handle node moving into', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -227,10 +194,7 @@ describe('Timeline Node Reducers for Moving actions', () => {
 	})
 
 	it('should handle node moving out', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -241,10 +205,7 @@ describe('Timeline Node Reducers for Moving actions', () => {
 	})
 
 	it('should handle error case: ancestor node wants to move into descendant node', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), null));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(0)));
@@ -263,10 +224,7 @@ timeline 0
 	timeline 1
 		trial 0
 */
-let base_dup1 = {
-	previewId: null,
-	mainTimeline: []
-};
+let base_dup1 = Object.assign({}, initState);
 base_dup1 = reducer(base_dup1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 base_dup1 = reducer(base_dup1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 base_dup1 = reducer(base_dup1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -280,10 +238,7 @@ timeline 2
 	timeline 3
 		trial 1
 */
-let expect_dup1 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_dup1 = Object.assign({}, initState);
 expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_dup1 = reducer(expect_dup1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -298,28 +253,19 @@ timeline 0
 		trial 0
 		trial 1
 */
-let expect_dup2 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_dup2 = Object.assign({}, initState);
 expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
 expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTrialId(1), standardizeTimelineId(1)));
 
-let expect_dup3 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_dup3 = Object.assign({}, initState);
 expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(standardizeTimelineId(1), null));
 
 describe('Timeline Node Reducers for Duplicating actions', () => {
 	it('should handle duplicating nested timeline', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		let timelineId = 0;
 		let trialId = 0;
 		let getTimelineId = () => {
@@ -338,10 +284,7 @@ describe('Timeline Node Reducers for Duplicating actions', () => {
 	})
 
 	it('should handle duplicating single trial', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -350,10 +293,7 @@ describe('Timeline Node Reducers for Duplicating actions', () => {
 	})
 
 	it('should handle duplicating single timeline', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 		let timelineId = 0;
 		let trialId = 0;
 		let getTimelineId = () => {
@@ -380,10 +320,7 @@ timeline 0 true
 		trial 0 true
 trial 1 false
 */
-let expect_toggle1 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_toggle1 = Object.assign({}, initState);
 expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -397,10 +334,7 @@ timeline 0 false
 		trial 0 false
 trial 1 true
 */
-let expect_toggle2 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_toggle2 = Object.assign({}, initState);
 expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -417,10 +351,7 @@ timeline 0 false
 		trial 0 false
 trial 1 false
 */
-let expect_toggle3 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_toggle3 = Object.assign({}, initState);
 expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -437,10 +368,7 @@ timeline 0 false
 		trial 0 true
 trial 1 false
 */
-let expect_toggle4 = {
-	previewId: null,
-	mainTimeline: []
-};
+let expect_toggle4 = Object.assign({}, initState);
 expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(0), null));
 expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
 expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(standardizeTrialId(0), standardizeTimelineId(1)));
@@ -452,10 +380,7 @@ expect_toggle4[standardizeTrialId(1)].enabled = false;
 
 describe('Timeline Node Reducers for Toggle actions', () => {
 	it('should handle toggling off single trial', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
@@ -466,10 +391,7 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 	})
 
 	it('should handle toggle of nested timeline', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
@@ -480,10 +402,7 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 	})
 
 	it('should handle deselect option', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
@@ -494,10 +413,7 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 	})
 
 	it('should handle selecting only one', () => {
-		let s1 = {
-			previewId: null,
-			mainTimeline: []
-		};
+		let s1 = Object.assign({}, initState);
 
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0), null));
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(1), standardizeTimelineId(0)));
