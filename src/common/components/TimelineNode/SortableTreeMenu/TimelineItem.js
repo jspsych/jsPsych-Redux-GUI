@@ -1,22 +1,14 @@
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
-import Menu from 'material-ui/Menu';
-import Popover from 'material-ui/Popover';
-import MenuItem from 'material-ui/MenuItem';
-import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
-import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
-import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
-import Delete from 'material-ui/svg-icons/action/delete';
+
 import {
-	pink500 as contextMenuIconColor,
-	grey100 as contextMenuBackgroundColor,
 	cyan400 as highlightColor,
 	green500 as checkColor,
 	indigo500 as iconHighlightColor,
@@ -28,32 +20,24 @@ import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 
 import Tree from '../../../containers/TimelineNode/SortableTreeMenu/TreeContainer';
+import NestedContextMenus from './NestedContextMenus';
 import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
 
 export const INDENT = 32;
 
-var lastAction = null;
+export const colorSelector = (hovered, isSelected) => {
+	if (hovered)
+		return null;
 
-const setLastAction = (a) => { lastAction = a };
+	if (isSelected)
+		return highlightColor;
 
-const canDispatchMoveToAction = (current) => {
-	return !lastAction || 
-		current.type !== lastAction.type ||
-		current.sourceId !== lastAction.sourceId ||
-		current.targetId !== lastAction.targetId;
+	return null;
 }
-
-export const contextMenuStyle = {
-	outerDiv: { position: 'absolute', zIndex: 20},
-	innerDiv: { backgroundColor: contextMenuBackgroundColor,
-				borderBottom: '1px solid #BDBDBD' },
-	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
-	iconColor: contextMenuIconColor,
-}
-
-export const ITEM_TYPE = "Organizer-Item";
 
 export const treeNodeDnD = {
+	ITEM_TYPE: "Organizer-Item",
+
 	itemSource: {
 		beginDrag(props) {
 			return {
@@ -69,31 +53,40 @@ export const treeNodeDnD = {
 	},
 
 	itemTarget: {
+		// better this way since we always want hover (for preview effects)
 		canDrop() {
 			return false;
 		},
 
 	  	hover(props, monitor, component) {
 		  	const {id: draggedId } = monitor.getItem()
-		    const {id: overId } = props
+		    const {id: overId, lastItem } = props
 
-		    if (draggedId === props.parent) return;
+		    // leave
+		    // if parent dragged into its children (will check more in redux)
+		    // or if source is not over current target
+		    if (draggedId === props.parent ||       
+		    	!monitor.isOver({shallow: true})) { 
+		    	return;
+			}
 
+			// allow move into
+			let offset = monitor.getDifferenceFromInitialOffset();
 		    if (draggedId === overId) {
-				let offset = monitor.getDifferenceFromInitialOffset();
-				if (offset.x > INDENT && draggedId) {
+				if (offset.x >= INDENT && draggedId) {
 					let action = moveIntoAction(draggedId);
 					props.dispatch(action);
 				}
 				return;
 			}
-		    if (!monitor.isOver({shallow: true})) return;
 
-		    let action = moveToAction(draggedId, overId);
-		    if (canDispatchMoveToAction) {
-		    	props.dispatch(action);
-		    	setLastAction(action);
-		    }
+			let isLast = lastItem === draggedId;
+			if (offset.x < 0 && !isLast) {
+				return;
+			}
+
+			// replace
+		    props.dispatch(moveToAction(draggedId, overId, isLast));
 		}
 	},
 
@@ -101,18 +94,23 @@ export const treeNodeDnD = {
 		connectDragSource: connect.dragSource(),
 		connectDragPreview: connect.dragPreview(),
 		isDragging: monitor.isDragging(),
-		draggedItem: monitor.getItem()
 	}),
 
 	targetCollector: (connect, monitor) => ({
 		connectDropTarget: connect.dropTarget(),
-		isOver: monitor.isOver(),
 		isOverCurrent: monitor.isOver({
 			shallow: true
 		}),
 	})
 }
 
+var keyboardFocusId = null;
+
+export const setKeyboardFocusId = (id) => {
+	keyboardFocusId = id;
+}
+
+export const getKeyboardFocusId = () => (keyboardFocusId);
 
 class TimelineItem extends React.Component {
 	constructor(props) {
@@ -120,6 +118,7 @@ class TimelineItem extends React.Component {
 
 		this.state = {
 			contextMenuOpen: false,
+			toggleContextMenuOpen: false,
 		}
 
 		this.openContextMenu = (event) => {
@@ -136,6 +135,27 @@ class TimelineItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
+
+		this.openToggleContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			this.setState({
+				toggleContextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
+
+		this.closeToggleContextMenu = () => {
+			this.setState({
+				toggleContextMenuOpen: false
+			})
+		}
+	}
+
+	componentDidMount() {
+		if (getKeyboardFocusId() === this.props.id) {
+			this.refs[this.props.id].applyFocusState('keyboard-focused');
+		}
 	}
 
 	render() {
@@ -143,36 +163,22 @@ class TimelineItem extends React.Component {
 			connectDropTarget,
 			connectDragPreview,
 			connectDragSource,
-			isOver,
 			isOverCurrent,
 		} = this.props;
-		
-		let hovered = isOver && isOverCurrent;
-
-		const colorSelector = (hovered, isSelected) => {
-			if (hovered)
-				return null;
-
-			if (isSelected)
-				return highlightColor;
-
-			return null;
-		} 
 
 		return connectDragPreview(connectDropTarget(
 				<div>
 					<MuiThemeProvider>
-					<div className={ITEM_TYPE} style={{
+					<div className={treeNodeDnD.ITEM_TYPE} style={{
 									display: 'flex',
-									backgroundColor: colorSelector(hovered, this.props.isSelected),
-									height: "50%",
+									backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 								}}>
 							{connectDragSource(<div>
 								<IconButton className="Timeline-Collapse-Icon"
 										hoveredStyle={{backgroundColor: hoverColor}}
 										onTouchTap={this.props.toggleCollapsed} 
 										disableTouchRipple={true} 
-							>
+								>
 								{(this.props.collapsed || this.props.hasNoChildren) ? 
 									<CollapsedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} /> : 
 									<ExpandedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} />
@@ -181,46 +187,44 @@ class TimelineItem extends React.Component {
 							</div>)}
 							<div style={{width: "100%"}}>
 								<ListItem 
+										ref={this.props.id}
 										primaryText={this.props.name}
+										onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
 										onContextMenu={this.openContextMenu}
 										onTouchTap={(e) => {
 											if (e.nativeEvent.which === 1) {
-												this.props.onClick();
+												this.props.onClick(setKeyboardFocusId);
 											}
 										}}
 										rightIconButton={
 											<IconButton 
+												onContextMenu={this.openToggleContextMenu}
 												disableTouchRipple={true}
-												onTouchTap={this.props.onToggle} 
+												onTouchTap={(e) => {
+															if (e.nativeEvent.which === 1) {
+																this.props.onToggle();
+																}
+															}} 
 											>
 											{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 											</IconButton>
 										}/>
 							</div>
-							<Popover
-					          open={this.state.contextMenuOpen}
-					          anchorEl={this.state.anchorEl}
-					          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-					          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
-					          onRequestClose={this.closeContextMenu}
-					        >
-					        <Menu>
-								<MenuItem primaryText="New Timeline" 
-									leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-									onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
-								/>
-								<Divider />
-								<MenuItem primaryText="New Trial"  
-									leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
-								/>
-								<Divider />
-								<MenuItem primaryText="Delete"  
-									leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-									onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
-								/>
-							</Menu>
-							</Popover>
+							<NestedContextMenus
+								openItemMenu={this.state.contextMenuOpen}
+								anchorEl={this.state.anchorEl}
+								onRequestCloseItemMenu={this.closeContextMenu}
+								insertTimeline={this.props.insertTimeline}
+								insertTrial={this.props.insertTrial}
+								deleteNode={this.props.deleteTimeline}
+								duplicateNode={this.props.duplicateTimeline} 
+
+								openToggleMenu={this.state.toggleContextMenuOpen}
+								onRequestCloseToggleMenu={this.closeToggleContextMenu}
+								toggleAll={this.props.toggleAll}
+								untoggleAll={this.props.untoggleAll}
+								toggleThisOnly={this.props.toggleThisOnly}
+							/>
 					</div>	
 					</MuiThemeProvider>
 					<div style={{paddingLeft: INDENT}}>
@@ -236,10 +240,10 @@ class TimelineItem extends React.Component {
 
 export default flow(
 	DragSource(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemSource,
 		treeNodeDnD.sourceCollector),
 	DropTarget(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemTarget,
 		treeNodeDnD.targetCollector))(TimelineItem);

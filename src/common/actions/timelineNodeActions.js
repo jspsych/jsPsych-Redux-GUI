@@ -30,11 +30,27 @@ export function deleteTrialAction(id) {
 	};
 }
 
-export function moveToAction(sourceId, targetId) {
+export function moveToAction(sourceId, targetId, isLast) {
 	return {
 		type: actionTypes.MOVE_TO,
 		sourceId: sourceId,
 		targetId: targetId,
+		isLast: isLast,
+	};
+}
+
+export function moveIntoAction(id) {
+	return {
+		type: actionTypes.MOVE_INTO,
+		id: id,
+	};
+}
+
+export function moveByKeyboardAction(id, key) {
+	return {
+		type: actionTypes.MOVE_BY_KEYBOARD,
+		id: id,
+		key: key,
 	};
 }
 
@@ -52,6 +68,15 @@ export function onToggleAction(id) {
 	};
 }
 
+
+export function setToggleCollectivelyAction(flag, spec=null) {
+	return {
+		type: actionTypes.SET_TOGGLE_COLLECTIVELY,
+		flag: flag,
+		spec: spec,
+	};
+}
+
 export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,
@@ -59,9 +84,29 @@ export function setCollapsed(id, toggle=true) {
 	};
 }
 
-export function moveIntoAction(id) {
+export function insertNodeAfterTrialAction(id, targetId, isTimeline=false) {
 	return {
-		type: actionTypes.MOVE_INTO,
+		type: actionTypes.INSERT_NODE_AFTER_TRIAL,
 		id: id,
+		targetId: targetId,
+		isTimeline: isTimeline
+	};
+}
+
+export function duplicateTimelineAction(dupId, targetId, getTimelineIdCallback, getTrialIdCallback) {
+	return {
+		type: actionTypes.DUPLICATE_TIMELINE,
+		dupId: dupId,
+		targetId: targetId,
+		getTimelineId: getTimelineIdCallback,
+		getTrialId: getTrialIdCallback,
+	};
+}
+
+export function duplicateTrialAction(dupId, targetId) {
+	return {
+		type: actionTypes.DUPLICATE_TRIAL,
+		dupId: dupId,
+		targetId: targetId,
 	};
 }

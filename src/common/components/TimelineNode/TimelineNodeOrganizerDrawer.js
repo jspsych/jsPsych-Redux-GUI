@@ -12,6 +12,8 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
+import Duplicate from 'material-ui/svg-icons/content/content-copy';
+
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
@@ -23,9 +25,6 @@ import {
 
 import { convertPercent } from '../App';
 import SortableTreeMenu from '../../containers/TimelineNode/SortableTreeMenu';
-
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 
 export const TREE_MENU_INDENT = 20;
 
@@ -149,6 +148,11 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 					        fabContent={<Delete/>}
 					        onTouchTap={this.props.deleteSelected}
 					      />
+					      <SpeedDialItem
+					        label="Duplicate"
+					        fabContent={<Duplicate/>}
+					        onTouchTap={this.props.duplicateNode}
+					      />
 					    </SpeedDial>
 					    </div>
 					</div>: null}
@@ -200,4 +204,4 @@ class TimelineNodeOrganizerDrawer extends React.Component {
 }
 
 
-export default DragDropContext(HTML5Backend)(TimelineNodeOrganizerDrawer);
+export default TimelineNodeOrganizerDrawer;

@@ -2,21 +2,14 @@ import React from 'react';
 
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
-import Menu from 'material-ui/Menu';
-import Popover from 'material-ui/Popover';
-import MenuItem from 'material-ui/MenuItem';
-import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
  
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
-import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
-import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
-import Delete from 'material-ui/svg-icons/action/delete';
+
 import {
 	grey400 as normalColor,
-	cyan400 as highlightColor,
 	indigo500 as iconHighlightColor,
 	green500 as checkColor,
 	grey300 as hoverColor,
@@ -25,10 +18,13 @@ import {
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import {
-	contextMenuStyle,
-	ITEM_TYPE,
-	treeNodeDnD
+	colorSelector,
+	treeNodeDnD,
+	setKeyboardFocusId,
+	getKeyboardFocusId
 } from './TimelineItem';
+
+import NestedContextMenus from './NestedContextMenus';
 
 
 class TrialItem extends React.Component {
@@ -37,6 +33,7 @@ class TrialItem extends React.Component {
 
 		this.state = {
 			contextMenuOpen: false,
+			toggleContextMenuOpen: false,
 		}
 
 		this.openContextMenu = (event) => {
@@ -53,6 +50,27 @@ class TrialItem extends React.Component {
 				contextMenuOpen: false
 			})
 		}
+
+		this.openToggleContextMenu = (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			this.setState({
+				toggleContextMenuOpen: true,
+				anchorEl: event.currentTarget, 
+			})
+		}
+
+		this.closeToggleContextMenu = () => {
+			this.setState({
+				toggleContextMenuOpen: false
+			})
+		}
+	}
+
+	componentDidMount() {
+		if (getKeyboardFocusId() === this.props.id) {
+			this.refs[this.props.id].applyFocusState('keyboard-focused');
+		}
 	}
 
 	render() {
@@ -60,31 +78,16 @@ class TrialItem extends React.Component {
 			connectDropTarget,
 			connectDragPreview,
 			connectDragSource,
-			isOver,
 			isOverCurrent
 		} = this.props;
-
-		let hovered = isOver && isOverCurrent;
-
-		const colorSelector = (hovered, isSelected) => {
-			if (hovered)
-				return null;
-
-			if (isSelected)
-				return highlightColor;
-
-			return null;
-		} 
-
+		
 		return connectDragPreview(connectDropTarget(
 			<div>
 			<MuiThemeProvider>
 			<div>
-				<div className={ITEM_TYPE} style={{
+				<div className={treeNodeDnD.ITEM_TYPE} style={{
 						display:'flex', 
-						width: "100%",
-						overflow: 'hidden',
-						backgroundColor: colorSelector(hovered, this.props.isSelected),
+						backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 					}} >
 					{connectDragSource(<div className="Drag-Handle">
 						<IconButton 
@@ -96,43 +99,44 @@ class TrialItem extends React.Component {
 					</div>)}
 					<div style={{width: "100%"}} >
 						<ListItem  
+							ref={this.props.id}
 							primaryText={this.props.name}
+							onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
 							onContextMenu={this.openContextMenu}
 							onTouchTap={(e) => {
 								if (e.nativeEvent.which === 1) {
-									this.props.onClick();
+									this.props.onClick(setKeyboardFocusId);
 								}
 							}}
 							rightIconButton={
-								<IconButton disableTouchRipple={true} onTouchTap={this.props.onToggle}>
+								<IconButton 
+									onContextMenu={this.openToggleContextMenu}
+									disableTouchRipple={true}
+									onTouchTap={(e) => {
+												if (e.nativeEvent.which === 1) {
+													this.props.onToggle();
+													}
+												}} 
+									>
 								{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 								</IconButton>}
 						/>
 					</div>
-						<Popover
-				          open={this.state.contextMenuOpen}
-				          anchorEl={this.state.anchorEl}
-				          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-				          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
-				          onRequestClose={this.closeContextMenu}
-				        >
-						<Menu>
-							<MenuItem primaryText="New Timeline" 
-								leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-								onTouchTap={()=>{ this.props.insertTimeline(); this.closeContextMenu()}}
+						<NestedContextMenus
+								openItemMenu={this.state.contextMenuOpen}
+								anchorEl={this.state.anchorEl}
+								onRequestCloseItemMenu={this.closeContextMenu}
+								insertTimeline={this.props.insertTimeline}
+								insertTrial={this.props.insertTrial}
+								deleteNode={this.props.deleteTrial}
+								duplicateNode={this.props.duplicateTrial} 
+
+								openToggleMenu={this.state.toggleContextMenuOpen}
+								onRequestCloseToggleMenu={this.closeToggleContextMenu}
+								toggleAll={this.props.toggleAll}
+								untoggleAll={this.props.untoggleAll}
+								toggleThisOnly={this.props.toggleThisOnly}
 							/>
-							<Divider />
-							<MenuItem primaryText="New Trial"  
-								leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.insertTrial(); this.closeContextMenu()}}
-							/>
-							<Divider />
-							<MenuItem primaryText="Delete"  
-								leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-								onTouchTap={()=>{ this.props.deleteItem(); this.closeContextMenu()}}
-							/>
-					    </Menu>
-					    </Popover>
 					</div>
 				</div>
 			</MuiThemeProvider>
@@ -143,10 +147,10 @@ class TrialItem extends React.Component {
 
 export default flow(
 	DragSource(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemSource,
 		treeNodeDnD.sourceCollector),
 	DropTarget(
-		ITEM_TYPE,
+		treeNodeDnD.ITEM_TYPE,
 		treeNodeDnD.itemTarget,
 		treeNodeDnD.targetCollector))(TrialItem)

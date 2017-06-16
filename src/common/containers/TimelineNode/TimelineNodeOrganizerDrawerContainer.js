@@ -56,6 +56,21 @@ const deleteSelected = (dispatch) => {
 	})
 }
 
+const duplicateNode = (dispatch) => {
+	dispatch((dispatch, getState) => {
+		let timelineNodeState = getState().timelineNodeState;
+		let previewId = timelineNodeState.previewId;
+		if (previewId === null) { 
+			return;
+			// its a timeline
+		} else if (isTimeline(timelineNodeState[previewId])) {
+			dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), previewId, getTimelineId, getTrialId));
+			// its a trial
+		} else {
+			dispatch(timelineNodeActions.duplicateTrialAction(getTrialId(), previewId));
+		}
+	})
+}
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
@@ -69,6 +84,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTrial: () => { insertTrial(dispatch) },
 	insertTimeline: () => { insertTimeline(dispatch) },
 	deleteSelected: () => { deleteSelected(dispatch) },
+	duplicateNode: () => { duplicateNode(dispatch) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineNodeOrganizerDrawer);

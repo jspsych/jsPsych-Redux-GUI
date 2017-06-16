@@ -59,16 +59,26 @@ export default function(state=initState, action) {
 			return addTrial(state, action);
 		case actionTypes.DELETE_TRIAL:
 			return deleteTrial(state, action);
+		case actionTypes.INSERT_NODE_AFTER_TRIAL:
+			return insertNodeAfterTrial(state, action);
+		case actionTypes.DUPLICATE_TRIAL:
+			return duplicateTrial(state, action);
+		case actionTypes.DUPLICATE_TIMELINE:
+			return duplicateTimeline(state, action);
 		case actionTypes.MOVE_TO:
 			return moveTo(state, action);
+		case actionTypes.MOVE_INTO:
+			return moveInto(state, action);
+		case actionTypes.MOVE_BY_KEYBOARD:
+			return moveByKeyboard(state, action);
 		case actionTypes.ON_PREVIEW:
 			return onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
 			return onToggle(state, action);
+		case actionTypes.SET_TOGGLE_COLLECTIVELY:
+			return setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return setCollapsed(state, action);
-		case actionTypes.MOVE_INTO:
-			return moveInto(state, action);
 
 		// case actionTypes.CHANGE_PLUGIN_TYPE:
 		// 	return changePlugin(state, action);
@@ -101,7 +111,6 @@ function getNodeById(state, id) {
 		return null;
 	return state[id];
 }
-
 
 const getDefaultTimelineName = () => {
 	if (__TEST__)
@@ -263,6 +272,31 @@ function addTrial(state, action) {
 	return new_state;
 }
 
+function insertNodeAfterTrial(state, action) {
+	let targetParent = state[action.targetId].parent;
+	let new_state;
+
+	// if inserted node is a timeline
+	if (action.isTimeline) {
+		new_state = addTimeline(state, {id: action.id, parent: targetParent});
+	// if it is a trial
+	} else {
+		new_state = addTrial(state, {id: action.id, parent: targetParent});
+	}
+
+	let arr;
+	if (targetParent === null) {
+		arr = new_state.mainTimeline;
+	} else {
+		arr = new_state[targetParent].childrenById;
+	}
+
+	// move source after target
+	arr.move(arr.indexOf(action.id), arr.indexOf(action.targetId)+1);
+
+	return new_state;
+}
+
 function deleteTimelineHelper(state, id) {
 	let timeline = getNodeById(state, id);
 
@@ -332,6 +366,115 @@ function deleteTrial(state, action) {
 	return deleteTrialHelper(new_state, action.id);
 }
 
+function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrialId) {
+
+	// find target
+	let target = state[targetId];
+	// deep copy it but with different id
+	let dup = copyTimeline(target);
+	dup.id = dupId;
+
+	// clear dup children array
+	dup.childrenById = [];
+	// populate it
+	let dupTargetId;
+	let dupTarget;
+	let dupChild;
+	let newId;
+	for (let i = 0; i < target.childrenById.length; i++) {
+		dupTargetId = target.childrenById[i];
+		dupTarget = state[dupTargetId];
+		// if this descendant is a timeline, call duplicate recusively to
+		// reach all nodes
+		if (utils.isTimeline(dupTarget)) {
+			newId = getTimelineId();
+			dupChild = duplicateTimelineHelper(state, newId, dupTargetId, getTimelineId, getTrialId);
+		// if this descendant is a trial, simply duplicated it
+		} else {
+			newId = getTrialId();
+			dupChild = copyTrial(dupTarget);
+		}
+
+		// add dup child to dup and state
+		dup.childrenById.push(newId);
+		state[newId] = dupChild;
+		// have its own id and parent
+		dupChild.id = newId;
+		dupChild.parent = dupId;
+	}
+
+	return dup;
+}
+
+/*
+action = {
+	dupId: id, // assigned id
+	targetId: id, // target to be copyed 
+}
+*/
+function duplicateTimeline(state, action) {
+	const { dupId, targetId, getTimelineId, getTrialId } = action;
+
+	let new_state = Object.assign({}, state);
+
+	// duplicate
+	let dup = duplicateTimelineHelper(new_state, dupId, targetId, getTimelineId, getTrialId);
+	new_state[dup.id] = dup;
+	let target = state[targetId];
+	let parent = target.parent;
+
+	// push behind target
+	let arr;
+	if (parent === null) {
+		new_state.mainTimeline = new_state.mainTimeline.slice();
+		arr = new_state.mainTimeline;
+	} else {
+		parent = copyTimeline(new_state[parent]);
+		new_state[parent.id] = parent;
+		arr = parent.childrenById;
+	}
+	arr.splice(arr.indexOf(targetId)+1, 0, dupId);
+
+	return new_state;
+}
+
+/*
+action = {
+	dupId: id, // assigned id
+	targetId: id, // target to be copyed 
+}
+*/
+function duplicateTrial(state, action) {
+	const { dupId, targetId } = action;
+
+	let target = state[targetId];
+	let parent = target.parent;
+
+	// duplicate
+	let new_state = Object.assign({}, state);
+	let dup = copyTrial(target);
+	// get its own id
+	dup.id = dupId;
+	new_state[dupId] = dup;
+
+	// push behind target
+	let arr;
+	if (parent === null) {
+		new_state.mainTimeline = new_state.mainTimeline.slice();
+		arr = new_state.mainTimeline;
+	} else {
+		parent = copyTimeline(new_state[parent]);
+		new_state[parent.id] = parent;
+		arr = parent.childrenById;
+	}
+	arr.splice(arr.indexOf(targetId)+1, 0, dupId);
+
+	return new_state;
+} 
+
+/*
+See if source is an ancestor of target
+*/
 function isAncestor(state, sourceId, targetId) {
 	let target = getNodeById(state, targetId);
 
@@ -344,7 +487,19 @@ function isAncestor(state, sourceId, targetId) {
 	return false;
 }
 
+/*
+Move source to a wanted position in the tree. 
+Either right at or one slot behind the original node at that pos.
+action = {
+	sourceId: id, // source
+	targetId: id, // target
+}
+*/
 function moveTo(state, action) {
+	// can't move if
+	// 1. it is moving to itself
+	// 2. self or target is null
+	// 3. Ancestor to descendant
 	if (action.sourceId === action.targetId ||
 		!action.sourceId ||
 		!action.targetId ||
@@ -353,10 +508,16 @@ function moveTo(state, action) {
 	
 	let source = state[action.sourceId];
 	let target = state[action.targetId];
+
+	// get new state
 	let new_state = Object.assign({}, state);
+	// replace old source with a new deep copied source
 	new_state[source.id] = source;
 
+	// if source and target have the same parent
 	if (source.parent === target.parent) {
+
+		// deep copy parent array
 		let arr;
 		if (source.parent === null) {
 			new_state.mainTimeline = new_state.mainTimeline.slice();
@@ -366,9 +527,12 @@ function moveTo(state, action) {
 			new_state[parent.id] = parent;
 			arr = parent.childrenById;
 		}
+		// move source to pos of target
 		let from = arr.indexOf(source.id);
 		let to = arr.indexOf(target.id);
 		arr.move(from, to);
+
+	// if not 
 	} else { 
 		// delete source from old parent
 		let sourceParent = source.parent;
@@ -380,6 +544,7 @@ function moveTo(state, action) {
 			sourceParent.childrenById = sourceParent.childrenById.filter((id) => (id !== source.id));
 		}
 
+		// deep copy parent array
 		let targetParent = target.parent;
 		let arr;
 		if (targetParent === null) {
@@ -391,15 +556,29 @@ function moveTo(state, action) {
 			arr = targetParent.childrenById;
 		}
 
+		// move source into wanted pos in parent
 		let targetIndex = arr.indexOf(target.id);
 		source.parent = target.parent;
 		if (arr.indexOf(source.id) === -1) {
+			// if we are moving out, we put source behind target
+			if (action.isLast) {
+				targetIndex++;
+			}
 			arr.splice(targetIndex, 0, source.id);
 		}
 	}
+
 	return new_state;
 }
 
+/*
+If node right above source node can take children,
+move source into that node.
+New parent automatically expands.
+action = {
+	id: id, // source
+}
+*/
 function moveInto(state, action) {
 	let node = state[action.id];
 	let parent = node.parent;
@@ -412,14 +591,20 @@ function moveInto(state, action) {
 	}
 
 	let index = parentChildren.indexOf(node.id)
+	// we have a candidate if
+	// 1. source is not the first child of its parent
+	// 2. the node above source is a timeline
 	let hasParentCandidate =  index > 0 &&
 		utils.isTimeline(state[parentChildren[index-1]]);
 
 	
 	if (hasParentCandidate) {
+		// deep copies
 		let new_state = Object.assign({}, state);
 		node = copyNode(node);
 		new_state[node.id] = node;
+
+		// delete source from old parent
 		let parentCandidateId;
 		if (parent === null) {
 			parentCandidateId = new_state.mainTimeline[new_state.mainTimeline.indexOf(node.id)-1];
@@ -431,9 +616,11 @@ function moveInto(state, action) {
 			parent.childrenById = parent.childrenById.filter((id) => (id !== node.id));
 		}
 
+		// deep copy new parent
 		let parentCandidate = copyTimeline(new_state[parentCandidateId]);
 		new_state[parentCandidateId] = parentCandidate;
 
+		// insert source into new parent, new parent automatically expands
 		parentCandidate.collapsed = false;
 		if (parentCandidate.childrenById.indexOf(node.id) === -1)
 			parentCandidate.childrenById.push(node.id);
@@ -447,31 +634,137 @@ function moveInto(state, action) {
 
 }
 
+/*
+Move node by keyboard input.
+action = {
+	id: id, // source
+	key: number, // denote arrow keys
+}
+*/
+function moveByKeyboard(state, action) {
+	const { id, key } = action;
+
+	let current = state[id];
+	let parent = current.parent;
+	if (parent === null) {
+		parent = state.mainTimeline;
+	} else {
+		parent = state[parent].childrenById;
+	}
+
+	let currentIndex = parent.indexOf(current.id);
+	let targetId;
+	let isLast = false;
+	switch (key) {
+		// up
+		case 38:
+			// if already first
+			if (currentIndex === 0) {
+				return state;
+			} else {
+				targetId = parent[currentIndex - 1];
+			}
+			break;
+		// down
+		case 40:
+			// if already last
+			if (currentIndex === parent.length - 1) {
+				return state; 
+			} else {
+				targetId = parent[currentIndex + 1];
+			}
+			break;
+		// left
+		case 37:
+			// can't move left if
+			// 1. has no parent, Or
+			// 2. it is not the last child of its parent
+			if (current.parent === null ||
+				current.id !== parent[parent.length - 1]) {
+				return state;
+			} else {
+				targetId = current.parent;
+				isLast = true;
+			}
+			break;
+		// right
+		case 39:
+			return moveInto(state, { id: id });
+		default:
+			return state;
+	}
+
+	return moveTo(state, { sourceId: id, targetId: targetId, isLast: isLast });
+}
+
 
 function onPreview(state, action) {
 	let new_state = Object.assign({}, state, {
 		previewId: action.id
 	});
-	console.log(new_state)
+
+	console.log(new_state);
 	return new_state;
+}
+
+/*
+action = {
+	id: id, // target
+
+	 // if is bool, meaning we set enabled to a specific value
+	spec: bool or null,
+}
+*/
+function onToggleHelper(state, id, spec=null) {
+	let node = copyNode(state[id]);
+	state[node.id] = node;
+	if (spec === null) {
+		node.enabled = !node.enabled;
+	} else {
+		node.enabled = spec;
+	}
+
+	// recusive call to set all descendants of timeline
+	// to have the same enabled attrib
+	if (utils.isTimeline(node)) {
+		for (let cid of node.childrenById) {
+			onToggleHelper(state, cid, node.enabled)
+		}
+	}
 }
 
 function onToggle(state, action) {
-	let node = state[action.id];
-
 	let new_state = Object.assign({}, state);
 
-	if (utils.isTimeline(node)) {
-		node = copyTimeline(node);
-	} else {
-		node = copyTrial(node);
-	}
-
-	node.enabled = !node.enabled;
-	new_state[node.id] = node;
+	onToggleHelper(new_state, action.id, null);
 
 	return new_state;
 }
+
+/*
+action = {
+	flag: bool, // whether enable or not
+	spec: id, // toggle one only option
+}
+*/
+function setToggleCollectively(state, action) {
+	const { flag, spec } = action;
+	let new_state = Object.assign({}, state);
+
+	for (let id of new_state.mainTimeline) {
+		if (id === spec) {
+			continue;
+		}
+		onToggleHelper(new_state, id, flag);
+	}
+
+	if (spec) {
+		onToggleHelper(new_state, spec, true);
+	}
+
+	return new_state;
+}
+
 
 function setCollapsed(state, action) {
 	let timeline = state[action.id];
