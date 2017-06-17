@@ -30,6 +30,7 @@ A trial state = {
 
 
 import * as utils from './utils'; 
+import { deepCopy } from '../../utils';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
@@ -83,17 +84,6 @@ export function createTimeline(id,
 	};
 }
 
-// define deep copy for parameters later
-function copyTimeline(timeline) {
-	return createTimeline(timeline.id,
-		timeline.parent,
-		timeline.name,
-		timeline.childrenById.slice(),
-		timeline.collapsed,
-		timeline.enabled,
-		timeline.parameters)
-}
-
 
 export function createTrial(id,
 	parent=null,
@@ -113,15 +103,6 @@ export function createTrial(id,
 	};
 }
 
-function copyTrial(trial) {
-	return createTrial(trial.id,
-		trial.parent,
-		trial.name,
-		trial.enabled,
-		trial.parameters,
-		trial.pluginType)
-}
-
 export function createTable(id,
 	timelineId,
 	headerId,
@@ -137,21 +118,6 @@ export function createTable(id,
 	};
 }
 
-function copyTable(table) {
-	return createTable(table.id,
-		table.timelineId,
-		table.headerId,
-		table.rowId,
-		table.cellValue)
-}
-
-function copyNode(node) {
-	if (utils.isTimeline(node)) {
-		return copyTimeline(node);
-	} else {
-		return copyTrial(node);
-	}
-}
 
 /*
 action = {
@@ -166,7 +132,7 @@ export function addTimeline(state, action) {
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
-		parent = copyTimeline(parent);
+		parent = deepCopy(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
 		parent.collapsed = false;
@@ -196,7 +162,7 @@ export function addTrial(state, action) {
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
-		parent = copyTimeline(parent);
+		parent = deepCopy(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
 		parent.collapsed = false;
@@ -255,7 +221,7 @@ function deleteTimelineHelper(state, id) {
 		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
 	} else {
 		parent =  getNodeById(state, parent)
-		parent = copyTimeline(parent);
+		parent = deepCopy(parent);
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
@@ -284,7 +250,7 @@ function deleteTrialHelper(state, id) {
 		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
 	} else {
 		parent = getNodeById(state, parent);
-		parent = copyTimeline(parent);
+		parent = deepCopy(parent);
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
@@ -311,7 +277,7 @@ function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrial
 	// find target
 	let target = state[targetId];
 	// deep copy it but with different id
-	let dup = copyTimeline(target);
+	let dup = deepCopy(target);
 	dup.id = dupId;
 
 	// clear dup children array
@@ -332,7 +298,7 @@ function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrial
 		// if this descendant is a trial, simply duplicated it
 		} else {
 			newId = getTrialId();
-			dupChild = copyTrial(dupTarget);
+			dupChild = deepCopy(dupTarget);
 		}
 
 		// add dup child to dup and state
@@ -369,7 +335,7 @@ export function duplicateTimeline(state, action) {
 		new_state.mainTimeline = new_state.mainTimeline.slice();
 		arr = new_state.mainTimeline;
 	} else {
-		parent = copyTimeline(new_state[parent]);
+		parent = deepCopy(new_state[parent]);
 		new_state[parent.id] = parent;
 		arr = parent.childrenById;
 	}
@@ -392,7 +358,7 @@ export function duplicateTrial(state, action) {
 
 	// duplicate
 	let new_state = Object.assign({}, state);
-	let dup = copyTrial(target);
+	let dup = deepCopy(target);
 	// get its own id
 	dup.id = dupId;
 	new_state[dupId] = dup;
@@ -403,7 +369,7 @@ export function duplicateTrial(state, action) {
 		new_state.mainTimeline = new_state.mainTimeline.slice();
 		arr = new_state.mainTimeline;
 	} else {
-		parent = copyTimeline(new_state[parent]);
+		parent = deepCopy(new_state[parent]);
 		new_state[parent.id] = parent;
 		arr = parent.childrenById;
 	}
@@ -463,7 +429,7 @@ export function moveTo(state, action) {
 			new_state.mainTimeline = new_state.mainTimeline.slice();
 			arr = new_state.mainTimeline;
 		} else {
-			let parent = copyTimeline(new_state[source.parent]);
+			let parent = deepCopy(new_state[source.parent]);
 			new_state[parent.id] = parent;
 			arr = parent.childrenById;
 		}
@@ -479,7 +445,7 @@ export function moveTo(state, action) {
 		if (sourceParent === null) {
 			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== source.id));
 		} else {
-			sourceParent = copyTimeline(new_state[sourceParent]);
+			sourceParent = deepCopy(new_state[sourceParent]);
 			new_state[sourceParent.id] = sourceParent;
 			sourceParent.childrenById = sourceParent.childrenById.filter((id) => (id !== source.id));
 		}
@@ -491,7 +457,7 @@ export function moveTo(state, action) {
 			new_state.mainTimeline = new_state.mainTimeline.slice();
 			arr = new_state.mainTimeline;
 		} else {
-			targetParent = copyTimeline(new_state[targetParent]);
+			targetParent = deepCopy(new_state[targetParent]);
 			new_state[targetParent.id] = targetParent;
 			arr = targetParent.childrenById;
 		}
@@ -541,7 +507,7 @@ export function moveInto(state, action) {
 	if (hasParentCandidate) {
 		// deep copies
 		let new_state = Object.assign({}, state);
-		node = copyNode(node);
+		node = deepCopy(node);
 		new_state[node.id] = node;
 
 		// delete source from old parent
@@ -550,14 +516,14 @@ export function moveInto(state, action) {
 			parentCandidateId = new_state.mainTimeline[new_state.mainTimeline.indexOf(node.id)-1];
 			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== node.id));
 		} else {
-			parent = copyTimeline(new_state[parent]);
+			parent = deepCopy(new_state[parent]);
 			new_state[parent.id] = parent;
 			parentCandidateId = parent.childrenById[parent.childrenById.indexOf(node.id)-1];
 			parent.childrenById = parent.childrenById.filter((id) => (id !== node.id));
 		}
 
 		// deep copy new parent
-		let parentCandidate = copyTimeline(new_state[parentCandidateId]);
+		let parentCandidate = deepCopy(new_state[parentCandidateId]);
 		new_state[parentCandidateId] = parentCandidate;
 
 		// insert source into new parent, new parent automatically expands
@@ -656,7 +622,7 @@ action = {
 }
 */
 function onToggleHelper(state, id, spec=null) {
-	let node = copyNode(state[id]);
+	let node = deepCopy(state[id]);
 	state[node.id] = node;
 	if (spec === null) {
 		node.enabled = !node.enabled;
@@ -711,7 +677,7 @@ export function setCollapsed(state, action) {
 
 	let new_state = Object.assign({}, state);
 
-	timeline = copyTimeline(timeline);
+	timeline = deepCopy(timeline);
  	timeline.collapsed = !timeline.collapsed;
 
 	new_state[timeline.id] = timeline;
