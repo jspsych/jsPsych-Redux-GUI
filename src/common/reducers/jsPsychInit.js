@@ -39,7 +39,7 @@ export const initState = {
 	on_trial_start: defaultFunction,
 	on_trial_finish: defaultFunction,
 	on_data_update: defaultFunction,
-	on_interaction_data_update: "",
+	on_interaction_data_update: defaultFunction,
 	exclusions: {
 		min_width: 0,
 		min_height: 0,
@@ -54,7 +54,7 @@ export const initState = {
 }
 
 export default function(state=initState, action) {
-	console.log(action)
+
 	switch(action.type) {
 		case actionTypes.SET_JSPSYCH_INIT:
 			return setJspyschInit(state, action);
