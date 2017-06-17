@@ -2,11 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {
@@ -17,8 +13,6 @@ import {
 import InitSettingIcon from 'material-ui/svg-icons/action/settings';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
-// import CheckIcon from 'material-ui/svg-icons/toggle/check-box';
-// import UnCheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 
 import CodeEditor from '../CodeEditor';
 
@@ -28,7 +22,7 @@ const textFieldRow = (self, key, type="number") => (
   <div style={{display: 'flex'}}>
     <div style={{padding: 15}}>{key}: </div>
     <TextField
-      id="text-field-default_iti"
+      id={"text-field-"+key}
       value={self.props[key]}
       type={type}
       onChange={(e, value) => { self.props.setJsPsychInit(e, value, settingType[key]); }}

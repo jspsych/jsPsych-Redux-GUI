@@ -5,15 +5,15 @@ import IconButton from 'material-ui/IconButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CodeMirror from 'react-codemirror';
-require('codemirror/lib/codemirror.css')
+require('codemirror/lib/codemirror.css');
 
 import ButtonIcon from 'material-ui/svg-icons/editor/mode-edit';
 import {
-  indigo500 as hoverColor,
+  cyan500 as hoverColor,
   grey800 as normalColor,
 } from 'material-ui/styles/colors';
 
-export default class codeEditor extends React.Component {
+export default class CodeEditor extends React.Component {
   static propTypes = { 
   	onUpdate: PropTypes.func.isRequired,
   	code: PropTypes.string,
