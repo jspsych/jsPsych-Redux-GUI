@@ -28,9 +28,9 @@ export initState = {
 
 */
 
-import * as actionTypes from '../constants/actionTypes';
+import * as actionTypes from '../constants/ActionTypes';
 
-const defaultFunction = "function(data) { return undefined; }";
+export const defaultFunction = "function(data) { \n\treturn undefined; \n}";
 
 export const initState = {
 	display_element: undefined,
@@ -53,7 +53,8 @@ export const initState = {
 	max_load_time: 60000,
 }
 
-export default function(state, action) {
+export default function(state=initState, action) {
+	console.log(action)
 	switch(action.type) {
 		case actionTypes.SET_JSPSYCH_INIT:
 			return setJspyschInit(state, action);
@@ -62,7 +63,7 @@ export default function(state, action) {
 	}
 }
 
-function copyState: (state) {
+function copyState(state) {
 	return Object.assign({}, state, {
 		preload_audio: state.preload_audio.slice(),
 		preload_images: state.preload_images.slice(),
@@ -78,7 +79,7 @@ export const settingType = {
 	on_trial_start: 3,
 	on_trial_finish: 4,
 	on_data_update: 5,
-	on_interaction_data_update: 6;
+	on_interaction_data_update: 6,
 	min_width: 7,
 	min_height: 8,
 	audio: 9,
@@ -124,13 +125,13 @@ function setJspyschInit(state, action) {
 			new_state.on_interaction_data_update = value;
 			break;
 		case settingType.min_width:
-			new_state.min_width = value;
+			new_state.exclusions.min_width = value;
 			break;
 		case settingType.min_height:
-			new_state.min_height = value;
+			new_state.exclusions.min_height = value;
 			break;
 		case settingType.audio:
-			new_state.audio = !new_state.audio;
+			new_state.exclusions.audio = !new_state.exclusions.audio;
 			break;
 		case settingType.show_progress_bar:
 			new_state.show_progress_bar = !new_state.show_progress_bar;
