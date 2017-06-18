@@ -29,6 +29,7 @@ export initState = {
 */
 
 import * as actionTypes from '../../constants/ActionTypes';
+import { deepCopy } from '../../utils';
 
 export const defaultFunction = "function(data) { \n\treturn undefined; \n}";
 
@@ -63,15 +64,6 @@ export default function(state=initState, action) {
 	}
 }
 
-function copyState(state) {
-	return Object.assign({}, state, {
-		preload_audio: state.preload_audio.slice(),
-		preload_images: state.preload_images.slice(),
-		exclusions: Object.assign({}, state.exclusions),
-	});
-}
-
-
 export const settingType = {
 	display_element: 0,
 	default_iti: "default_iti",
@@ -100,7 +92,7 @@ action = {
 */
 function setJspyschInit(state, action) {
 	const { key, value } = action;
-	let new_state = copyState(state);
+	let new_state = deepCopy(state);
 
 	switch(key) {
 		case settingType.display_element:
