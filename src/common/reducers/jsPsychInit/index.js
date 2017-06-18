@@ -28,7 +28,7 @@ export initState = {
 
 */
 
-import * as actionTypes from '../constants/ActionTypes';
+import * as actionTypes from '../../constants/ActionTypes';
 
 export const defaultFunction = "function(data) { \n\treturn undefined; \n}";
 
@@ -74,21 +74,21 @@ function copyState(state) {
 
 export const settingType = {
 	display_element: 0,
-	default_iti: 1,
-	on_finish: 2,
-	on_trial_start: 3,
-	on_trial_finish: 4,
-	on_data_update: 5,
-	on_interaction_data_update: 6,
-	min_width: 7,
-	min_height: 8,
-	audio: 9,
-	show_progress_bar: 10,
-	auto_update_progress_bar: 11,
-	show_preload_progress_bar: 12,
-	preload_audio: 13,
-	preload_images: 14,
-	max_load_time: 15,
+	default_iti: "default_iti",
+	on_finish: "on_finish",
+	on_trial_start: "on_trial_start",
+	on_trial_finish: "on_trial_finish",
+	on_data_update: "on_data_update",
+	on_interaction_data_update: "on_interaction_data_update",
+	min_width: "min_width",
+	min_height: "min_height",
+	audio: "audio",
+	show_progress_bar: "show_progress_bar",
+	auto_update_progress_bar: "auto_update_progress_bar",
+	show_preload_progress_bar: "show_preload_progress_bar",
+	preload_audio: "preload_audio",
+	preload_images: "preload_images",
+	max_load_time: "max_load_time",
 }
 
 /*
