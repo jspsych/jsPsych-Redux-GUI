@@ -5,13 +5,13 @@ import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { GridTile } from 'material-ui/GridList';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 
 import {
 	grey900 as deepGrey,
 } from 'material-ui/styles/colors';
 
-import InitEditor from '../../containers/Appbar/jsPsychInitEditorContainer';
+import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 
 var experimentTitleStyle = {
 	color: deepGrey,
@@ -54,7 +54,7 @@ export default class Appbar extends React.Component {
                     marginLeft: 5
                   }}>
 								<TextField 
-								id="ExperimentNameTextfield"
+								id="Experiment-Name-Textfield"
                 value={this.props.experimentName}
 								onChange={this.props.changeExperimentName}/>
 							</div>

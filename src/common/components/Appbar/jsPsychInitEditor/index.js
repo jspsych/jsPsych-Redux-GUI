@@ -14,9 +14,9 @@ import InitSettingIcon from 'material-ui/svg-icons/action/settings';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
-import CodeEditorTrigger from '../CodeEditorTrigger';
+import CodeEditorTrigger from '../../CodeEditorTrigger';
 
-import { settingType } from '../../reducers/jsPsychInit';
+import { settingType } from '../../../reducers/jsPsychInit';
 
 export default class jsPsychInitEditor extends React.Component {
   constructor(props) {
@@ -50,7 +50,7 @@ export default class jsPsychInitEditor extends React.Component {
       onChange={(e, value) => { this.props.setJsPsychInit(e, value, key); }}
     />
   </div>
-)
+  )
 
   toggleRow = (key) => (
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
@@ -90,7 +90,7 @@ export default class jsPsychInitEditor extends React.Component {
       <MuiThemeProvider>
         <div className="jsPsych.init-editor">
           <IconButton 
-              tooltip="Launch Property Settings"
+              tooltip="Init Properties Setting"
               onTouchTap={this.handleOpen}
           >
               <InitSettingIcon 
