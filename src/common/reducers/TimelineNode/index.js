@@ -1,5 +1,6 @@
 import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
+import * as editor from './editor';
 
 
 export const initState = {
@@ -15,6 +16,7 @@ export default function(state=initState, action) {
 	// console.log(action)
 
 	switch(action.type) {
+		// organizer starts
 		case actionTypes.ADD_TIMELINE:
 			return organizer.addTimeline(state, action);
 		case actionTypes.DELETE_TIMELINE:
@@ -44,6 +46,9 @@ export default function(state=initState, action) {
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
 
+		// editor starts
+		case actionTypes.SET_NAME:
+			return editor.setName(state, action);
 		// case actionTypes.CHANGE_PLUGIN_TYPE:
 		// 	return changePlugin(state, action);
 		// case actionTypes.TOGGLE_PARAM_VALUE:

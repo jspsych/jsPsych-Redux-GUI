@@ -684,6 +684,3 @@ export function setCollapsed(state, action) {
 
 	return new_state;
 }
-
-
-

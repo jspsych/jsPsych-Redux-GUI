@@ -110,3 +110,10 @@ export function duplicateTrialAction(dupId, targetId) {
 		targetId: targetId,
 	};
 }
+
+export function setNameAction(name) {
+	return {
+		type: actionTypes.SET_NAME,
+		name: name
+	};
+}

@@ -31,7 +31,7 @@ export initState = {
 import * as actionTypes from '../../constants/ActionTypes';
 import { deepCopy } from '../../utils';
 
-export const defaultFunction = "function(data) { \n\treturn undefined; \n}";
+export const defaultFunction = "function(data) {\n\treturn undefined;\n}";
 
 export const initState = {
 	display_element: undefined,

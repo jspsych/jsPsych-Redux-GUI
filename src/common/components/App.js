@@ -2,7 +2,7 @@ import React from 'react';
 import Preview from './Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
-import TimelineNodeEditorDrawer from '../containers/TimelineNode/TimelineNodeEditorDrawer';
+import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -88,7 +88,7 @@ class App extends React.Component {
 	  				>
 	  				<Preview />
 	  				</div>
-	  				<TimelineNodeEditorDrawer open={this.state.timelineEditorDrawerToggle} 
+	  				<TimelineNodeEditor open={this.state.timelineEditorDrawerToggle} 
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
