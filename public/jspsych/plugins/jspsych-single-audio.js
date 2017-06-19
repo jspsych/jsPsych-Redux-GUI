@@ -84,13 +84,14 @@ jsPsych.plugins["single-audio"] = (function() {
     }
 
     // set up end event if trial needs it
+
     if(trial.trial_ends_after_audio){
       if(context !== null){
         source.onended = function() {
           end_trial();
         }
       } else {
-        audio.addEventListener('end', end_trial);
+        audio.addEventListener('ended', end_trial);
       }
     }
 
@@ -106,7 +107,7 @@ jsPsych.plugins["single-audio"] = (function() {
     };
 
     // function to end trial when it is time
-    var end_trial = function() {
+    function end_trial() {
 
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
@@ -118,11 +119,11 @@ jsPsych.plugins["single-audio"] = (function() {
         source.onended = function() { }
       } else {
         audio.pause();
-        audio.removeEventListener('end', end_trial);
+        audio.removeEventListener('ended', end_trial);
       }
 
       // kill keyboard listeners
-      jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+      jsPsych.pluginAPI.cancelAllKeyboardResponses();
 
       // gather the data to store for the trial
       var trial_data = {

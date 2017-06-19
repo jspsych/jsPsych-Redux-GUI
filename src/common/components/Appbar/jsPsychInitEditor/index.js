@@ -68,7 +68,7 @@ export default class jsPsychInitEditor extends React.Component {
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
       <div style={{padding: 15}}>{key}</div>
       <div style={{position: 'absolute', right: 0}}>
-        <CodeEditorTrigger code={this.props[key]} 
+        <CodeEditorTrigger code={this.props[key].toString()} 
                     onUpdate={(newCode) => { this.props.setJsPsychInit(null, newCode, key); }}
                     title={key+" = "}
         />

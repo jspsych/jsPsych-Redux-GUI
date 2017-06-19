@@ -8,10 +8,47 @@ export const initState = {
 	previewId: null,
 
 	// the main timeline. array of ids
-	mainTimeline: [],
+	// mainTimeline: [],
+	// mainTimeline: ["TRIAL--1", "TIMELINE--1"],
+	mainTimeline: ["TRIAL--1", "TRIAL--2"],
 
 	// init properties
-	jsPsychInit: jsPsychInit.initState
+	jsPsychInit: jsPsychInit.initState,
+
+
+	"TRIAL--1": {
+		id: "TRIAL--1",
+		type: "TRIAL",
+		name: "Trial -1",
+		parent: null,
+		enabled: true,
+		parameters: { text: "Test -1", choices: [], allow_mouse_click: false },
+		pluginType: "text",
+	},
+
+	"TRIAL--2": {
+		id: "TRIAL--2",
+		type: "TRIAL",
+		name: "Trial -2",
+		// parent: "TIMELINE--1",
+		parent: null,
+		enabled: true,
+		parameters: { text: "Test -2", choices: [], allow_mouse_click: false  },
+		pluginType: "text",
+	},
+
+	// "TIMELINE--1": {
+	// 	id: "TIMELINE--1",
+	// 	type: "TIMELINE",
+	// 	name: "Timline -1",
+	// 	parent: null,
+	// 	childrenById: ["TRIAL--2"],
+	// 	collapsed: false,
+	// 	enabled: true,
+	// 	parameters: {
+
+	// 	},
+	// }
 }
 
 

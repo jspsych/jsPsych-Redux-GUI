@@ -32,10 +32,13 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						'WebkitTransition': 'all 0.4s ease',
 						'MozTransition': 'all 0.4s ease',
 						transition: 'all 0.4s ease',
-						borderLeft: (this.props.open) ? '3px solid black' : '0.1px solid black'
 						}}>
 				<div className="TimelineNode-Editor-Container"
-					style={{height: '100%', width: '100%'}}>
+					style={{
+						height: '100%', 
+						width: '100%', 
+						borderLeft: (this.props.open) ? '3px solid black' : '1.5px solid black'
+					}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Editor-Content">
 						<div style={{display: 'flex'}}>

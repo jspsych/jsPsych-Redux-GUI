@@ -10,7 +10,10 @@ const mapStateToProps = (state, ownProps) => {
 	let jsPsychInit = state.timelineNodeState.jsPsychInit;
 
 	return {
-		...jsPsychInit
+		...jsPsychInit,
+		min_width: jsPsychInit.exclusions.min_width,
+		min_height: jsPsychInit.exclusions.min_height,
+		audio: jsPsychInit.exclusions.audio
 	};
 };
 

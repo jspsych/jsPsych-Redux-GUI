@@ -34,6 +34,7 @@
   "dependencies": {
     "express": "^4.15.3",
     "google-spreadsheets": "^0.5.1",
+    "jsonfn": "^0.31.0",
     "lodash.flow": "^3.5.0",
     "material-ui": "^0.17.3",
     "prop-types": "^15.5.10",
