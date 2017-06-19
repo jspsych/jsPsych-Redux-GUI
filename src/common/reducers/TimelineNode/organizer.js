@@ -767,18 +767,39 @@ export function arrayOfArrays(arrayOfObjects) {
 	newArray.push(firstRow);
 
 	var currentArray;
-	//For each row in array
-	for(let i=1; i<arrayOfObjects.length; i++) {
+	//For each object in array
+	for(let i=0; i<arrayOfObjects.length; i++) {
 		newArray.push([]);
 		//For each column in array
 		for(let j=0; j<headers.length; j++) {
 			currentArray = arrayOfObjects[i];
-			newArray[i][j] = currentArray[headers[j]];
+			newArray[i+1][j] = currentArray[headers[j]];
 			console.log("current header " + headers[j]);
 			console.log("ca[h[j]] " + currentArray[headers[j]]);
 		}
 	}
 	return newArray;
+}
+
+export function arrayOfObjects(arrayOfArrays) {
+	var array = [];
+	var headers = arrayOfArrays[0];
+	var currentObj;
+	console.log(arrayOfArrays[0].length);
+	//For number of rows
+	console.log("leng of array " + arrayOfArrays.length);
+	for(let i=0; i<(arrayOfArrays.length-1); i++) {
+		array.push({});
+		//For number of headers
+		for(let j=0; j<arrayOfArrays[0].length; j++) {
+			let currentHeader = headers[j]; 
+		 	currentObj = array[i]; 
+		 	currentObj[headers[j]] = arrayOfArrays[i+1][j];
+		 	array[i] = currentObj;
+		}
+	}
+
+	return array;
 }
 
 export function changeHeader(state, action) {
@@ -790,6 +811,15 @@ export function changeHeader(state, action) {
 	new_state[state.previewId] = node; 
 
 	var newArray = arrayOfArrays(node.timeline_variable);
+	console.log(newArray);
+	console.log(newArray[0]);
+	console.log(arrayOfObjects(newArray));
+
+	var headerArray = newArray[0];
+	headerArray[action.headerId] = action.newVal;
+
+	node.timeline_variable = arrayOfObjects(newArray)
+
 	return new_state;
 }
 
