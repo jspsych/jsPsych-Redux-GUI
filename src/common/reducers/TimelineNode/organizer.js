@@ -830,26 +830,42 @@ export function changeCell(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	const newArray = node.timeline_variable.map(obj => Object.assign({}, obj));
 
-	let cellString = action.cellId; //string with row and column index
-	var cellIndex = cellString.split(' '); 
-	var columns = Object.keys(node.timeline_variable[0]); //array of headers
-	console.log(columns[2]);
 
-	var cellRow = cellIndex[0];
-	var cellColumn = cellIndex[1];
-	console.log("cellRow " + cellRow);
-	console.log("cellColumn " + cellColumn);
+// 	let cellString = action.cellId; //string with row and column index
+// 	var cellIndex = cellString.split(' '); 
+// 	var columns = Object.keys(node.timeline_variable[0]); //array of headers
+// 	console.log(columns[2]);
 
-	//var currentRow = node.timeline_variable[cellRow];
-	var currentRow = newArray[cellRow];
+// 	var cellRow = cellIndex[0];
+// 	var cellColumn = cellIndex[1];
+// 	console.log("cellRow " + cellRow);
+// 	console.log("cellColumn " + cellColumn);
 
-	currentRow[columns[cellColumn]] = action.newVal;
-    console.log("currentRow[columns[cellColumn]] " + currentRow[columns[cellColumn]]);
+// 	//var currentRow = node.timeline_variable[cellRow];
+// 	var currentRow = newArray[cellRow];
+
+// 	currentRow[columns[cellColumn]] = action.newVal;
+//     console.log("currentRow[columns[cellColumn]] " + currentRow[columns[cellColumn]]);
     
-    node.timeline_variable = newArray;
-    return new_state; 
+//     node.timeline_variable = newArray;
+//     return new_state; 
+	var cellString = action.cellId; //string with row and column index
+	console.log('cellId ' + action.cellId);
+ 	var cellIndex = cellString.split(' '); 
+	var newArray = arrayOfArrays(node.timeline_variable);
+	var cellRow = cellIndex[0]; 
+	console.log('cellRow ' + cellRow);
+    var cellColumn = cellIndex[1];
+    console.log('cellColumn ' + cellColumn);
+
+    newArray[cellRow][cellColumn] = action.newVal;
+
+    node.timeline_variable = arrayOfObjects(newArray);
+    console.log(node.timeline_variable);
+
+    return new_state;
+
 }
 
 export function addColumn(state, action) {

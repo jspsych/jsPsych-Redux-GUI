@@ -61,7 +61,7 @@ class EditableTable extends React.Component {
 					timelineRows.map((row, rowIndex) => {        ////index is number of rows
 						return <tr>{
 							headers.map((title, titleIndex) => {
-								return <input id={rowIndex +" "+ titleIndex} style={tableStyles.header}  
+								return <input id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header}  
 								defaultValue={row[headers[titleIndex]]} 
 								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} /> //{row[headers[titleIndex]]}</input>
 							})
