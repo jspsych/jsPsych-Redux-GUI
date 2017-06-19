@@ -90,7 +90,7 @@ export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
 	enabled=true,
-	parameters={text: '', choices: ''},
+	parameters={ text: '', choices: ''},
 	pluginType=DEFAULT_PLUGIN_TYPE) {
 
 	return {
@@ -103,22 +103,6 @@ export function createTrial(id,
 		pluginType: pluginType,
 	};
 }
-
-export function createTable(id,
-	timelineId,
-	erId,
-	rowId,
-	cellValue={}) {
-
-	return {
-		id: id,
-		timelineId: utils.getTimelineId(),
-		headerId: utils.getHeaderId(),
-		rowId: utils.getRowId(),
-		cellValue: cellValue
-	};
-}
-
 
 /*
 action = {
@@ -685,8 +669,7 @@ export function setCollapsed(state, action) {
 
 	return new_state;
 }
-<<<<<<< HEAD
-=======
+
 
 export function changePlugin(state, action) {
 	let node = state[state.previewId];
@@ -859,4 +842,3 @@ export function addColumn(state, action) {
 
 
 
->>>>>>> b6ef4d5718743ad0e68746645b8fd130818f3045
