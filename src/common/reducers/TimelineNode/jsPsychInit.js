@@ -28,7 +28,6 @@ export initState = {
 
 */
 
-import * as actionTypes from '../../constants/ActionTypes';
 import { deepCopy } from '../../utils';
 
 export const defaultFunction = "function(data) {\n\treturn undefined;\n}";
@@ -52,16 +51,6 @@ export const initState = {
 	preload_audio: [],
 	preload_images: [],
 	max_load_time: 60000,
-}
-
-export default function(state=initState, action) {
-
-	switch(action.type) {
-		case actionTypes.SET_JSPSYCH_INIT:
-			return setJspyschInit(state, action);
-		default:
-			return state;
-	}
 }
 
 export const settingType = {
@@ -90,58 +79,61 @@ action = {
 }
 
 */
-function setJspyschInit(state, action) {
+export function setJspyschInit(state, action) {
 	const { key, value } = action;
-	let new_state = deepCopy(state);
+	let new_state = Object.assign({}, state);
 
+	let jsPsychInit = deepCopy(new_state.jsPsychInit);
+	new_state.jsPsychInit = jsPsychInit;
+	
 	switch(key) {
 		case settingType.display_element:
-			new_state.display_element = value;
+			jsPsychInit.display_element = value;
 			break;
 		case settingType.default_iti:
-			new_state.default_iti = value;
+			jsPsychInit.default_iti = value;
 			break;
 		case settingType.on_finish:
-			new_state.on_finish = value;
+			jsPsychInit.on_finish = value;
 			break;
 		case settingType.on_data_update:
-			new_state.on_data_update = value;
+			jsPsychInit.on_data_update = value;
 			break;
 		case settingType.on_trial_start:
-			new_state.on_trial_start = value;
+			jsPsychInit.on_trial_start = value;
 			break;
 		case settingType.on_trial_finish:
-			new_state.on_trial_finish = value;
+			jsPsychInit.on_trial_finish = value;
 			break;
 		case settingType.on_interaction_data_update:
-			new_state.on_interaction_data_update = value;
+			jsPsychInit.on_interaction_data_update = value;
 			break;
 		case settingType.min_width:
-			new_state.exclusions.min_width = value;
+			jsPsychInit.exclusions.min_width = value;
 			break;
 		case settingType.min_height:
-			new_state.exclusions.min_height = value;
+			jsPsychInit.exclusions.min_height = value;
 			break;
 		case settingType.audio:
-			new_state.exclusions.audio = !new_state.exclusions.audio;
+			jsPsychInit.exclusions.audio = !jsPsychInit.exclusions.audio;
 			break;
 		case settingType.show_progress_bar:
-			new_state.show_progress_bar = !new_state.show_progress_bar;
+			jsPsychInit.show_progress_bar = !jsPsychInit.show_progress_bar;
 			break;
 		case settingType.auto_update_progress_bar:
-			new_state.auto_update_progress_bar = !new_state.auto_update_progress_bar;
+			jsPsychInit.auto_update_progress_bar = !jsPsychInit.auto_update_progress_bar;
 			break;
 		case settingType.show_preload_progress_bar:
-			new_state.show_preload_progress_bar = !new_state.show_preload_progress_bar;
+			jsPsychInit.show_preload_progress_bar = !jsPsychInit.show_preload_progress_bar;
 			break;
 		case settingType.preload_audio:
-			new_state.preload_audio = value;
+			jsPsychInit.preload_audio = value;
 			break;
 		case settingType.preload_images:
-			new_state.preload_images = value;
+			jsPsychInit.preload_images = value;
 			break;
 		case settingType.max_load_time:
-			new_state.max_load_time = value;
+			jsPsychInit.max_load_time = value;
 			break;
 		default:
 			break;

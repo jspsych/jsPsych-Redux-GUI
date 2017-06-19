@@ -1,7 +1,6 @@
 import * as actionTypes from '../constants/ActionTypes';
 import { combineReducers } from "redux";
 import timelineNodeReducer from './TimelineNode';
-import jsPsychInitReducer from './jsPsychInit';
 
 const initState = {
 	experimentName: "Untitled Experiment"
@@ -27,7 +26,6 @@ function mainReducer(state = initState, action) {
 const rootReducer = combineReducers({
 	mainState: mainReducer,
 	timelineNodeState: timelineNodeReducer,
-	jsPsychInitState: jsPsychInitReducer,
 });
 
 export default rootReducer;

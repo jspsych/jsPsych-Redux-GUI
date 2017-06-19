@@ -89,7 +89,7 @@ export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
 	enabled=true,
-	parameters={text: '', choices: ''},
+	parameters={ text: '', choices: ''},
 	pluginType=DEFAULT_PLUGIN_TYPE) {
 
 	return {
@@ -102,22 +102,6 @@ export function createTrial(id,
 		pluginType: pluginType,
 	};
 }
-
-export function createTable(id,
-	timelineId,
-	headerId,
-	rowId,
-	cellValue={}) {
-
-	return {
-		id: id,
-		timelineId: utils.getTimelineId(),
-		headerId: utils.getHeaderId(),
-		rowId: utils.getRowId(),
-		cellValue: cellValue
-	};
-}
-
 
 /*
 action = {

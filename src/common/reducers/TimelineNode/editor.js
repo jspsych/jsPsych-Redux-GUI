@@ -1,4 +1,5 @@
 import { deepCopy } from '../../utils';
+import * as utils from './utils';
 
 export function setName(state, action) {
 	let node = state[state.previewId];
@@ -11,4 +12,20 @@ export function setName(state, action) {
 	node.name = action.name;
 
 	return new_state;
+}
+
+
+export function createTable(id,
+	timelineId,
+	headerId,
+	rowId,
+	cellValue={}) {
+
+	return {
+		id: id,
+		timelineId: utils.getTimelineId(),
+		headerId: utils.getHeaderId(),
+		rowId: utils.getRowId(),
+		cellValue: cellValue
+	};
 }
