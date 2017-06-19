@@ -15,7 +15,7 @@ function handleFunc(s) {
 		return s;
 	} else {
 		for (let m of fur) {
-			s = s.replace(funcM, m);
+			s = s.replace('"'+m+'"', m);
 		}
 		return s;
 	}
@@ -25,7 +25,7 @@ function handleFat(s) {
 	let far = s.match(fatR);
 	if (!far) return s;
 	for (let m of far) {
-		s = s.replace(fatM, m);
+		s = s.replace('"'+m+'"', m);
 	}
 	return s;
 }
