@@ -45,6 +45,9 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
+						<TrialForm id={this.props.id} pluginType={this.props.pluginType} />
+						<TimelineForm id={this.props.id} />
+
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :
