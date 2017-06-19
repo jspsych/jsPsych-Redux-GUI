@@ -2,7 +2,8 @@ import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-//import SpreadsheetComponent from 'react-spreadsheet-component';
+
+import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
 import { grey900 } from 'material-ui/styles/colors';
 
@@ -78,6 +79,13 @@ class EditableTable extends React.Component {
 			onTouchTap={this.props.onTouchTap} >
 			<NavigationArrowForward />
 			</IconButton >
+			<IconButton
+			tooltip="add row"
+			tooltipPosition="bottom-right"
+			style={tableStyles.small}
+			onTouchTap={(event) => this.props.handleAddRow(event.target.id)} >
+			<NavigationArrowDownward />
+			</IconButton>
 			</div>
 			</div>
 			)

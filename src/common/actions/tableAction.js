@@ -24,3 +24,10 @@ export function addColumn(id) {
 		id: id
 	};
 }
+
+export function addRow(id) {
+	return {
+		type: actionTypes.ADD_ROW,
+		id: id
+	};
+}

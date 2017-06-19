@@ -21,6 +21,10 @@ const onAddColumn = (dispatch, ownProps) => {
 	dispatch(tableActions.addColumn(ownProps.id));
 }
 
+const onAddRow = (dispatch, ownProps) => {
+	dispatch(tableActions.addRow(ownProps.id));
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 	let timeline = timelineNodeState[timelineNodeState.previewId];
@@ -34,7 +38,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleHeaderChange: (headerId, newVal) => { onChangeHeader(dispatch, headerId, newVal) },
 	handleTableChange: (cellId, newVal) =>  { onChangeCells(dispatch, cellId, newVal) },
-	onTouchTap: (e) => { onAddColumn(dispatch, ownProps) }
+	onTouchTap: (e) => { onAddColumn(dispatch, ownProps) },
+	handleAddRow: (e) => { onAddRow(dispatch, ownProps) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditableTable);

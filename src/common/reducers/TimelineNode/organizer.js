@@ -36,6 +36,9 @@ const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_PLUGIN_TYPE = 'text';
 
+const DEFAULT_HEADER = '-';
+const DEFAULT_CELL_VALUE = '-';
+
 var timeline = 0;
 var trial = 0;
 
@@ -71,8 +74,7 @@ export function createTimeline(id,
 	collapsed=true,
 	enabled=true,
 	parameters={},
-	timeline_variable=[{h1: 'value1', h2: 'value2'},
-						{h1: 'hi', h2: 'not null'}]
+	timeline_variable=[{h1: null, h2: null}]
 	) {
 
 	return {
@@ -868,6 +870,10 @@ export function changeCell(state, action) {
 
 }
 
+export function addColumnHelper(state, action) {
+
+}
+
 export function addColumn(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -875,11 +881,19 @@ export function addColumn(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
+	node.timeline_variable[DEFAULT_HEADER] = DEFAULT_CELL_VALUE;
+
+	return new_state;
+}
+
+export function addRow(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	for(let i=0; i<node.timeline_variable.length; i++) {
-		node.timeline_variable[i].newHeader = null; 
-	}
+	node.timeline_variable.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
 
 	return new_state;
 }
