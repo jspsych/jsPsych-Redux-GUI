@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { isTimeline } from '../../reducers/TimelineNode/utils/index';
-import TimelineForm from '../../components/TimelineNode/TimelineForm';
+import { isTimeline } from '../../reducers/TimelineNode/utils';
+import TimelineForm from '../../components/TimelineNodeEditor/TimelineForm';
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;

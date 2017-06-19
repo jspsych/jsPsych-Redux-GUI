@@ -8,10 +8,47 @@ export const initState = {
 	previewId: null,
 
 	// the main timeline. array of ids
-	mainTimeline: [],
+	// mainTimeline: [],
+	// mainTimeline: ["TRIAL--1", "TIMELINE--1"],
+	mainTimeline: ["TRIAL--1", "TRIAL--2"],
 
 	// init properties
-	jsPsychInit: jsPsychInit.initState
+	jsPsychInit: jsPsychInit.initState,
+
+
+	"TRIAL--1": {
+		id: "TRIAL--1",
+		type: "TRIAL",
+		name: "Trial -1",
+		parent: null,
+		enabled: true,
+		parameters: { text: "Test -1", choices: [], allow_mouse_click: false },
+		pluginType: "text",
+	},
+
+	"TRIAL--2": {
+		id: "TRIAL--2",
+		type: "TRIAL",
+		name: "Trial -2",
+		// parent: "TIMELINE--1",
+		parent: null,
+		enabled: true,
+		parameters: { text: "Test -2", choices: [], allow_mouse_click: false  },
+		pluginType: "text",
+	},
+
+	// "TIMELINE--1": {
+	// 	id: "TIMELINE--1",
+	// 	type: "TIMELINE",
+	// 	name: "Timline -1",
+	// 	parent: null,
+	// 	childrenById: ["TRIAL--2"],
+	// 	collapsed: false,
+	// 	enabled: true,
+	// 	parameters: {
+
+	// 	},
+	// }
 }
 
 
@@ -48,7 +85,6 @@ export default function(state=initState, action) {
 			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
-<<<<<<< HEAD
 
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
@@ -57,32 +93,18 @@ export default function(state=initState, action) {
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
-		// case actionTypes.CHANGE_PLUGIN_TYPE:
-		// 	return changePlugin(state, action);
-		// case actionTypes.TOGGLE_PARAM_VALUE:
-		// 	return changeToggleValue(state, action);
-		// case actionTypes.CHANGE_PARAM_TEXT:
-		// 	return changeParamText(state, action);
-		// case actionTypes.CHANGE_PARAM_INT: 
-		// 	return changeParamInt(state, action);
-		// case actionTypes.CHANGE_PARAM_FLOAT:
-		// 	return changeParamFloat(state, action);
-		// case actionTypes.CHANGE_HEADER:
-		// 	return changeHeader(state, action);
-=======
 		case actionTypes.CHANGE_PLUGIN_TYPE:
-			return organizer.changePlugin(state, action);
+			return editor.changePlugin(state, action);
 		case actionTypes.TOGGLE_PARAM_VALUE:
-			return organizer.changeToggleValue(state, action);
+			return editor.changeToggleValue(state, action);
 		case actionTypes.CHANGE_PARAM_TEXT:
-			return organizer.changeParamText(state, action);
+			return editor.changeParamText(state, action);
 		case actionTypes.CHANGE_PARAM_INT: 
-			return organizer.changeParamInt(state, action);
+			return editor.changeParamInt(state, action);
 		case actionTypes.CHANGE_PARAM_FLOAT:
-			return organizer.changeParamFloat(state, action);
+			return editor.changeParamFloat(state, action);
 		case actionTypes.CHANGE_HEADER:
-			return organizer.changeHeader(state, action);
->>>>>>> b6ef4d5718743ad0e68746645b8fd130818f3045
+			return editor.changeHeader(state, action);
 
 		default:
 			return state;

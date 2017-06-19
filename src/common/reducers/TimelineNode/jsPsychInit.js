@@ -32,8 +32,10 @@ import { deepCopy } from '../../utils';
 
 export const defaultFunction = "function(data) {\n\treturn undefined;\n}";
 
+export const jsPsych_Display_Element = "Preview-Window";
+
 export const initState = {
-	display_element: undefined,
+	display_element: jsPsych_Display_Element,
 	default_iti: 0,
 	on_finish: defaultFunction,
 	on_trial_start: defaultFunction,
@@ -54,7 +56,6 @@ export const initState = {
 }
 
 export const settingType = {
-	display_element: 0,
 	default_iti: "default_iti",
 	on_finish: "on_finish",
 	on_trial_start: "on_trial_start",
@@ -87,9 +88,6 @@ export function setJspyschInit(state, action) {
 	new_state.jsPsychInit = jsPsychInit;
 	
 	switch(key) {
-		case settingType.display_element:
-			jsPsychInit.display_element = value;
-			break;
 		case settingType.default_iti:
 			jsPsychInit.default_iti = value;
 			break;

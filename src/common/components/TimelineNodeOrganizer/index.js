@@ -93,7 +93,7 @@ class TimelineNodeOrganizer extends React.Component {
 					style={{
 						height: '100%', 
 						width: '100%', 
-						borderRight: (this.props.open) ? '3px solid black' : '0.1px solid black'
+						borderRight: (this.props.open) ? '3px solid black' : '1.5px solid black'
 					}}>
 					{(this.props.open) ? 
 					<div className="TimelineNode-Organizer-Content">

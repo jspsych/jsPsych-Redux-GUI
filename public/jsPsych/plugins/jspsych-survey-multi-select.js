@@ -65,7 +65,7 @@ jsPsych.plugins['survey-multi-select'] = (function() {
 
     // trial defaults
     trial.preamble = typeof trial.preamble == 'undefined' ? "" : trial.preamble;
-    trial.required = typeof trial.required == 'undefined' ? true : trial.required;
+    trial.required = typeof trial.required == 'undefined' ? false : trial.required;
     trial.required_msg = trial.required_msg || '*please select at least one option!';
     trial.horizontal = typeof trial.horizontal == 'undefined' ? false : trial.horizontal;
     //If button_label is empty, the browser's language will be used to determine the button label.
@@ -77,7 +77,7 @@ jsPsych.plugins['survey-multi-select'] = (function() {
     trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     // inject CSS for trial
-    var node = display_element.innerHTML += '<style id="jspsych-survey-multi-select-css">';
+    display_element.innerHTML = '<style id="jspsych-survey-multi-select-css"></style>';
     var cssstr = ".jspsych-survey-multi-select-question { margin-top: 2em; margin-bottom: 2em; text-align: left; }"+
       ".jspsych-survey-multi-select-text span.required {color: darkred;}"+
       ".jspsych-survey-multi-select-horizontal .jspsych-survey-multi-select-text {  text-align: center;}"+

@@ -72,6 +72,7 @@ window.jsPsych = (function() {
       'preload_audio': [],
       'exclusions': {},
       'show_progress_bar': false,
+      'auto_update_progress_bar': true,
       'auto_preload': true,
       'show_preload_progress_bar': true,
       'max_load_time': 60000,
@@ -114,6 +115,9 @@ window.jsPsych = (function() {
     opts.display_element.innerHTML = '<div class="jspsych-content-wrapper"><div id="jspsych-content"></div></div>';
     DOM_target = document.querySelector('#jspsych-content');
 
+    // add tabIndex attribute to scope event listeners
+    opts.display_element.tabIndex = 0;
+
     // add CSS class to DOM_target
     opts.display_element.className += ' jspsych-display-element';
     DOM_target.className += 'jspsych-content';
@@ -122,6 +126,9 @@ window.jsPsych = (function() {
     timeline = new TimelineNode({
       timeline: opts.timeline
     });
+
+    // create keyboard event listeners
+    jsPsych.pluginAPI.createKeyboardEventListeners(opts.display_element);
 
     // create listeners for user browser interaction
     jsPsych.data.createInteractionListeners();
@@ -734,7 +741,7 @@ window.jsPsych = (function() {
     var complete = timeline.advance();
 
     // update progress bar if shown
-    if (opts.show_progress_bar === true) {
+    if (opts.show_progress_bar === true && opts.auto_update_progress_bar == true) {
       updateProgressBar();
     }
 
@@ -831,6 +838,11 @@ window.jsPsych = (function() {
     var progress = jsPsych.progress();
 
     document.querySelector('#jspsych-progressbar-inner').style.width = progress.percent_complete + "%";
+  }
+
+  core.setProgressBar = function(proportion_complete){
+    proportion_complete = Math.max(Math.min(1,proportion_complete),0);
+    document.querySelector('#jspsych-progressbar-inner').style.width = (proportion_complete*100) + "%";
   }
 
   //Leave a trace in the DOM that jspsych was loaded
@@ -1668,16 +1680,18 @@ jsPsych.pluginAPI = (function() {
 
   var held_keys = {};
 
-  // keyboard events
-  document.addEventListener('keydown', function(e){
-    for(var i=0; i<keyboard_listeners.length; i++){
-      keyboard_listeners[i].fn(e);
-    }
-    held_keys[e.keyCode] = true;
-  });
-  document.addEventListener('keyup', function(e){
-    held_keys[e.keyCode] = false;
-  });
+  module.createKeyboardEventListeners = function(root_element){
+    // keyboard events
+    root_element.addEventListener('keydown', function(e){
+      for(var i=0; i<keyboard_listeners.length; i++){
+        keyboard_listeners[i].fn(e);
+      }
+      held_keys[e.keyCode] = true;
+    });
+    root_element.addEventListener('keyup', function(e){
+      held_keys[e.keyCode] = false;
+    });
+  }
 
   module.getKeyboardResponse = function(parameters) {
     //parameters are: callback_function, valid_responses, rt_method, persist, audio_context, audio_context_start_time, allow_held_key?

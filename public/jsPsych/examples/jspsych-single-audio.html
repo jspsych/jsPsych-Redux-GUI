@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-
     <script src="../jspsych.js"></script>
     <script src="../plugins/jspsych-single-audio.js"></script>
     <link rel="stylesheet" href="../css/jspsych.css"></link>
   </head>
+
+  <body></body>
 
   <script>
 
@@ -17,16 +18,18 @@
 
   var block_1 = {
     type: 'single-audio',
+    trial_ends_after_audio: true,
     timeline: [
+      {stimulus: 'sound/tone.mp3'},
       {stimulus: function() { return 'sound/sound.mp3'; }},
       {stimulus: 'sound/hammer.mp3'}
     ],
-    prompt: 'press any key to advance'
+    prompt: 'the trial should advance automatically after sound completes, or press any key to advance'
   }
 
   jsPsych.init({
     timeline: [block_1],
-    preload_audio: ['sound/sound.mp3']
+    preload_audio: ['sound/sound.mp3'],
     on_finish: function() {jsPsych.data.displayData();}
   });
 

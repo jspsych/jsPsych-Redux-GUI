@@ -1,5 +1,5 @@
 import React from 'react';
-import Preview from './Preview';
+import Preview from '../containers/Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
@@ -65,7 +65,7 @@ class App extends React.Component {
 		return (
 			<div>
 			<MuiThemeProvider>
-			<div className="App" style={{overflowX: 'hidden', height: "100%"}}>
+			<div className="App" style={{overflowX: 'hidden', overflowY: 'auto', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
 				</div>

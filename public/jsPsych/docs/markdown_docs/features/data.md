@@ -2,7 +2,7 @@
 
 There are two very different kinds of data storage: data stored in **memory** and data stored **permanently**. Data stored permanently exists even after the browser running jsPsych closes, typically in a database or in a file on a server. Data stored in memory exists only as long the browser window running jsPsych is open.
 
-jsPsych has many features for interacting with data stored in memory, but few for permanent data storage. This is a deliberate choice as there are dozens of ways that data could be stored permanently and jsPsych does not lock you into one particular solution. However, saving data permanently is obviously a crucial component of any experiment, and the second half of this page contains a few suggestions on how to accomplish permanent data storage.
+jsPsych has many features for interacting with data stored in memory, but few for permanent data storage. This is a deliberate choice, as there are dozens of ways that data could be stored permanently. jsPsych does not lock you into one particular solution. However, saving data permanently is obviously a crucial component of any experiment, and the second half of this page contains a few suggestions on how to accomplish permanent data storage.
 
 ## Storing data in jsPsych's data structure
 
@@ -56,7 +56,8 @@ var block = {
 
 ## Aggregating and manipulating jsPsych data
 
-When accessing the data with `jsPsych.data.get()` the returned object is a special data collection object that exposes a number of methods for aggregating and manipulating the data. The full list of methods is detailed in the data API. TODO: FILL IN LINK.
+When accessing the data with `jsPsych.data.get()` the returned object is a special data collection object that exposes a number of methods for aggregating and manipulating the data. The full list of methods is detailed in the [data module documentation](../core_library/jspsych-data.md).
+
 
 Here are some examples of data collection manipulation.
 
@@ -75,7 +76,7 @@ All data with a response time between 100 and 500ms:
 var data = jsPsych.data.get().filterCustom(function(x){ return x.rt >= 100 && x.rt <=500 });
 ```
 
-Applying filters consecutively:
+Applying filters consecutively to get all trials from a particular plugin with a response time above 100ms:
 ```js
 var data = jsPsych.data.get().filter({trial_type: 'single-stim'}).filterCustom(function(x){ return x.rt > 100; });
 ```
