@@ -45,6 +45,7 @@ export default function(state=initState, action) {
 			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
+<<<<<<< HEAD
 
 		// editor starts
 		case actionTypes.SET_NAME:
@@ -61,6 +62,20 @@ export default function(state=initState, action) {
 		// 	return changeParamFloat(state, action);
 		// case actionTypes.CHANGE_HEADER:
 		// 	return changeHeader(state, action);
+=======
+		case actionTypes.CHANGE_PLUGIN_TYPE:
+			return organizer.changePlugin(state, action);
+		case actionTypes.TOGGLE_PARAM_VALUE:
+			return organizer.changeToggleValue(state, action);
+		case actionTypes.CHANGE_PARAM_TEXT:
+			return organizer.changeParamText(state, action);
+		case actionTypes.CHANGE_PARAM_INT: 
+			return organizer.changeParamInt(state, action);
+		case actionTypes.CHANGE_PARAM_FLOAT:
+			return organizer.changeParamFloat(state, action);
+		case actionTypes.CHANGE_HEADER:
+			return organizer.changeHeader(state, action);
+>>>>>>> b6ef4d5718743ad0e68746645b8fd130818f3045
 
 		default:
 			return state;
