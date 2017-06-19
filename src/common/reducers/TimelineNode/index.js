@@ -85,7 +85,6 @@ export default function(state=initState, action) {
 			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
-<<<<<<< HEAD
 
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
@@ -94,32 +93,18 @@ export default function(state=initState, action) {
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
-		// case actionTypes.CHANGE_PLUGIN_TYPE:
-		// 	return changePlugin(state, action);
-		// case actionTypes.TOGGLE_PARAM_VALUE:
-		// 	return changeToggleValue(state, action);
-		// case actionTypes.CHANGE_PARAM_TEXT:
-		// 	return changeParamText(state, action);
-		// case actionTypes.CHANGE_PARAM_INT: 
-		// 	return changeParamInt(state, action);
-		// case actionTypes.CHANGE_PARAM_FLOAT:
-		// 	return changeParamFloat(state, action);
-		// case actionTypes.CHANGE_HEADER:
-		// 	return changeHeader(state, action);
-=======
 		case actionTypes.CHANGE_PLUGIN_TYPE:
-			return organizer.changePlugin(state, action);
+			return editor.changePlugin(state, action);
 		case actionTypes.TOGGLE_PARAM_VALUE:
-			return organizer.changeToggleValue(state, action);
+			return editor.changeToggleValue(state, action);
 		case actionTypes.CHANGE_PARAM_TEXT:
-			return organizer.changeParamText(state, action);
+			return editor.changeParamText(state, action);
 		case actionTypes.CHANGE_PARAM_INT: 
-			return organizer.changeParamInt(state, action);
+			return editor.changeParamInt(state, action);
 		case actionTypes.CHANGE_PARAM_FLOAT:
-			return organizer.changeParamFloat(state, action);
+			return editor.changeParamFloat(state, action);
 		case actionTypes.CHANGE_HEADER:
-			return organizer.changeHeader(state, action);
->>>>>>> b6ef4d5718743ad0e68746645b8fd130818f3045
+			return editor.changeHeader(state, action);
 
 		default:
 			return state;

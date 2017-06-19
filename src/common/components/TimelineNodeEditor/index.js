@@ -50,7 +50,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Subheader>Timeline/Trial Editor</Subheader>
 						</div>
 						<Divider />
-<<<<<<< HEAD:src/common/components/TimelineNodeEditor/index.js
 						{(this.props.previewId) ?
 						<List style={{padding: 5}}>
 							<TextField 
@@ -61,11 +60,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
 						</List> :
 						null}
-=======
-						<TrialForm id={this.props.id} pluginType={this.props.pluginType} />
-						<TimelineForm id={this.props.id} />
-
->>>>>>> b6ef4d5718743ad0e68746645b8fd130818f3045:src/common/components/TimelineNode/TimelineNodeEditorDrawer.js
 					</div> : null}
 				</div>
   				{(this.props.open) ? null :
