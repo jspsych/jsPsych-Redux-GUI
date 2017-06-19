@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { isTimeline } from '../../reducers/TimelineNode/utils';
+import { isTimeline } from '../../reducers/TimelineNode/utils/index';
 import TimelineForm from '../../components/TimelineNodeEditor/TimelineForm';
 
 const mapStateToProps = (state, ownProps) => {
@@ -11,6 +11,7 @@ const mapStateToProps = (state, ownProps) => {
 		return {
 			id: timeline.id,
 			isTimeline: isTimeline(timeline),
+			timeline_variable: timeline.timeline_variable
 		}
 	} else {
 		return {

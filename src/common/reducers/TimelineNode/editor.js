@@ -15,23 +15,6 @@ export function setName(state, action) {
 }
 
 
-export function createTable(id,
-	timelineId,
-	headerId,
-	rowId,
-	cellValue={}) {
-
-	return {
-		id: id,
-		timelineId: utils.getTimelineId(),
-		headerId: utils.getHeaderId(),
-		rowId: utils.getRowId(),
-		cellValue: cellValue
-	};
-}
-
-
-
 export function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -115,32 +98,14 @@ export function changeParamFloat(state, action) {
 }
 
 export function changeHeader(state, action) {
+	console.log("Inside reducer");
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node; 
 
-	// node.timeline_variable = Object.assign({}, node.timeline_variable);
-	// console.log("node.timeline_variable " + node.timeline_variable);
-	//var array = [];
-
-	// for(let i=0; i<node.timeline_variable.length; i++) {
-	// 	// let rowCopy = Object.assign({}, node.timeline_variable[i]);
-	// 	// array.push({rowCopy});
-	// 	var clonedArray = JSON.parse(JSON.stringify(nodesArray))
-	// }
-
-	const newArray = node.timeline_variable.map(obj => Object.assign({}, obj));
-
-	for(let i=0; i<node.timeline_variable.length; i++) {
-		// node.timeline_variable[i][action.newVal] = node.timeline_variable[i][action.headerId];
-		// delete node.timeline_variable[i][action.headerId];
-		newArray[i][action.newVal] = newArray[i][action.headerId];
-		delete newArray[i][action.headerId];
-	}
-
-	node.timeline_variable = newArray;
+	var newArray = arrayOfArrays(node.timeline_variable);
 	return new_state;
 }
 
@@ -151,7 +116,6 @@ export function changeCell(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	//node.timeline_variable = Object.assign({}, node.timeline_variable);
 	const newArray = node.timeline_variable.map(obj => Object.assign({}, obj));
 
 	let cellString = action.cellId; //string with row and column index
@@ -189,13 +153,3 @@ export function addColumn(state, action) {
 
 	return new_state;
 }
-
-// function changeHeader(state, action) {
-// 	let table = state[state.previewId];
-// 	let new_state = Object.assign({}, state);
-
-// 	let cellId = action.cellId;
-
-// 	table = copyTable(table);
-// 	new_state[] = action.cellId
-// }

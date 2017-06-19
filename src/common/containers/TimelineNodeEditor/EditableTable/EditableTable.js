@@ -1,15 +1,40 @@
 import { connect } from 'react-redux';
-import EditableTable from '../../../components/TimelineNode/EditableTable/EditableTable';
-import { isTimeline } from '../../../reducers/timelineNodeUtils';
+import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
+import { isTimeline } from '../../../reducers/TimelineNode/utils/index';
+import * as tableActions from '../../../actions/tableAction';
+
+const onChangeHeader = (dispatch, headerId, newVal) => {
+	console.log("headerId " + headerId);
+	console.log("newVal " + newVal);
+	dispatch(tableActions.changeHeaderAction(headerId, newVal));
+}
+
+const onChangeCells = (dispatch, cellId, newVal) => {
+	console.log('in editable table');
+	console.log('cellId ' + cellId);
+	console.log('value '  + newVal);
+	dispatch(tableActions.changeCellAction(cellId, newVal));
+}
+
+const onAddColumn = (dispatch, ownProps) => {
+	console.log(ownProps.id);
+	dispatch(tableActions.addColumn(ownProps.id));
+}
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineId = null;
 	let timelineNodeState = state.timelineNodeState;
-	let node = timelinNodeState[ownProps.id];
-	if(isTimeline(node)) {
-		timelineId = node.id;
-	}
+	let timeline = timelineNodeState[timelineNodeState.previewId];
+    console.log(timeline);
 	return{
-		timelineId: timelineId
+		timelineId: timeline.id,
+		timeline_variable: timeline.timeline_variable,
 	}
 };
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+	handleHeaderChange: (headerId, newVal) => { onChangeHeader(dispatch, headerId, newVal) },
+	handleTableChange: (cellId, newVal) =>  { onChangeCells(dispatch, cellId, newVal) },
+	onTouchTap: (e) => { onAddColumn(dispatch, ownProps) }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditableTable);
