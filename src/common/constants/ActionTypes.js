@@ -36,5 +36,7 @@ export const CHANGE_HEADER = "CHANGE_HEADER";
 export const CHANGE_CELL = "CHANGE_CELL";
 export const ADD_COLUMN = "ADD_COLUMN";
 export const ADD_ROW = "ADD_ROW";
-
+export const CHANGE_SAMPLING = "CHANGE_SAMPLING";
+export const CHANGE_SIZE = "CHANGE_SIZE";
+export const CHANGE_RANDOMIZE = "CHANGE_RANDOMIZE";
 

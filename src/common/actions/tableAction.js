@@ -9,8 +9,6 @@ export function changeCellAction(cellId, newVal) {
 }
 
 export function changeHeaderAction(headerId, newVal) {
-	console.log('inside action headerId: ' + headerId);
-
 	return {
 		type: actionTypes.CHANGE_HEADER,
 		headerId: headerId,
@@ -18,10 +16,11 @@ export function changeHeaderAction(headerId, newVal) {
 	};
 }
 
-export function addColumn(id) {
+export function addColumn(id, index) {
 	return {
 		type: actionTypes.ADD_COLUMN,
-		id: id
+		id: id,
+		index: index
 	};
 }
 
@@ -29,5 +28,26 @@ export function addRow(id) {
 	return {
 		type: actionTypes.ADD_ROW,
 		id: id
+	};
+}
+
+export function changeSampling(newVal) {
+	return {
+		type: actionTypes.CHANGE_SAMPLING,
+		newVal: newVal
+	};
+}
+
+export function changeSize(newVal) {
+	return {
+		type: actionTypes.CHANGE_SIZE,
+		newVal: newVal
+	};
+}
+
+export function changeBool(newBool) {
+	return {
+		type: actionTypes.CHANGE_RANDOMIZE,
+		newBool: newBool
 	};
 }
