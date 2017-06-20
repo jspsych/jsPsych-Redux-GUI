@@ -2,11 +2,10 @@ import React from 'react';
 import Preview from '../containers/Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
-import TimelineNodeEditor from '../containers/TimelineNodeEditor/';
+import TimelineNodeEditor from '../containers/TimelineNodeEditor';
+
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
-
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
