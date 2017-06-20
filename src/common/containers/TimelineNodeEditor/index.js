@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../actions/timelineNodeActions';
-import TimelineNodeEditor from '../../components/TimelineNodeEditor/TimelineNodeEditor';
+import TimelineNodeEditor from '../../components/TimelineNodeEditor';
 import { isTimeline } from '../../reducers/TimelineNode/utils';
 
 const changeNodeName = (name, dispatch) => {
