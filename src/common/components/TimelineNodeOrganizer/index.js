@@ -83,7 +83,7 @@ class TimelineNodeOrganizer extends React.Component {
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%", 
 						left: '0px',
 						overflow: 'hidden',
-						height: '86.5vh', 
+						// height: '86.5vh', 
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),

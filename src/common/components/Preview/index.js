@@ -6,6 +6,10 @@ import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit
 
 
 export default class Preview extends React.Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.liveEditting && this.props.code !== nextProps.code;
+  }
+
   componentDidUpdate() {
     let script = document.createElement('script');
     script.type = 'text/javascript';

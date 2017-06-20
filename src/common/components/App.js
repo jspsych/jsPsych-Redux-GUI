@@ -63,7 +63,6 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<div>
 			<MuiThemeProvider>
 			<div className="App" style={{overflowX: 'hidden', overflowY: 'auto', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
@@ -96,7 +95,6 @@ class App extends React.Component {
 	  			</div>
   			</div>
   			</MuiThemeProvider>
-  			</div>
   		);
 	}
 }
