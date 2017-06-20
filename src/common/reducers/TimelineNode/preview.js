@@ -1,6 +1,77 @@
 // var babel = require("babel-core");
 
-function stringify(obj) {
+import { initState as jsPsychInitState } from './jsPsychInit';
+
+const welcomeObj = {
+	...jsPsychInitState,
+	timeline: [
+		{
+			type: 'text',
+			text: 'Welcome to jsPysch Experiment Builder!',
+			choice: "",
+		}
+	]
+}
+
+const undefinedObj = {
+	...jsPsychInitState,
+	timeline: [
+		{
+			type: 'text',
+			text: 'No timeline/trial is selected!',
+			choice: "",
+		}
+	]
+}
+
+export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
+
+export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
+
+export function generateInit(state) {
+	let blocks = [];
+	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
+	let node;
+	for (let id of timeline) {
+		if (!id) continue;
+		node = state[id];
+		if (node.enabled || !state.previewAll) {
+			blocks.push(generateTrial(node));
+		}
+	}
+
+	let obj = {
+		...state.jsPsychInit,
+		timeline: blocks
+	};
+
+	return "jsPsych.init(" + stringify(obj) + ");";
+}
+
+
+function generateTrial(trial) {
+	return {
+		type: trial.pluginType,
+		...trial.parameters
+	};
+}
+
+export function setLiveEditting(state, action) {
+	return Object.assign({}, state, {
+		liveEditting: action.flag,
+	});
+}
+
+/*
+Specially written for stringify obj in this app to generate code
+For functions, turn it to
+{
+	isFunc: true,
+	code: function
+}
+
+*/
+export function stringify(obj) {
 	let type = typeof obj;
 	switch(type) {
 		case 'object':
@@ -31,37 +102,4 @@ function stringify(obj) {
 		default:
 			return JSON.stringify(obj);
 	}
-}
-
-export function generateInit(state, timeline=[]) {
-	let blocks = [];
-	let node;
-	for (let id of timeline) {
-		if (!id) continue;
-		node = state[id];
-		if (node.enabled || state.previewId === node.id) {
-			blocks.push(generateTrial(node));
-		}
-	}
-
-	let obj = {
-		...state.jsPsychInit,
-		timeline: blocks
-	};
-
-	return "jsPsych.init(" + stringify(obj) + ");";
-}
-
-
-function generateTrial(trial) {
-	return {
-		type: trial.pluginType,
-		...trial.parameters
-	};
-}
-
-export function setLiveEditting(state, action) {
-	return Object.assign({}, state, {
-		liveEditting: action.flag,
-	});
 }

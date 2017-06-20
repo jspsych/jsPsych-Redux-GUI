@@ -40,3 +40,5 @@ export function deepCopy(target) {
 			throw new TypeError(type + " not supported.");
 	}
 }
+
+

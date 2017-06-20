@@ -1,15 +1,15 @@
 import { connect } from 'react-redux';
 import Preview from '../../components/Preview';
 
-import { generateInit } from '../../reducers/TimelineNode/preview';
+import { generateInit, Undefined } from '../../reducers/TimelineNode/preview';
 
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
-	let code = "";
+	let code = Undefined;
 	if (timelineNodeState.previewId) {
-		code = generateInit(timelineNodeState, [timelineNodeState.previewId]);
+		code = generateInit(timelineNodeState);
 	}
-	
+
 	return {
 		code: code,
 		liveEditting: timelineNodeState.liveEditting
