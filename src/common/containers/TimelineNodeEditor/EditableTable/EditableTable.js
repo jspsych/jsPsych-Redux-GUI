@@ -4,15 +4,10 @@ import { isTimeline } from '../../../reducers/TimelineNode/utils/index';
 import * as tableActions from '../../../actions/tableAction';
 
 const onChangeHeader = (dispatch, headerId, newVal) => {
-	console.log("headerId " + headerId);
-	console.log("newVal " + newVal);
 	dispatch(tableActions.changeHeaderAction(headerId, newVal));
 }
 
 const onChangeCells = (dispatch, cellId, newVal) => {
-	console.log('in editable table');
-	console.log('cellId ' + cellId);
-	console.log('value '  + newVal);
 	dispatch(tableActions.changeCellAction(cellId, newVal));
 }
 
