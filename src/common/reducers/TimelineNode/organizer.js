@@ -870,7 +870,7 @@ export function changeCell(state, action) {
 
 }
 
-export function addColumnHelper(state, action) {
+export function addColumnHelper(array) {
 
 }
 
@@ -881,7 +881,11 @@ export function addColumn(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.timeline_variable[DEFAULT_HEADER] = DEFAULT_CELL_VALUE;
+	var newArray = arrayOfArrays(node.timeline_variable);
+	newArray[0].push(DEFAULT_HEADER);
+	node.timeline_variable = arrayOfObjects(newArray);
+
+	//node.timeline_variable[DEFAULT_HEADER] = DEFAULT_CELL_VALUE;
 
 	return new_state;
 }

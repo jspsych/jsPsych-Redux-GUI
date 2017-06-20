@@ -2,6 +2,8 @@ import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import RaisedButton from 'material-ui/RaisedButton';
+import Popover from 'material-ui/Popover';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
@@ -26,6 +28,25 @@ const tableStyles = {
 class EditableTable extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			open: false,
+		}
+
+		this.handleTouchTap = (event) => {
+			event.preventDefault();
+
+			this.setState({
+				open:true,
+				anchorEl: event.currentTarget
+			});
+		}
+
+		this.handleRequestClose = () => {
+			this.setState({
+				open:false
+			});
+		}
 	}
 
 	render(){
@@ -46,6 +67,16 @@ class EditableTable extends React.Component {
 		var i = 0;
 		return(
 			<div>
+			<RaisedButton
+				onTouchTap={this.handleTouchTap}
+				label="Timeline_Variables" />
+			<Popover
+				open={this.state.open}
+				anchorEl={this.state.anchorEl}
+				anchorOrigin= {{horizontal:"left",vertical:"top"}}
+				targetOrigin= {{horizontal:"right",vertical:"top"}}
+				onRequestClose={this.handleRequestClose} >
+
 			<table className="dataTable" style={tableStyles.table}>
 				<thead>
 					<tr className="headerRow">
@@ -87,6 +118,7 @@ class EditableTable extends React.Component {
 			<NavigationArrowDownward />
 			</IconButton>
 			</div>
+			</Popover>
 			</div>
 			)
 	}
