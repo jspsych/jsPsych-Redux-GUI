@@ -22,7 +22,7 @@ export const initState = {
 		name: "Trial -1",
 		parent: null,
 		enabled: true,
-		parameters: { text: "Test -1", choices: [], allow_mouse_click: false },
+		parameters: { text: "Test -1", choices: ['A'], allow_mouse_click: false },
 		pluginType: "text",
 	},
 
