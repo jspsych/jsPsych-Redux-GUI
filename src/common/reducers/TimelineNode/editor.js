@@ -1,7 +1,6 @@
 import { deepCopy } from '../../utils';
 import * as utils from './utils';
 
-const DEFAULT_PLUGIN_TYPE = 'text';
 const DEFAULT_HEADER = 'H';
 const DEFAULT_CELL_VALUE = '-';
 

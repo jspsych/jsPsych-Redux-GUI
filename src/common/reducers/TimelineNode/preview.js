@@ -28,7 +28,7 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
-export function generateInit(state) {
+export default function generateCode(state) {
 	let blocks = [];
 	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
 	let node;
