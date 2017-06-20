@@ -117,3 +117,18 @@ export function setNameAction(name) {
 		name: name
 	};
 }
+
+export function setLiveEdittingAction(flag) {
+	return {
+		type: actionTypes.SET_LIVE_EDITTING,
+		flag: flag,
+	};
+}
+
+export function setJspyschInitAction(key, value) {
+	return {
+		type: actionTypes.SET_JSPSYCH_INIT,
+		key: key,
+		value: value,
+	};
+}

@@ -51,7 +51,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						</div>
 						<Divider />
 						{(this.props.previewId) ?
-						<List style={{padding: 5}}>
+						<List style={{padding: 5, overflowY: 'auto', maxHeight: 455}}>
 							<TextField 
 									floatingLabelText={this.props.label}
 									id="Node-Name-Textfield"

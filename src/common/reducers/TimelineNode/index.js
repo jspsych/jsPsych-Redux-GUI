@@ -2,6 +2,7 @@ import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
+import * as preview from './preview';
 
 export const initState = {
 	// id of which is being previewed/editted
@@ -15,6 +16,8 @@ export const initState = {
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
 
+	// live editting
+	liveEditting: true,
 
 	"TRIAL--1": {
 		id: "TRIAL--1",
@@ -90,6 +93,10 @@ export default function(state=initState, action) {
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
 
+		// preview
+		case actionTypes.SET_LIVE_EDITTING:
+			return preview.setLiveEditting(state, action);
+
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
@@ -110,3 +117,4 @@ export default function(state=initState, action) {
 			return state;
 	}
 }
+

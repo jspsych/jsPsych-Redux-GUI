@@ -9,9 +9,10 @@ const mapStateToProps = (state, ownProps) => {
 	if (timelineNodeState.previewId) {
 		code = generateInit(timelineNodeState, [timelineNodeState.previewId]);
 	}
-
+	
 	return {
 		code: code,
+		liveEditting: timelineNodeState.liveEditting
 	};
 }
 

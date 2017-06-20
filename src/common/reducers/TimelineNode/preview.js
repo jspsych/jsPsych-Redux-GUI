@@ -1,4 +1,4 @@
-import { transform } from 'babel-core';
+// var babel = require("babel-core");
 
 function stringify(obj) {
 	let type = typeof obj;
@@ -17,7 +17,7 @@ function stringify(obj) {
 				res.push("]");
 			} else if (obj.isFunc) { 
 				let code = obj.code.replace(/\n/g, '').replace(/\t/g, '    ');
-				console.log(code);
+				// console.log(babel.transform(code).code);
 				return code;
 			}else {
 				res.push("{");
@@ -58,4 +58,10 @@ function generateTrial(trial) {
 		type: trial.pluginType,
 		...trial.parameters
 	};
+}
+
+export function setLiveEditting(state, action) {
+	return Object.assign({}, state, {
+		liveEditting: action.flag,
+	});
 }

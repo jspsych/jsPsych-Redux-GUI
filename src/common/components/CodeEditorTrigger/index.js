@@ -17,6 +17,8 @@ import {
 export default class CodeEditor extends React.Component {
   static propTypes = { 
   	onUpdate: PropTypes.func.isRequired,
+    closeCallback: PropTypes.func.isRequired,
+    openCallback: PropTypes.func.isRequired,
   	code: PropTypes.string,
   	buttonIcon: PropTypes.object,
     title: PropTypes.string
@@ -25,7 +27,9 @@ export default class CodeEditor extends React.Component {
   static defaultProps = { 
   	code: "",
   	buttonIcon: (<ButtonIcon color={normalColor} hoverColor={hoverColor} />),
-    title: "Code Editor"
+    title: "Code Editor",
+    openCallback: function() { return; },
+    closeCallback: function() { return; },
   };
 
   state = {
@@ -51,14 +55,14 @@ export default class CodeEditor extends React.Component {
         label="Finish"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleClose}
+        onTouchTap={() => { this.handleClose(); this.props.closeCallback(); }}
       />,
     ];
 
   	return (
   		<MuiThemeProvider>
   		<div>
-	  		<IconButton onTouchTap={this.handleOpen}>
+	  		<IconButton onTouchTap={() => { this.handleOpen(); this.props.openCallback()}}>
 	  		{buttonIcon}
 	  		</IconButton>
 	  		<Dialog
