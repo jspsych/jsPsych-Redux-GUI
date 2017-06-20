@@ -27,7 +27,7 @@ const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 
 	let trial = timelineNodeState[timelineNodeState.previewId];
-	console.log(trial);
+
 	if(trial != null) {
 	return {
 		id: trial.id,

@@ -3,18 +3,26 @@ import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
-
+import { Welcome } from '../../reducers/TimelineNode/preview';
 
 export default class Preview extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return nextProps.liveEditting && this.props.code !== nextProps.code;
   }
 
+  componentDidMount() {
+    this.load(Welcome);
+  }
+
   componentDidUpdate() {
+    this.load(this.props.code);
+  }
+
+  load(code) {
     let script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
-    script.innerHTML = this.props.code;
+    script.innerHTML = code;
     this.display_element.appendChild(script);
   }
 

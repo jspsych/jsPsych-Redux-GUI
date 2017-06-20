@@ -589,13 +589,22 @@ export function moveByKeyboard(state, action) {
 	return moveTo(state, { sourceId: id, targetId: targetId, isLast: isLast });
 }
 
+/*
+action = {
+	id: selected id,
+	previewAll: bool, // indicate if all items on timeline shall be played
+}
 
+*/
 export function onPreview(state, action) {
+	let { id, previewAll } = action;
+
+
 	let new_state = Object.assign({}, state, {
-		previewId: action.id
+		previewId: id,
+		previewAll: previewAll,
 	});
 
-	console.log(new_state);
 	return new_state;
 }
 

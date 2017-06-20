@@ -54,10 +54,11 @@ export function moveByKeyboardAction(id, key) {
 	};
 }
 
-export function onPreviewAction(id) {
+export function onPreviewAction(id, previewAll=false) {
 	return {
 		type: actionTypes.ON_PREVIEW,
-		id: id
+		id: id,
+		previewAll: previewAll
 	};
 }
 

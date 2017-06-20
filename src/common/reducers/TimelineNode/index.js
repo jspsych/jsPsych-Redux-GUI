@@ -7,6 +7,8 @@ import * as preview from './preview';
 export const initState = {
 	// id of which is being previewed/editted
 	previewId: null,
+	// timeline/trial queue to preview
+	previewQueue: [],
 
 	// the main timeline. array of ids
 	// mainTimeline: [],
