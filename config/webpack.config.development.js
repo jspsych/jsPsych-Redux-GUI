@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
@@ -14,6 +15,7 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new UglifyJSPlugin(),
   ],
 
   module: {
@@ -28,6 +30,13 @@ module.exports = {
     }, {
       test: /\.css$/,
       loader: 'style!css!'
+    }, {
+        test: /\.json$/,
+        loader: 'json-loader'
     }]
+  },
+  
+  node: {
+    fs: "empty"
   }
 }

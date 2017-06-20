@@ -34,6 +34,8 @@ export function deepCopy(target) {
 				}
 			}
 			return clone;
+		case 'function':
+			return new Function(clone.toString());
 		default:
 			throw new TypeError(type + " not supported.");
 	}

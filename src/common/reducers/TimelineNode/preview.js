@@ -1,33 +1,36 @@
-var funcM = /"function.*?}"/g;
-var funcR = /function.*?}/g;
-var fatM = /"\(.*?\).*?=>.*?(}|\))"/g;
-var fatR = /\(.*?\).*?=>.*?(}|\))/g;
+import { transform } from 'babel-core';
 
-function handleFunctionString(s) {
-	s = s.replace(/\\n/g, '');
-	s = s.replace(/\\t/g, '');
-	return handleFunc(handleFat(s));
-}
-
-function handleFunc(s) {
-	let fur = s.match(funcR);
-	if (!fur) {
-		return s;
-	} else {
-		for (let m of fur) {
-			s = s.replace('"'+m+'"', m);
-		}
-		return s;
+function stringify(obj) {
+	let type = typeof obj;
+	switch(type) {
+		case 'object':
+			let res = [];
+			if (Array.isArray(obj)) {
+				res.push("[");
+				let i = obj.length;
+				for (let item of obj) {
+					res.push(stringify(item));
+					if (obj-- > 1) {
+						res.push(",");
+					}
+				}
+				res.push("]");
+			} else if (obj.isFunc) { 
+				let code = obj.code.replace(/\n/g, '').replace(/\t/g, '    ');
+				console.log(code);
+				return code;
+			}else {
+				res.push("{");
+				let keys = Object.keys(obj);
+				for (let key of keys) {
+					res.push('"' + key + '"' + ":" + stringify(obj[key]) + ",");  
+				}
+				res.push("}");
+			}
+			return res.join("");
+		default:
+			return JSON.stringify(obj);
 	}
-}
-
-function handleFat(s) {
-	let far = s.match(fatR);
-	if (!far) return s;
-	for (let m of far) {
-		s = s.replace('"'+m+'"', m);
-	}
-	return s;
 }
 
 export function generateInit(state, timeline=[]) {
@@ -36,7 +39,7 @@ export function generateInit(state, timeline=[]) {
 	for (let id of timeline) {
 		if (!id) continue;
 		node = state[id];
-		if (node.enabled) {
+		if (node.enabled || state.previewId === node.id) {
 			blocks.push(generateTrial(node));
 		}
 	}
@@ -46,7 +49,7 @@ export function generateInit(state, timeline=[]) {
 		timeline: blocks
 	};
 
-	return "jsPsych.init(" + (handleFunctionString(JSON.stringify(obj))) + ");";
+	return "jsPsych.init(" + stringify(obj) + ");";
 }
 
 
