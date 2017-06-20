@@ -34,6 +34,7 @@ import { deepCopy } from '../../utils';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
+const DEFAULT_PLUGIN_TYPE = 'text';
 
 var timeline = 0;
 var trial = 0;
