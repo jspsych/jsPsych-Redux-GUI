@@ -34,7 +34,6 @@ import { deepCopy } from '../../utils';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
-const DEFAULT_PLUGIN_TYPE = 'text';
 
 var timeline = 0;
 var trial = 0;
@@ -71,7 +70,8 @@ export function createTimeline(id,
 	collapsed=true,
 	enabled=true,
 	parameters={},
-	timeline_variable=[{header1: 'value1', header2: 'value2'}]) {
+	timeline_variable=[{h1: null, h2: null}]
+	) {
 
 	return {
 		id: id,
@@ -82,6 +82,7 @@ export function createTimeline(id,
 		collapsed: collapsed,
 		enabled: enabled,
 		parameters: parameters,
+		timeline_variable: timeline_variable
 	};
 }
 
@@ -103,13 +104,13 @@ export function createTrial(id,
 		pluginType: pluginType,
 	};
 }
-
 /*
 action = {
 	id: id,
 	parent: string,
 }
 */
+
 export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
@@ -669,7 +670,3 @@ export function setCollapsed(state, action) {
 
 	return new_state;
 }
-
-
-
-
