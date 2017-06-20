@@ -4,6 +4,11 @@ import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forwa
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
+import Toggle from 'material-ui/Toggle';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
+import Mousetrap from 'mousetrap';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
@@ -12,8 +17,9 @@ import { grey900 } from 'material-ui/styles/colors';
 const tableStyles = {
 	small: {
 		display: 'flex',
-		height: '15px',
-		width: '15px'
+		right: '0px',
+		height: '5px',
+		width: '5px'
 	},
 	table: {
 		tableLayout: 'fixed'
@@ -22,6 +28,9 @@ const tableStyles = {
 		border: '1px solid black',
 		width: '50px',
 		height: '20px'
+	},
+	size: {
+		width: '100px',
 	}
 }
 
@@ -52,19 +61,9 @@ class EditableTable extends React.Component {
 	render(){
 		var i = 0;
 		var timelineRows = this.props.timeline_variable;
-		console.log("before header");
 		var headers = Object.keys(this.props.timeline_variable[0]);
-		console.log("after header " + headers);
-
-		var config = {
-			rows: 2,
-			columns: 2,
-			hasHeadRow: true,
-			isHeadRowString: true,
-			canAddRow: true,
-			canAddColumn: true,
-		}
-		var i = 0;
+		
+		console.log(this.props.sampling.type);
 		return(
 			<div>
 			<RaisedButton
@@ -107,7 +106,7 @@ class EditableTable extends React.Component {
 			tooltip="add column"
 			tooltipPosition="top-right"
 			style={tableStyles.small}
-			onTouchTap={this.props.onTouchTap} >
+			onTouchTap={(event) => this.props.handleAddColumn(event.target.id)} >
 			<NavigationArrowForward />
 			</IconButton >
 			<IconButton
@@ -117,6 +116,29 @@ class EditableTable extends React.Component {
 			onTouchTap={(event) => this.props.handleAddRow(event.target.id)} >
 			<NavigationArrowDownward />
 			</IconButton>
+			<Toggle label="Randomize_Order"
+			defaultToggled={this.props.randomize_order}
+			labelPosition="right"
+			onToggle={this.props.onToggle} />
+			<div style={{display: 'flex'}}>
+			<SelectField floatingLabelText="Sampling"
+			value={this.props.sampling.type}
+			onChange={this.props.onChange} >
+				<MenuItem value="with-replacement"
+				primaryText="with-replacement" />
+				<MenuItem value="without-replacement"
+				primaryText="without-replacement" />
+				<MenuItem value="fixed-repititions"
+				primaryText="fixed-repititions" />
+				<MenuItem value="custom"
+				primaryText="custom" />
+			</SelectField>
+			<TextField
+			floatingLabelText="Sampling Size"
+			value={this.props.sampling.size}
+			style={tableStyles.size}
+			onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
+			</div>
 			</div>
 			</Popover>
 			</div>

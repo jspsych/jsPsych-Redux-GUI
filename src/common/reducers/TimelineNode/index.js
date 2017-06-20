@@ -119,6 +119,12 @@ export default function(state=initState, action) {
 			return editor.addColumn(state, action);
 		case actionTypes.ADD_ROW:
 			return editor.addRow(state, action);
+		case actionTypes.CHANGE_SAMPLING: 
+			return editor.changeSampling(state, action);
+		case actionTypes.CHANGE_SIZE:
+		 	return editor.changeSize(state, action);
+		 case actionTypes.CHANGE_RANDOMIZE: 
+		 	return editor.changeRandomize(state, action); 
 		default:
 			return state;
 	}

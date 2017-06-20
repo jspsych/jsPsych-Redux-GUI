@@ -70,7 +70,11 @@ export function createTimeline(id,
 	collapsed=true,
 	enabled=true,
 	parameters={},
-	timeline_variable=[{h1: null, h2: null}]
+	timeline_variable=[{H0: null, H1: null}],
+	randomize_order=true,
+	sampling={type: "with-replacement", size: 1}, //{type: 'without-replacement', size: 1} //{type: 'fixed-replacement', size: 1} // {type: 'custom', fn: }
+	conditional_function: null,
+	loop_function: null,
 	) {
 
 	return {
@@ -82,7 +86,11 @@ export function createTimeline(id,
 		collapsed: collapsed,
 		enabled: enabled,
 		parameters: parameters,
-		timeline_variable: timeline_variable
+		timeline_variable: timeline_variable,
+		randomize_order: randomize_order,
+		sampling: sampling,
+		conditional_function: conditional_function,
+		loop_function: loop_function
 	};
 }
 
