@@ -11,14 +11,6 @@ class TimelineForm extends React.Component {
 		super(props);
 	}
 	render(){
-		var config = {
-			rows: 2,
-			columns: 2,
-			hasHeadRow: true,
-			isHeadRowString: true,
-			canAddRow: true,
-			canAddColumn: true,
-		}
 		var form;
 		if(this.props.isTimeline) {
 			// var form = <div className="TimelineForm">
@@ -28,7 +20,7 @@ class TimelineForm extends React.Component {
 			// value={0} />
 			// </div>
 			// var form =
-		 //    <div>
+		 	//    <div>
 			// <SpreadsheetComponent 
 			// initialData={this.props.timeline_variable}
 			// config={config}

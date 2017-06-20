@@ -88,7 +88,7 @@ class TrialForm extends React.Component {
 							id={plug} key={plug} 
 							value={this.props.parameters[plug]} 
 							floatingLabelText={plug} 
-							onChange={(even, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
+							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 				}
 			});
 			var form = (<div className="trialForm"><SelectField
