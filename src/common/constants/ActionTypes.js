@@ -33,5 +33,8 @@ export const CHANGE_PARAM_FLOAT = "CHANGE_PARAM_FLOAT";
 
 //EditableTable Actions
 export const CHANGE_HEADER = "CHANGE_HEADER";
+export const CHANGE_CELL = "CHANGE_CELL";
+export const ADD_COLUMN = "ADD_COLUMN";
+export const ADD_ROW = "ADD_ROW";
 
 

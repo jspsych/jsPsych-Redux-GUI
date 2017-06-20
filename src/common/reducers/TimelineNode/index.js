@@ -88,7 +88,6 @@ export default function(state=initState, action) {
 			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
-
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
@@ -112,7 +111,12 @@ export default function(state=initState, action) {
 			return editor.changeParamFloat(state, action);
 		case actionTypes.CHANGE_HEADER:
 			return editor.changeHeader(state, action);
-
+		case actionTypes.CHANGE_CELL:
+			return editor.changeCell(state, action);
+		case actionTypes.ADD_COLUMN:
+			return editor.addColumn(state, action);
+		case actionTypes.ADD_ROW:
+			return editor.addRow(state, action);
 		default:
 			return state;
 	}

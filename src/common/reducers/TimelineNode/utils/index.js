@@ -57,3 +57,4 @@ export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 
 export const isTrial = (node) => (node.type === TRIAL_TYPE);
 
+
