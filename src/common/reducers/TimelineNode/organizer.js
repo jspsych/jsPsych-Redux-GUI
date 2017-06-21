@@ -671,6 +671,13 @@ export function setToggleCollectively(state, action) {
 
 	if (spec) {
 		onToggleHelper(new_state, spec, true);
+		let specNode = new_state[spec];
+		let parent = specNode.parent;
+		if (parent) {
+			parent = deepCopy(new_state[parent]);
+			new_state[parent.id] = parent;
+			parent.enabled = true;
+		}
 	}
 
 	return new_state;
