@@ -1,6 +1,7 @@
 import * as actionTypes from '../constants/ActionTypes';
 import { combineReducers } from "redux";
 import timelineNodeReducer from './TimelineNode';
+import userReducer from './User';
 
 const initState = {
 	experimentName: "Untitled Experiment"
@@ -19,13 +20,14 @@ function mainReducer(state = initState, action) {
 		default:
 			return state;
 	}
-	
+
 }
 
 
 const rootReducer = combineReducers({
 	mainState: mainReducer,
 	timelineNodeState: timelineNodeReducer,
+	userState: userReducer
 });
 
 export default rootReducer;

@@ -11,6 +11,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
+import UserMenu from '../../containers/Appbar/UserMenu';
 
 var experimentTitleStyle = {
 	color: deepGrey,
@@ -27,7 +28,7 @@ export default class Appbar extends React.Component {
 	render() {
 		return (
 			<MuiThemeProvider>
-        			<div className="Appbar" 
+        			<div className="Appbar"
         				style={{
         					width: "100%",
         					margin: '0 auto',
@@ -38,7 +39,7 @@ export default class Appbar extends React.Component {
         				draggable={false}
         				>
   						<div style={{
-                minWidth:"6vw", 
+                minWidth:"6vw",
                 width: "7%",
               }}>
     						<GridTile style={{ height: 88 }}>
@@ -49,10 +50,11 @@ export default class Appbar extends React.Component {
                 display: 'inline-block', width:"93%"
               }}>
         			<div style={{
-                    backgroundColor: 'white', 
+                    backgroundColor: 'white',
                     marginLeft: 5
                   }}>
-								<TextField 
+								<UserMenu />
+								<TextField
 								id="Experiment-Name-Textfield"
                 value={this.props.experimentName}
 								onChange={this.props.changeExperimentName}/>
@@ -69,5 +71,3 @@ export default class Appbar extends React.Component {
 	}
 
 }
-
-
