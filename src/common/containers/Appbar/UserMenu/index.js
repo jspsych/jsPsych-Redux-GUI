@@ -1,6 +1,11 @@
 import { connect } from 'react-redux';
 
 import UserMenu from '../../../components/Appbar/UserMenu';
+import * as userMenuActions from '../../../actions/userMenuActions';
+
+const showRegisterWindow = (dispatch) => {
+  dispatch(userMenuActions.showRegisterWindow());
+}
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -8,8 +13,8 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispath, ownProps) => ({
-
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  showRegisterWindow: () => { showRegisterWindow(dispatch) }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

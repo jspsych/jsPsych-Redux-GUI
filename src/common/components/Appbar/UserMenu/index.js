@@ -28,10 +28,17 @@ export default class UserMenu extends React.Component {
     })
   }
 
+  handleCreateAccount = () => {
+    this.setState({
+      open: false
+    });
+    this.props.showRegisterWindow();
+  }
+
   render() {
 
     var buttonLabel = this.props.user == null ? 'Create Account' : this.props.user;
-    
+
     return (
       <div style={{display: 'inline-block', float: 'right'}}>
         <FlatButton label={buttonLabel} onTouchTap={this.handleTouchTap} />
@@ -41,7 +48,9 @@ export default class UserMenu extends React.Component {
           onRequestClose = {this.handleRequestClose}
           >
           <Menu>
-            <MenuItem primaryText="Sign Out" />
+            <MenuItem
+              primaryText="Create Account"
+              onTouchTap={this.handleCreateAccount} />
           </Menu>
         </Popover>
     </div>
