@@ -63,7 +63,7 @@ class EditableTable extends React.Component {
 		var timelineRows = this.props.timeline_variable;
 		var headers = Object.keys(this.props.timeline_variable[0]);
 		
-		console.log(this.props.sampling.type);
+		// console.log(this.props.sampling.type);
 		return(
 			<div>
 			<RaisedButton
@@ -82,6 +82,7 @@ class EditableTable extends React.Component {
 					{
 						headers.map((title) => {
 							return <input id={i++} defaultValue={title} 
+							key={i++}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
 							style={tableStyles.header} /> 
 						})
@@ -90,9 +91,10 @@ class EditableTable extends React.Component {
 				</thead>
 				{
 					timelineRows.map((row, rowIndex) => {        ////index is number of rows
-						return <tr>{
+						return <tr key={rowIndex}>{
 							headers.map((title, titleIndex) => {
-								return <input id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header}  
+								return <input id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
+								key={[rowIndex+1] +" "+ titleIndex} 
 								defaultValue={row[headers[titleIndex]]} 
 								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} /> //{row[headers[titleIndex]]}</input>
 							})

@@ -38,7 +38,7 @@ const onAddRow = (dispatch, ownProps) => {
 }
 
 const onChangeSampling = (dispatch, newVal) => {
-	console.log("newVal " + newVal);
+	// console.log("newVal " + newVal);
 	dispatch(tableActions.changeSampling(newVal));
 }
 
@@ -53,7 +53,7 @@ const onChangeRandomize = (dispatch, newBool) => {
 const mapStateToProps = (state, ownProps) => {
 	let timelineNodeState = state.timelineNodeState;
 	let timeline = timelineNodeState[timelineNodeState.previewId];
-    console.log(timeline);
+    // console.log(timeline);
 	return{
 		timelineId: timeline.id,
 		timeline_variable: timeline.parameters.timeline_variable,

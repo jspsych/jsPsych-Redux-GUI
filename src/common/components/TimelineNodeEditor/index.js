@@ -19,6 +19,8 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
+//<TimelineForm id={this.props.id} />
+
 export default class TimelineNodeEditorDrawer extends React.Component {
 
 	render() {
@@ -58,7 +60,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 	                				value={this.props.nodeName}
 									onChange={this.props.changeNodeName} />
 							<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
-							<TimelineForm id={this.props.id} />
+							
 						</List> :
 						null}
 						</div> : null}

@@ -35,10 +35,20 @@ import { createFuncObj, defaultFunction } from './jsPsychInit';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
-const DEFAULT_PLUGIN_PARAM = {
-	type: 'text',
-
+const DEFAULT_TIMELINE_PARAM = {
+	timeline_variables: undefined,
+	randomize_order: true,
+	sample: undefined,
+	conditional_function: undefined,
+	loop_function: undefined,
 };
+const DEFAULT_TRIAL_PARAM = {
+		type: 'text',
+		text: '',
+		chocies: '',
+		allow_mouse_click: false,
+};
+
 
 var timeline = 0;
 var trial = 0;
@@ -74,14 +84,8 @@ export function createTimeline(id,
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
+	parameters=DEFAULT_TIMELINE_PARAM
 	) {
-	let parameters = {
-		timeline_variable: [{H0: null, H1: null}],
-		randomize_order: true,
-		sampling: {type: "with-replacement", size: 1},
-		conditional_function: createFuncObj(defaultFunction("conditional_function")),
-		loop_function: createFuncObj(defaultFunction("loop_function")),
-	}
 
 	return {
 		id: id,
@@ -99,13 +103,8 @@ export function createTimeline(id,
 export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
-	enabled=true,) {
-
-	let parameters = {
-		type: 'text',
-		text: '',
-		chocies: '',
-	}
+	enabled=true,
+	parameters=DEFAULT_TRIAL_PARAM) {
 
 	return {
 		id: id,

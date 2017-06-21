@@ -22,7 +22,6 @@ export function deepCopy(target) {
 		case "object":
 			if (Array.isArray(clone)) {
 				clone = [];
-				let member;
 				for (let item of target) {
 					clone.push(deepCopy(item));
 				}

@@ -5,6 +5,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
 import { Welcome } from '../../reducers/TimelineNode/preview';
 
+const runtime_script_ele_id = 'RunTime-Script';
+
 export default class Preview extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return nextProps.liveEditting && this.props.code !== nextProps.code;
@@ -19,11 +21,14 @@ export default class Preview extends React.Component {
   }
 
   load(code) {
+    let ele = document.getElementById(runtime_script_ele_id);
+    if (ele) ele.remove();
     let script = document.createElement('script');
+    script.id = runtime_script_ele_id;
     script.type = 'text/javascript';
-    script.async = true;
+    script.async = false;
     script.innerHTML = code;
-    this.display_element.appendChild(script);
+    document.body.appendChild(script);
   }
 
 	render() {
@@ -43,7 +48,7 @@ export default class Preview extends React.Component {
                 zDepth={1}>
               <div 
                   className={jsPsych_Display_Element}
-                  id="Preview-Window"
+                  id={jsPsych_Display_Element}
                   style={{
                     width: '100%',
                     height: '100%',

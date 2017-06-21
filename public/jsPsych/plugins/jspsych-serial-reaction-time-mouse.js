@@ -22,17 +22,12 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
     trial.response_ends_trial = (typeof trial.response_ends_trial === 'undefined') ? true : trial.response_ends_trial;
     trial.timing_pre_target = (typeof trial.timing_pre_target === 'undefined') ? 0 : trial.timing_pre_target;
     trial.timing_max_duration = trial.timing_max_duration || -1; // if -1, then wait for response forever
-    trial.show_response_feedback = (typeof trial.show_response_feedback === 'undefined') ? true : trial.show_response_feedback;
-    trial.feedback_duration = (typeof trial.feedback_duration === 'undefined') ? 50 : trial.feedback_duration;
     trial.fade_duration = (typeof trial.fade_duration === 'undefined') ? -1 : trial.fade_duration;
     trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
 
     var startTime = -1;
     var response = {
-      rt: -1,
-      row: -1,
-      column: -1,
-      correct: false
+      rt: -1
     }
 
     // display stimulus
@@ -54,16 +49,12 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
     }
 
 		function showTarget(){
-
       display_element.querySelector('#jspsych-serial-reaction-time-stimulus-cell-'+trial.target[0]+'-'+trial.target[1]).addEventListener('mousedown', function(e){
         if(startTime == -1){
           return;
         } else {
           var info = {}
           info.rt = Date.now() - startTime;
-          var node = e.target;
-          info.row = parseInt(node.dataset.row);
-          info.column = parseInt(node.dataset.column);
           after_response(info);
         }
       });
@@ -91,8 +82,6 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
       // gather the data to store for the trial
       var trial_data = {
         "rt": response.rt,
-        "cell_clicked": JSON.stringify([response.row, response.column]),
-				"correct": response.correct,
 				"grid": JSON.stringify(trial.grid),
 				"target": JSON.stringify(trial.target)
       };
@@ -110,16 +99,6 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
 
 			// only record first response
       response = response.rt == -1 ? info : response;
-
-			// check if the response is correct
-			var responseLoc = [info.row, info.column];
-			response.correct = (JSON.stringify(responseLoc) == JSON.stringify(trial.target));
-
-			if (trial.show_response_feedback){
-				var color = response.correct ? '#0f0' : '#f00';
-        display_element.querySelector('#jspsych-serial-reaction-time-stimulus-cell-'+responseLoc[0]+'-'+responseLoc[1]).style.transition = "";
-        display_element.querySelector('#jspsych-serial-reaction-time-stimulus-cell-'+responseLoc[0]+'-'+responseLoc[1]).style.backgroundColor = color;
-			}
 
       if (trial.response_ends_trial) {
         endTrial();
