@@ -35,10 +35,13 @@ export function generateCode(state) {
 	let blocks = [];
 	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
 	let node;
+	// bool that descides if this node should be include 
+	let include;  
 	for (let id of timeline) {
 		if (!id) continue;
 		node = state[id];
-		if (node.enabled || !state.previewAll) {
+		include = (!state.previewAll) ? true : node.enabled;
+		if (include) {
 			if (isTimeline(node)) {
 				blocks.push(generateTimeline(state, node));
 			} else {
@@ -79,15 +82,18 @@ function generateTimeline(state, node) {
 		...node.parameters
 	}
 	let timeline = [];
-	let desc, block;
+	let desc, block, include;
 	for (let descId of node.childrenById) {
 		desc = state[descId];
-		if (isTimeline(desc)) {
-			block = generateTimeline(state, desc);
-		} else {
-			block = generateTrial(state, desc);
+		include = (!state.previewAll) ? true : desc.enabled;
+		if (include) {
+			if (isTimeline(desc)) {
+				block = generateTimeline(state, desc);
+			} else {
+				block = generateTrial(state, desc);
+			}
+			timeline.push(block);
 		}
-		timeline.push(block);
 	}
 
 	res.timeline = timeline;
