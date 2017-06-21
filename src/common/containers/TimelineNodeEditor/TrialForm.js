@@ -33,7 +33,7 @@ const mapStateToProps = (state, ownProps) => {
 		id: trial.id,
 		isTrial: isTrial(trial),
 		parameters: trial.parameters,
-		pluginType: trial.pluginType,
+		pluginType: trial.parameters.type,
 		}
 	} else {
 		return {

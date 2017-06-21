@@ -30,23 +30,23 @@ export function getTrialId() {
 	return standardizeTrialId(trialId++);
 }
 
-export function getHeaderId() {
-	return standerdizeHeaderId(headerId++);
-}
+// export function getHeaderId() {
+// 	return standerdizeHeaderId(headerId++);
+// }
 
-export function getRowId() {
-	return standerdizeRowId(rowId++);
-}
+// export function getRowId() {
+// 	return standerdizeRowId(rowId++);
+// }
 
-export function startFromTwo(array, index) {
-	if(array[0] != array[1]) {
-		index = 2;
-	} else {
-		index++;
-	}
+// export function startFromTwo(array, index) {
+// 	if(array[0] !== array[1]) {
+// 		index = 2;
+// 	} else {
+// 		index++;
+// 	}
 
-	return index;
-}
+// 	return index;
+// }
 
 export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 

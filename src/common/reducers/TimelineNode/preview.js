@@ -1,4 +1,6 @@
-// var babel = require("babel-core");
+var esprima = require("esprima");
+var esmangle = require("esmangle");
+var escodegen = require("escodegen");
 
 import { initState as jsPsychInitState } from './jsPsychInit';
 
@@ -28,7 +30,7 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
-export default function generateCode(state) {
+export function generateCode(state) {
 	let blocks = [];
 	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
 	let node;
@@ -51,9 +53,14 @@ export default function generateCode(state) {
 
 function generateTrial(trial) {
 	return {
-		type: trial.pluginType,
 		...trial.parameters
 	};
+}
+
+function generateTimeline(timeline) {
+	let res = {
+		...timeline.parameters
+	}
 }
 
 export function setLiveEditting(state, action) {
@@ -72,6 +79,8 @@ For functions, turn it to
 
 */
 export function stringify(obj) {
+	if (!obj) return JSON.stringify(obj);
+	
 	let type = typeof obj;
 	switch(type) {
 		case 'object':
@@ -87,9 +96,7 @@ export function stringify(obj) {
 				}
 				res.push("]");
 			} else if (obj.isFunc) { 
-				let code = obj.code.replace(/\n/g, '').replace(/\t/g, '    ');
-				// console.log(babel.transform(code).code);
-				return code;
+				return stringifyFunc(obj.code, obj.info);
 			}else {
 				res.push("{");
 				let keys = Object.keys(obj);
@@ -101,5 +108,24 @@ export function stringify(obj) {
 			return res.join("");
 		default:
 			return JSON.stringify(obj);
+	}
+}
+
+function stringifyFunc(code, info=null) {
+	try {
+		let tree = esprima.parse(code);
+		let res = escodegen.generate(tree, {
+            format: {
+                compact: true,
+                semicolons: true,
+                parentheses: false
+            }
+        });			
+		return res;
+	} catch (e) {
+		let log = JSON.stringify({error: e, info: info});
+		let func = "function() { alert('" + JSON.stringify({error: e, info: info}) + "'); }";
+		console.log(func);
+		return func;
 	}
 }

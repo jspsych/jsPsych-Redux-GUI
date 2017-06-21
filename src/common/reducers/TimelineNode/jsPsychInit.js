@@ -30,20 +30,25 @@ export initState = {
 
 import { deepCopy } from '../../utils';
 
-export const defaultFunction = (function(data) {
-	return undefined;
-}).toString();
+export const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
+
+export const createFuncObj = (code, info=null) => ({
+	isFunc: true,
+	code: code,
+	info: info
+})
+
 
 export const jsPsych_Display_Element = "Preview-Window";
 
 export const initState = {
 	display_element: jsPsych_Display_Element,
 	default_iti: 0,
-	on_finish: { isFunc: true, code: defaultFunction },
-	on_trial_start: { isFunc: true, code: defaultFunction },
-	on_trial_finish: { isFunc: true, code: defaultFunction },
-	on_data_update: { isFunc: true, code: defaultFunction },
-	on_interaction_data_update: { isFunc: true, code: defaultFunction },
+	on_finish: createFuncObj(defaultFunction("on_finish")),
+	on_trial_start: createFuncObj(defaultFunction("on_trial_start")),
+	on_trial_finish: createFuncObj(defaultFunction("on_trial_finish")),
+	on_data_update: createFuncObj(defaultFunction("on_data_update")),
+	on_interaction_data_update: createFuncObj(defaultFunction("on_interaction_data_update")),
 	exclusions: {
 		min_width: 0,
 		min_height: 0,
@@ -94,19 +99,19 @@ export function setJspyschInit(state, action) {
 			jsPsychInit.default_iti = value;
 			break;
 		case settingType.on_finish:
-			jsPsychInit.on_finish.code = value;
+			jsPsychInit.on_finish = createFuncObj(value);
 			break;
 		case settingType.on_data_update:
-			jsPsychInit.on_data_update.code = value;
+			jsPsychInit.on_data_update = createFuncObj(value);
 			break;
 		case settingType.on_trial_start:
-			jsPsychInit.on_trial_start.code = value;
+			jsPsychInit.on_trial_start = createFuncObj(value);
 			break;
 		case settingType.on_trial_finish:
-			jsPsychInit.on_trial_finish.code= value;
+			jsPsychInit.on_trial_finish = createFuncObj(value);
 			break;
 		case settingType.on_interaction_data_update:
-			jsPsychInit.on_interaction_data_update.code = value;
+			jsPsychInit.on_interaction_data_update = createFuncObj(value);
 			break;
 		case settingType.min_width:
 			jsPsychInit.exclusions.min_width = value;

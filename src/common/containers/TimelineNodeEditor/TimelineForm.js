@@ -11,7 +11,7 @@ const mapStateToProps = (state, ownProps) => {
 		return {
 			id: timeline.id,
 			isTimeline: isTimeline(timeline),
-			timeline_variable: timeline.timeline_variable
+			timeline_variable: timeline.parameters.timeline_variable
 		}
 	} else {
 		return {

@@ -72,7 +72,7 @@ export default class jsPsychInitEditor extends React.Component {
                     onUpdate={(newCode) => { this.props.setJsPsychInit(null, newCode, key); }}
                     openCallback={this.props.turnOffLiveEditting}
                     closeCallback={this.props.turnOnLiveEditting}
-                    title={key+" = "}
+                    title={key+": "}
         />
       </div>
     </div>
