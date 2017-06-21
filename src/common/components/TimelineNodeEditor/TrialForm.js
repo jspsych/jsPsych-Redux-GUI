@@ -37,7 +37,7 @@ class TrialForm extends React.Component {
 						return (
 							<Toggle 
 							id={plug} 
-							key={plug} 
+							key={plug+" "+this.props.id} 
 							label={plug} 
 							defaultToggled={this.props.parameters[plug]} 
 							onToggle={(event, newValue) => this.props.onToggle(event.target.id, newValue)} />);
@@ -46,7 +46,7 @@ class TrialForm extends React.Component {
 						return (
 							<TextField 
 							id={plug} 
-							key={plug} 
+							key={plug+" "+this.props.id} 
 							value={this.props.parameters[plug]} 
 							floatingLabelText={plug} 
 							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
@@ -54,7 +54,7 @@ class TrialForm extends React.Component {
 						return (
 							<TextField 
 							id={plug} 
-							key={plug} 
+							key={plug+" "+this.props.id} 
 							value={this.props.parameters[plug]} 
 							floatingLabelText={plug} 
 							onChange={(event, newValue) => this.props.onChangeInt(event.target.id, newValue)} />);
@@ -62,7 +62,7 @@ class TrialForm extends React.Component {
 						return (
 							<TextField 
 							id={plug} 
-							key={plug} 
+							key={plug+" "+this.props.id} 
 							value={this.props.parameters[plug]} 
 							floatingLabelText={plug} 
 							onChange={(event, newValue) => this.props.onChangeFloat(event.target.id, newValue)} />);
@@ -71,7 +71,7 @@ class TrialForm extends React.Component {
 						return (
 							<TextField
 							 id={plug} 
-							 key={plug} 
+							 key={plug+" "+this.props.id} 
 							 value={this.props.parameters[plug]} 
 							 floatingLabelText={plug} 
 							 onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);

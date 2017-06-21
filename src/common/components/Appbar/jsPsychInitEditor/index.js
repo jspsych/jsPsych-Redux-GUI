@@ -68,10 +68,10 @@ export default class jsPsychInitEditor extends React.Component {
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
       <div style={{padding: 15}}>{key}</div>
       <div style={{position: 'absolute', right: 0}}>
-        <CodeEditorTrigger code={this.props[key].code} 
-                    onUpdate={(newCode) => { this.props.setJsPsychInit(null, newCode, key); }}
-                    openCallback={this.props.turnOffLiveEditting}
-                    closeCallback={this.props.turnOnLiveEditting}
+        <CodeEditorTrigger initCode={this.props[key].code} 
+                    submitCallback={(newCode) => { 
+                      this.props.setJsPsychInit(null, newCode, key);
+                    }}
                     title={key+": "}
         />
       </div>

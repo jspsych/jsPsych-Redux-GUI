@@ -42,7 +42,7 @@ export function generateCode(state) {
 			if (isTimeline(node)) {
 				blocks.push(generateTimeline(state, node));
 			} else {
-				blocks.push(generateTrial(node));
+				blocks.push(generateTrial(state, node));
 			}
 		}
 	}
@@ -55,17 +55,23 @@ export function generateCode(state) {
 	return "jsPsych.init(" + stringify(obj) + ");";
 }
 
-export function setLiveEditting(state, action) {
+export function playAll(state, action) {
 	return Object.assign({}, state, {
-		liveEditting: action.flag,
+		previewAll: true,
 	});
 }
 
 
-function generateTrial(trial) {
-	return {
+function generateTrial(state, trial) {
+	let res = {
 		...trial.parameters
 	};
+
+	if (res.timing_stim && !state.previewAll) {
+		res.timing_stim = -1;
+	}
+
+	return res;
 }
 
 function generateTimeline(state, node) {
@@ -79,7 +85,7 @@ function generateTimeline(state, node) {
 		if (isTimeline(desc)) {
 			block = generateTimeline(state, desc);
 		} else {
-			block = generateTrial(desc);
+			block = generateTrial(state, desc);
 		}
 		timeline.push(block);
 	}

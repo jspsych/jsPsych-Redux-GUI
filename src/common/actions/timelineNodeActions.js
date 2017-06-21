@@ -62,6 +62,12 @@ export function onPreviewAction(id, previewAll=false) {
 	};
 }
 
+export function playAllAction() {
+	return {
+		type: actionTypes.PLAY_ALL,
+	};
+}
+
 export function onToggleAction(id) {
 	return {
 		type: actionTypes.ON_TOGGLE,
@@ -116,13 +122,6 @@ export function setNameAction(name) {
 	return {
 		type: actionTypes.SET_NAME,
 		name: name
-	};
-}
-
-export function setLiveEdittingAction(flag) {
-	return {
-		type: actionTypes.SET_LIVE_EDITTING,
-		flag: flag,
 	};
 }
 

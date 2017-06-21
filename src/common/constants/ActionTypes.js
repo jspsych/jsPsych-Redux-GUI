@@ -21,8 +21,8 @@ export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
 // jsPsych init editor
 export const SET_JSPSYCH_INIT = "SET_JSPSYCH_INIT";
 
-// Preview
-export const SET_LIVE_EDITTING = "SET_LIVE_EDITTING";
+// preview
+export const PLAY_ALL = "PLAY_ALL";
 
 //TrialForm Actions 
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";

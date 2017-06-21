@@ -84,7 +84,7 @@ export function createTimeline(id,
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
-	parameters=DEFAULT_TIMELINE_PARAM
+	parameters=deepCopy(DEFAULT_TIMELINE_PARAM)
 	) {
 
 	return {
@@ -104,7 +104,7 @@ export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
 	enabled=true,
-	parameters=DEFAULT_TRIAL_PARAM) {
+	parameters=deepCopy(DEFAULT_TRIAL_PARAM)) {
 
 	return {
 		id: id,
@@ -609,7 +609,6 @@ action = {
 */
 export function onPreview(state, action) {
 	let { id, previewAll } = action;
-
 
 	let new_state = Object.assign({}, state, {
 		previewId: id,

@@ -28,17 +28,13 @@ const mapStateToProps = (state, ownProps) => {
 
 	let trial = timelineNodeState[timelineNodeState.previewId];
 
-	if(trial != null) {
 	return {
 		id: trial.id,
 		isTrial: isTrial(trial),
 		parameters: trial.parameters,
 		pluginType: trial.parameters.type,
-		}
-	} else {
-		return {
-		}
 	}
+
 };
 
 const mapDispatchToProps = (dispatch,ownProps) => ({

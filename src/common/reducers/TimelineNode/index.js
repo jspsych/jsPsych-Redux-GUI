@@ -1,26 +1,22 @@
 import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
-import * as editor from './editor';
 import * as preview from './preview';
+import * as editor from './editor';
 
 export const initState = {
 	// id of which is being previewed/editted
 	previewId: null,
-	// timeline/trial queue to preview
-	previewQueue: [],
+	// if want to play all
+	previewAll: false,
 
 	// the main timeline. array of ids
 	// mainTimeline: [],
-	// mainTimeline: ["TRIAL--1", "TIMELINE--1"],
-	mainTimeline: ["TIMTELINE--1"],
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
 
-	// live editting
-	liveEditting: true,
-
+	mainTimeline: ["TIMTELINE--1"],
 	"TIMTELINE--1": {
 		id: "TIMTELINE--1",
 		type: "TIMELINE",
@@ -55,19 +51,6 @@ export const initState = {
 		enabled: true,
 		parameters: { type: 'text', text: "Test -2", choices: ['D'], allow_mouse_click: false },
 	},
-
-	// "TIMELINE--1": {
-	// 	id: "TIMELINE--1",
-	// 	type: "TIMELINE",
-	// 	name: "Timline -1",
-	// 	parent: null,
-	// 	childrenById: ["TRIAL--2"],
-	// 	collapsed: false,
-	// 	enabled: true,
-	// 	parameters: {
-
-	// 	},
-	// }
 }
 
 
@@ -104,13 +87,14 @@ export default function(state=initState, action) {
 			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
+
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
 
-		// preview
-		case actionTypes.SET_LIVE_EDITTING:
-			return preview.setLiveEditting(state, action);
+		// prevew
+		case actionTypes.PLAY_ALL:
+			return preview.playAll(state, action);
 
 		// editor starts
 		case actionTypes.SET_NAME:

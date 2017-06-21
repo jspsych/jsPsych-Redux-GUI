@@ -16,24 +16,24 @@ import {
 
 export default class CodeEditor extends React.Component {
   static propTypes = { 
-  	onUpdate: PropTypes.func.isRequired,
-    closeCallback: PropTypes.func.isRequired,
-    openCallback: PropTypes.func.isRequired,
-  	code: PropTypes.string,
+    submitCallback: PropTypes.func.isRequired,
+    openCallback: PropTypes.func,
+  	initCode: PropTypes.string,
   	buttonIcon: PropTypes.object,
     title: PropTypes.string
   };
 
   static defaultProps = { 
-  	code: "",
+  	initCode: "",
   	buttonIcon: (<ButtonIcon color={normalColor} hoverColor={hoverColor} />),
     title: "Code Editor",
     openCallback: function() { return; },
-    closeCallback: function() { return; },
+    submitCallback: function(newCode) { return; },
   };
 
   state = {
-  	open: false
+  	open: false,
+    code: this.props.initCode
   };
 
   handleOpen = () => {
@@ -48,21 +48,27 @@ export default class CodeEditor extends React.Component {
   	});
   };
 
+  onUpdate = (newCode) => {
+    this.setState({
+      code: newCode
+    });
+  }
+
   render() {
-  	const { code, onUpdate, buttonIcon, title } = this.props;
+  	const { buttonIcon, title, submitCallback, openCallback } = this.props;
   	const actions = [
       <FlatButton
         label="Finish"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={() => { this.handleClose(); this.props.closeCallback(); }}
+        onTouchTap={() => { this.handleClose(); submitCallback(this.state.code); }}
       />,
     ];
 
   	return (
   		<MuiThemeProvider>
   		<div>
-	  		<IconButton onTouchTap={() => { this.handleOpen(); this.props.openCallback()}}>
+	  		<IconButton onTouchTap={() => { this.handleOpen(); openCallback()}}>
 	  		{buttonIcon}
 	  		</IconButton>
 	  		<Dialog
@@ -73,8 +79,11 @@ export default class CodeEditor extends React.Component {
 	            open={this.state.open}
 	            onRequestClose={this.handleClose}
 	          >
-	          <CodeMirror value={code} onChange={onUpdate} options={{lineNumbers: true}}/>
-	         </Dialog>
+	          <CodeMirror value={this.state.code} 
+                        onChange={this.onUpdate} 
+                        options={{lineNumbers: true}}
+            />
+	      </Dialog>
 	    </div>
 	  	</MuiThemeProvider>
 
