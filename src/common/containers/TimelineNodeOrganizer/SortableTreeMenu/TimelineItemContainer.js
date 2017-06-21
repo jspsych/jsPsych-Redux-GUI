@@ -13,7 +13,7 @@ const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 			setKeyboardFocusId(ownProps.id);
 		} else {
 			dispatch(timelineNodeActions.onPreviewAction(null));
-			ownProps.closeTimelineEditorCallback();
+			// ownProps.closeTimelineEditorCallback();
 			setKeyboardFocusId(null);
 		}
 	})
