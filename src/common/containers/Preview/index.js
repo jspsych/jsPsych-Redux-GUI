@@ -9,7 +9,7 @@ const mapStateToProps = (state, ownProps) => {
 	if (timelineNodeState.previewId) {
 		code = generateCode(timelineNodeState);
 	}
-
+	console.log(code)
 	return {
 		code: code,
 		liveEditting: timelineNodeState.liveEditting
@@ -21,3 +21,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Preview);
+

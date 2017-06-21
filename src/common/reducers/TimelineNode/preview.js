@@ -3,6 +3,7 @@ var esmangle = require("esmangle");
 var escodegen = require("escodegen");
 
 import { initState as jsPsychInitState } from './jsPsychInit';
+import { isTimeline } from './utils';
 
 const welcomeObj = {
 	...jsPsychInitState,
@@ -38,7 +39,11 @@ export function generateCode(state) {
 		if (!id) continue;
 		node = state[id];
 		if (node.enabled || !state.previewAll) {
-			blocks.push(generateTrial(node));
+			if (isTimeline(node)) {
+				blocks.push(generateTimeline(state, node));
+			} else {
+				blocks.push(generateTrial(node));
+			}
 		}
 	}
 
@@ -50,6 +55,12 @@ export function generateCode(state) {
 	return "jsPsych.init(" + stringify(obj) + ");";
 }
 
+export function setLiveEditting(state, action) {
+	return Object.assign({}, state, {
+		liveEditting: action.flag,
+	});
+}
+
 
 function generateTrial(trial) {
 	return {
@@ -57,17 +68,27 @@ function generateTrial(trial) {
 	};
 }
 
-function generateTimeline(timeline) {
+function generateTimeline(state, node) {
 	let res = {
-		...timeline.parameters
+		...node.parameters
 	}
+	let timeline = [];
+	let desc, block;
+	for (let descId of node.childrenById) {
+		desc = state[descId];
+		if (isTimeline(desc)) {
+			block = generateTimeline(state, desc);
+		} else {
+			block = generateTrial(desc);
+		}
+		timeline.push(block);
+	}
+
+	res.timeline = timeline;
+	return res;
 }
 
-export function setLiveEditting(state, action) {
-	return Object.assign({}, state, {
-		liveEditting: action.flag,
-	});
-}
+
 
 /*
 Specially written for stringify obj in this app to generate code
@@ -80,17 +101,17 @@ For functions, turn it to
 */
 export function stringify(obj) {
 	if (!obj) return JSON.stringify(obj);
-	
+
 	let type = typeof obj;
 	switch(type) {
 		case 'object':
 			let res = [];
 			if (Array.isArray(obj)) {
 				res.push("[");
-				let i = obj.length;
+				let l = obj.length, i = 1;
 				for (let item of obj) {
 					res.push(stringify(item));
-					if (obj-- > 1) {
+					if (i++ < l) {
 						res.push(",");
 					}
 				}
@@ -100,8 +121,12 @@ export function stringify(obj) {
 			}else {
 				res.push("{");
 				let keys = Object.keys(obj);
+				let l = keys.length, i = 1;
 				for (let key of keys) {
-					res.push('"' + key + '"' + ":" + stringify(obj[key]) + ",");  
+					res.push('"' + key + '"' + ":" + stringify(obj[key]));
+					if (i++ < l) {
+						res.push(",");
+					}
 				}
 				res.push("}");
 			}
@@ -124,8 +149,8 @@ function stringifyFunc(code, info=null) {
 		return res;
 	} catch (e) {
 		let log = JSON.stringify({error: e, info: info});
-		let func = "function() { alert('" + JSON.stringify({error: e, info: info}) + "'); }";
-		console.log(func);
+		let func = "function() { console.log('" + JSON.stringify({error: e, info: info}) + "'); }";
+		console.log(code);
 		return func;
 	}
 }

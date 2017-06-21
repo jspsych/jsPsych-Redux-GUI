@@ -13,7 +13,7 @@ export const initState = {
 	// the main timeline. array of ids
 	// mainTimeline: [],
 	// mainTimeline: ["TRIAL--1", "TIMELINE--1"],
-	mainTimeline: ["TRIAL--1", "TRIAL--2"],
+	mainTimeline: ["TIMTELINE--1"],
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
@@ -21,11 +21,28 @@ export const initState = {
 	// live editting
 	liveEditting: true,
 
+	"TIMTELINE--1": {
+		id: "TIMTELINE--1",
+		type: "TIMELINE",
+		name: "Timeline -1",
+		parent: null,
+		enabled: true,
+		collapsed: false,
+		childrenById: ["TRIAL--1", "TRIAL--2"],
+		parameters: {
+			timeline_variables: undefined,
+			randomize_order: true,
+			sample: undefined,
+			conditional_function: undefined,
+			loop_function: undefined,
+		}
+	},
+
 	"TRIAL--1": {
 		id: "TRIAL--1",
 		type: "TRIAL",
 		name: "Trial -1",
-		parent: null,
+		parent: "TIMTELINE--1",
 		enabled: true,
 		parameters: { type: 'text', text: "Test -1", choices: ['A'], allow_mouse_click: false },
 	},
@@ -34,10 +51,9 @@ export const initState = {
 		id: "TRIAL--2",
 		type: "TRIAL",
 		name: "Trial -2",
-		// parent: "TIMELINE--1",
-		parent: null,
+		parent: "TIMTELINE--1",
 		enabled: true,
-		parameters: { type: 'text', text: "Test -2", choices: [], allow_mouse_click: false  },
+		parameters: { type: 'text', text: "Test -2", choices: ['D'], allow_mouse_click: false },
 	},
 
 	// "TIMELINE--1": {

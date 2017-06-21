@@ -119,7 +119,9 @@ window.jsPsych = (function() {
     opts.display_element.tabIndex = 0;
 
     // add CSS class to DOM_target
-    opts.display_element.className += ' jspsych-display-element';
+    if(opts.display_element.className.indexOf('jspsych-display-element') == -1){
+      opts.display_element.className += ' jspsych-display-element';
+    }
     DOM_target.className += 'jspsych-content';
 
     // create experiment timeline
@@ -368,6 +370,8 @@ window.jsPsych = (function() {
           order = jsPsych.randomization.sample(order, timeline_parameters.sample.size, true);
         } else if(timeline_parameters.sample.type == 'without-replacement'){
           order = jsPsych.randomization.sample(order, timeline_parameters.sample.size, false);
+        } else if(timeline_parameters.sample.type == 'fixed-repetitions'){
+          order = jsPsych.randomization.repeat(order, timeline_parameters.sample.size, false);
         }
       }
 

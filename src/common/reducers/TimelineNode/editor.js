@@ -26,11 +26,10 @@ export function changePlugin(state, action) {
 	let params = window.jsPsych.plugins[action.newPluginVal].info.parameters;
 	let paramKeys = Object.keys(params);
 
-	var paramsObject = { type: action.newPluginVal};
+	var paramsObject = { type: action.newPluginVal };
 
 	for(let i=0; i<paramKeys.length; i++) {
 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
-
 	}
 
 	node = deepCopy(node);
