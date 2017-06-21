@@ -1,15 +1,20 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
+import IconButton from 'material-ui/IconButton';
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import Play from 'material-ui/svg-icons/av/play-arrow';
+import Refresh from 'material-ui/svg-icons/navigation/refresh';
 
 import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
 import { Welcome } from '../../reducers/TimelineNode/preview';
 
-const runtime_script_ele_id = 'RunTime-Script';
+const runtime_script_ele_id = 'Runtime-Script-Tag';
 
 export default class Preview extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.liveEditting && this.props.code !== nextProps.code;
+    return this.props.code !== nextProps.code;
   }
 
   componentDidMount() {
@@ -58,6 +63,25 @@ export default class Preview extends React.Component {
                   >
               </div>
             </Paper>
+
+            <div style={{paddingTop: 10, }}>
+              <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
+                <ToolbarGroup firstChild={true}>
+                    <IconButton 
+                      tooltip="Play Experiment"
+                      onTouchTap={()=>{ this.props.playAll(); this.load(this.props.code); }}
+                      >
+                      <Play />
+                    </IconButton>
+                    <IconButton 
+                      tooltip="Reload Experiment"
+                      onTouchTap={()=>{ this.load(this.props.code); }}
+                      >
+                      <Refresh />
+                    </IconButton>
+                </ToolbarGroup>
+              </Toolbar>
+            </div>
         </div>
       </MuiThemeProvider>
   		);

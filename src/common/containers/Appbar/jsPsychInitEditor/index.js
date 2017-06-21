@@ -7,14 +7,6 @@ const setJsPsychInit = (dispatch, key, value) => {
 	dispatch(timelineNodeActions.setJspyschInitAction(key, value));
 }
 
-const turnOffLiveEditting = (dispatch) => {
-	dispatch(timelineNodeActions.setLiveEdittingAction(false));
-}
-
-const turnOnLiveEditting = (dispatch) => {
-	dispatch(timelineNodeActions.setLiveEdittingAction(true));
-}
-
 const mapStateToProps = (state, ownProps) => {
 	let jsPsychInit = state.timelineNodeState.jsPsychInit;
 
@@ -28,8 +20,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	setJsPsychInit: (e, value, key) => { setJsPsychInit(dispatch, key, value); },
-	turnOffLiveEditting: () => { turnOffLiveEditting(dispatch); },
-	turnOnLiveEditting: () => { turnOnLiveEditting(dispatch); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(jsPsychInitEditor);
