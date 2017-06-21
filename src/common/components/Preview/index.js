@@ -10,6 +10,10 @@ import Refresh from 'material-ui/svg-icons/navigation/refresh';
 import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
 import { Welcome } from '../../reducers/TimelineNode/preview';
 
+import {
+  cyan600 as hoverColor,
+} from 'material-ui/styles/colors';
+
 const runtime_script_ele_id = 'Runtime-Script-Tag';
 
 export default class Preview extends React.Component {
@@ -66,18 +70,18 @@ export default class Preview extends React.Component {
 
             <div style={{paddingTop: 10, }}>
               <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
-                <ToolbarGroup firstChild={true}>
+                <ToolbarGroup style={{margin: '0 auto'}}>
                     <IconButton 
-                      tooltip="Play Experiment"
+                      tooltip="Play"
                       onTouchTap={()=>{ this.props.playAll(); this.load(this.props.code); }}
                       >
-                      <Play />
+                      <Play hoverColor={hoverColor} />
                     </IconButton>
                     <IconButton 
-                      tooltip="Reload Experiment"
+                      tooltip="Reload"
                       onTouchTap={()=>{ this.load(this.props.code); }}
                       >
-                      <Refresh />
+                      <Refresh hoverColor={hoverColor} />
                     </IconButton>
                 </ToolbarGroup>
               </Toolbar>
