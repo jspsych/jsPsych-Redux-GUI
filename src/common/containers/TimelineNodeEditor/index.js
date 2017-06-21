@@ -17,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
 
 	return {
 		previewId: timelineNodeState.previewId,
-		pluginType: node.pluginType,
+		pluginType: node.parameters.type,
 		nodeName: node.name,
 		label: ((isTimeline(node)) ? "Timeline" : "Trial") + " Name"
 	}

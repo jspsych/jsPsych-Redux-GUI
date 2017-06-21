@@ -26,7 +26,7 @@ export function changePlugin(state, action) {
 	let params = window.jsPsych.plugins[action.newPluginVal].info.parameters;
 	let paramKeys = Object.keys(params);
 
-	var paramsObject = {};
+	var paramsObject = { type: action.newPluginVal};
 
 	for(let i=0; i<paramKeys.length; i++) {
 		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
@@ -35,7 +35,6 @@ export function changePlugin(state, action) {
 
 	node = deepCopy(node);
 
-	node.pluginType = action.newPluginVal; 
 	node.parameters = paramsObject;
 	new_state[state.previewId] = node; 
 	
@@ -49,8 +48,6 @@ export function changeToggleValue(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters = Object.assign({}, node.parameters);
-
 	node.parameters[action.paramId] = action.newVal;
 
 	return new_state;
@@ -62,8 +59,6 @@ export function changeParamText(state, action) {
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
-
-	node.parameters = Object.assign({}, node.parameters);
 
 	node.parameters[action.paramId] = action.newVal;
 
@@ -77,8 +72,6 @@ export function changeParamInt(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters = Object.assign({}, node.parameters);
-
 	node.parameters[action.paramId] = action.newVal;
 
 	return new_state; 
@@ -90,8 +83,6 @@ export function changeParamFloat(state, action) {
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
-
-	node.parameters = Object.assign({}, node.parameters);
 
 	node.parameters[action.paramId] = action.newVal;
 
@@ -147,12 +138,12 @@ export function changeHeader(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node; 
 
-	var newArray = arrayOfArrays(node.timeline_variable);
+	var newArray = arrayOfArrays(node.parameters.timeline_variable);
 
 	var headerArray = newArray[0];
 	headerArray[action.headerId] = action.newVal;
 
-	node.timeline_variable = arrayOfObjects(newArray)
+	node.parameters.timeline_variable = arrayOfObjects(newArray)
 
 	return new_state;
 }
@@ -166,7 +157,7 @@ export function changeCell(state, action) {
 
 	var cellString = action.cellId; //string with row and column index
  	var cellIndex = cellString.split(' '); 
-	var newArray = arrayOfArrays(node.timeline_variable);
+	var newArray = arrayOfArrays(node.parameters.timeline_variable);
 	var cellRow = cellIndex[0]; 
 	
     var cellColumn = cellIndex[1];
@@ -174,7 +165,7 @@ export function changeCell(state, action) {
 
     newArray[cellRow][cellColumn] = action.newVal;
 
-    node.timeline_variable = arrayOfObjects(newArray);
+    node.parameters.timeline_variable = arrayOfObjects(newArray);
     
     return new_state;
 
@@ -197,14 +188,14 @@ export function addColumn(state, action) {
 
 	node = deepCopy(node);
 
-	var newArray = arrayOfArrays(node.timeline_variable);
+	var newArray = arrayOfArrays(node.parameters.timeline_variable);
 	// var previous = timelineIDs[1];
 	// timelineIDs[0] = previous;
 	// timelineIDs[1] =
     
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
-	node.timeline_variable = arrayOfObjects(newArray);
+	node.parameters.timeline_variable = arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
 
@@ -218,7 +209,7 @@ export function addRow(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.timeline_variable.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
+	node.parameters.timeline_variable.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
 
 	return new_state;
 }
@@ -229,7 +220,7 @@ export function changeSampling(state, action) {
 
 	node = deepCopy(node);
 
-	node.sampling['type'] = action.newVal;
+	node.parameters.sampling['type'] = action.newVal;
 
 	new_state[state.previewId] = node;
 	return new_state;
@@ -241,7 +232,7 @@ export function changeSize(state, action) {
 
 	node = deepCopy(node);
 
-	node.sampling['size'] = action.newVal;
+	node.parameters.sampling['size'] = action.newVal;
 
 	new_state[state.previewId] = node;
 	return new_state;
@@ -253,7 +244,7 @@ export function changeRandomize(state, action) {
 
 	node = deepCopy(node);
 
-	node.randomize_order = action.newBool;
+	node.parameters.randomize_order = action.newBool;
 
 	new_state[state.previewId] = node;
 	return new_state;

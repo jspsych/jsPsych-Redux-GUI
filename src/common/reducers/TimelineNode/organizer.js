@@ -31,10 +31,14 @@ A trial state = {
 
 import * as utils from './utils'; 
 import { deepCopy } from '../../utils';
+import { createFuncObj, defaultFunction } from './jsPsychInit';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
-const DEFAULT_PLUGIN_TYPE = 'text';
+const DEFAULT_PLUGIN_PARAM = {
+	type: 'text',
+
+};
 
 var timeline = 0;
 var trial = 0;
@@ -70,13 +74,14 @@ export function createTimeline(id,
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
-	parameters={},
-	timeline_variable=[{H0: null, H1: null}],
-	randomize_order=true,
-	sampling={type: "with-replacement", size: 1}, //{type: 'without-replacement', size: 1} //{type: 'fixed-replacement', size: 1} // {type: 'custom', fn: }
-	conditional_function: null,
-	loop_function: null,
 	) {
+	let parameters = {
+		timeline_variable: [{H0: null, H1: null}],
+		randomize_order: true,
+		sampling: {type: "with-replacement", size: 1},
+		conditional_function: createFuncObj(defaultFunction("conditional_function")),
+		loop_function: createFuncObj(defaultFunction("loop_function")),
+	}
 
 	return {
 		id: id,
@@ -87,11 +92,6 @@ export function createTimeline(id,
 		collapsed: collapsed,
 		enabled: enabled,
 		parameters: parameters,
-		timeline_variable: timeline_variable,
-		randomize_order: randomize_order,
-		sampling: sampling,
-		conditional_function: conditional_function,
-		loop_function: loop_function
 	};
 }
 
@@ -99,9 +99,13 @@ export function createTimeline(id,
 export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
-	enabled=true,
-	parameters={ text: '', choices: ''},
-	pluginType=DEFAULT_PLUGIN_TYPE) {
+	enabled=true,) {
+
+	let parameters = {
+		type: 'text',
+		text: '',
+		chocies: '',
+	}
 
 	return {
 		id: id,
@@ -110,7 +114,6 @@ export function createTrial(id,
 		parent: parent,
 		enabled: enabled,
 		parameters: parameters,
-		pluginType: pluginType,
 	};
 }
 /*

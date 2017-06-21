@@ -27,8 +27,7 @@ export const initState = {
 		name: "Trial -1",
 		parent: null,
 		enabled: true,
-		parameters: { text: "Test -1", choices: ['A'], allow_mouse_click: false },
-		pluginType: "text",
+		parameters: { type: 'text', text: "Test -1", choices: ['A'], allow_mouse_click: false },
 	},
 
 	"TRIAL--2": {
@@ -38,8 +37,7 @@ export const initState = {
 		// parent: "TIMELINE--1",
 		parent: null,
 		enabled: true,
-		parameters: { text: "Test -2", choices: [], allow_mouse_click: false  },
-		pluginType: "text",
+		parameters: { type: 'text', text: "Test -2", choices: [], allow_mouse_click: false  },
 	},
 
 	// "TIMELINE--1": {
