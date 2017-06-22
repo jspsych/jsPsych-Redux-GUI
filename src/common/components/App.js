@@ -83,6 +83,7 @@ class App extends React.Component {
 	  												this.state.timelineOrganizerDrawerWidth,
 	  												this.state.timelineEditorDrawerToggle),
 	  					 margin: '0 auto',
+							 backgroundColor: 'rgb(232, 232, 232)'
 	  					}}
 	  				>
 	  				<Preview />

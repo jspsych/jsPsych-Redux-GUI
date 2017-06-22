@@ -34,7 +34,8 @@ export default class Appbar extends React.Component {
         					margin: '0 auto',
         					display: 'flex',
         					height: "100%",
-        					paddingBottom: 0
+        					paddingBottom: 0,
+									borderBottom: '1px solid #aaa'
         				}}
         				draggable={false}
         				>
@@ -59,7 +60,7 @@ export default class Appbar extends React.Component {
                 value={this.props.experimentName}
 								onChange={this.props.changeExperimentName}/>
 							</div>
-  							<Toolbar style={{height: 40}}>
+  							<Toolbar style={{height: 40, backgroundColor: 'white'}}>
                   <ToolbarGroup firstChild={true}>
                     <InitEditor />
                   </ToolbarGroup>
