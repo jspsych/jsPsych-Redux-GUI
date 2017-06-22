@@ -56,7 +56,8 @@
   },
   "scripts": {
     "react": "react-scripts start",
-    "start": "babel-node ./src/server/dev-server",
+    "webpack": "babel-node ./src/server/dev-server",
+    "start": "react-scripts start",
     "build": "webpack",
     "eject": "react-scripts eject",
     "test": "jest",
