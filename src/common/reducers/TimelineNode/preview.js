@@ -21,7 +21,7 @@ const undefinedObj = {
 	timeline: [
 		{
 			type: 'text',
-			text: 'No timeline/trial is enabled or selected!',
+			text: 'No timeline/trial is toggled or selected!',
 			choice: "",
 		}
 	]

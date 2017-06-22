@@ -1,6 +1,7 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
+import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -15,11 +16,21 @@ import { Welcome } from '../../reducers/TimelineNode/preview';
 
 import {
   cyan600 as hoverColor,
+  grey600 as textColor
 } from 'material-ui/styles/colors';
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';
 
-
+const responsiveTextFieldStyle = {
+  maxWidth: 40,
+  minWidth: 40,
+  border: 'none',
+  borderBottom: '1px solid black',
+  backgroundColor: 'rgb(232, 232, 232)',
+  outline: 'none',
+  color: textColor,
+  textAlign: 'center'
+};
 //document.querySelector('#q').offsetWidth
 
 export default class Preview extends React.Component {
@@ -40,13 +51,12 @@ export default class Preview extends React.Component {
     this.load(Welcome);
   }
   
-
   componentDidUpdate() {
     this.load(this.props.code);
   }
 
   state = {
-    fullScreen: false
+    fullScreen: false,
   }
 
   detectFullScreenChange = () => {
@@ -82,7 +92,7 @@ export default class Preview extends React.Component {
     }
   }
 
-  load(code) {
+  load = (code) => {
     let ele = document.getElementById(runtime_script_ele_id);
     if (ele) {
       ele.remove();
@@ -95,13 +105,25 @@ export default class Preview extends React.Component {
     document.body.appendChild(script);
   }
 
+
+
 	render() {
+    const {
+      resWidth,
+      resHeight,
+      resWidthV,
+      resHeightV,
+      onResponsiveInputH,
+      onResponsiveInputW,
+      setResponsiveInputH,
+      setResponsiveInputW
+    } = this.props;
 		return (
       <MuiThemeProvider>
         <div id="Preview_Window_Container" style={{
           paddingTop: 10, 
-          width: "90%", 
-          height: "80%",
+          width:  resWidth,
+          height: resHeight,
           margin: 'auto', 
         }}
         >
@@ -151,6 +173,28 @@ export default class Preview extends React.Component {
                       >
                       {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
                     </IconButton>
+                    <input 
+                      className="Responsive-input" 
+                      style={responsiveTextFieldStyle} 
+                      title={"width: " + this.state.widthV}
+                      type='number'
+                      value={resWidthV}
+                      onChange={onResponsiveInputW}
+                      onKeyPress={setResponsiveInputW}
+                      onBlur={() => { let e = {which: 13}; setResponsiveInputW(e) }}
+                    />
+                    <div style={{paddingLeft: 8, paddingRight: 8, color: textColor}}>x</div>
+                    <input 
+                      className="Responsive-input" 
+                      style={responsiveTextFieldStyle} 
+                      title={"height" + this.state.heightV}
+                      type='number'
+                      value={resHeightV}
+                      onChange={onResponsiveInputH}
+                      onKeyPress={setResponsiveInputH}
+                      onBlur={() => { let e = {which: 13}; setResponsiveInputH(e) }}
+                    />
+                    
                 </ToolbarGroup>
               </Toolbar>
             </div>
@@ -160,4 +204,3 @@ export default class Preview extends React.Component {
 	}
 }
        
-        
