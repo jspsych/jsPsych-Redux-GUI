@@ -44,4 +44,52 @@ export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 
 export const isTrial = (node) => (node.type === TRIAL_TYPE);
 
+export function arrayOfArrays(arrayOfObjects) {
+	var newArray = [];
+	var headers = Object.keys(arrayOfObjects[0]);
+	var firstRow = [];
+	//For each object in the array
+	for(let i=0; i<headers.length; i++) { 
+		firstRow.push(headers[i]);
+	}
+	newArray.push(firstRow);
+
+	var currentArray;
+	//For each object in array
+	for(let i=0; i<arrayOfObjects.length; i++) {
+		newArray.push([]);
+		//For each column in array
+		for(let j=0; j<headers.length; j++) {
+			currentArray = arrayOfObjects[i];
+			newArray[i+1][j] = currentArray[headers[j]];
+		}
+	}
+	return newArray;
+}
+
+export function arrayOfObjects(arrayOfArrays) {
+	var array = [];
+	var headers = arrayOfArrays[0];
+	var currentObj;
+	//For number of rows
+	for(let i=0; i<(arrayOfArrays.length-1); i++) {
+		array.push({});
+		//For number of headers
+		for(let j=0; j<arrayOfArrays[0].length; j++) {
+			let currentHeader = headers[j]; 
+		 	currentObj = array[i]; 
+		 	currentObj[headers[j]] = arrayOfArrays[i+1][j];
+		 	array[i] = currentObj;
+		}
+	}
+
+	return array;
+}
+
+// export function initializeArray(firstArray) {
+// 	let array = [];
+// 	array.push({}); 
+// 	firstArray = array;
+// 	return rray;
+// }
 

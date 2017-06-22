@@ -56,7 +56,7 @@ const mapStateToProps = (state, ownProps) => {
     // console.log(timeline);
 	return{
 		timelineId: timeline.id,
-		timeline_variable: timeline.parameters.timeline_variable,
+		timeline_variables: timeline.parameters.timeline_variables,
 		randomize_order: timeline.parameters.randomize_order,
 		sampling: timeline.parameters.sampling,
 	}

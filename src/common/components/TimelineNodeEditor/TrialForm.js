@@ -91,7 +91,7 @@ class TrialForm extends React.Component {
 							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 				}
 			});
-			var form = (<div className="trialForm"><SelectField
+			form = (<div className="trialForm"><SelectField
 			value={this.props.pluginType}
 			floatingLabelText="Plugin Type"
 			maxHeight={300}
@@ -102,7 +102,7 @@ class TrialForm extends React.Component {
 			{pluginParameters}
 			</div>)
 		} else {
-			var form = <div></div>;
+			form = <div></div>;
 		}
 		return(
 			<MuiThemeProvider>

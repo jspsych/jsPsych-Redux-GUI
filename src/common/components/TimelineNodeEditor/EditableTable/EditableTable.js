@@ -9,6 +9,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import Mousetrap from 'mousetrap';
+import * as utils from '../../../reducers/TimelineNode/utils';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
@@ -60,29 +61,36 @@ class EditableTable extends React.Component {
 
 	render(){
 		var i = 0;
-		var timelineRows = this.props.timeline_variable;
-		var headers = Object.keys(this.props.timeline_variable[0]);
-		
+		var displayTable;
 		// console.log(this.props.sampling.type);
-		return(
-			<div>
-			<RaisedButton
-				onTouchTap={this.handleTouchTap}
-				label="Timeline_Variables" />
-			<Popover
-				open={this.state.open}
-				anchorEl={this.state.anchorEl}
-				anchorOrigin= {{horizontal:"left",vertical:"top"}}
-				targetOrigin= {{horizontal:"right",vertical:"top"}}
-				onRequestClose={this.handleRequestClose} >
+		if(this.props.timeline_variables === undefined) {
+			console.log("first");
+				displayTable = 
+				<table className="dataTable" style={tableStyles.table}>
+					<thead>
+						<tr>
+							<input id={0} key={0} defaultValue={undefined} style={tableStyles.header}
+							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} />
+						</tr>
+					</thead>
+					<tr>
+						<input id={1 + " "+0} defaultValue={undefined} style={tableStyles.header}
+						onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} />
+					</tr>
+				</table>
 
-			<table className="dataTable" style={tableStyles.table}>
+		} else {
+
+			var timelineRows = this.props.timeline_variables;
+			var headers = Object.keys(this.props.timeline_variables[0]);
+
+			displayTable = <table className="dataTable" style={tableStyles.table}>
 				<thead>
 					<tr className="headerRow">
 					{
-						headers.map((title) => {
-							return <input id={i++} defaultValue={title} 
-							key={i++}
+						headers.map((title, index) => {
+							return <input id={index} defaultValue={title} 
+							key={index}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
 							style={tableStyles.header} /> 
 						})
@@ -103,6 +111,22 @@ class EditableTable extends React.Component {
 					})
 				}
 			</table>
+		}
+
+		return(
+			<div>
+			<RaisedButton
+				onTouchTap={this.handleTouchTap}
+				label="Timeline_Variables" />
+			<Popover
+				open={this.state.open}
+				anchorEl={this.state.anchorEl}
+				anchorOrigin= {{horizontal:"left",vertical:"top"}}
+				targetOrigin= {{horizontal:"right",vertical:"top"}}
+				onRequestClose={this.handleRequestClose} >
+
+				{displayTable}
+
 			<div>
 			<IconButton
 			tooltip="add column"
@@ -124,7 +148,7 @@ class EditableTable extends React.Component {
 			onToggle={this.props.onToggle} />
 			<div style={{display: 'flex'}}>
 			<SelectField floatingLabelText="Sampling"
-			value={this.props.sampling.type}
+			deafultValue={0}
 			onChange={this.props.onChange} >
 				<MenuItem value="with-replacement"
 				primaryText="with-replacement" />
@@ -137,7 +161,7 @@ class EditableTable extends React.Component {
 			</SelectField>
 			<TextField
 			floatingLabelText="Sampling Size"
-			value={this.props.sampling.size}
+			value={1}
 			style={tableStyles.size}
 			onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
 			</div>

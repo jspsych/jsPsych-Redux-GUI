@@ -9,6 +9,7 @@ export function changeCellAction(cellId, newVal) {
 }
 
 export function changeHeaderAction(headerId, newVal) {
+	console.log("headerId " +headerId);
 	return {
 		type: actionTypes.CHANGE_HEADER,
 		headerId: headerId,

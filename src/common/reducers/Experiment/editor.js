@@ -88,48 +88,6 @@ export function changeParamFloat(state, action) {
 	return new_state; 
 }
 
-export function arrayOfArrays(arrayOfObjects) {
-	var newArray = [];
-	var headers = Object.keys(arrayOfObjects[0]);
-	var firstRow = [];
-	//For each object in the array
-	for(let i=0; i<headers.length; i++) { 
-		firstRow.push(headers[i]);
-	}
-	newArray.push(firstRow);
-
-	var currentArray;
-	//For each object in array
-	for(let i=0; i<arrayOfObjects.length; i++) {
-		newArray.push([]);
-		//For each column in array
-		for(let j=0; j<headers.length; j++) {
-			currentArray = arrayOfObjects[i];
-			newArray[i+1][j] = currentArray[headers[j]];
-		}
-	}
-	return newArray;
-}
-
-export function arrayOfObjects(arrayOfArrays) {
-	var array = [];
-	var headers = arrayOfArrays[0];
-	var currentObj;
-	//For number of rows
-	for(let i=0; i<(arrayOfArrays.length-1); i++) {
-		array.push({});
-		//For number of headers
-		for(let j=0; j<arrayOfArrays[0].length; j++) {
-			let currentHeader = headers[j]; 
-		 	currentObj = array[i]; 
-		 	currentObj[headers[j]] = arrayOfArrays[i+1][j];
-		 	array[i] = currentObj;
-		}
-	}
-
-	return array;
-}
-
 export function changeHeader(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -137,12 +95,27 @@ export function changeHeader(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node; 
 
-	var newArray = arrayOfArrays(node.parameters.timeline_variable);
+	let firstObj;
+	let array;
+	//let initialArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+	console.log(node.parameters.timeline_variables);
+	console.log(action.headerId);
+	console.log(node.parameters.timeline_variables == undefined && action.headerId == 0);
 
-	var headerArray = newArray[0];
-	headerArray[action.headerId] = action.newVal;
-
-	node.parameters.timeline_variable = arrayOfObjects(newArray)
+	if(node.parameters.timeline_variables == undefined && action.headerId == 0) {
+		console.log("inside if");
+		node.parameters.timeline_variables=[];
+		node.parameters.timeline_variables.push({});
+		firstObj = node.parameters.timeline_variables[0];
+		firstObj[action.newVal] = undefined;
+		node.parameters.timeline_variables[0] = firstObj;
+	} else {
+		console.log("inside else");
+		let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+		let headerArray = newArray[0];
+		headerArray[action.headerId] = action.newVal;
+		node.parameters.timeline_variables = utils.arrayOfObjects(newArray)
+	}
 
 	return new_state;
 }
@@ -156,7 +129,7 @@ export function changeCell(state, action) {
 
 	var cellString = action.cellId; //string with row and column index
  	var cellIndex = cellString.split(' '); 
-	var newArray = arrayOfArrays(node.parameters.timeline_variable);
+	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
 	var cellRow = cellIndex[0]; 
 	
     var cellColumn = cellIndex[1];
@@ -164,7 +137,7 @@ export function changeCell(state, action) {
 
     newArray[cellRow][cellColumn] = action.newVal;
 
-    node.parameters.timeline_variable = arrayOfObjects(newArray);
+    node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
     
     return new_state;
 
@@ -178,7 +151,7 @@ export function addColumnHelper(array) {
 	return array;
 }
 
-var index = 2;
+var index = 1;
 var timelineIDs = ['TIMELINE-0', 'TIMELINE-0'];
 var lastIndex = [1];
 export function addColumn(state, action) {
@@ -187,14 +160,15 @@ export function addColumn(state, action) {
 
 	node = deepCopy(node);
 
-	var newArray = arrayOfArrays(node.parameters.timeline_variable);
+	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+	console.log(newArray);
 	// var previous = timelineIDs[1];
 	// timelineIDs[0] = previous;
 	// timelineIDs[1] =
     
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
-	node.parameters.timeline_variable = arrayOfObjects(newArray);
+	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
 
@@ -208,7 +182,7 @@ export function addRow(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters.timeline_variable.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
+	node.parameters.timeline_variables.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
 
 	return new_state;
 }
