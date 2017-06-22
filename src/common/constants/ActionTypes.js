@@ -15,7 +15,7 @@ export const DUPLICATE_TIMELINE = "DUPLICATE_TIMELINE";
 export const DUPLICATE_TRIAL = "DUPLICATE_TRIAL";
 export const SET_NAME = "SET_NAME";
 
-// main 
+// main
 export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
 
 // jsPsych init editor
@@ -24,7 +24,7 @@ export const SET_JSPSYCH_INIT = "SET_JSPSYCH_INIT";
 // preview
 export const PLAY_ALL = "PLAY_ALL";
 
-//TrialForm Actions 
+//TrialForm Actions
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";
 export const TOGGLE_PARAM_VALUE = "TOGGLE_PARAM_VALUE";
 export const CHANGE_PARAM_TEXT = "CHANGE_PARAM_TEXT";
@@ -40,3 +40,6 @@ export const CHANGE_SAMPLING = "CHANGE_SAMPLING";
 export const CHANGE_SIZE = "CHANGE_SIZE";
 export const CHANGE_RANDOMIZE = "CHANGE_RANDOMIZE";
 
+//User Actions
+export const SHOW_REGISTER_WINDOW = "SHOW_REGISTER_WINDOW";
+export const HIDE_REGISTER_WINDOW = "HIDE_REGISTER_WINDOW";

@@ -37,7 +37,7 @@ const getWidthFromDragging = (e) => {
 	let percent = (e.pageX / window.innerWidth) * 100;
 	if (percent < MIN_WIDTH) percent = MIN_WIDTH;
 	if (percent > MAX_WIDTH) percent = MAX_WIDTH;
-	return percent; 
+	return percent;
 }
 
 function pauseEvent(e){
@@ -80,10 +80,10 @@ class TimelineNodeOrganizer extends React.Component {
 		return (
 			<MuiThemeProvider>
 			<div className="TimelineNode-Organizer"
-				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%", 
+				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%",
 						left: '0px',
 						overflow: 'hidden',
-						// height: '86.5vh', 
+						// height: '86.5vh',
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),
@@ -91,32 +91,32 @@ class TimelineNodeOrganizer extends React.Component {
 				}}>
 				<div className="TimelineNode-Organizer-Container"
 					style={{
-						height: '100%', 
-						width: '100%', 
-						borderRight: (this.props.open) ? '3px solid black' : '1.5px solid black'
+						height: '100%',
+						width: '100%',
+						borderRight: (this.props.open) ? '1px solid #aaa' : '1px solid #aaa'
 					}}>
-					{(this.props.open) ? 
+					{(this.props.open) ?
 					<div className="TimelineNode-Organizer-Content">
 						<div style={{display: 'flex'}}>
 							<Subheader>Timeline/Trial Organizer</Subheader>
-								<IconButton 
+								<IconButton
 		  							hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
 									disableTouchRipple={true}
 									onTouchTap={this.props.closeCallback}
 									>
 									<CloseDrawer hoverColor={CloseDrawerHoverColor}/>
-								</IconButton> 
+								</IconButton>
 						</div>
 						<Divider />
 						<div className="TimelineNode-Sheet" style={{
-							overflowY: "auto", 
+							overflowY: "auto",
 							maxWidth: "100%",
 							paddingLeft: 0,
 						}}>
-						<List style={{maxHeight: "68vh", 
-									minHeight: "68vh", 
+						<List style={{maxHeight: "68vh",
+									minHeight: "68vh",
   								}}>
-							<SortableTreeMenu 
+							<SortableTreeMenu
 								openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 								closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 							/>
@@ -178,7 +178,7 @@ class TimelineNodeOrganizer extends React.Component {
   						/>
   				</Draggable>
   				{(this.props.open) ? null :
-  					<IconButton 
+  					<IconButton
   						className="TimelineNode-Organizer-Handle"
   						tooltip="Open Timeline/Trial Organizer"
   						hoveredStyle={{

@@ -25,11 +25,11 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 
 	render() {
 		return (
-			<MuiThemeProvider>	
+			<MuiThemeProvider>
 			<div className="TimelineNode-Editor"
-					style={{width: (this.props.open) ? '20%': '0%', 
+					style={{width: (this.props.open) ? '20%': '0%',
 						right: '0px',
-						height: '86.5vh', 
+						height: '86.5vh',
 						display: 'flex',
 						'WebkitTransition': 'all 0.4s ease',
 						'MozTransition': 'all 0.4s ease',
@@ -37,14 +37,14 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						}}>
 				<div className="TimelineNode-Editor-Container"
 					style={{
-						height: '100%', 
-						width: '100%', 
-						borderLeft: (this.props.open) ? '3px solid black' : '1.5px solid black'
+						height: '100%',
+						width: '100%',
+						borderLeft: (this.props.open) ? '1px solid #aaa' : '1px solid #aaa'
 					}}>
-					{(this.props.open) ? 
+					{(this.props.open) ?
 					<div className="TimelineNode-Editor-Content">
 						<div style={{display: 'flex'}}>
-							<IconButton 
+							<IconButton
 							disableTouchRipple={true}
 	  						hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
 							onTouchTap={this.props.closeTimelineEditorCallback}
@@ -54,20 +54,20 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						<Divider />
 						{(this.props.previewId) ?
 						<List style={{padding: 5, overflowY: 'auto', maxHeight: 455, minHeight: 455}}>
-							<TextField 
+							<TextField
 									floatingLabelText={this.props.label}
 									id="Node-Name-Textfield"
 	                				value={this.props.nodeName}
 									onChange={this.props.changeNodeName} />
 							<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
-							
+
 						</List> :
 						null}
 						</div> : null}
 						<Divider />
 				</div>
   				{(this.props.open) ? null :
-  					<IconButton 
+  					<IconButton
   						className="TimelineNode-Editor-Handle"
   						tooltip="Open Timeline/Trial Editor"
   						hoveredStyle={{

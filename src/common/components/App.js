@@ -3,13 +3,14 @@ import Preview from '../containers/Preview';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
+import RegisterWindow from '../containers/RegisterWindow';
 
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
-export const convertPercent = (number) => (number + '%'); 
+export const convertPercent = (number) => (number + '%');
 
 const mainBodyWidth = (leftDrawer, leftWidth, rightDrawer) => {
 	let width = 100;
@@ -68,7 +69,7 @@ class App extends React.Component {
 					<Appbar />
 				</div>
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
-	  				<TimelineNodeOrganizer 
+	  				<TimelineNodeOrganizer
 	  					open={this.state.timelineOrganizerDrawerToggle}
 	  					width={this.state.timelineOrganizerDrawerWidth}
 	  					openCallback={this.openTimelineOgranizerDrawer}
@@ -77,21 +78,23 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={this.openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
-	  				<div className="main-body" 
-	  					style={{width: mainBodyWidth(this.state.timelineOrganizerDrawerToggle, 
-	  												this.state.timelineOrganizerDrawerWidth, 
+	  				<div className="main-body"
+	  					style={{width: mainBodyWidth(this.state.timelineOrganizerDrawerToggle,
+	  												this.state.timelineOrganizerDrawerWidth,
 	  												this.state.timelineEditorDrawerToggle),
 	  					 margin: '0 auto',
+							 backgroundColor: 'rgb(232, 232, 232)'
 	  					}}
 	  				>
 	  				<Preview />
 	  				</div>
-	  				<TimelineNodeEditor open={this.state.timelineEditorDrawerToggle} 
-	  					openTimelineEditorCallback={this.openTimelineEditorDrawer} 
+	  				<TimelineNodeEditor open={this.state.timelineEditorDrawerToggle}
+	  					openTimelineEditorCallback={this.openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={this.closeTimelineEditorDrawer}
 	  				/>
 
 	  			</div>
+					<RegisterWindow />
   			</div>
   			</MuiThemeProvider>
   		);
