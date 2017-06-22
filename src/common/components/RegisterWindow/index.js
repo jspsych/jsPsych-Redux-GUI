@@ -19,7 +19,7 @@ const userPool = new CognitoUserPool({
   ClientId: awsConfig.ClientId,
 });
 
-export default class UserMenu extends React.Component {
+export default class RegisterWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

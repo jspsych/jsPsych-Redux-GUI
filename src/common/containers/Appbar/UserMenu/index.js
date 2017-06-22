@@ -7,6 +7,10 @@ const showRegisterWindow = (dispatch) => {
   dispatch(userMenuActions.showRegisterWindow());
 }
 
+const showSignInWindow = (dispatch) => {
+  dispatch(userMenuActions.showSignInWindow());
+}
+
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.userState.user
@@ -14,7 +18,8 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  showRegisterWindow: () => { showRegisterWindow(dispatch) }
+  showRegisterWindow: () => { showRegisterWindow(dispatch) },
+  showSignInWindow: () => { showSignInWindow(dispatch) }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

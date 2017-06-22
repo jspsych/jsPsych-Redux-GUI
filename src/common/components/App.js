@@ -4,7 +4,7 @@ import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 import RegisterWindow from '../containers/RegisterWindow';
-
+import SignInWindow from '../containers/SignInWindow';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -95,6 +95,7 @@ class App extends React.Component {
 
 	  			</div>
 					<RegisterWindow />
+					<SignInWindow />
   			</div>
   			</MuiThemeProvider>
   		);
