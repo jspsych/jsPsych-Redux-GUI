@@ -1,8 +1,9 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+//import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import VerificationWindow from '../../containers/VerificationWindow';
 import {awsConfig} from '../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
@@ -17,6 +18,7 @@ const userPool = new CognitoUserPool({
 });
 
 export default class SignInWindow extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,6 +26,7 @@ export default class SignInWindow extends React.Component {
       password: '',
       userError: null,
       passwordError: null,
+      verificationNeeded: false,
     };
   }
 
@@ -48,11 +51,11 @@ export default class SignInWindow extends React.Component {
   handleSignIn = () => {
 
     var cont_flag = true;
-    if(this.state.user == ''){
+    if(this.state.user === ''){
       this.setState({userError: "Please enter your username or email"});
       cont_flag = false;
     }
-    if(this.state.password == ''){
+    if(this.state.password === ''){
       this.setState({passwordError: "Please enter your password"});
       cont_flag = false;
     }
@@ -73,15 +76,28 @@ export default class SignInWindow extends React.Component {
     var authenticationDetails = new AuthenticationDetails(authenticationData);
     var cognitoUser = new CognitoUser(userData);
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: function(result){
+      onSuccess: (result) => {
         console.log('access token: '+ result.getAccessToken().getJwtToken());
       },
-      onFailure: function(err){
-        alert(err);
+      onFailure: (err) => {
+        if(err.code === "UserNotConfirmedException"){
+          this.setState({verificationNeeded: true});
+        }
+        if(err.code === "NotAuthorizedException"){
+          this.setState({passwordError: "Invalid password"});
+        }
+        if(err.code === "UserNotFoundException"){
+          this.setState({userError: "No account found for this username / email"})
+        }
+        alert(err.code);
+        //alert(err.code);
+        //const errobj = JSON.parse(err);
+        //console.log(err);
+
+
+
       }
     })
-
-    console.log(this.state.user + " " + this.state.password);
   }
 
   render(){
@@ -98,6 +114,7 @@ export default class SignInWindow extends React.Component {
           <div style={{margin:'auto', textAlign: 'center'}}>
             <RaisedButton label="Sign In" primary={true} onTouchTap={this.handleSignIn} />
           </div>
+          <VerificationWindow user={this.state.user} open={this.state.verificationNeeded} />
         </Dialog>
       </div>
     )

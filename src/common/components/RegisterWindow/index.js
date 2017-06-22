@@ -62,15 +62,15 @@ export default class RegisterWindow extends React.Component {
   handleCreateAccount = () => {
 
     var cont_flag = true;
-    if(this.state.username == ''){
+    if(this.state.username === ''){
       this.setState({usernameError: "Please enter a username"});
       cont_flag = false;
     }
-    if(this.state.email == '' || this.state.emailError !== null){
+    if(this.state.email === '' || this.state.emailError !== null){
       this.setState({emailError: "Please enter a valid email address"});
       cont_flag = false;
     }
-    if(this.state.password == '' || this.state.passwordError !== null){
+    if(this.state.password === '' || this.state.passwordError !== null){
       this.setState({passwordError: "Password must be at least 10 characters long"});
       cont_flag = false;
     }
@@ -119,7 +119,6 @@ export default class RegisterWindow extends React.Component {
           actions={actions}
           contentStyle={{width: '320px'}}
         >
-        This box is where the account creation form will go.
           <TextField id="userName" floatingLabelText="Username" value={this.state.username} errorText={this.state.usernameError} onChange={this.handleUserNameChange}></TextField>
           <TextField id="email" floatingLabelText="Email" value={this.state.email} errorText={this.state.emailError} onChange={this.handleEmailChange}></TextField>
           <TextField id="password" type="password" floatingLabelText="Password" errorText={this.state.passwordError} value={this.state.password} onChange={this.handlePasswordChange}></TextField>
