@@ -43,9 +43,9 @@ export default class UserMenu extends React.Component {
       <div style={{display: 'inline-block', float: 'right'}}>
         <FlatButton label={buttonLabel} onTouchTap={this.handleTouchTap} />
         <Popover
-          open = {this.state.open}
-          anchorEl = {this.state.anchorEl}
-          onRequestClose = {this.handleRequestClose}
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          onRequestClose={this.handleRequestClose}
           >
           <Menu>
             <MenuItem

@@ -1,5 +1,4 @@
 var esprima = require("esprima");
-var esmangle = require("esmangle");
 var escodegen = require("escodegen");
 
 import { initState as jsPsychInitState } from './jsPsychInit';
@@ -35,8 +34,8 @@ export function generateCode(state) {
 	let blocks = [];
 	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
 	let node;
-	// bool that descides if this node should be include 
-	let include;  
+	// bool that descides if this node should be include
+	let include;
 	for (let id of timeline) {
 		if (!id) continue;
 		node = state[id];
@@ -128,7 +127,7 @@ export function stringify(obj) {
 					}
 				}
 				res.push("]");
-			} else if (obj.isFunc) { 
+			} else if (obj.isFunc) {
 				return stringifyFunc(obj.code, obj.info);
 			}else {
 				res.push("{");
@@ -157,7 +156,7 @@ function stringifyFunc(code, info=null) {
                 semicolons: true,
                 parentheses: false
             }
-        });			
+        });
 		return res;
 	} catch (e) {
 		let log = JSON.stringify({error: e, info: info});
