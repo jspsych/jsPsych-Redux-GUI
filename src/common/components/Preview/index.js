@@ -19,7 +19,6 @@ import {
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';
 
-var fullScreen = false;
 
 //document.querySelector('#q').offsetWidth
 
@@ -51,8 +50,9 @@ export default class Preview extends React.Component {
   }
 
   detectFullScreenChange = () => {
-    fullScreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-    this.setState({fullScreen: fullScreen})
+    this.setState({fullScreen: document.fullscreenElement || 
+                               document.mozFullScreenElement || 
+                               document.webkitFullscreenElement})
   }
 
   toggleFullScreen = () => {
@@ -84,7 +84,9 @@ export default class Preview extends React.Component {
 
   load(code) {
     let ele = document.getElementById(runtime_script_ele_id);
-    if (ele) ele.remove();
+    if (ele) {
+      ele.remove();
+    }
     let script = document.createElement('script');
     script.id = runtime_script_ele_id;
     script.type = 'text/javascript';
@@ -102,10 +104,6 @@ export default class Preview extends React.Component {
           height: "80%",
           margin: 'auto', 
         }}
-        onKeyUp={(e) => { if (e.which === 27 && this.state.fullScreen) {
-                              this.setState({fullScreen: false})
-                        }}}
-        tabIndex={-2}
         >
             <Paper 
                 style={{
