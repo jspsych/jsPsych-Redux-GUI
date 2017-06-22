@@ -16,6 +16,11 @@ import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-down
 import { grey900 } from 'material-ui/styles/colors';
 
 const tableStyles = {
+	numbers: {
+		border: '1px solid black',
+		width: '25px',
+		height: '15px'
+	},
 	small: {
 		display: 'flex',
 		right: '0px',
@@ -69,11 +74,13 @@ class EditableTable extends React.Component {
 				<table className="dataTable" style={tableStyles.table}>
 					<thead>
 						<tr>
+							<td style={tableStyles.numbers}></td>
 							<input id={0} key={0} defaultValue={undefined} style={tableStyles.header}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} />
 						</tr>
 					</thead>
 					<tr>
+						<td style={tableStyles.numbers}>1</td>
 						<input id={1 + " "+0} defaultValue={undefined} style={tableStyles.header}
 						onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} />
 					</tr>
@@ -87,6 +94,7 @@ class EditableTable extends React.Component {
 			displayTable = <table className="dataTable" style={tableStyles.table}>
 				<thead>
 					<tr className="headerRow">
+					<td style={tableStyles.numbers}></td>
 					{
 						headers.map((title, index) => {
 							return <input id={index} defaultValue={title} 
@@ -99,7 +107,7 @@ class EditableTable extends React.Component {
 				</thead>
 				{
 					timelineRows.map((row, rowIndex) => {        ////index is number of rows
-						return <tr key={rowIndex}>{
+						return <tr key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
 							headers.map((title, titleIndex) => {
 								return <input id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
 								key={[rowIndex+1] +" "+ titleIndex} 
