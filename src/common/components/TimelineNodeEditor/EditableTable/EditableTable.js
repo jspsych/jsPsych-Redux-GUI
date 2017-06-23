@@ -8,8 +8,8 @@ import Toggle from 'material-ui/Toggle';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-import Mousetrap from 'mousetrap';
 import * as utils from '../../../reducers/TimelineNode/utils';
+import * as shortcuts from './shortcuts';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
@@ -64,6 +64,12 @@ class EditableTable extends React.Component {
 		}
 	}
 
+	// componentDidMount() {
+	// 	console.log('in component');
+ //     	shortcuts.bindKeyboard();
+ //    }
+
+
 	render(){
 		var i = 0;
 		var displayTable;
@@ -97,9 +103,10 @@ class EditableTable extends React.Component {
 					<td style={tableStyles.numbers}></td>
 					{
 						headers.map((title, index) => {
-							return <input id={index} defaultValue={title} 
+							return <input name="tableHeader" data-row={0} data-column={index} id={index} defaultValue={title} 
 							key={index}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
+							onKeyDown={(event) => shortcuts.bindKeyboard(event)}
 							style={tableStyles.header} /> 
 						})
 					}
@@ -107,12 +114,13 @@ class EditableTable extends React.Component {
 				</thead>
 				{
 					timelineRows.map((row, rowIndex) => {        ////index is number of rows
-						return <tr key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
+						return <tr id={"row"+" "+rowIndex} key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
 							headers.map((title, titleIndex) => {
-								return <input id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
+								return <input name={"cells"} data-row={rowIndex+1} data-column={titleIndex} id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
 								key={[rowIndex+1] +" "+ titleIndex} 
 								defaultValue={row[headers[titleIndex]]} 
-								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} /> //{row[headers[titleIndex]]}</input>
+								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
+								onKeyDown={(event) => shortcuts.bindKeyboard(event)} /> //{row[headers[titleIndex]]}</input>
 							})
 						}
 						</tr>
@@ -179,47 +187,6 @@ class EditableTable extends React.Component {
 			)
 	}
 }
-
-			// <div>
-			// <SpreadsheetComponent 
-			// initialData={this.props.timeline_variable}
-			// spreadsheetId="1"/>
-			// </div>
-			// <table className="dataTable" style={tableStyles.table}>
-			// 	<thead>
-			// 		<tr className="headerRow">
-			// 		{
-			// 			headers.map((title) => {
-			// 				return <input id={i++} defaultValue={title} 
-			// 				onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
-			// 				style={tableStyles.header} /> 
-			// 			})
-			// 		}
-			// 		</tr>
-			// 	</thead>
-			// 	{
-			// 		timelineRows.map((row, rowIndex) => {        ////index is number of rows
-			// 			return <tr>{
-			// 				headers.map((title, titleIndex) => {
-			// 					return <input id={rowIndex +" "+ titleIndex} style={tableStyles.header}  
-			// 					defaultValue={row[headers[titleIndex]]} 
-			// 					onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} /> //{row[headers[titleIndex]]}</input>
-			// 				})
-			// 			}
-			// 			</tr>
-			// 		})
-			// 	}
-			// </table>
-			// <div>
-			// <IconButton
-			// tooltip="add column"
-			// tooltipPosition="top-right"
-			// style={tableStyles.small}
-			// onTouchTap={this.props.onTouchTap} >
-			// <NavigationArrowForward />
-			// </IconButton >
-			// </div>
-			// </div>
 export default EditableTable;
 
 
