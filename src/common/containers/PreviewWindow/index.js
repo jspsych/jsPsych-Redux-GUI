@@ -9,7 +9,14 @@ const playAll = (dispatch) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
+	let experimentState = state.experimentState;
+	let code = Undefined;
+	if (experimentState.previewId || experimentState.previewAll) {
+		code = generateCode(experimentState);
+	} 
+
 	return {
+		code: code,
 	};
 }
 
