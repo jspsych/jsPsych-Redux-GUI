@@ -9,14 +9,7 @@ const playAll = (dispatch) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
-	let code = Undefined;
-	if (timelineNodeState.previewId || timelineNodeState.previewAll) {
-		code = generateCode(timelineNodeState);
-	}
-
 	return {
-		code: code,
 	};
 }
 

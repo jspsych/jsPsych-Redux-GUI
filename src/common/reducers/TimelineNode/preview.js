@@ -1,5 +1,4 @@
 var esprima = require("esprima");
-var esmangle = require("esmangle");
 var escodegen = require("escodegen");
 
 import { initState as jsPsychInitState } from './jsPsychInit';
