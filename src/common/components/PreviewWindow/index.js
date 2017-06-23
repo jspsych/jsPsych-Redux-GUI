@@ -11,7 +11,7 @@ import Skip from 'material-ui/svg-icons/av/skip-next';
 import FullScreen from 'material-ui/svg-icons/navigation/fullscreen';
 import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 
-import PreviewContent from '../../containers/Preview/PreviewContentContainer';
+import PreviewContent from '../../containers/PreviewWindow/PreviewContentContainer';
 import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
 import { Welcome } from '../../reducers/Experiment/preview';
 
@@ -27,7 +27,7 @@ export const getFullScreenState = () => (
   document.webkitFullscreenElement
 )
 
-export default class Preview extends React.Component {
+export default class PreviewWindow extends React.Component {
   state = {
     fullScreen: false,
   }

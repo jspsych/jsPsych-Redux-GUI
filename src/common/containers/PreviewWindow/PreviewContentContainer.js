@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import PreviewContent from '../../components/Preview/PreviewContent';
+import PreviewContent from '../../components/PreviewWindow/PreviewContent';
 
 import { generateCode, Undefined } from '../../reducers/Experiment/preview';
 

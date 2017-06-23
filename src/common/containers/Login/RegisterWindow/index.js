@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import * as userMenuActions from '../../actions/userMenuActions';
-import RegisterWindow from '../../components/RegisterWindow';
+import * as userMenuActions from '../../../actions/userMenuActions';
+import RegisterWindow from '../../../components/Login/RegisterWindow';
 
 const hideRegisterWindow = (dispatch) => {
   dispatch(userMenuActions.hideRegisterWindow());

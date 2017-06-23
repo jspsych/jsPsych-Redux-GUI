@@ -3,11 +3,11 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {awsConfig} from '../../../../config/aws.js';
+import {awsConfig} from '../../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUserPool, CognitoUserAttribute} from "amazon-cognito-identity-js";
 
-console.log(JSON.stringify(awsConfig));
+// console.log(JSON.stringify(awsConfig));
 
 Config.region = awsConfig.region;
 /*Config.credentials = new CognitoIdentityCredentials({

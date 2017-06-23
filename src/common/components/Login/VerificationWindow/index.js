@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 //import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {awsConfig} from '../../../../config/aws.js';
+import {awsConfig} from '../../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool} from "amazon-cognito-identity-js";
 
@@ -17,11 +17,8 @@ const userPool = new CognitoUserPool({
 });
 
 export default class VerificationWindow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      code: ''
-    };
+  state = {
+    code: '',
   }
 
   handleCodeChange = (e, newVal) => {
@@ -32,7 +29,7 @@ export default class VerificationWindow extends React.Component {
 
   handleClose = () => {
     this.props.hideVerificationWindow();
-  };
+  }
 
   handleVerification = () => {
 

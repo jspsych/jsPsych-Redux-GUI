@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
-import Preview from '../../components/Preview';
+import PreviewWindow from '../../components/PreviewWindow';
 
 import { generateCode, Undefined } from '../../reducers/Experiment/preview';
 
@@ -17,5 +17,5 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	playAll: () => { playAll(dispatch) },
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Preview);
+export default connect(mapStateToProps, mapDispatchToProps)(PreviewWindow);
 

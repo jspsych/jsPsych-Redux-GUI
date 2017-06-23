@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-//import * as userMenuActions from '../../actions/userMenuActions';
-import VerificationWindow from '../../components/VerificationWindow';
+//import * as userMenuActions from '../../../actions/userMenuActions';
+import VerificationWindow from '../../../components/Login/VerificationWindow';
 
 const mapStateToProps = (state, ownProps) => {
   return {
