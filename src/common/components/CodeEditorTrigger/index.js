@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
@@ -66,7 +65,6 @@ export default class CodeEditor extends React.Component {
     ];
 
   	return (
-  		<MuiThemeProvider>
   		<div>
 	  		<IconButton onTouchTap={() => { this.handleOpen(); openCallback()}}>
 	  		{buttonIcon}
@@ -85,8 +83,6 @@ export default class CodeEditor extends React.Component {
             />
 	      </Dialog>
 	    </div>
-	  	</MuiThemeProvider>
-
   	)
   }
 }

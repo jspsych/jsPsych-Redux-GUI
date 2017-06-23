@@ -4,8 +4,6 @@ import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 let jsPsych = window.jsPsych;
 
 const pluginStyle = {
@@ -102,12 +100,12 @@ class TrialForm extends React.Component {
 			{pluginParameters}
 			</div>)
 		} else {
-			form = <div></div>;
+			form = null;
 		}
 		return(
-			<MuiThemeProvider>
-			{form}
-			</MuiThemeProvider>
+			<div>
+				{form}
+			</div>
 			)
 	}
 }

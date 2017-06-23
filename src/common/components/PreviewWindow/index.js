@@ -3,7 +3,6 @@ import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import Refresh from 'material-ui/svg-icons/navigation/refresh';
@@ -124,7 +123,6 @@ export default class PreviewWindow extends React.Component {
       zoomHeight,
     } = this.props;
 		return (
-      <MuiThemeProvider>
         <div style={{
               paddingTop: 5, 
               margin: 'auto', 
@@ -185,7 +183,6 @@ export default class PreviewWindow extends React.Component {
                 </Toolbar>
           </div>
         </div>
-      </MuiThemeProvider>
   		);
 	}
 }

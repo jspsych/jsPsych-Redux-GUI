@@ -3,7 +3,6 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {
   grey800 as normalColor,
@@ -89,7 +88,6 @@ export default class jsPsychInitEditor extends React.Component {
     ];
 
     return (
-      <MuiThemeProvider>
         <div className="jsPsych.init-editor">
           <IconButton 
               tooltip="Init Properties Setting"
@@ -129,7 +127,6 @@ export default class jsPsychInitEditor extends React.Component {
           </div>
           </Dialog>
         </div>
-      </MuiThemeProvider>
     )
   }
 }

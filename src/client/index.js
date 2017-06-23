@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import rootReducer from '../common/reducers';
 import App from '../common/containers/AppContainer';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const preloadedState = window.__PRELOADED_STATE__;
 
@@ -16,7 +17,9 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 injectTapEventPlugin();
 ReactDOM.render(
   <Provider store={store}>
-  	<App />
+	<MuiThemeProvider>
+  		<App />
+  	</MuiThemeProvider>
   </Provider>,
   document.getElementById('container')
 );
