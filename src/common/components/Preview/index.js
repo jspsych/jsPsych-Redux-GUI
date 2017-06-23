@@ -28,6 +28,10 @@ export const getFullScreenState = () => (
 )
 
 export default class Preview extends React.Component {
+  state = {
+    fullScreen: false,
+  }
+
   componentWillMount() {
     document.addEventListener("webkitfullscreenchange",
       this.detectFullScreenChange, false);
@@ -35,6 +39,10 @@ export default class Preview extends React.Component {
       this.detectFullScreenChange, false);
     document.addEventListener("mozfullscreenchange",
       this.detectFullScreenChange, false);
+  }
+
+  detectFullScreenChange = () => {
+    this.setState({fullScreen: getFullScreenState()});
   }
 
   toggleFullScreen = () => {
@@ -110,10 +118,10 @@ export default class Preview extends React.Component {
                         <Skip hoverColor={hoverColor} />
                       </IconButton>
                       <IconButton 
-                        tooltip={(!getFullScreenState()) ? "Full screen" : "Exit full screen"}
+                        tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
                         onTouchTap={this.toggleFullScreen}
                         >
-                        {(!getFullScreenState()) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
+                        {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
                       </IconButton>
                   </ToolbarGroup>
                 </Toolbar>
