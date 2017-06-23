@@ -3,8 +3,8 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 //import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import VerificationWindow from '../../containers/VerificationWindow';
-import {awsConfig} from '../../../../config/aws.js';
+import VerificationWindow from '../../../containers/VerificationWindow';
+import {awsConfig} from '../../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
 

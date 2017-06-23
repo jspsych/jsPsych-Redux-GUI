@@ -32,8 +32,8 @@ const onChangeRandomize = (dispatch, newBool) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
-	let timeline = timelineNodeState[timelineNodeState.previewId];
+	let experimentState = state.experimentState;
+	let timeline = experimentState[experimentState.previewId];
     // console.log(timeline);
 	return{
 		timelineId: timeline.id,

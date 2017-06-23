@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import * as userMenuActions from '../../actions/userMenuActions';
-import SignInWindow from '../../components/SignInWindow';
+import * as userMenuActions from '../../../actions/userMenuActions';
+import SignInWindow from '../../../components/Login/SignInWindow';
 
 const hideSignInWindow = (dispatch) => {
   dispatch(userMenuActions.hideSignInWindow());

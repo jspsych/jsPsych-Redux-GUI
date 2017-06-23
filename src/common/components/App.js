@@ -1,10 +1,8 @@
 import React from 'react';
-import Preview from '../containers/Preview';
+import PreviewWindow from '../containers/PreviewWindow';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
-import RegisterWindow from '../containers/RegisterWindow';
-import SignInWindow from '../containers/SignInWindow';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -13,7 +11,7 @@ import {
   grey600 as textColor
 } from 'material-ui/styles/colors';
 
-import { getFullScreenState } from './Preview';
+import { getFullScreenState } from './PreviewWindow';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
@@ -376,7 +374,7 @@ class App extends React.Component {
 			              </div>
 			        	</span>
 			        </div>
-	  				<Preview 
+	  				<PreviewWindow 
 	  						zoomScale={this.state.zoomScale}
 	  						zoomWidth={this.state.zoomWidth}
 	  						zoomHeight={this.state.zoomHeight}
@@ -388,9 +386,6 @@ class App extends React.Component {
 	  				/>
 
 	  			</div>
-					<RegisterWindow />
-					<SignInWindow />
-			
   			</div>
   			</MuiThemeProvider>
   		);
@@ -401,17 +396,4 @@ class App extends React.Component {
 export default App;
 
 
-				// 	<div style={{
-				// 	position: "fixed",
-				// 	display: "block",
-    // width: "100%", 
-    // height: "100%", 
-    // top: 0,
-    // left: 0,
-    // right: 0,
-    // bottom: 0,
-    // backgroundColor: 'rgba(0,0,0,0.5)',
-    // zIndex: 300,
-				// }}>
-				// <div style={{float: 'right', position: 'relative', color: 'white'}}>X</div>
-				// </div>
+				
