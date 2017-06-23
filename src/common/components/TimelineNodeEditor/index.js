@@ -4,7 +4,6 @@ import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import TextField from 'material-ui/TextField';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
@@ -25,7 +24,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 
 	render() {
 		return (
-			<MuiThemeProvider>
 			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? '20%': '0%',
 						right: '0px',
@@ -87,7 +85,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 	  					zIndex: 1,
   				}}><OpenDrawer /></IconButton>}
   			</div>
-  			</MuiThemeProvider>
   			)
 	}
 }

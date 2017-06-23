@@ -1,7 +1,6 @@
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import Toggle from 'material-ui/Toggle';

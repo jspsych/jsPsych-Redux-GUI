@@ -2,7 +2,6 @@ import React from 'react';
 
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
  
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
@@ -83,8 +82,6 @@ class TrialItem extends React.Component {
 		
 		return connectDragPreview(connectDropTarget(
 			<div>
-			<MuiThemeProvider>
-			<div>
 				<div className={treeNodeDnD.ITEM_TYPE} style={{
 						display:'flex', 
 						backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
@@ -139,8 +136,6 @@ class TrialItem extends React.Component {
 							/>
 					</div>
 				</div>
-			</MuiThemeProvider>
-			</div>
 		))
 	}
 }

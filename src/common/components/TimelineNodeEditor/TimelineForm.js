@@ -1,7 +1,6 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EditableTable from '../../containers/TimelineNodeEditor/EditableTable/EditableTable';
 
 import SpreadsheetComponent from 'react-spreadsheet-component';

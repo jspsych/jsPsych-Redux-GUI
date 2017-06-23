@@ -1,7 +1,6 @@
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
@@ -168,7 +167,6 @@ class TimelineItem extends React.Component {
 
 		return connectDragPreview(connectDropTarget(
 				<div>
-					<MuiThemeProvider>
 					<div className={treeNodeDnD.ITEM_TYPE} style={{
 									display: 'flex',
 									backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
@@ -226,7 +224,6 @@ class TimelineItem extends React.Component {
 								toggleThisOnly={this.props.toggleThisOnly}
 							/>
 					</div>	
-					</MuiThemeProvider>
 					<div style={{paddingLeft: INDENT}}>
 						<Tree children={this.props.childrenById}
 							  collapsed={this.props.collapsed}

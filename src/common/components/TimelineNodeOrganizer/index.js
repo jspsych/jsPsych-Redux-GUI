@@ -5,7 +5,6 @@ import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
 import { SpeedDial, SpeedDialItem } from 'react-mui-speeddial';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
@@ -78,7 +77,6 @@ class TimelineNodeOrganizer extends React.Component {
 
 	render() {
 		return (
-			<MuiThemeProvider>
 			<div className="TimelineNode-Organizer"
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%",
 						left: '0px',
@@ -198,7 +196,6 @@ class TimelineNodeOrganizer extends React.Component {
   						}}
   					><OpenDrawer /></IconButton>}
   			</div>
-  			</MuiThemeProvider>
   			)
 	}
 }

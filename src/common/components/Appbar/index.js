@@ -4,7 +4,6 @@ import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import { GridTile } from 'material-ui/GridList';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {
 	grey900 as deepGrey,
@@ -27,7 +26,6 @@ export default class Appbar extends React.Component {
 
 	render() {
 		return (
-			<MuiThemeProvider>
         			<div className="Appbar"
         				style={{
         					width: "100%",
@@ -67,7 +65,6 @@ export default class Appbar extends React.Component {
   							</Toolbar>
   						</div>
   					</div>
-		   </MuiThemeProvider>
 		   )
 	}
 

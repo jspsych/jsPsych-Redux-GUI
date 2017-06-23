@@ -3,7 +3,6 @@ import Menu from 'material-ui/Menu';
 import Popover from 'material-ui/Popover';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
 import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
@@ -31,7 +30,6 @@ export default class NestedContextMenus extends React.Component {
 
 	render() {
 		return (
-			<MuiThemeProvider>
 				<div>
 					<Popover
 			          open={this.props.openItemMenu}
@@ -87,7 +85,6 @@ export default class NestedContextMenus extends React.Component {
 						</Menu>
 					</Popover>
 				</div>
-			</MuiThemeProvider>
 		)
 	}
 }
