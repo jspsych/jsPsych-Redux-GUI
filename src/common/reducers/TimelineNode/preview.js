@@ -20,7 +20,7 @@ const undefinedObj = {
 	timeline: [
 		{
 			type: 'text',
-			text: 'No timeline/trial is selected!',
+			text: 'No timeline/trial is toggled or selected!',
 			choice: "",
 		}
 	]
@@ -31,8 +31,8 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
 export function generateCode(state) {
-	let blocks = [];
 	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
+	let blocks = [];
 	let node;
 	// bool that descides if this node should be include
 	let include;
@@ -47,6 +47,10 @@ export function generateCode(state) {
 				blocks.push(generateTrial(state, node));
 			}
 		}
+	}
+
+	if (!blocks.length) {
+		return Undefined;
 	}
 
 	let obj = {
