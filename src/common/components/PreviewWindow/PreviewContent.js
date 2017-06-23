@@ -7,6 +7,33 @@ import { Welcome } from '../../reducers/Experiment/preview';
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';
 
+export const load = (code) => {
+  let ele = document.getElementById(runtime_script_ele_id);
+  if (ele) {
+    ele.remove();
+  }
+  let script = document.createElement('script');
+  script.id = runtime_script_ele_id;
+  script.type = 'text/javascript';
+  script.async = false;
+  script.innerHTML = code;
+  document.body.appendChild(script);
+}
+
+export const reload = () => {
+  let ele = document.getElementById(runtime_script_ele_id);
+  let code = ele.innerHTML;
+  if (ele) {
+    ele.remove();
+  }
+  let script = document.createElement('script');
+  script.id = runtime_script_ele_id;
+  script.type = 'text/javascript';
+  script.async = false;
+  script.innerHTML = code;
+  document.body.appendChild(script);
+}
+
 export default class PreviewContent extends React.Component {
   state = {
     code: Welcome
@@ -20,29 +47,16 @@ export default class PreviewContent extends React.Component {
   }
 
   componentDidMount() {
-    this.load(Welcome);
+    load(Welcome);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.zoomScale !== this.props.zoomScale) {
-      this.load(prevState.code);
+      load(prevState.code);
     } else {
       this.setState({code: this.props.code});
-      this.load(this.props.code);
+      load(this.props.code);
     }
-  }
-
-  load = (code) => {
-    let ele = document.getElementById(runtime_script_ele_id);
-    if (ele) {
-      ele.remove();
-    }
-    let script = document.createElement('script');
-    script.id = runtime_script_ele_id;
-    script.type = 'text/javascript';
-    script.async = false;
-    script.innerHTML = code;
-    document.body.appendChild(script);
   }
 
 	render() {

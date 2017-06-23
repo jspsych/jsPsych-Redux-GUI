@@ -14,6 +14,7 @@ import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 import PreviewContent from '../../containers/PreviewWindow/PreviewContentContainer';
 import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
 import { Welcome } from '../../reducers/Experiment/preview';
+import { load, reload } from './PreviewContent';
 
 import {
   cyan600 as hoverColor,
@@ -94,20 +95,20 @@ export default class PreviewWindow extends React.Component {
                   }}
                   zDepth={1}
           >
-            <PreviewContent zoomScale={zoomScale} />
+            <PreviewContent zoomScale={zoomScale} code={this.props.code}/>
           </Paper>
           <div style={{paddingTop: 5}}>
                 <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
                   <ToolbarGroup style={{margin: '0 auto'}}>
                       <IconButton 
                         tooltip="Play"
-                        onTouchTap={()=>{ this.props.playAll(); this.load(this.props.code); }}
+                        onTouchTap={()=>{ this.props.playAll(); load(this.props.code); }}
                         >
                         <Play hoverColor={hoverColor} />
                       </IconButton>
                       <IconButton 
                         tooltip="Reload"
-                        onTouchTap={()=>{ this.load(this.props.code); }}
+                        onTouchTap={reload}
                         >
                         <Refresh hoverColor={hoverColor} />
                       </IconButton>
