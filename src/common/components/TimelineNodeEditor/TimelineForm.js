@@ -7,9 +7,6 @@ import EditableTable from '../../containers/TimelineNodeEditor/EditableTable/Edi
 import SpreadsheetComponent from 'react-spreadsheet-component';
 
 class TimelineForm extends React.Component {
-	constructor(props) {
-		super(props);
-	}
 	render(){
 		var form;
 		if(this.props.isTimeline) {

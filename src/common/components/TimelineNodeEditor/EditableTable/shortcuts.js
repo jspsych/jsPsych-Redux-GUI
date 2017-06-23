@@ -1,11 +1,5 @@
-import React from 'react';
-
 export function bindKeyboard(event) {
 	console.log("in bind keyboard");
-	// Mousetrap.bind('up', function(event){onUpPress(event);}, 'keyup');
- //    Mousetrap.bind('down', function(event){onDownPress(event);}, 'keyup');
- //    Mousetrap.bind('left', function(event){onLeftPress(event);}, 'keyup');
- //    Mousetrap.bind('right', function(event){onRightPress(event);}, 'keyup');
  switch(event.key) {
  	case 'ArrowUp': onUpPress(event);
  	break;
@@ -25,9 +19,9 @@ export function onUpPress(event) {
 	let nextRowCell = cell.dataset.row-1;
 	let column = cell.dataset.column;
 	
-	if(event.target.name == "tableHeader") {
+	if(event.target.name === "tableHeader") {
 		//Do nothing
-	} else if(isFirstRow == 1) {
+	} else if(isFirstRow === 1) {
 		document.getElementById(column).focus();
 	} else {
 		document.getElementById(nextRowCell+" "+column).focus();
@@ -37,16 +31,15 @@ export function onUpPress(event) {
 export function onDownPress(event) {
 	let cell = document.getElementById(event.target.id);
 	let id = cell.id.split(' ');
-	let arrayCells = document.getElementsByName("cells");
 	let nextRowCell = id[0]*1+1;
 	console.log(nextRowCell); 
 	let column = cell.dataset.column;
 	console.log("nextCell " + column);
 
 	
-	if(event.target.name == "tableHeader") {
+	if(event.target.name === "tableHeader") {
 		document.getElementById(1+" "+column).focus();
-	} else if(nextRowCell == undefined) {
+	} else if(nextRowCell === undefined) {
 		document.getElementById(nextRowCell+" "+column).focus();
 	} else {
 		console.log("in else");
@@ -62,7 +55,7 @@ export function onLeftPress(event) {
 	let nextColumn = cell.dataset.column-1;
 	let row = cell.dataset.row;
 
-	if(event.target.name == "tableHeader") {
+	if(event.target.name === "tableHeader") {
 		document.getElementById(nextColumn).focus();
 	} else {
 		document.getElementById(row+" "+nextColumn).focus();
@@ -75,7 +68,7 @@ export function onRightPress(event) {
 	let nextColumn = cell.dataset.column*1+1;
 	let row = cell.dataset.row;
 
-	if(event.target.name == "tableHeader") {
+	if(event.target.name === "tableHeader") {
 		document.getElementById(nextColumn).focus();
 	} else {
 		document.getElementById(row+" "+nextColumn).focus();

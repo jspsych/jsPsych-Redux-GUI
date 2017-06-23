@@ -1,7 +1,5 @@
 import { connect } from 'react-redux';
 import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
-import { isTimeline,
-		 startFromTwo } from '../../../reducers/Experiment/utils/index';
 import * as tableActions from '../../../actions/tableAction';
 
 const onChangeHeader = (dispatch, headerId, newVal) => {
@@ -12,24 +10,7 @@ const onChangeCells = (dispatch, cellId, newVal) => {
 	dispatch(tableActions.changeCellAction(cellId, newVal));
 }
 
-// var previousTimeline = ["TIMELINE-0", "TIMELINE-0"];
-// var saveIndex = [2]; //last index for each timeline
 const onAddColumn = (dispatch, ownProps, index) => {
-	// var previous = previousTimeline[1];
-	// previousTimeline[0] = previous;
-	// previousTimeline[1] = ownProps.id;
-
-	// var timelineIndex = previousTimeline[1].split('-');
-	// index = saveIndex[timelineIndex[1]];
-	
-	// if((previousTimeline[0] != previousTimeline[1]) && (saveIndex)) {
-	// 	saveIndex.push(index);
-	// }
-
-	// index = startFromTwo(previousTimeline,index);
-
-	// saveIndex[timelineIndex[1]] = index;
-
 	dispatch(tableActions.addColumn(ownProps.id, index));
 }
 
