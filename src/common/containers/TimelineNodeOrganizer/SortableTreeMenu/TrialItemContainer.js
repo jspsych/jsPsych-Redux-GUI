@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../../actions/timelineNodeActions';
+import * as organizerActions from '../../../actions/organizerActions';
 import TrialItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TrialItem';
-import { getTimelineId, getTrialId } from '../../../reducers/TimelineNode/utils';
+import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 import {
 	toggleAll,
 	untoggleAll,
@@ -12,14 +12,14 @@ import {
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	// console.log(e.nativeEvent.which)
 	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let previewId = timelineNodeState.previewId;
+		let experimentState = getState().experimentState;
+		let previewId = experimentState.previewId;
 		if (previewId === null || previewId !== ownProps.id) {
-			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
+			dispatch(organizerActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
 			setKeyboardFocusId(ownProps.id);
 		} else {
-			dispatch(timelineNodeActions.onPreviewAction(null));
+			dispatch(organizerActions.onPreviewAction(null));
 			// ownProps.closeTimelineEditorCallback();
 			setKeyboardFocusId(null);
 		}
@@ -27,32 +27,32 @@ const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 }
 
 const onToggle = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.onToggleAction(ownProps.id));
+	dispatch(organizerActions.onToggleAction(ownProps.id));
 }
 
 const insertTimeline = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.insertNodeAfterTrialAction(getTimelineId(), ownProps.id, true));
+	dispatch(organizerActions.insertNodeAfterTrialAction(getTimelineId(), ownProps.id, true));
 }
 
 const insertTrial = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.insertNodeAfterTrialAction(getTrialId(), ownProps.id, false));
+	dispatch(organizerActions.insertNodeAfterTrialAction(getTrialId(), ownProps.id, false));
 }
 
 const deleteTrial = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.deleteTrialAction(ownProps.id));
+	dispatch(organizerActions.deleteTrialAction(ownProps.id));
 }
 
 const duplicateTrial = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.duplicateTrialAction(getTrialId(), ownProps.id));
+	dispatch(organizerActions.duplicateTrialAction(getTrialId(), ownProps.id));
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[ownProps.id];
+	let node = experimentState[ownProps.id];
 
 	return {
-		isSelected: ownProps.id === timelineNodeState.previewId,
+		isSelected: ownProps.id === experimentState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
 		parent: node.parent,

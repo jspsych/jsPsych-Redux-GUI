@@ -1,8 +1,8 @@
 import React from 'react';
 
 
-import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
-import { Welcome } from '../../reducers/TimelineNode/preview';
+import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
+import { Welcome } from '../../reducers/Experiment/preview';
 
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';

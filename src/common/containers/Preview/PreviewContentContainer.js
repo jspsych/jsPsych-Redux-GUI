@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 import PreviewContent from '../../components/Preview/PreviewContent';
 
-import { generateCode, Undefined } from '../../reducers/TimelineNode/preview';
+import { generateCode, Undefined } from '../../reducers/Experiment/preview';
 
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 	let code = Undefined;
-	if (timelineNodeState.previewId || timelineNodeState.previewAll) {
-		code = generateCode(timelineNodeState);
+	if (experimentState.previewId || experimentState.previewAll) {
+		code = generateCode(experimentState);
 	} 
 
 	return {

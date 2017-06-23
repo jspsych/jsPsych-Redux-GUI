@@ -1,18 +1,18 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../../actions/timelineNodeActions';
+import * as organizerActions from '../../../actions/organizerActions';
 import TimelineItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TimelineItem';
-import { getTimelineId, getTrialId } from '../../../reducers/TimelineNode/utils';
+import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let previewId = timelineNodeState.previewId;
+		let experimentState = getState().experimentState;
+		let previewId = experimentState.previewId;
 		if (previewId === null || previewId !== ownProps.id) {
-			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
+			dispatch(organizerActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
 			setKeyboardFocusId(ownProps.id);
 		} else {
-			dispatch(timelineNodeActions.onPreviewAction(null));
+			dispatch(organizerActions.onPreviewAction(null));
 			// ownProps.closeTimelineEditorCallback();
 			setKeyboardFocusId(null);
 		}
@@ -20,39 +20,39 @@ const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 }
 
 const onToggle = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.onToggleAction(ownProps.id));
+	dispatch(organizerActions.onToggleAction(ownProps.id));
 }
 
 export const toggleAll = (dispatch) => {
-	dispatch(timelineNodeActions.setToggleCollectivelyAction(true));
+	dispatch(organizerActions.setToggleCollectivelyAction(true));
 }
 
 export const untoggleAll = (dispatch) => {
-	dispatch(timelineNodeActions.setToggleCollectivelyAction(false));
+	dispatch(organizerActions.setToggleCollectivelyAction(false));
 }
 
 export const toggleThisOnly = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.setToggleCollectivelyAction(false, ownProps.id));
+	dispatch(organizerActions.setToggleCollectivelyAction(false, ownProps.id));
 }
 
 const toggleCollapsed = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.setCollapsed(ownProps.id));
+	dispatch(organizerActions.setCollapsed(ownProps.id));
 }
 
 const insertTimeline = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), ownProps.id));
+	dispatch(organizerActions.addTimelineAction(getTimelineId(), ownProps.id));
 }
 
 const insertTrial = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.addTrialAction(getTrialId(), ownProps.id));
+	dispatch(organizerActions.addTrialAction(getTrialId(), ownProps.id));
 }
 
 const deleteTimeline = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.deleteTimelineAction(ownProps.id));
+	dispatch(organizerActions.deleteTimelineAction(ownProps.id));
 }
 
 const duplicateTimeline = (dispatch, ownProps) => {
-	dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
+	dispatch(organizerActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
 }
 
 export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
@@ -61,17 +61,17 @@ export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
 	if (getKeyboardFocusId() === ownProps.id &&
 		 e.which >= 37 && 
 		 e.which <= 40) {
-		dispatch(timelineNodeActions.moveByKeyboardAction(ownProps.id, e.which));
+		dispatch(organizerActions.moveByKeyboardAction(ownProps.id, e.which));
 	}
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[ownProps.id];
+	let node = experimentState[ownProps.id];
 	let len = node.childrenById.length;
 	return {
-		isSelected: ownProps.id === timelineNodeState.previewId,
+		isSelected: ownProps.id === experimentState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
 		collapsed: node.collapsed,

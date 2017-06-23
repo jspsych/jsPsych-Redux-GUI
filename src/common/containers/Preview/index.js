@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../actions/timelineNodeActions';
+import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import Preview from '../../components/Preview';
 
-import { generateCode, Undefined } from '../../reducers/TimelineNode/preview';
+import { generateCode, Undefined } from '../../reducers/Experiment/preview';
 
 const playAll = (dispatch) => {
-	dispatch(timelineNodeActions.playAllAction());
+	dispatch(experimentSettingActions.playAllAction());
 }
 
 const mapStateToProps = (state, ownProps) => {

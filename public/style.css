@@ -5,15 +5,3 @@
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-.main-body:-webkit-full-screen {
-	background-color: black;
-}
-.main-body:-moz-full-screen {
-	background-color: black;
-}
-.main-body:-ms-fullscreen {
-	background-color: black;
-}
-.main-body:fullscreen {
-	background-color: black;
-}

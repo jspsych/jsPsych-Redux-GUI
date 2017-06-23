@@ -5,6 +5,8 @@ import * as preview from './preview';
 import * as editor from './editor';
 
 export const initState = {
+	experimentName: "Untitled Experiment",
+
 	// id of which is being previewed/editted
 	previewId: null,
 	// if want to play all
@@ -96,6 +98,10 @@ export default function(state=initState, action) {
 		case actionTypes.PLAY_ALL:
 			return preview.playAll(state, action);
 
+		// name
+		case actionTypes.SET_EXPERIMENT_NAME:
+			return setExperimentName(state, action);
+
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
@@ -128,3 +134,8 @@ export default function(state=initState, action) {
 	}
 }
 
+const setExperimentName = (state, action) => {
+	return Object.assign({}, state, {
+		experimentName: action.name
+	})
+}

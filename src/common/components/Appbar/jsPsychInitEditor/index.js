@@ -16,7 +16,7 @@ import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 import CodeEditorTrigger from '../../CodeEditorTrigger';
 
-import { settingType } from '../../../reducers/TimelineNode/jsPsychInit';
+import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
 export default class jsPsychInitEditor extends React.Component {
   constructor(props) {

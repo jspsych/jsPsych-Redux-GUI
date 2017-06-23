@@ -12,8 +12,8 @@ import FullScreen from 'material-ui/svg-icons/navigation/fullscreen';
 import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 
 import PreviewContent from '../../containers/Preview/PreviewContentContainer';
-import { jsPsych_Display_Element } from '../../reducers/TimelineNode/jsPsychInit';
-import { Welcome } from '../../reducers/TimelineNode/preview';
+import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
+import { Welcome } from '../../reducers/Experiment/preview';
 
 import {
   cyan600 as hoverColor,
