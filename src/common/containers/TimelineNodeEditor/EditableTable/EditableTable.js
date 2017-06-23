@@ -35,6 +35,8 @@ const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let timeline = experimentState[experimentState.previewId];
     // console.log(timeline);
+	// let timelineNodeState = state.timelineNodeState;
+	// let timeline = timelineNodeState[timelineNodeState.previewId];
 	return{
 		timelineId: timeline.id,
 		timeline_variables: timeline.parameters.timeline_variables,
