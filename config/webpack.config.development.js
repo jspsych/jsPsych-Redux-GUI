@@ -16,6 +16,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     // new UglifyJSPlugin(),
+
   ],
 
   module: {
@@ -35,7 +36,7 @@ module.exports = {
         loader: 'json-loader'
     }]
   },
-  
+
   node: {
     fs: "empty",
     module: "empty",

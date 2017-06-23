@@ -11,3 +11,15 @@ export function hideRegisterWindow() {
 		type: actionTypes.HIDE_REGISTER_WINDOW,
 	};
 }
+
+export function showSignInWindow() {
+	return {
+		type: actionTypes.SHOW_SIGNIN_WINDOW,
+	};
+}
+
+export function hideSignInWindow() {
+	return {
+		type: actionTypes.HIDE_SIGNIN_WINDOW,
+	};
+}

@@ -33,6 +33,7 @@
     "webpack-preset": "^0.2.0"
   },
   "dependencies": {
+    "amazon-cognito-identity-js": "^1.19.0",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
     "express": "^4.15.3",

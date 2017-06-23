@@ -35,19 +35,29 @@ export default class UserMenu extends React.Component {
     this.props.showRegisterWindow();
   }
 
+  handleSignIn = () => {
+    this.setState({
+      open: false
+    });
+    this.props.showSignInWindow();
+  }
+
   render() {
 
-    var buttonLabel = this.props.user == null ? 'Create Account' : this.props.user;
+    var buttonLabel = this.props.user == null ? 'Your Account' : this.props.user;
 
     return (
       <div style={{display: 'inline-block', float: 'right'}}>
         <FlatButton label={buttonLabel} onTouchTap={this.handleTouchTap} />
         <Popover
-          open = {this.state.open}
-          anchorEl = {this.state.anchorEl}
-          onRequestClose = {this.handleRequestClose}
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          onRequestClose={this.handleRequestClose}
           >
           <Menu>
+            <MenuItem
+              primaryText="Sign In"
+              onTouchTap={this.handleSignIn} />
             <MenuItem
               primaryText="Create Account"
               onTouchTap={this.handleCreateAccount} />
