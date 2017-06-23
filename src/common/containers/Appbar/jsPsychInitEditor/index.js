@@ -8,7 +8,7 @@ const setJsPsychInit = (dispatch, key, value) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let jsPsychInit = state.timelineNodeState.jsPsychInit;
+	let jsPsychInit = state.experimentState.jsPsychInit;
 
 	return {
 		...jsPsychInit,

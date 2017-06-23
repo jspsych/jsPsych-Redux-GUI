@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
-import { isTimeline } from '../../reducers/TimelineNode/utils/index';
+import { isTimeline } from '../../reducers/Experiment/utils/index';
 import TimelineForm from '../../components/TimelineNodeEditor/TimelineForm';
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let timeline = timelineNodeState[timelineNodeState.previewId];
+	let timeline = experimentState[experimentState.previewId];
 
 	if(timeline != null) {
 		return {

@@ -1,22 +1,22 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../actions/timelineNodeActions';
 import TimelineNodeEditor from '../../components/TimelineNodeEditor';
-import { isTimeline } from '../../reducers/TimelineNode/utils';
+import { isTimeline } from '../../reducers/Experiment/utils';
 
 const changeNodeName = (name, dispatch) => {
 	dispatch(timelineNodeActions.setNameAction(name));
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[timelineNodeState.previewId];
+	let node = experimentState[experimentState.previewId];
 	if (!node) return {
 		previewId: null,
 	};
 
 	return {
-		previewId: timelineNodeState.previewId,
+		previewId: experimentState.previewId,
 		pluginType: node.parameters.type,
 		nodeName: node.name,
 		label: ((isTimeline(node)) ? "Timeline" : "Trial") + " Name"

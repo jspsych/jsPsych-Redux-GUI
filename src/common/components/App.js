@@ -6,7 +6,6 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 import RegisterWindow from '../containers/RegisterWindow';
 import SignInWindow from '../containers/SignInWindow';
 
-
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Zoom from 'material-ui/svg-icons/action/zoom-in';
@@ -294,6 +293,7 @@ class App extends React.Component {
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
 				</div>
+				
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizer
 	  					open={this.state.timelineOrganizerDrawerToggle}
@@ -390,6 +390,7 @@ class App extends React.Component {
 	  			</div>
 					<RegisterWindow />
 					<SignInWindow />
+			
   			</div>
   			</MuiThemeProvider>
   		);
@@ -398,3 +399,19 @@ class App extends React.Component {
 
 
 export default App;
+
+
+				// 	<div style={{
+				// 	position: "fixed",
+				// 	display: "block",
+    // width: "100%", 
+    // height: "100%", 
+    // top: 0,
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // backgroundColor: 'rgba(0,0,0,0.5)',
+    // zIndex: 300,
+				// }}>
+				// <div style={{float: 'right', position: 'relative', color: 'white'}}>X</div>
+				// </div>

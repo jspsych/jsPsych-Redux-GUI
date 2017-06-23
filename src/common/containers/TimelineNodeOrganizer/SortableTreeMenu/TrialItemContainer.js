@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TrialItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TrialItem';
-import { getTimelineId, getTrialId } from '../../../reducers/TimelineNode/utils';
+import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 import {
 	toggleAll,
 	untoggleAll,
@@ -12,8 +12,8 @@ import {
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	// console.log(e.nativeEvent.which)
 	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let previewId = timelineNodeState.previewId;
+		let experimentState = getState().experimentState;
+		let previewId = experimentState.previewId;
 		if (previewId === null || previewId !== ownProps.id) {
 			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
@@ -47,12 +47,12 @@ const duplicateTrial = (dispatch, ownProps) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[ownProps.id];
+	let node = experimentState[ownProps.id];
 
 	return {
-		isSelected: ownProps.id === timelineNodeState.previewId,
+		isSelected: ownProps.id === experimentState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
 		parent: node.parent,

@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
 import * as timelineNodeActions from '../../../actions/timelineNodeActions';
 import TimelineItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TimelineItem';
-import { getTimelineId, getTrialId } from '../../../reducers/TimelineNode/utils';
+import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	dispatch((dispatch, getState) => {
-		let timelineNodeState = getState().timelineNodeState;
-		let previewId = timelineNodeState.previewId;
+		let experimentState = getState().experimentState;
+		let previewId = experimentState.previewId;
 		if (previewId === null || previewId !== ownProps.id) {
 			dispatch(timelineNodeActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
@@ -66,12 +66,12 @@ export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[ownProps.id];
+	let node = experimentState[ownProps.id];
 	let len = node.childrenById.length;
 	return {
-		isSelected: ownProps.id === timelineNodeState.previewId,
+		isSelected: ownProps.id === experimentState.previewId,
 		isEnabled: node.enabled,
 		name: node.name,
 		collapsed: node.collapsed,

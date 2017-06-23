@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
 import TreeNode from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TreeNode';
-import { isTimeline } from '../../../reducers/TimelineNode/utils';
+import { isTimeline } from '../../../reducers/Experiment/utils';
 
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let node = timelineNodeState[ownProps.id];
+	let node = experimentState[ownProps.id];
 	let isTimelineNode = isTimeline(node);
 
 	return {

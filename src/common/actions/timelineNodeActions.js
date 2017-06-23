@@ -132,3 +132,8 @@ export function setJspyschInitAction(key, value) {
 		value: value,
 	};
 }
+
+export const setExperimentNameAction = (name) => ({
+	type: actionTypes.SET_EXPERIMENT_NAME,
+	name: name,
+});

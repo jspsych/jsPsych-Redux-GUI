@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { isTrial } from '../../reducers/TimelineNode/utils';
+import { isTrial } from '../../reducers/Experiment/utils';
 import TrialForm from '../../components/TimelineNodeEditor/TrialForm';
 import * as trialFormActions from '../../actions/trialFormActions';
 
@@ -24,9 +24,9 @@ const onChangeFloatParam = (dispatch, e, newVal) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
-	let trial = timelineNodeState[timelineNodeState.previewId];
+	let trial = experimentState[experimentState.previewId];
 
 	return {
 		id: trial.id,

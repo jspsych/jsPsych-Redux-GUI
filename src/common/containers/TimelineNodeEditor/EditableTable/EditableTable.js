@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
 import { isTimeline,
-		 startFromTwo } from '../../../reducers/TimelineNode/utils/index';
+		 startFromTwo } from '../../../reducers/Experiment/utils/index';
 import * as tableActions from '../../../actions/tableAction';
 
 const onChangeHeader = (dispatch, headerId, newVal) => {

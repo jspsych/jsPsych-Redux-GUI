@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
-import * as mainActions from '../../actions/mainActions';
+import * as timelineNodeActions from '../../actions/timelineNodeActions';
 import Appbar from '../../components/Appbar';
 
 const changeExperimentName = (dispatch, text) => {
-	dispatch(mainActions.setExperimentNameAction(text));
+	dispatch(timelineNodeActions.setExperimentNameAction(text));
 }
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		experimentName: state.mainState.experimentName
+		experimentName: state.experimentState.experimentName
 	}
 };
 

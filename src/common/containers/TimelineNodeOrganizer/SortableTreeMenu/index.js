@@ -3,10 +3,10 @@ import SortableTreeMenu from '../../../components/TimelineNodeOrganizer/Sortable
 
 
 const mapStateToProps = (state, ownProps) => {
-	let timelineNodeState = state.timelineNodeState;
+	let experimentState = state.experimentState;
 
 	return {
-		children: timelineNodeState.mainTimeline,
+		children: experimentState.mainTimeline,
 	}
 };
 

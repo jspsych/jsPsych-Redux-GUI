@@ -44,7 +44,7 @@ export default class UserMenu extends React.Component {
 
   render() {
 
-    var buttonLabel = this.props.user == null ? 'Your Account' : this.props.user;
+    var buttonLabel = this.props.user === null ? 'Your Account' : this.props.user;
 
     return (
       <div style={{display: 'inline-block', float: 'right'}}>
