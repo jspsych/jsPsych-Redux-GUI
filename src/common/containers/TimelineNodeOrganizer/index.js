@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../actions/timelineNodeActions';
+import * as organizerActions from '../../actions/organizerActions';
 import TimelineNodeOrganizer from '../../components/TimelineNodeOrganizer';
 import { isTimeline, 
 		getTimelineId, 
@@ -11,14 +11,14 @@ const insertTrial = (dispatch) => {
 		let experimentState = getState().experimentState;
 		let previewId = experimentState.previewId;
 		if (previewId === null) {
-			dispatch(timelineNodeActions.addTrialAction(getTrialId(), null));
+			dispatch(organizerActions.addTrialAction(getTrialId(), null));
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(timelineNodeActions.addTrialAction(getTrialId(), previewId));
+			dispatch(organizerActions.addTrialAction(getTrialId(), previewId));
 			// its a trial
 		} else {
 			let parent = experimentState[previewId].parent;
-			dispatch(timelineNodeActions.addTrialAction(getTrialId(), parent));
+			dispatch(organizerActions.addTrialAction(getTrialId(), parent));
 		}
 	})
 }
@@ -28,14 +28,14 @@ const insertTimeline = (dispatch) => {
 		let experimentState = getState().experimentState;
 		let previewId = experimentState.previewId;
 		if (previewId === null) {
-			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), null));
+			dispatch(organizerActions.addTimelineAction(getTimelineId(), null));
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), previewId));
+			dispatch(organizerActions.addTimelineAction(getTimelineId(), previewId));
 			// its a trial
 		} else {
 			let parent = experimentState[previewId].parent;
-			dispatch(timelineNodeActions.addTimelineAction(getTimelineId(), parent));
+			dispatch(organizerActions.addTimelineAction(getTimelineId(), parent));
 		}
 	})
 }
@@ -48,10 +48,10 @@ const deleteSelected = (dispatch) => {
 			return;
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(timelineNodeActions.deleteTimelineAction(previewId));
+			dispatch(organizerActions.deleteTimelineAction(previewId));
 			// its a trial
 		} else {
-			dispatch(timelineNodeActions.deleteTrialAction(previewId));
+			dispatch(organizerActions.deleteTrialAction(previewId));
 		}
 	})
 }
@@ -64,10 +64,10 @@ const duplicateNode = (dispatch) => {
 			return;
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(timelineNodeActions.duplicateTimelineAction(getTimelineId(), previewId, getTimelineId, getTrialId));
+			dispatch(organizerActions.duplicateTimelineAction(getTimelineId(), previewId, getTimelineId, getTrialId));
 			// its a trial
 		} else {
-			dispatch(timelineNodeActions.duplicateTrialAction(getTrialId(), previewId));
+			dispatch(organizerActions.duplicateTrialAction(getTrialId(), previewId));
 		}
 	})
 }

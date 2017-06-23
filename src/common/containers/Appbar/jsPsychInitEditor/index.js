@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../../actions/timelineNodeActions';
+import * as experimentSettingActions from '../../../actions/experimentSettingActions';
 
 import jsPsychInitEditor from '../../../components/Appbar/jsPsychInitEditor';
 
 const setJsPsychInit = (dispatch, key, value) => {
-	dispatch(timelineNodeActions.setJspyschInitAction(key, value));
+	dispatch(experimentSettingActions.setJspyschInitAction(key, value));
 }
 
 const mapStateToProps = (state, ownProps) => {

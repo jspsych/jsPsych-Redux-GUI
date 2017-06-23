@@ -21,7 +21,7 @@ import flow from 'lodash/flow';
 
 import Tree from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TreeContainer';
 import NestedContextMenus from './NestedContextMenus';
-import { moveToAction, moveIntoAction } from '../../../actions/timelineNodeActions';
+import { moveToAction, moveIntoAction } from '../../../actions/organizerActions';
 
 export const INDENT = 32;
 

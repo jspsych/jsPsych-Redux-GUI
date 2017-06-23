@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../actions/timelineNodeActions';
+import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import Appbar from '../../components/Appbar';
 
 const changeExperimentName = (dispatch, text) => {
-	dispatch(timelineNodeActions.setExperimentNameAction(text));
+	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
 const mapStateToProps = (state, ownProps) => {

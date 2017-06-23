@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
-import * as timelineNodeActions from '../../actions/timelineNodeActions';
+import * as organizerActions from '../../actions/organizerActions';
 import TimelineNodeEditor from '../../components/TimelineNodeEditor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
 const changeNodeName = (name, dispatch) => {
-	dispatch(timelineNodeActions.setNameAction(name));
+	dispatch(organizerActions.setNameAction(name));
 }
 
 const mapStateToProps = (state, ownProps) => {

@@ -62,12 +62,6 @@ export function onPreviewAction(id, previewAll=false) {
 	};
 }
 
-export function playAllAction() {
-	return {
-		type: actionTypes.PLAY_ALL,
-	};
-}
-
 export function onToggleAction(id) {
 	return {
 		type: actionTypes.ON_TOGGLE,
@@ -125,15 +119,5 @@ export function setNameAction(name) {
 	};
 }
 
-export function setJspyschInitAction(key, value) {
-	return {
-		type: actionTypes.SET_JSPSYCH_INIT,
-		key: key,
-		value: value,
-	};
-}
 
-export const setExperimentNameAction = (name) => ({
-	type: actionTypes.SET_EXPERIMENT_NAME,
-	name: name,
-});
+
