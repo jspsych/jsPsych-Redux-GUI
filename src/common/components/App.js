@@ -7,8 +7,8 @@ import RegisterWindow from '../containers/RegisterWindow';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import Zoom from 'material-ui/svg-icons/action/zoom-in';
 import {
-  cyan600 as hoverColor,
   grey600 as textColor
 } from 'material-ui/styles/colors';
 
@@ -322,11 +322,12 @@ class App extends React.Component {
 	  				<span style={{
 	  					paddingTop: 5,
 	  					paddingBottom: 5,
-	  					paddingLeft: 3,
+	  					// paddingLeft: 3,
 	  					display: 'flex', 
-	  					width: 185,
-	  					backgroundColor: 'rgb(232, 232, 232)'
-	  				}}>
+	  					// width: 185,
+	  					// margin: '0 auto',
+	  					// backgroundColor: 'rgb(232, 232, 232)'
+	  				}}>	
 			              <input 
 			                className="Responsive-input" 
 			                style={responsiveTextFieldStyle} 
@@ -340,7 +341,7 @@ class App extends React.Component {
 			              <div style={{
 			              	paddingLeft: 8, 
 			              	paddingRight: 8, 
-			              	color: textColor
+			              	color: (getFullScreenState()) ? 'white' : textColor,
 			              }}>x</div>
 			              <input 
 			                className="Responsive-input" 
