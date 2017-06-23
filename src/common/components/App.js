@@ -283,7 +283,6 @@ class App extends React.Component {
 			// backgroundColor: 'rgb(232, 232, 232)',
 			outline: 'none',
 			color: textColor,
-	  		zIndex: 200,
 			textAlign: 'center'
 		};
 		return (
@@ -325,7 +324,6 @@ class App extends React.Component {
 	  					paddingBottom: 5,
 	  					// paddingLeft: 3,
 	  					display: 'flex', 
-	  					zIndex: 200,
 	  					// width: 185,
 	  					// margin: '0 auto',
 	  					// backgroundColor: 'rgb(232, 232, 232)'
@@ -355,7 +353,7 @@ class App extends React.Component {
 			                onKeyPress={this.setZoomHeight}
 			                onBlur={() => { let e = {which: 13}; this.setZoomHeight(e) }}
 			              />
-			              <div style={{paddingLeft: 16, zIndex: 200,}}>
+			              <div style={{paddingLeft: 16}}>
 			                <select value={-1} 
 			                        style={{
 			                          outline: 'none', 
