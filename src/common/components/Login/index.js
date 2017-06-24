@@ -79,6 +79,9 @@ export default class Login extends React.Component {
       	password: '',
 	}
 
+	/*
+	If need this function, pass it to reducer state
+	*/ 
 	popVerification = () => {
 		this.props.handleOpen();
 		this.props.setLoginMode(LoginModes.verification);

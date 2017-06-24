@@ -1,7 +1,8 @@
 import * as actionTypes from '../../constants/ActionTypes';
 
 export const initState = {
-  username: null,
+  user: null,
+  popVerificationCallback: null,
 };
 
 
