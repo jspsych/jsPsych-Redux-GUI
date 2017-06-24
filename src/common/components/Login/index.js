@@ -4,6 +4,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import {Tabs, Tab} from 'material-ui/Tabs';
+import SwipeableViews from 'react-swipeable-views';
 
 import SignInWindow from '../../containers/Login/SignInWindowContainer';
 import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
@@ -131,6 +132,7 @@ export default class Login extends React.Component {
 			case LoginModes.signIn:
 			case LoginModes.register:
 				return (
+				<div>
 					<Tabs
 				        value={loginMode}
 				        onChange={setLoginMode}
@@ -142,17 +144,8 @@ export default class Login extends React.Component {
 				      		}}
 				      		style={{
 				      		 	color: tabTextColor
-				      		}}>
-				      	<div style={{paddingTop: 10}} />
-				      	<SignInWindow 
-				      		handleClose={handleClose}
-				      		popVerification={popVerification}
-				      		username={username}
-				      		password={password}
-				      		setUserName={setUserName}
-				      		setPassword={setPassword}
-				      	/>
-				      </Tab>
+				      		}}/>
+				      	
 				      <Tab label={registerDialogStyle.title} 
 				      		value={LoginModes.register}
 				      		buttonStyle={{
@@ -160,15 +153,28 @@ export default class Login extends React.Component {
 				      		}}
 				      		style={{
 				      			color: tabTextColor
-				      		}}>
-				      	<div style={{paddingTop: 10}} />
-				      	<RegisterWindow
+				      		}} />
+				   	</Tabs>
+				   	<SwipeableViews index={loginMode} onChangeIndex={setLoginMode} >
+				   	<div style={{paddingTop: 10}} >
+				   		<SignInWindow 
+				      		handleClose={handleClose}
+				      		popVerification={popVerification}
+				      		username={username}
+				      		password={password}
+				      		setUserName={setUserName}
+				      		setPassword={setPassword}
+				      	/>
+				   	</div>
+				   	<div style={{paddingTop: 10}} >
+				   		<RegisterWindow
 				      		handleOpen={handleOpen}
 				      		handleClose={handleClose}
 				      		setLoginMode={setLoginMode}
 				      	/>
-				      </Tab>
-				   	</Tabs>
+				   	</div>
+				   	</SwipeableViews>
+				</div>
 
 			)
 			case LoginModes.verification:

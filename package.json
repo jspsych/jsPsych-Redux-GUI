@@ -51,6 +51,7 @@
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.6",
     "react-spreadsheet-component": "^0.5.1",
+    "react-swipeable-views": "^0.12.3",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"
