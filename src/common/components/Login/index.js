@@ -75,7 +75,7 @@ export default class Login extends React.Component {
 	};
 
 	state = {
-		userName: '',
+		username: '',
       	password: '',
 	}
 
@@ -85,7 +85,7 @@ export default class Login extends React.Component {
 	}
 
 	setUserName = (name) => {
-		this.setState({userName: name});
+		this.setState({username: name});
 	}
 
 	setPassword = (password) => {
@@ -115,7 +115,7 @@ export default class Login extends React.Component {
 
 	renderContent = () => {
 		let { loginMode, handleOpen, handleClose, setLoginMode } = this.props;
-		let { userName, password, } = this.state;
+		let { username, password, } = this.state;
 
 		let {
 			popVerification,
@@ -144,7 +144,7 @@ export default class Login extends React.Component {
 				      	<SignInWindow 
 				      		handleClose={handleClose}
 				      		popVerification={popVerification}
-				      		userName={userName}
+				      		username={username}
 				      		password={password}
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
@@ -171,7 +171,7 @@ export default class Login extends React.Component {
 			case LoginModes.verification:
 				return (
 					<VerificationWindow 
-						userName={userName}
+						username={username}
 						handleClose={handleClose}
 					/>
 				)

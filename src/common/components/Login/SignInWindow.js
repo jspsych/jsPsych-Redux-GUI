@@ -42,7 +42,7 @@ export default class SignInWindow extends React.Component {
 
   handleSignIn = () => {
     var cont_flag = true;
-    if(this.props.userName === ''){
+    if(this.props.username === ''){
       this.setState({userError: "Please enter your username or email"});
       cont_flag = false;
     }
@@ -55,12 +55,12 @@ export default class SignInWindow extends React.Component {
     }
 
     var authenticationData = {
-      Username: this.props.userName,
+      Username: this.props.username,
       Password: this.props.password
     }
 
     var userData = {
-      Username : this.props.userName, // your username here
+      Username : this.props.username, // your username here
       Pool : userPool
     };
 
@@ -89,16 +89,16 @@ export default class SignInWindow extends React.Component {
   }
 
   render(){
-    let { userName, password } = this.props;
+    let { username, password } = this.props;
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}}>
         <div style={{width: 500, margin: 'auto'}} >
           <TextField 
             fullWidth={true}
-            id="userName" 
+            id="username" 
             floatingLabelText="Username or Email" 
-            value={userName} 
+            value={username} 
             errorText={this.state.userError} 
             onChange={this.handleUserNameChange}
           />

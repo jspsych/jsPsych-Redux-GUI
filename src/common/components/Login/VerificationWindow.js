@@ -30,7 +30,7 @@ export default class VerificationWindow extends React.Component {
   handleVerification = () => {
 
     var userData = {
-      Username : this.props.userName, // your username here
+      Username : this.props.username, // your username here
       Pool : userPool
     };
 
