@@ -104,7 +104,10 @@ export default class Login extends React.Component {
           		open={open}
           		onRequestClose={handleClose}
           		contentStyle={{width: 450, height: 600,}}
+          		bodyStyle={{backgroundColor: dialogBodyColor}}
+          		overlayStyle={{backgroundColor: 'rgba(0, 0, 0, 0.83)'}}
           		modal={false}
+          		autoScrollBodyContent={true}
 			>
 			<div>
 			{
@@ -141,7 +144,7 @@ export default class Login extends React.Component {
 				      			backgroundColor: (LoginModes.signIn === loginMode) ? null : tabColor,
 				      		}}
 				      		style={{
-				      		 	color: tabTextColor
+				      		 	color: (LoginModes.signIn === loginMode) ? 'white' : tabTextColor
 				      		}}>
 				      	<div style={{paddingTop: 10}} />
 				      	<SignInWindow 
@@ -159,7 +162,7 @@ export default class Login extends React.Component {
 				      			backgroundColor: (LoginModes.register === loginMode) ? null : tabColor, 
 				      		}}
 				      		style={{
-				      			color: tabTextColor
+				      			color: (LoginModes.register === loginMode) ? 'white' : tabTextColor
 				      		}}>
 				      	<div style={{paddingTop: 10}} />
 				      	<RegisterWindow
