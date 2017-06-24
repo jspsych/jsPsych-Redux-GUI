@@ -1,10 +1,8 @@
 import React from 'react';
-import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-//import FlatButton from 'material-ui/FlatButton';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
-import VerificationWindow from '../../../containers/VerificationWindow';
-import {awsConfig} from '../../../../../config/aws.js';
+import {awsConfig} from '../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
 
@@ -22,40 +20,33 @@ export default class SignInWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: '',
-      password: '',
       userError: null,
       passwordError: null,
-      verificationNeeded: false,
     };
   }
 
   handleUserNameChange = (e, newVal) => {
+    this.props.setUserName(newVal);
     this.setState({
-      user: newVal,
       userError: newVal.length > 0 ? null : "Please enter your username or email address"
     });
   }
 
   handlePasswordChange = (e, newVal) => {
-    this.setState({
-      password: newVal,
-      //passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
-    });
+    this.props.setPassword(newVal);
+    // this.setState({
+    //   password: newVal,
+    //   //passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+    // });
   }
 
-  handleClose = () => {
-    this.props.hideSignInWindow();
-  };
-
   handleSignIn = () => {
-
     var cont_flag = true;
-    if(this.state.user === ''){
+    if(this.props.userName === ''){
       this.setState({userError: "Please enter your username or email"});
       cont_flag = false;
     }
-    if(this.state.password === ''){
+    if(this.props.password === ''){
       this.setState({passwordError: "Please enter your password"});
       cont_flag = false;
     }
@@ -64,12 +55,12 @@ export default class SignInWindow extends React.Component {
     }
 
     var authenticationData = {
-      Username: this.state.user,
-      Password: this.state.password
+      Username: this.props.userName,
+      Password: this.props.password
     }
 
     var userData = {
-      Username : this.state.user, // your username here
+      Username : this.props.userName, // your username here
       Pool : userPool
     };
 
@@ -81,7 +72,7 @@ export default class SignInWindow extends React.Component {
       },
       onFailure: (err) => {
         if(err.code === "UserNotConfirmedException"){
-          this.setState({verificationNeeded: true});
+          this.props.popVerification();
         }
         if(err.code === "NotAuthorizedException"){
           this.setState({passwordError: "Invalid password"});
@@ -93,30 +84,37 @@ export default class SignInWindow extends React.Component {
         //alert(err.code);
         //const errobj = JSON.parse(err);
         //console.log(err);
-
-
-
       }
     })
   }
 
   render(){
+    let { userName, password } = this.props;
+
     return(
-      <div>
-        <Dialog
-          title="Sign In"
-          open={this.props.open}
-          onRequestClose={this.handleClose}
-          contentStyle={{width: '320px'}}
-        >
-          <TextField id="userName" floatingLabelText="Username or Email" value={this.state.user} errorText={this.state.userError} onChange={this.handleUserNameChange}></TextField>
-          <TextField id="password" type="password" floatingLabelText="Password" errorText={this.state.passwordError} value={this.state.password} onChange={this.handlePasswordChange}></TextField>
-          <div style={{margin:'auto', textAlign: 'center'}}>
+      <Paper zDepth={1} style={{paddingTop: 10}}>
+        <div style={{width: 500, margin: 'auto'}} >
+          <TextField 
+            fullWidth={true}
+            id="userName" 
+            floatingLabelText="Username or Email" 
+            value={userName} 
+            errorText={this.state.userError} 
+            onChange={this.handleUserNameChange}
+          />
+          <TextField id="password" 
+            fullWidth={true}
+            type="password" 
+            floatingLabelText="Password" 
+            errorText={this.state.passwordError} 
+            value={password} 
+            onChange={this.handlePasswordChange} 
+          />
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
             <RaisedButton label="Sign In" primary={true} onTouchTap={this.handleSignIn} />
           </div>
-          <VerificationWindow user={this.state.user} open={this.state.verificationNeeded} />
-        </Dialog>
-      </div>
+        </div>
+      </Paper>
     )
   }
 }

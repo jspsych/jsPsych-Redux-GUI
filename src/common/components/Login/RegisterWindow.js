@@ -3,7 +3,8 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import {awsConfig} from '../../../../../config/aws.js';
+import Paper from 'material-ui/Paper';
+import {awsConfig} from '../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUserPool, CognitoUserAttribute} from "amazon-cognito-identity-js";
 
@@ -101,32 +102,40 @@ export default class RegisterWindow extends React.Component {
   }
 
   render(){
-    const actions = [
-      <FlatButton
-        label="Not right now"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleClose}
-      />,
-    ];
 
     return(
-      <div>
-        <Dialog
-          title="Create a new account"
-          open={this.props.open}
-          onRequestClose={this.handleClose}
-          actions={actions}
-          contentStyle={{width: '320px'}}
-        >
-          <TextField id="userName" floatingLabelText="Username" value={this.state.username} errorText={this.state.usernameError} onChange={this.handleUserNameChange}></TextField>
-          <TextField id="email" floatingLabelText="Email" value={this.state.email} errorText={this.state.emailError} onChange={this.handleEmailChange}></TextField>
-          <TextField id="password" type="password" floatingLabelText="Password" errorText={this.state.passwordError} value={this.state.password} onChange={this.handlePasswordChange}></TextField>
-          <div style={{margin:'auto', textAlign: 'center'}}>
+      <Paper zDepth={1} style={{paddingTop: 10}}>
+        <div style={{width: 500, margin: 'auto'}} >
+          <TextField 
+            fullWidth={true}
+            id="userName" 
+            floatingLabelText="Username" 
+            value={this.state.username} 
+            errorText={this.state.usernameError} 
+            onChange={this.handleUserNameChange}>
+          </TextField>
+          <TextField 
+            fullWidth={true}
+            id="email" 
+            floatingLabelText="Email" 
+            value={this.state.email} 
+            errorText={this.state.emailError} 
+            onChange={this.handleEmailChange}>
+          </TextField>
+          <TextField 
+            fullWidth={true}
+            id="password" 
+            type="password" 
+            floatingLabelText="Password" 
+            errorText={this.state.passwordError} 
+            value={this.state.password} 
+            onChange={this.handlePasswordChange}>
+          </TextField>
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
             <RaisedButton label="Create Account" primary={true} onTouchTap={this.handleCreateAccount} />
           </div>
-        </Dialog>
-      </div>
+        </div>
+      </Paper>
     )
   }
 }
