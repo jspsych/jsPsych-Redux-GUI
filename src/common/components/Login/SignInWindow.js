@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import {awsConfig} from '../../../../config/aws.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
@@ -93,7 +94,7 @@ export default class SignInWindow extends React.Component {
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}}>
-        <div style={{width: 500, margin: 'auto'}} >
+        <div style={{width: 350, margin: 'auto'}} >
           <TextField 
             fullWidth={true}
             id="username" 
@@ -110,8 +111,11 @@ export default class SignInWindow extends React.Component {
             value={password} 
             onChange={this.handlePasswordChange} 
           />
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
+            <RaisedButton label="Sign In" primary={true} onTouchTap={this.handleSignIn} fullWidth={true}/>
+          </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-            <RaisedButton label="Sign In" primary={true} onTouchTap={this.handleSignIn} />
+            <FlatButton label="Forgot my password"  />
           </div>
         </div>
       </Paper>

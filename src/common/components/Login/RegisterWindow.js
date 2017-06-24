@@ -105,7 +105,7 @@ export default class RegisterWindow extends React.Component {
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}}>
-        <div style={{width: 500, margin: 'auto'}} >
+        <div style={{width: 350, margin: 'auto'}} >
           <TextField 
             fullWidth={true}
             id="userName" 
@@ -132,7 +132,7 @@ export default class RegisterWindow extends React.Component {
             onChange={this.handlePasswordChange}>
           </TextField>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-            <RaisedButton label="Create Account" primary={true} onTouchTap={this.handleCreateAccount} />
+            <RaisedButton label="Create Account" primary={true} onTouchTap={this.handleCreateAccount} fullWidth={true}/>
           </div>
         </div>
       </Paper>

@@ -103,7 +103,7 @@ export default class Login extends React.Component {
 			<Dialog
           		open={open}
           		onRequestClose={handleClose}
-          		contentStyle={{width: 600, height: 600,}}
+          		contentStyle={{width: 450, height: 600,}}
           		modal={false}
 			>
 			<div>
