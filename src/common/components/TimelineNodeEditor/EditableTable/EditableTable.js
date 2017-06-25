@@ -101,8 +101,9 @@ class EditableTable extends React.Component {
 	
 			if(event.target.name == "tableHeader" && cell != null) {
 				document.getElementById(1+" "+column).focus();
-			} else if(document.getElementById(nextRowCell) == null) {
-				//want to dispatch action here
+			} else if(document.getElementById(nextRowCell+" "+column) == null) {
+				console.log("In onDownPress");
+				console.log(document.getElementById(nextRowCell+" "+column));
 				this.props.handleAddRow(event.target.id);
 			} else {
 				document.getElementById(nextRowCell+" "+column).focus();
@@ -130,6 +131,8 @@ class EditableTable extends React.Component {
 			if(event.target.name == "tableHeader" && cell != null) {
 				document.getElementById(nextColumn).focus();
 			} else if(document.getElementById(nextColumn) == null) {
+				console.log("in onRightPRess");
+				console.log(document.getElementById(nextColumn));
 				this.props.handleAddColumn(event.target.id);
 			} else {
 				document.getElementById(row+" "+nextColumn).focus();
