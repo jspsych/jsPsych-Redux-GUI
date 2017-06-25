@@ -9,6 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import * as utils from '../../../reducers/Experiment/utils';
 import * as shortcuts from './shortcuts';
+import * as tableActions from '../../../actions/tableAction';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
@@ -39,6 +40,7 @@ const tableStyles = {
 	}
 }
 
+
 class EditableTable extends React.Component {
 	constructor(props) {
 		super(props);
@@ -61,12 +63,82 @@ class EditableTable extends React.Component {
 				open:false
 			});
 		}
-	}
 
-	// componentDidMount() {
-	// 	console.log('in component');
- //     	shortcuts.bindKeyboard();
- //    }
+		this.bindKeyboard = (event) => {
+			switch(event.key) {
+				case 'ArrowUp': this.onUpPress(event);
+				break;
+				case 'ArrowDown': this.onDownPress(event);
+				break; 
+				case 'ArrowLeft': this.onLeftPress(event);
+				break;
+				case 'ArrowRight': this.onRightPress(event);
+				break;
+				default: console.log("key pressed "+event.key);
+			}	
+		}
+
+		this.onUpPress = (event) => {
+			let cell = document.getElementById(event.target.id);
+			let isFirstRow = cell.dataset.row; 
+			let nextRowCell = cell.dataset.row-1;
+			let column = cell.dataset.column;
+
+			if(event.target.name == "tableHeader") {
+			//Do nothing
+			} else if(isFirstRow == 1) {
+			console.log("infirstRow");
+			document.getElementById(column).focus();
+			} else {
+			console.log("in else");
+			document.getElementById(nextRowCell+" "+column).focus();
+			}
+		}
+
+		this.onDownPress = (event) => {
+			let cell = document.getElementById(event.target.id);
+			let id = cell.id.split(' ');
+			let nextRowCell = id[0]*1+1;
+			let column = cell.dataset.column;
+
+	
+			if(event.target.name == "tableHeader" && cell != null) {
+				document.getElementById(1+" "+column).focus();
+			} else if(document.getElementById(nextRowCell) == null) {
+				//want to dispatch action here
+				this.props.handleAddRow(event.target.id);
+			} else {
+				document.getElementById(nextRowCell+" "+column).focus();
+			}
+		}		
+
+		this.onLeftPress = (event) => {
+			let cell = document.getElementById(event.target.id);
+			let nextColumn = cell.dataset.column-1;
+			let row = cell.dataset.row;
+
+			if(event.target.name == "tableHeader") {
+				document.getElementById(nextColumn).focus();
+			} else {
+				document.getElementById(row+" "+nextColumn).focus();
+			}
+
+		}
+
+		this.onRightPress = (event) => {
+			let cell = document.getElementById(event.target.id);
+			let nextColumn = cell.dataset.column*1+1;
+			let row = cell.dataset.row;
+
+			if(event.target.name == "tableHeader" && cell != null) {
+				document.getElementById(nextColumn).focus();
+			} else if(document.getElementById(nextColumn) == null) {
+				this.props.handleAddColumn(event.target.id);
+			} else {
+				document.getElementById(row+" "+nextColumn).focus();
+			}
+		}
+	}
 
 
 	render(){
@@ -105,7 +177,7 @@ class EditableTable extends React.Component {
 							return <input name="tableHeader" data-row={0} data-column={index} id={index} defaultValue={title} 
 							key={index}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
-							onKeyDown={(event) => shortcuts.bindKeyboard(event)}
+							onKeyDown={(event) => this.bindKeyboard(event)}
 							style={tableStyles.header} /> 
 						})
 					}
@@ -119,7 +191,7 @@ class EditableTable extends React.Component {
 								key={[rowIndex+1] +" "+ titleIndex} 
 								defaultValue={row[headers[titleIndex]]} 
 								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
-								onKeyDown={(event) => shortcuts.bindKeyboard(event)} /> //{row[headers[titleIndex]]}</input>
+								onKeyDown={(event) => this.bindKeyboard(event)} /> //{row[headers[titleIndex]]}</input>
 							})
 						}
 						</tr>
@@ -143,20 +215,6 @@ class EditableTable extends React.Component {
 				{displayTable}
 
 			<div>
-			<IconButton
-			tooltip="add column"
-			tooltipPosition="top-right"
-			style={tableStyles.small}
-			onTouchTap={(event) => this.props.handleAddColumn(event.target.id)} >
-			<NavigationArrowForward />
-			</IconButton >
-			<IconButton
-			tooltip="add row"
-			tooltipPosition="bottom-right"
-			style={tableStyles.small}
-			onTouchTap={(event) => this.props.handleAddRow(event.target.id)} >
-			<NavigationArrowDownward />
-			</IconButton>
 			<Toggle label="Randomize_Order"
 			defaultToggled={this.props.randomize_order}
 			labelPosition="right"

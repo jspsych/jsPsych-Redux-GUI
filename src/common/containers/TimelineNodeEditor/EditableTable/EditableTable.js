@@ -10,11 +10,13 @@ const onChangeCells = (dispatch, cellId, newVal) => {
 	dispatch(tableActions.changeCellAction(cellId, newVal));
 }
 
-const onAddColumn = (dispatch, ownProps, index) => {
-	dispatch(tableActions.addColumn(ownProps.id, index));
+export const onAddColumn = (dispatch, ownProps) => {
+	console.log("in on addColumn");
+	dispatch(tableActions.addColumn(ownProps.id));
 }
 
-const onAddRow = (dispatch, ownProps) => {
+export const onAddRow = (dispatch, ownProps) => {
+	console.log("in on addRow");
 	dispatch(tableActions.addRow(ownProps.id));
 }
 
@@ -34,9 +36,6 @@ const onChangeRandomize = (dispatch, newBool) => {
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let timeline = experimentState[experimentState.previewId];
-    // console.log(timeline);
-	// let timelineNodeState = state.timelineNodeState;
-	// let timeline = timelineNodeState[timelineNodeState.previewId];
 	return{
 		timelineId: timeline.id,
 		timeline_variables: timeline.parameters.timeline_variables,

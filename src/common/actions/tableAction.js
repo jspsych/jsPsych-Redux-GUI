@@ -21,7 +21,6 @@ export function addColumn(id, index) {
 	return {
 		type: actionTypes.ADD_COLUMN,
 		id: id,
-		index: index
 	};
 }
 
