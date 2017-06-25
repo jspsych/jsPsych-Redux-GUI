@@ -37,7 +37,6 @@
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
     "express": "^4.15.3",
-    "google-spreadsheets": "^0.5.1",
     "lodash.flow": "^3.5.0",
     "material-ui": "^0.17.3",
     "prop-types": "^15.5.10",
@@ -50,7 +49,6 @@
     "react-mui-speeddial": "0.0.6",
     "react-redux": "^5.0.2",
     "react-responsive": "^1.2.6",
-    "react-spreadsheet-component": "^0.5.1",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0"

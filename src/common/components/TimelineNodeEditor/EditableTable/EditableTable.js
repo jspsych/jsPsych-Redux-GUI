@@ -7,9 +7,6 @@ import Toggle from 'material-ui/Toggle';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-import * as utils from '../../../reducers/Experiment/utils';
-import * as shortcuts from './shortcuts';
-import * as tableActions from '../../../actions/tableAction';
 
 import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
 
