@@ -16,7 +16,7 @@ import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
-	grey200,
+	grey300 as popDrawerColor,
 	grey400 as DrawerHandleColor,
 	grey300 as CloseBackHighlightColor,
 	grey50 as CloseDrawerHoverColor
@@ -190,7 +190,7 @@ class TimelineNodeOrganizer extends React.Component {
 	  					left: -8,
 	  					top: '50%',
 	  					width: 25,
-	  					backgroundColor: grey200,
+	  					backgroundColor: popDrawerColor,
 	  					padding: '12px 0',
 	  					zIndex: 1,
   						}}

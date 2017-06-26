@@ -24,9 +24,7 @@ export default class RegisterWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
       email: '',
-      password: '',
       usernameError: null,
       emailError: null,
       passwordError: null,
@@ -34,8 +32,8 @@ export default class RegisterWindow extends React.Component {
   }
 
   handleUserNameChange = (e, newVal) => {
+    this.props.setUserName(newVal);
     this.setState({
-      username: newVal,
       usernameError: newVal.length > 0 ? null : "Please enter a username"
     });
   }
@@ -50,20 +48,16 @@ export default class RegisterWindow extends React.Component {
   }
 
   handlePasswordChange = (e, newVal) => {
+    this.props.setPassword(newVal);
     this.setState({
-      password: newVal,
       passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
     });
   }
 
-  handleClose = () => {
-    this.props.hideRegisterWindow();
-  };
-
   handleCreateAccount = () => {
 
     var cont_flag = true;
-    if(this.state.username === ''){
+    if(this.props.username === ''){
       this.setState({usernameError: "Please enter a username"});
       cont_flag = false;
     }
@@ -71,7 +65,8 @@ export default class RegisterWindow extends React.Component {
       this.setState({emailError: "Please enter a valid email address"});
       cont_flag = false;
     }
-    if(this.state.password === '' || this.state.passwordError !== null){
+
+    if(this.props.password === '' || this.state.passwordError !== null){
       this.setState({passwordError: "Password must be at least 10 characters long"});
       cont_flag = false;
     }
@@ -89,28 +84,34 @@ export default class RegisterWindow extends React.Component {
     attributeList.push(new CognitoUserAttribute(dataEmail));
 
     var cognitoUser;
-    userPool.signUp(this.state.username, this.state.password, attributeList, null, function(err, result){
+    userPool.signUp(this.props.username, this.props.password, attributeList, null, function(err, result){
       if(err){
         alert(err)
         return;
       }
       cognitoUser = result.user;
+      this.props.popVerification();
       console.log('user name is ' + cognitoUser.getUsername());
     })
-
-    console.log(this.state.username + " " + this.state.email + " " + this.state.password);
+    console.log(this.props.username + " " + this.state.email + " " + this.props.password);
   }
 
   render(){
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}}>
-        <div style={{width: 350, margin: 'auto'}} >
+        <div style={{width: 350, margin: 'auto'}} 
+          onKeyPress={(e)=>{
+              if (e.which === 13) {
+                this.handleCreateAccount();
+              }
+             }}
+          >
           <TextField 
             fullWidth={true}
             id="userName" 
             floatingLabelText="Username" 
-            value={this.state.username} 
+            value={this.props.username} 
             errorText={this.state.usernameError} 
             onChange={this.handleUserNameChange}>
           </TextField>
@@ -128,11 +129,19 @@ export default class RegisterWindow extends React.Component {
             type="password" 
             floatingLabelText="Password" 
             errorText={this.state.passwordError} 
-            value={this.state.password} 
+            value={this.props.password} 
             onChange={this.handlePasswordChange}>
           </TextField>
-          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
             <RaisedButton label="Create Account" primary={true} onTouchTap={this.handleCreateAccount} fullWidth={true}/>
+          </div>
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
+          <FlatButton
+              label="Not right now"
+              secondary={true}
+              keyboardFocused={true}
+              onTouchTap={this.props.handleClose}
+            />
           </div>
         </div>
       </Paper>

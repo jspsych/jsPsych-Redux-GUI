@@ -35,10 +35,9 @@ export default class SignInWindow extends React.Component {
 
   handlePasswordChange = (e, newVal) => {
     this.props.setPassword(newVal);
-    // this.setState({
-    //   password: newVal,
-    //   //passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
-    // });
+    this.setState({
+      passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+    });
   }
 
   handleSignIn = () => {
@@ -70,19 +69,22 @@ export default class SignInWindow extends React.Component {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         console.log('access token: '+ result.getAccessToken().getJwtToken());
+        this.props.signIn(this.props.username);
       },
       onFailure: (err) => {
+        console.log(err.code)
+        if(err.code === "NotAuthorizedException"){
+          this.setState({passwordError: "Invalid password"});
+          return;
+        }
+        if(err.code === "UserNotFoundException"){
+          this.setState({userError: "No account found for this username / email"});
+          return;
+        }
         if(err.code === "UserNotConfirmedException"){
           this.props.popVerification();
         }
-        if(err.code === "NotAuthorizedException"){
-          this.setState({passwordError: "Invalid password"});
-        }
-        if(err.code === "UserNotFoundException"){
-          this.setState({userError: "No account found for this username / email"})
-        }
-        alert(err.code);
-        //alert(err.code);
+        // alert(err.code);
         //const errobj = JSON.parse(err);
         //console.log(err);
       }
@@ -90,11 +92,16 @@ export default class SignInWindow extends React.Component {
   }
 
   render(){
-    let { username, password } = this.props;
+    let { username, password, handleClose } = this.props;
 
     return(
-      <Paper zDepth={1} style={{paddingTop: 10}}>
-        <div style={{width: 350, margin: 'auto'}} >
+      <Paper zDepth={1} style={{paddingTop: 10}} >
+        <div style={{width: 350, margin: 'auto'}} 
+             onKeyPress={(e)=>{
+              if (e.which === 13) {
+                this.handleSignIn();
+              }
+             }}>
           <TextField 
             fullWidth={true}
             id="username" 
@@ -115,10 +122,20 @@ export default class SignInWindow extends React.Component {
             <RaisedButton label="Sign In" primary={true} onTouchTap={this.handleSignIn} fullWidth={true}/>
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-            <FlatButton label="Forgot my password"  />
+            <FlatButton label="Forgot my password" />
           </div>
+          
         </div>
       </Paper>
     )
   }
 }
+
+// <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
+//           <FlatButton
+//               label="Not right now"
+//               secondary={true}
+//               keyboardFocused={true}
+//               onTouchTap={handleClose}
+//             />
+//           </div>

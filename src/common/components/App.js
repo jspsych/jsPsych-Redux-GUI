@@ -294,7 +294,7 @@ class App extends React.Component {
 		} = this;
 
 		return (
-			<div className="App" style={{overflowX: 'hidden', overflowY: 'hidden', height: "100%"}}>
+			<div className="App" style={{overflow: 'hidden', height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
 				</div>

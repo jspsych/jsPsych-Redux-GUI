@@ -42,12 +42,19 @@ export default class VerificationWindow extends React.Component {
           return;
       }
       console.log('call result: ' + result);
+      this.props.signIn(this.props.username);
     });
   }
 
   render(){
     return(
-      <div>
+      <div
+        onKeyPress={(e)=>{
+          if (e.which === 13) {
+            this.handleVerification();
+          }
+         }}
+        >
         <p>Your account won't be created until you enter the vertification code that you receive by email. Please enter the code below.</p>
           <TextField id="verificationCode" floatingLabelText="Verification Code" value={this.state.code} onChange={this.handleCodeChange}></TextField>
           <div style={{margin:'auto', textAlign: 'center'}}>

@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
+import Subheader from 'material-ui/Subheader';
+import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -8,37 +10,29 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SignInWindow from '../../containers/Login/SignInWindowContainer';
 import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
 import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
+
+import Close from 'material-ui/svg-icons/navigation/close';
 import {
 	grey50 as dialogBodyColor,
 	grey200 as tabColor,
 	grey900 as tabTextColor,
+	grey300 as CloseBackHighlightColor,
+	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-export const LoginModes = {
-	signIn: 0,
-	register: 1,
-	verification: 2,
-}
+import { LoginModes } from '../../reducers/User';
+
 
 const signInDialogStyle = {
 	title: "Sign In",
 	contentStyle: {
 		width: '320px'
 	},
-	actions: (<div />),
 }
 
 const registerDialogStyle = {
 	title:"Create a new account",
 	contentStyle: {width: '320px'},
-	actions: (onclick) => {
-		return (<FlatButton
-			        label="Not right now"
-			        primary={true}
-			        keyboardFocused={true}
-			        onTouchTap={onclick}
-			      />)
-	},
 }
 
 const verificationDialogStyle = {
@@ -46,7 +40,6 @@ const verificationDialogStyle = {
 	contentStyle: {
 		width: '320px'
 	},
-	actions: (<div />)
 }
 
 const switchDialog = (mode) => {
@@ -66,25 +59,9 @@ const switchDialog = (mode) => {
 }
 
 export default class Login extends React.Component {
-	// init values
-	static propTypes = {
-		loginMode: PropTypes.number.isRequired,
-		open: PropTypes.bool.isRequired,
-		handleOpen: PropTypes.func.isRequired,
-		handleClose: PropTypes.func.isRequired
-	};
-
 	state = {
 		username: '',
       	password: '',
-	}
-
-	/*
-	If need this function, pass it to reducer state
-	*/ 
-	popVerification = () => {
-		this.props.handleOpen();
-		this.props.setLoginMode(LoginModes.verification);
 	}
 
 	setUserName = (name) => {
@@ -95,17 +72,40 @@ export default class Login extends React.Component {
 		this.setState({password: password});
 	}
 
+	handleClose = () => {
+		this.setState({
+			username: '',
+			password: '',
+		});
+		this.props.handleClose();
+	}
+
 	render() {
-		let { open, handleOpen, handleClose, loginMode } = this.props;
-		let { renderContent } = this;
+		let { open, handleOpen, loginMode } = this.props;
+		let { renderContent, handleClose, } = this;
 
 		return (
 			<Dialog
           		open={open}
+          		titleStyle={{padding: 0}}
+          		title={
+          			<div style={{display: 'flex', backgroundColor: dialogBodyColor}}>
+          			<Subheader style={{fontSize: 24}}></Subheader>
+          			<IconButton 
+          				hoveredStyle={{
+          					backgroundColor: CloseBackHighlightColor,
+          				}}
+          				onTouchTap={handleClose}
+						disableTouchRipple={true}
+					>
+					<Close hoverColor={CloseDrawerHoverColor} />
+					</IconButton>
+				</div>
+
+          		}
           		onRequestClose={handleClose}
           		contentStyle={{width: 450, height: 600,}}
-          		bodyStyle={{backgroundColor: dialogBodyColor}}
-          		overlayStyle={{backgroundColor: 'rgba(0, 0, 0, 0.83)'}}
+          		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}
           		modal={false}
           		autoScrollBodyContent={true}
 			>
@@ -120,11 +120,16 @@ export default class Login extends React.Component {
 
 
 	renderContent = () => {
-		let { loginMode, handleOpen, handleClose, setLoginMode } = this.props;
+		let {
+			loginMode,
+			handleClose,
+			popVerification,
+			setLoginMode,
+			signIn
+		} = this.props;
 		let { username, password, } = this.state;
 
 		let {
-			popVerification,
 			setUserName,
 			setPassword,
 			renderContent,
@@ -136,7 +141,7 @@ export default class Login extends React.Component {
 				return (
 					<Tabs
 				        value={loginMode}
-				        onChange={setLoginMode}
+				        onChange={(mode) => { setLoginMode(mode); }}
 				      >
 				      <Tab label={signInDialogStyle.title} 
 				      		value={LoginModes.signIn}
@@ -154,6 +159,7 @@ export default class Login extends React.Component {
 				      		password={password}
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
+				      		signIn={signIn}
 				      	/>
 				      </Tab>
 				      <Tab label={registerDialogStyle.title} 
@@ -166,9 +172,12 @@ export default class Login extends React.Component {
 				      		}}>
 				      	<div style={{paddingTop: 10}} />
 				      	<RegisterWindow
-				      		handleOpen={handleOpen}
 				      		handleClose={handleClose}
-				      		setLoginMode={setLoginMode}
+				      		popVerification={popVerification}
+				      		username={username}
+				      		password={password}
+				      		setUserName={setUserName}
+				      		setPassword={setPassword}
 				      	/>
 				      </Tab>
 				   	</Tabs>
@@ -178,7 +187,7 @@ export default class Login extends React.Component {
 				return (
 					<VerificationWindow 
 						username={username}
-						handleClose={handleClose}
+						signIn={signIn}
 					/>
 				)
 			default:
