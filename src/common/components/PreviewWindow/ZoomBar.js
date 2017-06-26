@@ -17,6 +17,10 @@ const responsiveTextFieldStyle = {
 };
 
 export default class ZoomBar extends React.Component {
+	static defaultProps = {
+		zoomHeightByUser: 0,
+		zoomWidthByUser: 0
+	}
 
 	render() {
 		const {
@@ -48,6 +52,7 @@ export default class ZoomBar extends React.Component {
 	  				}}>	
 			              <input 
 			                className="Responsive-input" 
+			                id="Responsive-input-Width"
 			                style={responsiveTextFieldStyle} 
 			                title={"width: " + zoomWidthByUser + "px"}
 			                type='number'
@@ -63,6 +68,7 @@ export default class ZoomBar extends React.Component {
 			              }}>x</div>
 			              <input 
 			                className="Responsive-input" 
+			                id="Responsive-input-Height"
 			                style={responsiveTextFieldStyle} 
 			                title={"height: " + zoomHeightByUser + "px"}
 			                type='number'

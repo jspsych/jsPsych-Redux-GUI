@@ -1,25 +1,27 @@
 import { connect } from 'react-redux';
 
 import UserMenu from '../../../components/Appbar/UserMenu';
-import * as userMenuActions from '../../../actions/userMenuActions';
+import * as userActions from '../../../actions/userActions';
+import { LoginModes } from '../../../reducers/User';
 
-const showRegisterWindow = (dispatch) => {
-  dispatch(userMenuActions.showRegisterWindow());
+const handleSignIn = (dispatch) => {
+	dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
 }
 
-const showSignInWindow = (dispatch) => {
-  dispatch(userMenuActions.showSignInWindow());
+const handleCreateAccount = (dispatch) => {
+	dispatch(userActions.setLoginWindowAction(true, LoginModes.register));
 }
+
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    user: state.userState.user
+    username: state.userState.username
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  showRegisterWindow: () => { showRegisterWindow(dispatch) },
-  showSignInWindow: () => { showSignInWindow(dispatch) }
+	handleSignIn: () => { handleSignIn(dispatch) },
+	handleCreateAccount: () => { handleCreateAccount(dispatch) }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

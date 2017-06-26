@@ -4,18 +4,17 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
-export default class UserMenu extends React.Component {
-  constructor(props) {
-    super(props);
+import Login from '../../../containers/Login';
 
-    this.state = {
-      open: false
-    }
+export default class UserMenu extends React.Component {
+  state = {
+      open: false,
+  }
+
+  componentWillMount() {
   }
 
   handleTouchTap = (event) => {
-    event.preventDefault();
-
     this.setState({
       open: true,
       anchorEl: event.currentTarget
@@ -28,39 +27,30 @@ export default class UserMenu extends React.Component {
     })
   }
 
-  handleCreateAccount = () => {
-    this.setState({
-      open: false
-    });
-    this.props.showRegisterWindow();
-  }
-
-  handleSignIn = () => {
-    this.setState({
-      open: false
-    });
-    this.props.showSignInWindow();
-  }
-
   render() {
 
-    var buttonLabel = this.props.user === null ? 'Your Account' : this.props.user;
+    var buttonLabel = this.props.username === null ? 'Your Account' : this.props.username;
 
     return (
-      <div style={{display: 'inline-block', float: 'right'}}>
-        <FlatButton label={buttonLabel} onTouchTap={this.handleTouchTap} />
+      <div>
+      <div style={{float: 'right', paddingRight: 1}}>
+        <MenuItem primaryText={buttonLabel} onTouchTap={this.handleTouchTap} />
+      </div>
+       <Login />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
           onRequestClose={this.handleRequestClose}
+          anchorOrigin={{horizontal:"right",vertical:"bottom"}}
+          targetOrigin={{horizontal:"right",vertical:"top"}}
           >
           <Menu>
             <MenuItem
-              primaryText="Sign In"
-              onTouchTap={this.handleSignIn} />
+              primaryText={"Sign In"}
+              onTouchTap={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
             <MenuItem
-              primaryText="Create Account"
-              onTouchTap={this.handleCreateAccount} />
+              primaryText={"Create Account"}
+              onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
           </Menu>
         </Popover>
     </div>

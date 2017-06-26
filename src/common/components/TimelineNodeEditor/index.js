@@ -12,7 +12,7 @@ import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
-	grey200,
+	grey300 as popDrawerColor,
 	grey400 as DrawerHandleColor,
 	grey300 as CloseBackHighlightColor,
 	grey50 as CloseDrawerHoverColor
@@ -80,7 +80,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 	  					right: -8,
 	  					top: '50%',
 	  					width: 25,
-	  					backgroundColor: grey200,
+	  					backgroundColor: popDrawerColor,
 	  					padding: '12px 0',
 	  					zIndex: 1,
   				}}><OpenDrawer /></IconButton>}

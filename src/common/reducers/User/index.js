@@ -1,51 +1,38 @@
 import * as actionTypes from '../../constants/ActionTypes';
 
+export const LoginModes = {
+	signIn: 0,
+	register: 1,
+	verification: 2,
+}
+
 export const initState = {
-  user: null,
-  registerWindowVisible: false,
-  signInWindowVisible: false,
+  username: null,
+  windowOpen: false,
+  loginMode: LoginModes.signIn,
 };
 
-/*const setExperimentName = (state, action) => {
+function setLoginWindow(state, action) {
+	let { open, mode } = action;
 	return Object.assign({}, state, {
-		experimentName: action.name
+		windowOpen: open,
+		loginMode: (mode === null) ? LoginModes.signIn : mode
 	})
-}*/
-
-const showRegisterWindow = (state, action) => {
-  return Object.assign({}, state, {
-    registerWindowVisible: true
-  });
 }
 
-const hideRegisterWindow = (state, action) => {
-  return Object.assign({}, state, {
-    registerWindowVisible: false
-  });
-}
-
-const showSignInWindow = (state, action) => {
-  return Object.assign({}, state, {
-    signInWindowVisible: true
-  });
-}
-
-const hideSignInWindow = (state, action) => {
-  return Object.assign({}, state, {
-    signInWindowVisible: false
-  });
+function signIn(state, action) {
+	return Object.assign({}, state, {
+		username: action.username,
+		windowOpen: false
+	})
 }
 
 export default function userReducer(state = initState, action) {
 	switch (action.type) {
-    case actionTypes.SHOW_REGISTER_WINDOW:
-      return showRegisterWindow(state, action);
-    case actionTypes.HIDE_REGISTER_WINDOW:
-      return hideRegisterWindow(state, action);
-    case actionTypes.SHOW_SIGNIN_WINDOW:
-      return showSignInWindow(state, action);
-    case actionTypes.HIDE_SIGNIN_WINDOW:
-      return hideSignInWindow(state, action);
+		case actionTypes.SET_LOGIN_WINDOW:
+			return setLoginWindow(state, action);
+		case actionTypes.SIGN_IN:
+			return signIn(state, action);
 		default:
 			return state;
 	}
