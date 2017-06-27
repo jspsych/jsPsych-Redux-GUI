@@ -140,7 +140,7 @@ export function stringify(obj) {
 				let keys = Object.keys(obj);
 				let l = keys.length, i = 1;
 				for (let key of keys) {
-					res.push('"' + key + '"' + ":" + stringify(obj[key]));
+					res.push('"' + key + '":' + stringify(obj[key]));
 					if (i++ < l) {
 						res.push(",");
 					}
@@ -165,9 +165,8 @@ function stringifyFunc(code, info=null) {
         });
 		return res;
 	} catch (e) {
-		let log = JSON.stringify({error: e, info: info});
+		// let log = JSON.stringify({error: e, info: info});
 		let func = "function() { console.log('" + JSON.stringify({error: e, info: info}) + "'); }";
-		console.log(code);
 		return func;
 	}
 }

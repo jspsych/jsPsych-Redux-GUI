@@ -25,8 +25,6 @@ export default class ZoomBar extends React.Component {
 	render() {
 		const {
 			zoomScale,
-			zoomWidth,
-			zoomHeight,
 			zoomWidthByUser,
 			zoomHeightByUser,
 			onInputZoomHeight,

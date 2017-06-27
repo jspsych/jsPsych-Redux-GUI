@@ -6,6 +6,8 @@ import * as editor from './editor';
 
 export const initState = {
 	experimentName: "Untitled Experiment",
+	// key in db
+	experimentId: null,
 
 	// id of which is being previewed/editted
 	previewId: null,
@@ -55,6 +57,12 @@ export const initState = {
 	},
 }
 
+
+const setExperimentName = (state, action) => {
+	return Object.assign({}, state, {
+		experimentName: action.name
+	})
+}
 
 export default function(state=initState, action) {
 	// console.log(action)
@@ -140,10 +148,4 @@ export default function(state=initState, action) {
 		default:
 			return state;
 	}
-}
-
-const setExperimentName = (state, action) => {
-	return Object.assign({}, state, {
-		experimentName: action.name
-	})
 }

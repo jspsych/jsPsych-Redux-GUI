@@ -1,7 +1,7 @@
 // track id
 var timelineId = 0;
 var trialId = 0;
-var index = 2; 
+// var index = 2; 
 
 const TIMELINE_ID_PREFIX = "TIMELINE-";
 const TRIAL_ID_PREFIX = "TRIAL-";

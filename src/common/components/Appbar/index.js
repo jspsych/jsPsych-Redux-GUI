@@ -1,28 +1,19 @@
 import React from 'react';
-import Divider from 'material-ui/Divider';
-import IconButton from 'material-ui/IconButton';
+// import Divider from 'material-ui/Divider';
+// import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import { GridTile } from 'material-ui/GridList';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'; // , ToolbarSeparator, ToolbarTitle
 
 import {
-	grey900 as deepGrey,
+	// grey900 as deepGrey,
 } from 'material-ui/styles/colors';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 
-var experimentTitleStyle = {
-	color: deepGrey,
-	fontSize: 18,
-	fontFamily: 'Roboto',
-}
-
 
 export default class Appbar extends React.Component {
-	constructor(props) {
-		super(props);
-	}
 
 	render() {
 		return (
@@ -42,7 +33,7 @@ export default class Appbar extends React.Component {
                 width: "7%",
               }}>
     						<GridTile style={{ height: 88 }}>
-    							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg'/>
+    							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg' role="presentation"/>
     						</GridTile>
   						</div>
         			<div className="Appbar-main" style={{
