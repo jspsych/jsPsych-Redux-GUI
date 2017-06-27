@@ -19,13 +19,14 @@ if (cognitoUser !== null) {
 			alert('You have been signed out due to overtime.');
 		} else {
 			session = result;
-			console.log(getTokens(session));
 		}
 	});
 }
 
 
 import * as actionTypes from '../../constants/ActionTypes';
+
+//${cognito-identity.amazonaws.com:sub}
 
 export const LoginModes = {
 	signIn: 0,
