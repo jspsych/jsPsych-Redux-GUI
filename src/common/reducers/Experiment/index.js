@@ -136,7 +136,7 @@ export default function(state=initState, action) {
 		 case actionTypes.DELETE_ROW:
 		 	return editor.deleteRow(state, action);
 		 case actionTypes.DELETE_COLUMN_HEADER:
-		 	return editor.deleteColumnHeader;
+		 	return editor.deleteColumnHeader(state, action);
 		default:
 			return state;
 	}

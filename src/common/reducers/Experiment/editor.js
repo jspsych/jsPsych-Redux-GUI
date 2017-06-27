@@ -175,15 +175,10 @@ export function addColumn(state, action) {
 	node = deepCopy(node);
 
 	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	console.log(newArray);
-	// var previous = timelineIDs[1];
-	// timelineIDs[0] = previous;
-	// timelineIDs[1] =
     
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
 	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-	console.log(node.parameters.timeline_variables);
 
 	new_state[state.previewId] = node;
 
@@ -276,14 +271,14 @@ export function deleteColumnHeader(state, action) {
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
-	
+	console.log("in reducer " + action.titleIndex);
     let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
    
     let transformColumns = utils.arrayOfColumns(newArray);
     transformColumns.splice(action.titleIndex,1);
     
-   node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
-   node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
+    node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
+    node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
 
 	new_state[state.previewId] = node;
 	return new_state;

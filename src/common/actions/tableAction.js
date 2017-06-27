@@ -75,10 +75,9 @@ export function rowDelete(rowIndex, titleIndex) {
 	};
 }
 
-export function columnHeaderDelete(rowIndex, titleIndex) {
+export function columnHeaderDelete(titleIndex) {
 	return {
 		type: actionTypes.DELETE_COLUMN_HEADER,
-		rowIndex: rowIndex,
 		titleIndex: titleIndex
 	};
 }

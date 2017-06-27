@@ -77,7 +77,7 @@ class EditableTable extends React.Component {
 
 		this.handleColumnContextMenu = (event, index) => {
 			event.preventDefault();
-			console.log(event.target.id);
+			console.log(index);
 		
 			this.setState({
 				isOpenHeader: true,
@@ -99,18 +99,16 @@ class EditableTable extends React.Component {
 			console.log(rowIndex);
 		}
 
-		this.onCD = (event, rowIndex, titleIndex) => {
-			console.log("in CD " + titleIndex);
+		this.onColumn = (event, rowIndex, titleIndex) => {
 			this.props.onColumnDelete(rowIndex, titleIndex);
 		}
 
-		this.onRD = (event, rowIndex, titleIndex) => {
-			console.log("In Rd " + rowIndex);
+		this.onRow = (event, rowIndex, titleIndex) => {
 			this.props.onRowDelete(rowIndex, titleIndex);
 		}
 
-		this.onColumnHeader = (event, rowIndex, titleIndex) => {
-			this.props.onColumnDeleteByHeader(rowIndex, titleIndex);
+		this.onColumnHeader = (event, titleIndex) => {
+			this.props.onColumnDeleteByHeader(titleIndex);
 		}
 
 		this.bindKeyboard = (event) => {
@@ -296,15 +294,15 @@ class EditableTable extends React.Component {
 				anchorEl={this.state.anchorEl}
 				anchorOrigin= {{horizontal:"left",vertical:"top"}}
 				targetOrigin= {{horizontal:"right",vertical:"top"}}
-				onDeleteColumn={(event) => this.onCD(event, this.state.rowIndex, this.state.titleIndex)}
-				onDeleteRow={(event) => this.onRD(event, this.state.rowIndex, this.state.titleIndex)}
+				onDeleteColumn={(event) => this.onColumn(event, this.state.rowIndex, this.state.titleIndex)}
+				onDeleteRow={(event) => this.onRow(event, this.state.rowIndex, this.state.titleIndex)}
 				handleCloseContext={this.closeContext} 
 
 				openHeader={this.state.isOpenHeader}
 				anchorEl={this.state.anchorEl}
 				anchorOrigin={{horizontal:"left",vertical:"top"}}
 				targetOrigin={{horizontal:"right",vertical:"top"}}
-				onDeleteColumnByHeader={(event) => this.props.onColumnHeader(event, this.state.rowIndex, this.state.titleIndex)}
+				onDeleteColumnByHeader={(event) => this.onColumnHeader(event, this.state.index)}
 				handleCloseHeader={this.closeHeader} />
 			</Popover>
 			</div>

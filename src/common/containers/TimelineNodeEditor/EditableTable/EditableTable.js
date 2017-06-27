@@ -43,8 +43,8 @@ const deleteRow = (dispatch, rowIndex, titleIndex) => {
 	dispatch(tableActions.rowDelete(rowIndex, titleIndex));
 }
 
-const deleteColumnByHeader = (dispatch, rowIndex, titleIndex) => {
-	dispatch(tableActions.columnHeaderDelete(rowIndex, titleIndex));
+const deleteColumnByHeader = (dispatch, titleIndex) => {
+	dispatch(tableActions.columnHeaderDelete(titleIndex));
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -68,7 +68,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleFirstHeaderChange: (headerId, newVal) => { onFirstHeader(dispatch, headerId, newVal) },
 	onColumnDelete: (rowIndex, titleIndex) => { deleteColumn(dispatch, rowIndex, titleIndex) },
 	onRowDelete: (rowIndex, titleIndex) => { deleteRow(dispatch, rowIndex, titleIndex) },
-	onColumnDeleteByHeader: (rowIndex, titleIndex) => { deleteColumnByHeader(dispatch, rowIndex, titleIndex) }
+	onColumnDeleteByHeader: (titleIndex) => { deleteColumnByHeader(dispatch, titleIndex) }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditableTable);
