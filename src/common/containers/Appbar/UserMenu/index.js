@@ -12,16 +12,21 @@ const handleCreateAccount = (dispatch) => {
 	dispatch(userActions.setLoginWindowAction(true, LoginModes.register));
 }
 
+const handleSignOut = (dispatch) => {
+	dispatch(userActions.signOutAction());
+}
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-    username: state.userState.username
-  }
+	let userState = state.userState;
+	return {
+		username: (userState.user !== null) ? userState.user.username : null,
+	}
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleSignIn: () => { handleSignIn(dispatch) },
-	handleCreateAccount: () => { handleCreateAccount(dispatch) }
+	handleCreateAccount: () => { handleCreateAccount(dispatch) },
+	handleSignOut: () => { handleSignOut(dispatch); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

@@ -1,8 +1,7 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
-import TextField from 'material-ui/TextField';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import Refresh from 'material-ui/svg-icons/navigation/refresh';
@@ -15,7 +14,7 @@ import { Welcome } from '../../reducers/Experiment/preview';
 
 import {
   cyan600 as hoverColor,
-  grey600 as textColor
+  // grey600 as textColor
 } from 'material-ui/styles/colors';
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';

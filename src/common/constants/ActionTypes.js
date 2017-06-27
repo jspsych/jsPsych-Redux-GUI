@@ -41,5 +41,5 @@ export const CHANGE_SIZE = "CHANGE_SIZE";
 export const CHANGE_RANDOMIZE = "CHANGE_RANDOMIZE";
 
 //User Actions
-export const SIGN_IN = "SIGN_IN";
+export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";

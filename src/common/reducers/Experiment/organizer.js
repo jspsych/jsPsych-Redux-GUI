@@ -31,7 +31,7 @@ A trial state = {
 
 import * as utils from './utils'; 
 import { deepCopy } from '../../utils';
-import { createFuncObj, defaultFunction } from './jsPsychInit';
+// import { createFuncObj, defaultFunction } from './jsPsychInit';
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
@@ -210,6 +210,7 @@ function deleteTimelineHelper(state, id) {
 		} else {
 			state = deleteTrialHelper(state, childId)
 		}
+		return null;
 	});
 
 	// delete itself

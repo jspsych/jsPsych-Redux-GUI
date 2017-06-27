@@ -1,4 +1,4 @@
-import * as actionTypes from '../constants/ActionTypes';
+// import * as actionTypes from '../constants/ActionTypes';
 import { combineReducers } from "redux";
 import experitmentReducer from './Experiment';
 import userReducer from './User';
