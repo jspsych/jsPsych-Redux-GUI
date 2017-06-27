@@ -38,7 +38,7 @@ const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_TIMELINE_PARAM = {
 	timeline_variables: undefined,
 	randomize_order: true,
-	sample: undefined,
+	sampling: undefined,
 	conditional_function: undefined,
 	loop_function: undefined,
 };

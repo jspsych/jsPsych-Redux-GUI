@@ -86,10 +86,37 @@ export function arrayOfObjects(arrayOfArrays) {
 	return array;
 }
 
-// export function initializeArray(firstArray) {
-// 	let array = [];
-// 	array.push({}); 
-// 	firstArray = array;
-// 	return rray;
-// }
+//Takes in an array of rows
+export function arrayOfColumns(arrayOfRows) {
+	var array = [];
 
+	for(let i=0; i<arrayOfRows[0].length; i++) {
+		array.push([]);
+	}
+
+	//For each row
+	for(let i=0; i<arrayOfRows.length; i++) {
+		//For each element in each row
+		for(let j=0; j<arrayOfRows[0].length; j++) {
+			array[j].push(arrayOfRows[i][j]); 
+		}
+	}
+	console.log(array);
+	return array;
+}
+
+export function backToArrayOfArrays(arrayOfColumns) {
+	var array = [];
+
+	for(let i=0; i<arrayOfColumns[0].length; i++) {
+		array.push([]);
+	}
+
+	for(let i=0; i<arrayOfColumns.length; i++) {
+		for(let j=0; j<arrayOfColumns[0].length; j++) {
+			array[j].push(arrayOfColumns[i][j]);	
+		}
+	}
+
+	return array;
+}

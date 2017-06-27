@@ -5,10 +5,11 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import Toggle from 'material-ui/Toggle';
 import SelectField from 'material-ui/SelectField';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 
-import NavigationArrowDownward from 'material-ui/svg-icons/navigation/arrow-downward';
+import TableContextMenu from './TableContextMenu';
 
 import { grey900 } from 'material-ui/styles/colors';
 
@@ -37,13 +38,14 @@ const tableStyles = {
 	}
 }
 
-
 class EditableTable extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			open: false,
+			isOpenContext: false,
+			isOpenHeader: false,
 		}
 
 		this.handleTouchTap = (event) => {
@@ -51,14 +53,64 @@ class EditableTable extends React.Component {
 
 			this.setState({
 				open:true,
-				anchorEl: event.currentTarget
+				anchorEl: event.currentTarget,
 			});
 		}
 
 		this.handleRequestClose = () => {
 			this.setState({
-				open:false
+				open:false,
 			});
+		}
+
+		this.closeContext = () => {
+			this.setState({
+				isOpenContext:false
+			});
+		}
+
+		this.closeHeader = () => {
+			this.setState({
+				isOpenHeader:false
+			})
+		}
+
+		this.handleColumnContextMenu = (event, index) => {
+			event.preventDefault();
+			console.log(event.target.id);
+		
+			this.setState({
+				isOpenHeader: true,
+				anchorEl: event.currentTarget,
+				index: index
+			});
+		}
+
+		this.handleContextMenu = (event, rowIndex, titleIndex) => {
+			event.preventDefault();
+			console.log(rowIndex);
+			
+			this.setState({
+				isOpenContext: true,
+				anchorEl: event.currentTarget,
+				rowIndex: rowIndex,
+				titleIndex: titleIndex
+			});
+			console.log(rowIndex);
+		}
+
+		this.onCD = (event, rowIndex, titleIndex) => {
+			console.log("in CD " + titleIndex);
+			this.props.onColumnDelete(rowIndex, titleIndex);
+		}
+
+		this.onRD = (event, rowIndex, titleIndex) => {
+			console.log("In Rd " + rowIndex);
+			this.props.onRowDelete(rowIndex, titleIndex);
+		}
+
+		this.onColumnHeader = (event, rowIndex, titleIndex) => {
+			this.props.onColumnDeleteByHeader(rowIndex, titleIndex);
 		}
 
 		this.bindKeyboard = (event) => {
@@ -84,10 +136,8 @@ class EditableTable extends React.Component {
 			if(event.target.name == "tableHeader") {
 			//Do nothing
 			} else if(isFirstRow == 1) {
-			console.log("infirstRow");
 			document.getElementById(column).focus();
 			} else {
-			console.log("in else");
 			document.getElementById(nextRowCell+" "+column).focus();
 			}
 		}
@@ -102,8 +152,6 @@ class EditableTable extends React.Component {
 			if(event.target.name == "tableHeader" && cell != null) {
 				document.getElementById(1+" "+column).focus();
 			} else if(document.getElementById(nextRowCell+" "+column) == null) {
-				console.log("In onDownPress");
-				console.log(document.getElementById(nextRowCell+" "+column));
 				this.props.handleAddRow(event.target.id);
 			} else {
 				document.getElementById(nextRowCell+" "+column).focus();
@@ -128,11 +176,11 @@ class EditableTable extends React.Component {
 			let nextColumn = cell.dataset.column*1+1;
 			let row = cell.dataset.row;
 
-			if(event.target.name == "tableHeader" && cell != null) {
+			if(event.target.name == "tableHeader" && document.getElementById(nextColumn) != null) {
 				document.getElementById(nextColumn).focus();
+			} else if(event.target.name == "tableHeader" && document.getElementById(nextColumn) == null) {
+				this.props.handleAddColumn(event.target.id);
 			} else if(document.getElementById(nextColumn) == null) {
-				console.log("in onRightPRess");
-				console.log(document.getElementById(nextColumn));
 				this.props.handleAddColumn(event.target.id);
 			} else {
 				document.getElementById(row+" "+nextColumn).focus();
@@ -153,13 +201,15 @@ class EditableTable extends React.Component {
 						<tr>
 							<td style={tableStyles.numbers}></td>
 							<input id={0} key={0} defaultValue={undefined} style={tableStyles.header}
-							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} />
+							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)}
+							onKeyDown={(event) => this.bindKeyboard(event)} />
 						</tr>
 					</thead>
 					<tr>
 						<td style={tableStyles.numbers}>1</td>
 						<input id={1 + " "+0} defaultValue={undefined} style={tableStyles.header}
-						onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} />
+						onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)}
+						onKeyDown={(event) => this.bindKeyboard(event)} />
 					</tr>
 				</table>
 
@@ -178,7 +228,8 @@ class EditableTable extends React.Component {
 							key={index}
 							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
 							onKeyDown={(event) => this.bindKeyboard(event)}
-							style={tableStyles.header} /> 
+							onContextMenu={(event) => this.handleColumnContextMenu(event, index)}
+							style={tableStyles.header} />
 						})
 					}
 					</tr>
@@ -191,7 +242,8 @@ class EditableTable extends React.Component {
 								key={[rowIndex+1] +" "+ titleIndex} 
 								defaultValue={row[headers[titleIndex]]} 
 								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
-								onKeyDown={(event) => this.bindKeyboard(event)} /> //{row[headers[titleIndex]]}</input>
+								onKeyDown={(event) => this.bindKeyboard(event)}
+								onContextMenu={(event) => this.handleContextMenu(event, rowIndex+1, titleIndex)} />
 							})
 						}
 						</tr>
@@ -221,7 +273,7 @@ class EditableTable extends React.Component {
 			onToggle={this.props.onToggle} />
 			<div style={{display: 'flex'}}>
 			<SelectField floatingLabelText="Sampling"
-			deafultValue={0}
+			deafultValue="with-replacement"
 			onChange={this.props.onChange} >
 				<MenuItem value="with-replacement"
 				primaryText="with-replacement" />
@@ -239,13 +291,27 @@ class EditableTable extends React.Component {
 			onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
 			</div>
 			</div>
+			<TableContextMenu
+				openContext={this.state.isOpenContext}
+				anchorEl={this.state.anchorEl}
+				anchorOrigin= {{horizontal:"left",vertical:"top"}}
+				targetOrigin= {{horizontal:"right",vertical:"top"}}
+				onDeleteColumn={(event) => this.onCD(event, this.state.rowIndex, this.state.titleIndex)}
+				onDeleteRow={(event) => this.onRD(event, this.state.rowIndex, this.state.titleIndex)}
+				handleCloseContext={this.closeContext} 
+
+				openHeader={this.state.isOpenHeader}
+				anchorEl={this.state.anchorEl}
+				anchorOrigin={{horizontal:"left",vertical:"top"}}
+				targetOrigin={{horizontal:"right",vertical:"top"}}
+				onDeleteColumnByHeader={(event) => this.props.onColumnHeader(event, this.state.rowIndex, this.state.titleIndex)}
+				handleCloseHeader={this.closeHeader} />
 			</Popover>
 			</div>
 			)
 	}
 }
 export default EditableTable;
-
 
 
 

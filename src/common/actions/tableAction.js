@@ -8,8 +8,15 @@ export function changeCellAction(cellId, newVal) {
 	};
 }
 
+export function changeFirstHeaderAction(headerId, newVal) {
+	return {
+		type: actionTypes.CHANGE_FIRST_HEADER,
+		headerId: headerId,
+		newVal: newVal
+	};
+}
+
 export function changeHeaderAction(headerId, newVal) {
-	console.log("headerId " +headerId);
 	return {
 		type: actionTypes.CHANGE_HEADER,
 		headerId: headerId,
@@ -51,3 +58,45 @@ export function changeBool(newBool) {
 		newBool: newBool
 	};
 }
+
+export function columnDelete(rowIndex, titleIndex) {
+	return {
+		type: actionTypes.DELETE_COLUMN,
+		rowIndex: rowIndex,
+		titleIndex: titleIndex
+	};
+}
+
+export function rowDelete(rowIndex, titleIndex) {
+	return {
+		type: actionTypes.DELETE_ROW,
+		rowIndex: rowIndex,
+		titleIndex: titleIndex
+	};
+}
+
+export function columnHeaderDelete(rowIndex, titleIndex) {
+	return {
+		type: actionTypes.DELETE_COLUMN_HEADER,
+		rowIndex: rowIndex,
+		titleIndex: titleIndex
+	};
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
