@@ -151,14 +151,14 @@ export default class VerificationWindow extends React.Component {
             errorText={this.state.codeError} 
             value={this.state.code} 
             onChange={this.handleCodeChange}
-            />
-
-          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}   
                onKeyPress={(e)=>{
                   if (e.which === 13) {
                     this.handleVerification();
                   }
                }}
+            />
+
+          <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}   
           >
             {
               this.renderVerifcationButton()
