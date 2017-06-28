@@ -19,7 +19,7 @@ import {
 
 import { LoginModes } from '../../reducers/User';
 
-import {awsConfig} from '../../../../config/aws.js';
+import {awsConfig} from '../../../../config/aws-config-cognito.js';
 import {Config} from "aws-sdk";
 import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
 
