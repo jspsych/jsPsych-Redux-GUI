@@ -18,17 +18,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { LoginModes } from '../../reducers/User';
-
-import {awsConfig} from '../../../../config/aws-config-cognito.js';
-import {Config} from "aws-sdk";
-import {CognitoUser, CognitoUserPool, AuthenticationDetails} from "amazon-cognito-identity-js";
-
-Config.region = awsConfig.region;
-
-const userPool = new CognitoUserPool({
-  UserPoolId: awsConfig.UserPoolId,
-  ClientId: awsConfig.ClientId,
-});
+import { login } from '../../backend/cognito';
 
 
 const signInDialogStyle = {
@@ -79,20 +69,15 @@ export default class Login extends React.Component {
 			Password: this.state.password
 		}
 
-		var userData = {
-			Username: this.state.username,
-			Pool: userPool
-		};
 
-		var authenticationDetails = new AuthenticationDetails(authenticationData);
-		var cognitoUser = new CognitoUser(userData);
-		cognitoUser.authenticateUser(authenticationDetails, {
-			onSuccess: (result) => {
-				this.props.signIn(cognitoUser);
+		login(this.state.username,
+			authenticationData,
+			() => {
+				this.props.signIn();
 				this.clearField();
 			},
-			onFailure: onFailure
-		})
+			onFailure);
+		
 	}
 
 
@@ -202,7 +187,6 @@ export default class Login extends React.Component {
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
 				      		setEmail={setEmail}
-				      		userPool={userPool}
 				      	/>
 				      </Tab>
 				   	</Tabs>
@@ -213,7 +197,6 @@ export default class Login extends React.Component {
 					<VerificationWindow 
 						username={username}
 						signIn={handleSignIn}
-						userPool={userPool}
 					/>
 				)
 			default:

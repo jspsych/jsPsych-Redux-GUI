@@ -8,16 +8,16 @@ export function setLoginWindowAction(open, mode=null) {
 	};
 }
 
-export function signInAction(user) {
+export function signInAction() {
 	return {
 		type: actionTypes.SIGN_IN_OUT,
-		user: user,
+		signIn: true,
 	};
 }
 
 export function signOutAction() {
 	return {
 		type: actionTypes.SIGN_IN_OUT,
-		user: null,
+		signIn: false,
 	};
 }

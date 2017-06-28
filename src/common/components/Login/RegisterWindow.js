@@ -5,8 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import CircularProgress from 'material-ui/CircularProgress';
 
-import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-
+import { signUp } from '../../backend/cognito';
 
 export default class RegisterWindow extends React.Component {
   state = {
@@ -66,25 +65,21 @@ export default class RegisterWindow extends React.Component {
       return;
     }
 
-    var attributeList = [];
-
-    var dataEmail = {
+    var attributes = [{
       Name: 'email',
       Value: this.props.email,
-    }
+    }];
 
-    attributeList.push(new CognitoUserAttribute(dataEmail));
 
-    var cognitoUser;
-    this.props.userPool.signUp(this.props.username, this.props.password, attributeList, null, (err, result) => {
-      if(err){
+
+    signUp(this.props.username, this.props.password, attributes, (err, result) => {
+      if (err) {
         this.handleReadyChange(true);
         alert(err);
         return;
       }
-      cognitoUser = result.user;
       this.props.popVerification();
-    })
+    });
   }
 
   render(){

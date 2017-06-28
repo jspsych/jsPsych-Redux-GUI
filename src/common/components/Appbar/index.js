@@ -1,6 +1,6 @@
 import React from 'react';
 // import Divider from 'material-ui/Divider';
-// import IconButton from 'material-ui/IconButton';
+import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
 import { GridTile } from 'material-ui/GridList';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'; // , ToolbarSeparator, ToolbarTitle
@@ -12,6 +12,8 @@ import {
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 
+import Save from 'material-ui/svg-icons/content/save';
+import { save as saveToDynamoDB } from '../../backend/dynamoDB'
 
 export default class Appbar extends React.Component {
 
@@ -45,13 +47,17 @@ export default class Appbar extends React.Component {
                   }}>
 								<UserMenu />
 								<TextField
-								id="Experiment-Name-Textfield"
-                value={this.props.experimentName}
-								onChange={this.props.changeExperimentName}/>
+  								id="Experiment-Name-Textfield"
+                  value={this.props.experimentName}
+  								onChange={this.props.changeExperimentName}
+                  />
 							</div>
   							<Toolbar style={{height: 40, backgroundColor: 'white'}}>
                   <ToolbarGroup firstChild={true}>
                     <InitEditor />
+                    <IconButton onTouchTap={() => { saveToDynamoDB(this.props.state); }}> 
+                      <Save />
+                    </IconButton>
                   </ToolbarGroup>
   							</Toolbar>
   						</div>

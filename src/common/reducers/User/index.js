@@ -1,45 +1,10 @@
-import { awsConfig } from '../../../../config/aws-config-cognito.js';
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
-var AWS = require('aws-sdk');
-
-const userPool = new CognitoUserPool({
-  UserPoolId: awsConfig.UserPoolId,
-  ClientId: awsConfig.ClientId,
-});
-
-var cognitoUser = userPool.getCurrentUser();
-var session = null;
-if (cognitoUser !== null) {
-	cognitoUser.getSession(function(err, result) {
-		if (err) {
-			alert(err);
-			return;
-		}
-		if (!result.isValid()) {
-			alert('You have been signed out due to overtime.');
-		} else {
-			session = result;
-		}
-	});
-}
-AWS.config.region = awsConfig.region; // Region
-AWS.config.credentials = new (AWS.CognitoIdentityCredentials)({
-    IdentityPoolId: 'us-east-2:03654ec9-25fb-421c-b08b-e824354f9b6f',
-});
-AWS.config.credentials.get(function(){
-
-    // Credentials will be available when this function is called.
-    var accessKeyId = AWS.config.credentials.accessKeyId;
-    var secretAccessKey = AWS.config.credentials.secretAccessKey;
-    var sessionToken = AWS.config.credentials.sessionToken;
-
-});
-console.log(AWS.config.credentials.identityId)
-
-
+import {
+	fetchCredential,
+	logout,
+	getLoginSessionFromLocalStorage,
+	getUserInfoFromLocalStorage,
+} from '../../backend/cognito';
 import * as actionTypes from '../../constants/ActionTypes';
-
-//${cognito-identity.amazonaws.com:sub}
 
 export const LoginModes = {
 	signIn: 0,
@@ -47,9 +12,13 @@ export const LoginModes = {
 	verification: 2,
 }
 
+fetchCredential();
 export const initState = {
-	// a cognito object
-	user: cognitoUser,
+	user: getUserInfoFromLocalStorage(),
+	loginSession: getLoginSessionFromLocalStorage(),
+
+	// last
+	lastEdittingId: null,
 
 	// repository
 	experiments: [],
@@ -60,17 +29,6 @@ export const initState = {
 	loginMode: LoginModes.signIn,
 };
 
-function getTokens(session) {
-	if (session === null) {
-		return null;
-	} else {
-		return {
-			idToken: session.getIdToken().getJwtToken(),
-			accessToken: session.getAccessToken().getJwtToken(),
-			refreshToken: session.getRefreshToken().token
-		}
-	}
-}
 
 function setLoginWindow(state, action) {
 	let { open, mode } = action;
@@ -81,16 +39,17 @@ function setLoginWindow(state, action) {
 }
 
 function signInOut(state, action) {
-	let { user } = action;
+	let { signIn } = action;
 	let new_state = Object.assign({}, state);
-	if (user !== null) {
+	if (signIn) {
 		new_state.windowOpen = false;
 	} else {
-		if (new_state.user) {
-			new_state.user.signOut();
-		}
+		logout();
 	}
-	new_state.user = user;
+	new_state.user = getUserInfoFromLocalStorage();
+	new_state.loginSession = getLoginSessionFromLocalStorage();
+	// console.log(new_state.user);
+	// console.log(new_state.loginSession)
 	return new_state;
 }
 

@@ -18,6 +18,8 @@ let Modes = {
   success: 2,
 }
 
+import { verify, resendVerification} from '../../backend/cognito';
+
 export default class VerificationWindow extends React.Component {
   state = {
     code: '',
@@ -25,17 +27,6 @@ export default class VerificationWindow extends React.Component {
     mode: Modes.ready,
     open: false,
     message: '',
-  }
-
-  componentDidMount() {
-    let userData = {
-      Username: this.props.username, // your username here
-      Pool: this.props.userPool
-    };
-
-    this.setState({
-      cognitoUser: new CognitoUser(userData),
-    });
   }
 
   handleSnackbarClose = () => {
@@ -70,7 +61,7 @@ export default class VerificationWindow extends React.Component {
 
   handleVerification = () => {
     this.handleModeChange(Modes.processing);
-    this.state.cognitoUser.confirmRegistration(this.state.code, true, (err, result) => {
+    verify(this.props.username, this.state.code, (err, result) => {
       if (err) {
         this.handleModeChange(Modes.ready);
         this.handleCodeError(err.message);
@@ -88,8 +79,8 @@ export default class VerificationWindow extends React.Component {
 
   resendVerificationCode = () => {
     this.handleCodeChange(null, '');
-      this.handleSnackbarOpen(); 
-    this.state.cognitoUser.resendConfirmationCode((err, result) => {
+    this.handleSnackbarOpen(); 
+    resendVerification(this.props.username, (err, result) => {
       if (err) {
         // alert(err);
         return;
