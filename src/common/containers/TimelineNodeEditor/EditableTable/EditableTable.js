@@ -2,11 +2,6 @@ import { connect } from 'react-redux';
 import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
 import * as tableActions from '../../../actions/tableAction';
 
-const onFirstHeader = (dispatch, headerId, newVal) => {
-	console.log("in onFirst header");
-	dispatch(tableActions.changeFirstHeaderAction(headerId, newVal));
-}
-
 const onChangeHeader = (dispatch, headerId, newVal) => {
 	dispatch(tableActions.changeHeaderAction(headerId, newVal));
 }
@@ -36,11 +31,11 @@ const onChangeRandomize = (dispatch, newBool) => {
 }
 
 const deleteColumn = (dispatch, rowIndex, titleIndex) => {
-	dispatch(tableActions.columnDelete(rowIndex, titleIndex));
+		dispatch(tableActions.columnDelete(rowIndex, titleIndex));
 }
 
 const deleteRow = (dispatch, rowIndex, titleIndex) => {
-	dispatch(tableActions.rowDelete(rowIndex, titleIndex));
+		dispatch(tableActions.rowDelete(rowIndex, titleIndex));
 }
 
 const deleteColumnByHeader = (dispatch, titleIndex) => {
@@ -65,7 +60,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	onChange: (e, key, newVal) => { onChangeSampling(dispatch, newVal) },
 	handleSampleSize: (newVal) => { onChangeSize(dispatch, newVal) },
 	onToggle: (e, newBool) => { onChangeRandomize(dispatch, newBool) },
-	handleFirstHeaderChange: (headerId, newVal) => { onFirstHeader(dispatch, headerId, newVal) },
 	onColumnDelete: (rowIndex, titleIndex) => { deleteColumn(dispatch, rowIndex, titleIndex) },
 	onRowDelete: (rowIndex, titleIndex) => { deleteRow(dispatch, rowIndex, titleIndex) },
 	onColumnDeleteByHeader: (titleIndex) => { deleteColumnByHeader(dispatch, titleIndex) }

@@ -88,26 +88,6 @@ export function changeParamFloat(state, action) {
 	return new_state; 
 }
 
-export function onFirstHeaderChange(state, action) {
-	console.log("in first header");
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node; 
-
-	let firstObj;
-	let array;
-
-	node.parameters.timeline_variables=[];
-	node.parameters.timeline_variables.push({});
-	firstObj = node.parameters.timeline_variables[0];
-	firstObj[action.newVal] = undefined;
-	node.parameters.timeline_variables[0] = firstObj;
-	console.log(node.parameters.timeline_variables);
-	return new_state;
-}
-
 export function changeHeader(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -117,7 +97,6 @@ export function changeHeader(state, action) {
 
 	let firstObj;
 	let array;
-
 	if(node.parameters.timeline_variables == undefined && action.headerId == 0) {
 		node.parameters.timeline_variables=[];
 		node.parameters.timeline_variables.push({});
@@ -197,6 +176,61 @@ export function addRow(state, action) {
 	return new_state;
 }
 
+export function deleteColumn(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+	
+    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+
+    if(action.titleIndex != 0 && newArray[0][1] != undefined) {
+    	let transformColumns = utils.arrayOfColumns(newArray);
+    	transformColumns.splice(action.titleIndex,1);
+    
+    	node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
+    	node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
+    }
+
+	return new_state;
+}
+
+export function deleteRow(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+    var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+    console.log(newArray);
+    if(action.rowIndex != 0 && newArray[2] != undefined) {
+     	newArray.splice(action.rowIndex, 1);
+
+    	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
+    }
+
+	return new_state;
+}
+
+export function deleteColumnHeader(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+   
+    let transformColumns = utils.arrayOfColumns(newArray);
+    transformColumns.splice(action.titleIndex,1);
+    
+    node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
+    node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
+
+	return new_state;
+}
+
 export function changeSampling(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -228,57 +262,6 @@ export function changeRandomize(state, action) {
 	node = deepCopy(node);
 
 	node.parameters.randomize_order = action.newBool;
-
-	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteColumn(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	
-    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-   
-    let transformColumns = utils.arrayOfColumns(newArray);
-    transformColumns.splice(action.titleIndex,1);
-    
-    node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
-    node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
-
-	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteRow(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-
-    var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-    newArray.splice(action.rowIndex, 1);
-
-    node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-
-	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteColumnHeader(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	console.log("in reducer " + action.titleIndex);
-    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-   
-    let transformColumns = utils.arrayOfColumns(newArray);
-    transformColumns.splice(action.titleIndex,1);
-    
-    node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
-    node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
 
 	new_state[state.previewId] = node;
 	return new_state;

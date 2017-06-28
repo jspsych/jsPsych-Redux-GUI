@@ -7,7 +7,7 @@ class TableContextMenu extends React.Component{
 
 	render(){
 		return (
-			<div>
+            <div>
 			<Popover
 				open={this.props.openContext}
 				anchorEl={this.props.anchorEl}
@@ -16,9 +16,9 @@ class TableContextMenu extends React.Component{
 				onRequestClose={this.props.handleCloseContext} >
 				<Menu>
 					<MenuItem value={1} primaryText="Delete Row"
-					onTouchTap={()=>{this.props.onDeleteRow(); this.props.handleCloseContext()}} />
+					onTouchTap={()=>{ this.props.onDeleteRow(); this.props.handleCloseContext()}} />
 					<MenuItem value={0} primaryText="Delete Column"
-					onTouchTap={()=>{this.props.onDeleteColumn(); this.props.handleCloseContext()}} />
+					onTouchTap={()=>{ this.props.onDeleteColumn(); this.props.handleCloseContext()}} />
 				</Menu>
 			</Popover>
 
@@ -30,7 +30,7 @@ class TableContextMenu extends React.Component{
 				onRequestClose={this.props.handleCloseHeader} >
 				<Menu>
 					<MenuItem value={1} primaryText="Delete Column"
-					onTouchTap={()=>{this.props.onDeleteColumnByHeader(); this.props.handleCloseHeader()}} />
+					onTouchTap={()=>{ this.props.onDeleteColumnByHeader(); this.props.handleCloseHeader()}} />
 				</Menu>
 			</Popover>
 			</div>

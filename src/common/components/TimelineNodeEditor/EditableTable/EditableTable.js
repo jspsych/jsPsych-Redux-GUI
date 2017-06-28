@@ -58,18 +58,21 @@ class EditableTable extends React.Component {
 		}
 
 		this.handleRequestClose = () => {
+			event.preventDefault();
 			this.setState({
 				open:false,
 			});
 		}
 
 		this.closeContext = () => {
+			event.preventDefault();
 			this.setState({
 				isOpenContext:false
 			});
 		}
 
 		this.closeHeader = () => {
+			event.preventDefault();
 			this.setState({
 				isOpenHeader:false
 			})
@@ -77,7 +80,6 @@ class EditableTable extends React.Component {
 
 		this.handleColumnContextMenu = (event, index) => {
 			event.preventDefault();
-			console.log(index);
 		
 			this.setState({
 				isOpenHeader: true,
@@ -88,7 +90,6 @@ class EditableTable extends React.Component {
 
 		this.handleContextMenu = (event, rowIndex, titleIndex) => {
 			event.preventDefault();
-			console.log(rowIndex);
 			
 			this.setState({
 				isOpenContext: true,
@@ -96,7 +97,6 @@ class EditableTable extends React.Component {
 				rowIndex: rowIndex,
 				titleIndex: titleIndex
 			});
-			console.log(rowIndex);
 		}
 
 		this.onColumn = (event, rowIndex, titleIndex) => {
@@ -190,9 +190,7 @@ class EditableTable extends React.Component {
 	render(){
 		var i = 0;
 		var displayTable;
-		// console.log(this.props.sampling.type);
 		if(this.props.timeline_variables === undefined) {
-			console.log("first");
 				displayTable = 
 				<table className="dataTable" style={tableStyles.table}>
 					<thead>
