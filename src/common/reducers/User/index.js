@@ -1,6 +1,6 @@
-import { awsConfig } from '../../../../config/aws.js';
+import { awsConfig } from '../../../../config/aws-config-cognito.js';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
-// var AWS = require('aws-sdk');
+var AWS = require('aws-sdk');
 
 const userPool = new CognitoUserPool({
   UserPoolId: awsConfig.UserPoolId,
@@ -22,6 +22,19 @@ if (cognitoUser !== null) {
 		}
 	});
 }
+AWS.config.region = awsConfig.region; // Region
+AWS.config.credentials = new (AWS.CognitoIdentityCredentials)({
+    IdentityPoolId: 'us-east-2:03654ec9-25fb-421c-b08b-e824354f9b6f',
+});
+AWS.config.credentials.get(function(){
+
+    // Credentials will be available when this function is called.
+    var accessKeyId = AWS.config.credentials.accessKeyId;
+    var secretAccessKey = AWS.config.credentials.secretAccessKey;
+    var sessionToken = AWS.config.credentials.sessionToken;
+
+});
+console.log(AWS.config.credentials.identityId)
 
 
 import * as actionTypes from '../../constants/ActionTypes';
