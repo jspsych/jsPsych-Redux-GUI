@@ -54,7 +54,8 @@
     "react-spreadsheet-component": "^0.5.1",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "uuid": "^3.1.0"
   },
   "scripts": {
     "react": "react-scripts start",

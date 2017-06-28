@@ -8,7 +8,8 @@ const changeExperimentName = (dispatch, text) => {
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		experimentName: state.experimentState.experimentName
+		experimentName: state.experimentState.experimentName,
+		state: state
 	}
 };
 
