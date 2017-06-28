@@ -18,8 +18,9 @@ const handleSignOut = (dispatch) => {
 
 const mapStateToProps = (state, ownProps) => {
 	let userState = state.userState;
+	let user = userState.user;
 	return {
-		username: (userState.user !== null) ? userState.user.username : null,
+		username: (user.username) ? user.username : null,
 	}
 }
 

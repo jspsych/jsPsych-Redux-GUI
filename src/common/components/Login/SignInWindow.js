@@ -115,7 +115,11 @@ export default class SignInWindow extends React.Component {
             }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-            <FlatButton label="Forgot my password" labelStyle={{textTransform: "none", }}/>
+            <FlatButton 
+              label="Forgot my password" 
+              labelStyle={{textTransform: "none", }}
+              secondary={true}
+            />
           </div>
           
         </div>
