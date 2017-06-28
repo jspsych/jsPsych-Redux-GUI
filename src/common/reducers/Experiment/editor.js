@@ -204,7 +204,7 @@ export function deleteRow(state, action) {
 	new_state[state.previewId] = node;
 
     var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-    console.log(newArray);
+
     if(action.rowIndex != 0 && newArray[2] != undefined) {
      	newArray.splice(action.rowIndex, 1);
 

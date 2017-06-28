@@ -58,21 +58,18 @@ class EditableTable extends React.Component {
 		}
 
 		this.handleRequestClose = () => {
-			event.preventDefault();
 			this.setState({
 				open:false,
 			});
 		}
 
 		this.closeContext = () => {
-			event.preventDefault();
 			this.setState({
 				isOpenContext:false
 			});
 		}
 
 		this.closeHeader = () => {
-			event.preventDefault();
 			this.setState({
 				isOpenHeader:false
 			})
@@ -80,20 +77,18 @@ class EditableTable extends React.Component {
 
 		this.handleColumnContextMenu = (event, index) => {
 			event.preventDefault();
-		
 			this.setState({
 				isOpenHeader: true,
-				anchorEl: event.currentTarget,
+				anchorElColumn: event.currentTarget,
 				index: index
 			});
 		}
 
 		this.handleContextMenu = (event, rowIndex, titleIndex) => {
 			event.preventDefault();
-			
 			this.setState({
 				isOpenContext: true,
-				anchorEl: event.currentTarget,
+				anchorElContext: event.currentTarget,
 				rowIndex: rowIndex,
 				titleIndex: titleIndex
 			});
@@ -289,17 +284,13 @@ class EditableTable extends React.Component {
 			</div>
 			<TableContextMenu
 				openContext={this.state.isOpenContext}
-				anchorEl={this.state.anchorEl}
-				anchorOrigin= {{horizontal:"left",vertical:"top"}}
-				targetOrigin= {{horizontal:"right",vertical:"top"}}
+				anchorEl={this.state.anchorElContext}
 				onDeleteColumn={(event) => this.onColumn(event, this.state.rowIndex, this.state.titleIndex)}
 				onDeleteRow={(event) => this.onRow(event, this.state.rowIndex, this.state.titleIndex)}
 				handleCloseContext={this.closeContext} 
 
 				openHeader={this.state.isOpenHeader}
-				anchorEl={this.state.anchorEl}
-				anchorOrigin={{horizontal:"left",vertical:"top"}}
-				targetOrigin={{horizontal:"right",vertical:"top"}}
+				anchorElHeader={this.state.anchorElColumn}
 				onDeleteColumnByHeader={(event) => this.onColumnHeader(event, this.state.index)}
 				handleCloseHeader={this.closeHeader} />
 			</Popover>

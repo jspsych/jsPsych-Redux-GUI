@@ -45,6 +45,7 @@ const deleteColumnByHeader = (dispatch, titleIndex) => {
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let timeline = experimentState[experimentState.previewId];
+
 	return{
 		timeline_variables: timeline.parameters.timeline_variables,
 		randomize_order: timeline.parameters.randomize_order,
