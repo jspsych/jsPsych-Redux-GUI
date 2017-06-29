@@ -186,7 +186,6 @@ render(){
 	var displayTable;
 	var timelineRows = this.props.timeline_variables;
 	var headers = Object.keys(this.props.timeline_variables[0]);
-	console.log(headers);
 
 	displayTable = (<table className="dataTable" style={tableStyles.table}>
 	<thead>

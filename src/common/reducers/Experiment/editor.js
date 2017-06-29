@@ -111,14 +111,12 @@ export function changeCell(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	var cellString = action.cellId; //string with row and column index
- 	var cellIndex = cellString.split(' '); 
-	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	var cellRow = cellIndex[0]; 
-	
-    var cellColumn = cellIndex[1];
+	let  cellString = action.cellId; //string with row and column index
+ 	let  cellIndex = cellString.split(' '); 
+	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+	let cellRow = cellIndex[0]; 
+    let  cellColumn = cellIndex[1];
     
-
     newArray[cellRow][cellColumn] = action.newVal;
 
     node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
@@ -141,17 +139,13 @@ export function addColumn(state, action) {
 
 	node = deepCopy(node);
 
-	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	console.log(newArray);
+	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
     
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
-	console.log("after column helper");
-	console.log(newArray);
 	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
-	console.log(node);
 	return new_state;
 }
 
@@ -169,13 +163,11 @@ export function addRow(state, action) {
 
 	node = deepCopy(node);
 	
-	// node.parameters.timeline_variables.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
 	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
 	addRowHelper(newArray);
 	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
-	console.log(node);
 	return new_state;
 }
 
