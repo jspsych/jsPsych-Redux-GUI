@@ -653,6 +653,17 @@ export function onToggle(state, action) {
 	return new_state;
 }
 
+// When enable one only, enable its ancestors too
+function enableThisOnlyTraceBack(state, parent) {
+	if (parent) {
+		parent = deepCopy(state[parent]);
+		state[parent.id] = parent;
+		parent.enabled = true;
+		enableThisOnlyTraceBack(state, parent.parent);
+	}
+}
+
+
 /*
 action = {
 	flag: bool, // whether enable or not
@@ -673,12 +684,7 @@ export function setToggleCollectively(state, action) {
 	if (spec) {
 		onToggleHelper(new_state, spec, true);
 		let specNode = new_state[spec];
-		let parent = specNode.parent;
-		if (parent) {
-			parent = deepCopy(new_state[parent]);
-			new_state[parent.id] = parent;
-			parent.enabled = true;
-		}
+		enableThisOnlyTraceBack(new_state, specNode.parent);
 	}
 
 	return new_state;

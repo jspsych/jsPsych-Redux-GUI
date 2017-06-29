@@ -1,10 +1,32 @@
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
-import { createIdFromTimeStamp } from '../../utils';
+import { getUUID } from '../../utils';
 const User_Table_Name = "jsPsych_Builder_Users";
 const Experiment_Table_Name = "jsPsych_Builder_Experiments";
 
-var AWS = require('aws-sdk');
+var AWS = require('aws-sdk-promise');
 AWS.config.region = cognitoConfig.region;
+
+if (typeof Promise === 'undefined') {
+  AWS.config.setPromisesDependency(require('bluebird'));
+} else {
+	AWS.config.setPromisesDependency(Promise);
+}
+
+const API_VERSION = '2012-08-10';
+
+function connectDynamoDB(accessInfo) {
+	let access = {};
+	if (accessInfo.accessKeyId &&
+		accessInfo.secretAccessKey &&
+		accessInfo.sessionToken) {
+		access = accessInfo;
+	}
+	return new (AWS.DynamoDB.DocumentClient)({
+				apiVersion: API_VERSION,
+				region: cognitoConfig.region,
+				...access
+			});
+}
 
 /*
 data = {
@@ -13,17 +35,7 @@ data = {
 }
 */
 function putItem(param, accessInfo) {
-	let access = {};
-	if (accessInfo.accessKeyId &&
-		accessInfo.secretAccessKey &&
-		accessInfo.sessionToken) {
-		access = accessInfo;
-	}
-	var dynamodb = new (AWS.DynamoDB.DocumentClient)({
-				apiVersion: '2012-08-10',
-				region: cognitoConfig.region,
-				...access
-			});
+	let dynamodb = connectDynamoDB(accessInfo);
 	dynamodb.put(param, (err, data) => {
 		if (err) {
 			console.log(err, err.stack); 
@@ -33,12 +45,37 @@ function putItem(param, accessInfo) {
 	});
 }
 
+function getItem(param, accessInfo) {
+	let dynamodb = connectDynamoDB(accessInfo);
+	return dynamodb.get(param).promise();
+}
+
+
+/*
+data = {
+	userId: identityId,
+	username: username,
+	// an object of update-userState-needed data
+	fetch: {
+		lastEdittingId: last editting experiment id,
+		medias: array,
+		experiments: array
+	}, 
+}
+
+accessInfo = { // from cognito
+	accessKeyId: id,
+	secretAccessKey: key,
+	sessionToken: token
+}
+*/
 export function putItemToUserTable(data, accessInfo) {
 	let param = {
 		TableName: User_Table_Name,
 		Item: {
 			'userId': data.userId,
-			'userState': data.userState,
+			'username': data.username,
+			'fetch': data.fetch
 		},
 		ReturnConsumedCapacity: "TOTAL", 
 	};
@@ -51,7 +88,7 @@ export function putItemToExperimentTable(data, accessInfo) {
 		TableName: Experiment_Table_Name,
 		Item: {
 			'experimentId': data.experimentId,
-			'experimentState': data.experimentState,
+			'fetch': data.fetch,
 		},
 		ReturnConsumedCapacity: "TOTAL", 
 	}
@@ -59,38 +96,75 @@ export function putItemToExperimentTable(data, accessInfo) {
 	putItem(param, accessInfo);
 }
 
+
+function extractUserData(userState) {
+	return {
+		userId: userState.user.identityId,
+		username: userState.user.username,
+		fetch: {
+			lastEdittingId: userState.lastEdittingId,
+			experiments: userState.experiments,
+		}
+	};
+}
+
+function extractExperimentData(experimentState) {
+	return {
+		experimentId: experimentState.experimentId,
+		fetch: experimentState
+	};
+}
+
+
+export function signInfetchUser(userState) {
+	let param = {
+		TableName: User_Table_Name,
+		Key: {
+			'userId': userState.user.identityId
+		},
+		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
+	};
+	return getItem(param, userState.loginSession);
+}
+
+export function fetchExperimentById(id, loginSession) {
+	let param = {
+		TableName: Experiment_Table_Name,
+		Key: {
+			'experimentId': id
+		},
+		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
+	};
+	return getItem(param, loginSession);
+}
+
+export function signUpSave(state) {
+	let { userState, experimentState } = state;
+
+	let userData = extractUserData(userState);
+	putItemToUserTable(userData, userState.loginSession);
+	// console.log(userState.loginSession)
+	if (experimentState.experimentId) {
+		let experimentData = extractExperimentData(experimentState);
+		putItemToExperimentTable(experimentData, userState.loginSession);
+	}
+}
+
+
 export function save(state, dispatch) {
 	let { userState, experimentState } = state;
 
-	let userData = {
-		userId: userState.user.identityId,
-		userState: userState
-	};
+	let userData = extractUserData(userState);
 
 	putItemToUserTable(userData, userState.loginSession);
 
 	let experimentId = experimentState.experimentId;
 	if (!experimentId) {
-		experimentId = createIdFromTimeStamp();
+		experimentId = getUUID();
+		experimentState.experimentId = experimentId;
 	}
-	let experimentData = {
-		experimentId: experimentId,
-		experimentState: experimentState
-	};
+	let experimentData = extractExperimentData(experimentState);
 
 	putItemToExperimentTable(experimentData, userState.loginSession);
 
 }
-
-	// 	dynamodb.get({
-	// 	TableName: User_Table_Name,
-	// 	Key: {
-	// 		'userId': data.userId,
-	// 	},
-	// 	AttributesToGet: [
-	// 		'userState',
-	// 	],
-	// }, function(err, data) {
-	// 	if (err) console.log(err);
-	// 	else console.log(data.Item.userState);
-	// });

@@ -9,6 +9,20 @@ export const initState = {
 	// key in db
 	experimentId: null,
 
+	// owner info
+	/*{
+		username: string,
+		identityId: id
+	}*/ 
+	owner: null,
+
+	// is private?
+	private: true,
+	// any new edit?
+	anyChange: false,
+	// repository
+	medias: [],
+
 	// id of which is being previewed/editted
 	previewId: null,
 	// if want to play all
@@ -64,7 +78,7 @@ const setExperimentName = (state, action) => {
 	})
 }
 
-export default function(state=initState, action) {
+function experimentReducer(state=initState, action) {
 	// console.log(action)
 
 	switch(action.type) {
@@ -102,7 +116,7 @@ export default function(state=initState, action) {
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
 
-		// prevew
+		// preview
 		case actionTypes.PLAY_ALL:
 			return preview.playAll(state, action);
 
@@ -140,4 +154,49 @@ export default function(state=initState, action) {
 		default:
 			return state;
 	}
+}
+
+
+function detectChange(state, action) {
+	switch(action.type) {
+		case actionTypes.ADD_TIMELINE:
+		case actionTypes.DELETE_TIMELINE:
+		case actionTypes.ADD_TRIAL:
+		case actionTypes.DELETE_TRIAL:
+		case actionTypes.INSERT_NODE_AFTER_TRIAL:
+		case actionTypes.DUPLICATE_TRIAL:
+		case actionTypes.DUPLICATE_TIMELINE:
+		case actionTypes.MOVE_TO:
+		case actionTypes.MOVE_INTO:
+		case actionTypes.MOVE_BY_KEYBOARD:
+		case actionTypes.ON_PREVIEW:
+		case actionTypes.ON_TOGGLE:
+		case actionTypes.SET_TOGGLE_COLLECTIVELY:
+		case actionTypes.SET_COLLAPSED:
+		case actionTypes.SET_JSPSYCH_INIT:
+		case actionTypes.SET_EXPERIMENT_NAME:
+		case actionTypes.SET_NAME:
+		case actionTypes.CHANGE_PLUGIN_TYPE:
+		case actionTypes.TOGGLE_PARAM_VALUE:
+		case actionTypes.CHANGE_PARAM_TEXT:
+		case actionTypes.CHANGE_PARAM_INT: 
+		case actionTypes.CHANGE_PARAM_FLOAT:
+		case actionTypes.CHANGE_HEADER:
+		case actionTypes.CHANGE_CELL:
+		case actionTypes.ADD_COLUMN:
+		case actionTypes.ADD_ROW:
+		case actionTypes.CHANGE_SAMPLING: 
+		case actionTypes.CHANGE_SIZE:
+		case actionTypes.CHANGE_RANDOMIZE:
+			if (state.anyChange) return state;
+			return Object.assign({}, state, {
+				anyChange: true,
+			});
+		default:
+			return state;
+	}
+}
+
+export default function(state, action) {
+	return detectChange(experimentReducer(state, action), action);
 }

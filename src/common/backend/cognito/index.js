@@ -8,6 +8,11 @@ import {
 
 var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
+if (typeof Promise === 'undefined') {
+	AWS.config.setPromisesDependency(require('bluebird'));
+} else {
+	AWS.config.setPromisesDependency(Promise);
+}
 
 export const userPool = new CognitoUserPool({
   UserPoolId: cognitoConfig.UserPoolId,
@@ -45,6 +50,10 @@ export function login(username, authenticationData, fetchCredentialCallback, onF
 	})
 }
 
+/*
+callback = (err, res) => {}
+
+*/
 export function signUp(username, password, attributes, callback) {
 
 	var attributeList = [];
@@ -52,7 +61,10 @@ export function signUp(username, password, attributes, callback) {
 		attributeList.push(new CognitoUserAttribute(attribute));
 	}
 
-	userPool.signUp(username, password, attributeList, null, callback);
+	userPool.signUp(username,
+		password,
+		attributeList,
+		null, callback);
 }
 
 export function verify(username, code, callback) {
@@ -72,7 +84,7 @@ export function resendVerification(username, callback) {
 }
 
 const LoginsKey = 'cognito-idp.' + cognitoConfig.region + '.amazonaws.com/' + cognitoConfig.UserPoolId;
-export function fetchCredential(cognitoUser = userPool.getCurrentUser(), callback = () => {}) {
+export function fetchCredential(cognitoUser = userPool.getCurrentUser(), dispatchAction = () => {}) {
 	if (!cognitoUser) return;
 
 	cognitoUser.getSession((err, result) => {
@@ -95,8 +107,7 @@ export function fetchCredential(cognitoUser = userPool.getCurrentUser(), callbac
 					return;
 				} else {
 					updateAWSCredentialLocalSession();
-					callback();
-					console.log('Successfully logged!');
+					dispatchAction();
 				}
 			});
 		}
@@ -104,7 +115,6 @@ export function fetchCredential(cognitoUser = userPool.getCurrentUser(), callbac
 }
 
 const cogLocalBaseKey = 'CognitoIdentityServiceProvider.' + cognitoConfig.ClientId + '.';
-const identityIdKey = 'aws.cognito.identity-id.' + cognitoConfig.IdentityPoolId;
 const lastAuthUserKey = cogLocalBaseKey + 'LastAuthUser';
 export function getLoginSessionFromLocalStorage() {
 	let lastAuthUser = window.localStorage[lastAuthUserKey];
@@ -116,9 +126,9 @@ export function getLoginSessionFromLocalStorage() {
 		accessToken: window.localStorage[accessTokenkey],
 		idToken: window.localStorage[idTokenkey],
 		refreshToken: window.localStorage[refreshTokenkey],
-		accessKeyId: convertUndefinedString(window.sessionStorage.accessKeyId),
-		secretAccessKey: convertUndefinedString(window.sessionStorage.secretAccessKey),
-		sessionToken: convertUndefinedString(window.sessionStorage.sessionToken),
+		accessKeyId: window.sessionStorage.accessKeyId,
+		secretAccessKey: window.sessionStorage.secretAccessKey,
+		sessionToken: window.sessionStorage.sessionToken,
 	}
 }
 
@@ -126,7 +136,7 @@ export function getLoginSessionFromLocalStorage() {
 export function getUserInfoFromLocalStorage() {
 	return {
 		username: window.localStorage[lastAuthUserKey],
-		identityId: window.localStorage[identityIdKey],
+		identityId: (AWS.config.credentials) ? AWS.config.credentials.identityId : undefined,
 	}
 }
 

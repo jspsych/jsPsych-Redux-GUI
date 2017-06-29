@@ -72,7 +72,7 @@ export default class VerificationWindow extends React.Component {
         this.handleCodeError('');
         this.props.signIn((err) => {
           console.log(err.code);
-        })
+        }, true)
       }
     });
   }

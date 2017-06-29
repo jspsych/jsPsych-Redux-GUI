@@ -32,8 +32,8 @@ const registerDialogStyle = {
 
 export default class Login extends React.Component {
 	state = {
-		username: '',
-      	password: '',
+		username: 'test',
+      	password: '1234567890',
       	email: '',
 	}
 
@@ -62,7 +62,7 @@ export default class Login extends React.Component {
 		this.props.handleClose();
 	}
 
-	handleSignIn = (onFailure) => {
+	handleSignIn = (onFailure, isFirstTime=false) => {
 
 		var authenticationData = {
 			Username: this.state.username,
@@ -73,7 +73,11 @@ export default class Login extends React.Component {
 		login(this.state.username,
 			authenticationData,
 			() => {
-				this.props.signIn();
+				if (isFirstTime) {
+					this.props.signUp();
+				} else {
+					this.props.signIn();
+				}
 				this.clearField();
 			},
 			onFailure);

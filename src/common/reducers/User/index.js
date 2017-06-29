@@ -22,7 +22,6 @@ export const initState = {
 
 	// repository
 	experiments: [],
-	medias: [],
 
 	// gui
 	windowOpen: false,
@@ -38,7 +37,8 @@ function setLoginWindow(state, action) {
 	})
 }
 
-function signInOut(state, action) {
+// simple update user info from localstorage which was set by cognito
+export function signInOut(state, action) {
 	let { signIn } = action;
 	let new_state = Object.assign({}, state);
 	if (signIn) {
@@ -52,6 +52,13 @@ function signInOut(state, action) {
 	// console.log(new_state.loginSession)
 	return new_state;
 }
+
+function test(a) {
+	return new Promise(function(resolve, reject) {
+		resolve(a);
+	})
+}
+
 
 export default function userReducer(state = initState, action) {
 	switch (action.type) {
