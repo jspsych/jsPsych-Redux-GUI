@@ -8,14 +8,6 @@ export function changeCellAction(cellId, newVal) {
 	};
 }
 
-export function changeFirstHeaderAction(headerId, newVal) {
-	return {
-		type: actionTypes.CHANGE_FIRST_HEADER,
-		headerId: headerId,
-		newVal: newVal
-	};
-}
-
 export function changeHeaderAction(headerId, newVal) {
 	return {
 		type: actionTypes.CHANGE_HEADER,
@@ -75,10 +67,9 @@ export function rowDelete(rowIndex, titleIndex) {
 	};
 }
 
-export function columnHeaderDelete(rowIndex, titleIndex) {
+export function columnHeaderDelete(titleIndex) {
 	return {
 		type: actionTypes.DELETE_COLUMN_HEADER,
-		rowIndex: rowIndex,
 		titleIndex: titleIndex
 	};
 }

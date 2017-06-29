@@ -30,7 +30,7 @@ export const initState = {
 		collapsed: false,
 		childrenById: ["TRIAL--1", "TRIAL--2"],
 		parameters: {
-			timeline_variables: undefined,
+			timeline_variables: [{H0: ""}],
 			randomize_order: true,
 			sample: undefined,
 			conditional_function: undefined,
@@ -137,14 +137,12 @@ export default function(state=initState, action) {
 		 	return editor.changeSize(state, action);
 		 case actionTypes.CHANGE_RANDOMIZE: 
 		 	return editor.changeRandomize(state, action); 
-		 case actionTypes.CHANGE_FIRST_HEADER: 
-		 	return editor.onFirstHeaderChange(state, action);
 		 case actionTypes.DELETE_COLUMN:
 		 	return editor.deleteColumn(state, action);
 		 case actionTypes.DELETE_ROW:
 		 	return editor.deleteRow(state, action);
 		 case actionTypes.DELETE_COLUMN_HEADER:
-		 	return editor.deleteColumnHeader;
+		 	return editor.deleteColumnHeader(state, action);
 		default:
 			return state;
 	}
