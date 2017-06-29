@@ -82,7 +82,6 @@ export function arrayOfObjects(arrayOfArrays) {
 		 	array[i] = currentObj;
 		}
 	}
-
 	return array;
 }
 
@@ -101,7 +100,6 @@ export function arrayOfColumns(arrayOfRows) {
 			array[j].push(arrayOfRows[i][j]); 
 		}
 	}
-	console.log(array);
 	return array;
 }
 
@@ -117,6 +115,5 @@ export function backToArrayOfArrays(arrayOfColumns) {
 			array[j].push(arrayOfColumns[i][j]);	
 		}
 	}
-
 	return array;
 }

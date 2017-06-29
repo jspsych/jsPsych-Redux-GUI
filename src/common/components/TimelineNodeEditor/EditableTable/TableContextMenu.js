@@ -11,8 +11,8 @@ export default class TableContextMenu extends React.Component{
 			<Popover
 				open={this.props.openContext}
 				anchorEl={this.props.anchorEl}
-				anchorOrigin={{horizontal:"left",vertical:"top"}}
-				targetOrigin={{horizontal:"right",vertical:"top"}}
+				anchorOrigin={{horizontal:"right",vertical:"top"}}
+				targetOrigin={{horizontal:"left",vertical:"top"}}
 				onRequestClose={this.props.handleCloseContext} >
 				<Menu>
 					<MenuItem value={1} primaryText="Delete Row"
@@ -25,8 +25,8 @@ export default class TableContextMenu extends React.Component{
 			<Popover
 				open={this.props.openHeader}
 				anchorEl={this.props.anchorElHeader}
-				anchorOrigin={{horizontal:"left",vertical:"top"}}
-				targetOrigin={{horizontal:"right",vertical:"top"}}
+				anchorOrigin={{horizontal:"right",vertical:"top"}}
+				targetOrigin={{horizontal:"left",vertical:"top"}}
 				onRequestClose={this.props.handleCloseHeader} >
 				<Menu>
 					<MenuItem value={1} primaryText="Delete Column"

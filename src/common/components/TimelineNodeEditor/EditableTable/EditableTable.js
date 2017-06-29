@@ -128,144 +128,125 @@ class EditableTable extends React.Component {
 
 			if(event.target.name == "tableHeader") {
 			//Do nothing
-			} else if(isFirstRow == 1) {
+		} else if(isFirstRow == 1) {
 			document.getElementById(column).focus();
-			} else {
+		} else {
 			document.getElementById(nextRowCell+" "+column).focus();
-			}
-		}
-
-		this.onDownPress = (event) => {
-			let cell = document.getElementById(event.target.id);
-			let id = cell.id.split(' ');
-			let nextRowCell = id[0]*1+1;
-			let column = cell.dataset.column;
-
-	
-			if(event.target.name == "tableHeader" && cell != null) {
-				document.getElementById(1+" "+column).focus();
-			} else if(document.getElementById(nextRowCell+" "+column) == null) {
-				this.props.handleAddRow(event.target.id);
-			} else {
-				document.getElementById(nextRowCell+" "+column).focus();
-			}
-		}		
-
-		this.onLeftPress = (event) => {
-			let cell = document.getElementById(event.target.id);
-			let nextColumn = cell.dataset.column-1;
-			let row = cell.dataset.row;
-
-			if(event.target.name == "tableHeader") {
-				document.getElementById(nextColumn).focus();
-			} else {
-				document.getElementById(row+" "+nextColumn).focus();
-			}
-
-		}
-
-		this.onRightPress = (event) => {
-			let cell = document.getElementById(event.target.id);
-			let nextColumn = cell.dataset.column*1+1;
-			let row = cell.dataset.row;
-
-			if(event.target.name == "tableHeader" && document.getElementById(nextColumn) != null) {
-				document.getElementById(nextColumn).focus();
-			} else if(event.target.name == "tableHeader" && document.getElementById(nextColumn) == null) {
-				this.props.handleAddColumn(event.target.id);
-			} else if(document.getElementById(nextColumn) == null) {
-				this.props.handleAddColumn(event.target.id);
-			} else {
-				document.getElementById(row+" "+nextColumn).focus();
-			}
 		}
 	}
 
+	this.onDownPress = (event) => {
+		let cell = document.getElementById(event.target.id);
+		let id = cell.id.split(' ');
+		let nextRowCell = id[0]*1+1;
+		let column = cell.dataset.column;
 
-	render(){
-		var i = 0;
-		var displayTable;
-		if(this.props.timeline_variables === undefined) {
-				displayTable = 
-				<table className="dataTable" style={tableStyles.table}>
-					<thead>
-						<tr>
-							<td style={tableStyles.numbers}></td>
-							<input id={0} key={0} defaultValue={undefined} style={tableStyles.header}
-							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)}
-							onKeyDown={(event) => this.bindKeyboard(event)} />
-						</tr>
-					</thead>
-					<tr>
-						<td style={tableStyles.numbers}>1</td>
-						<input id={1 + " "+0} defaultValue={undefined} style={tableStyles.header}
-						onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)}
-						onKeyDown={(event) => this.bindKeyboard(event)} />
-					</tr>
-				</table>
 
+		if(event.target.name == "tableHeader" && cell != null) {
+			document.getElementById(1+" "+column).focus();
+		} else if(document.getElementById(nextRowCell+" "+column) == null) {
+			this.props.handleAddRow(event.target.id);
 		} else {
+			document.getElementById(nextRowCell+" "+column).focus();
+		}
+	}		
 
-			var timelineRows = this.props.timeline_variables;
-			var headers = Object.keys(this.props.timeline_variables[0]);
+	this.onLeftPress = (event) => {
+		let cell = document.getElementById(event.target.id);
+		let nextColumn = cell.dataset.column-1;
+		let row = cell.dataset.row;
 
-			displayTable = <table className="dataTable" style={tableStyles.table}>
-				<thead>
-					<tr className="headerRow">
-					<td style={tableStyles.numbers}></td>
-					{
-						headers.map((title, index) => {
-							return <input name="tableHeader" data-row={0} data-column={index} id={index} defaultValue={title} 
-							key={index}
-							onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
-							onKeyDown={(event) => this.bindKeyboard(event)}
-							onContextMenu={(event) => this.handleColumnContextMenu(event, index)}
-							style={tableStyles.header} />
-						})
-					}
-					</tr>
-				</thead>
-				{
-					timelineRows.map((row, rowIndex) => {        ////index is number of rows
-						return <tr id={"row"+" "+rowIndex} key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
-							headers.map((title, titleIndex) => {
-								return <input name={"cells"} data-row={rowIndex+1} data-column={titleIndex} id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
-								key={[rowIndex+1] +" "+ titleIndex} 
-								defaultValue={row[headers[titleIndex]]} 
-								onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
-								onKeyDown={(event) => this.bindKeyboard(event)}
-								onContextMenu={(event) => this.handleContextMenu(event, rowIndex+1, titleIndex)} />
-							})
-						}
-						</tr>
-					})
-				}
-			</table>
+		if(event.target.name == "tableHeader") {
+			document.getElementById(nextColumn).focus();
+		} else {
+			document.getElementById(row+" "+nextColumn).focus();
 		}
 
-		return(
-			<div>
-			<RaisedButton
+	}
+
+	this.onRightPress = (event) => {
+		let cell = document.getElementById(event.target.id);
+		let nextColumn = cell.dataset.column*1+1;
+		let row = cell.dataset.row;
+
+		if(event.target.name == "tableHeader" && document.getElementById(nextColumn) != null) {
+			document.getElementById(nextColumn).focus();
+		} else if(event.target.name == "tableHeader" && document.getElementById(nextColumn) == null) {
+			this.props.handleAddColumn(event.target.id);
+		} else if(document.getElementById(nextColumn) == null) {
+			this.props.handleAddColumn(event.target.id);
+		} else {
+			document.getElementById(row+" "+nextColumn).focus();
+		}
+	}
+}
+
+
+render(){
+	console.log(this.props.timeline_variables);
+	var i = 0;
+	var displayTable;
+	var timelineRows = this.props.timeline_variables;
+	var headers = Object.keys(this.props.timeline_variables[0]);
+
+	displayTable = (<table className="dataTable" style={tableStyles.table}>
+	<thead>
+		<tr className="headerRow">
+			<td style={tableStyles.numbers}></td>
+			{	
+				headers.map((title, index) => {
+					return <td><input name="tableHeader" data-row={0} data-column={index} id={index} value={title} 
+					key={index}
+					onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
+					onKeyDown={(event) => this.bindKeyboard(event)}
+					onContextMenu={(event) => this.handleColumnContextMenu(event, index)}
+					style={tableStyles.header} /></td>
+				})
+			}
+		</tr>
+	</thead>
+	<tbody>
+	{
+		timelineRows.map((row, rowIndex) => {////rowIndex is number of rows
+			return <tr id={"row"+" "+rowIndex} key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
+				headers.map((title, titleIndex) => {
+					return <td><input name={"cells"} data-row={rowIndex+1} data-column={titleIndex} id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
+					key={[rowIndex+1] +" "+ titleIndex} 
+					value={row[headers[titleIndex]]} 
+					onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
+					onKeyDown={(event) => this.bindKeyboard(event)}
+					onContextMenu={(event) => this.handleContextMenu(event, rowIndex+1, titleIndex)} /></td>
+					})
+				}
+			</tr>
+		})
+	}
+	</tbody>
+	</table>)
+
+			return(
+				<div>
+				<RaisedButton
 				onTouchTap={this.handleTouchTap}
 				label="Timeline_Variables" />
-			<Popover
+				<Popover
 				open={this.state.open}
 				anchorEl={this.state.anchorEl}
-				anchorOrigin= {{horizontal:"left",vertical:"top"}}
-				targetOrigin= {{horizontal:"right",vertical:"top"}}
+				anchorOrigin={{horizontal:"left",vertical:"top"}}
+				targetOrigin={{horizontal:"right",vertical:"top"}}
 				onRequestClose={this.handleRequestClose} >
 
 				{displayTable}
 
-			<div>
-			<Toggle label="Randomize_Order"
-			defaultToggled={this.props.randomize_order}
-			labelPosition="right"
-			onToggle={this.props.onToggle} />
-			<div style={{display: 'flex'}}>
-			<SelectField floatingLabelText="Sampling"
-			deafultValue="with-replacement"
-			onChange={this.props.onChange} >
+				<div>
+				<Toggle label="Randomize_Order"
+				defaultToggled={this.props.randomize_order}
+				labelPosition="right"
+				onToggle={this.props.onToggle} />
+				<div style={{display: 'flex'}}>
+				<SelectField floatingLabelText="Sampling"
+				deafultValue="with-replacement"
+				onChange={this.props.onChange} >
 				<MenuItem value="with-replacement"
 				primaryText="with-replacement" />
 				<MenuItem value="without-replacement"
@@ -274,15 +255,15 @@ class EditableTable extends React.Component {
 				primaryText="fixed-repititions" />
 				<MenuItem value="custom"
 				primaryText="custom" />
-			</SelectField>
-			<TextField
-			floatingLabelText="Sampling Size"
-			value={1}
-			style={tableStyles.size}
-			onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
-			</div>
-			</div>
-			<TableContextMenu
+				</SelectField>
+				<TextField
+				floatingLabelText="Sampling Size"
+				value={1}
+				style={tableStyles.size}
+				onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
+				</div>
+				</div>
+				<TableContextMenu
 				openContext={this.state.isOpenContext}
 				anchorEl={this.state.anchorElContext}
 				onDeleteColumn={(event) => this.onColumn(event, this.state.rowIndex, this.state.titleIndex)}
@@ -293,8 +274,8 @@ class EditableTable extends React.Component {
 				anchorElHeader={this.state.anchorElColumn}
 				onDeleteColumnByHeader={(event) => this.onColumnHeader(event, this.state.index)}
 				handleCloseHeader={this.closeHeader} />
-			</Popover>
-			</div>
+				</Popover>
+				</div>
 			)
 	}
 }
