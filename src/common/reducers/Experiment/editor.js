@@ -2,7 +2,7 @@ import { deepCopy } from '../../utils';
 import * as utils from './utils';
 
 const DEFAULT_HEADER = 'H';
-const DEFAULT_CELL_VALUE = '-';
+const DEFAULT_CELL_VALUE = ' ';
 
 export function setName(state, action) {
 	let node = state[state.previewId];
@@ -129,7 +129,7 @@ export function changeCell(state, action) {
 
 export function addColumnHelper(array) {
 	for(let i=1; i<array.length; i++) {
-		array[i].push(null);
+		array[i][array[0].length-1] = '';
 	}
 	return array;
 }
@@ -142,14 +142,25 @@ export function addColumn(state, action) {
 	node = deepCopy(node);
 
 	var newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+	console.log(newArray);
     
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
+	console.log("after column helper");
+	console.log(newArray);
 	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
-
+	console.log(node);
 	return new_state;
+}
+
+export function addRowHelper(array) {
+	array.push([]);
+	for(let i=0; i<array[0].length; i++) {
+		array[array.length-1][i] = '';
+	}
+	return array;
 }
 
 export function addRow(state, action) {
@@ -158,10 +169,13 @@ export function addRow(state, action) {
 
 	node = deepCopy(node);
 	
-	node.parameters.timeline_variables.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
+	// node.parameters.timeline_variables.push({DEFAULT_HEADER: DEFAULT_CELL_VALUE});
+	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
+	addRowHelper(newArray);
+	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
 
 	new_state[state.previewId] = node;
-
+	console.log(node);
 	return new_state;
 }
 
@@ -189,16 +203,14 @@ export function deleteRow(state, action) {
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
-	
+
     let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
  
     if(newArray[2] != undefined) {
      	newArray.splice(action.rowIndex, 1);
     	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
     }
-    console.log("node after deleting row: ");
-    console.log(node); 
-    new_state[state.previewId] = node;
+ 	new_state[state.previewId] = node;
 	return new_state;
 }
 

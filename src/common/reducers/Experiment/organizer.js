@@ -36,7 +36,7 @@ import { createFuncObj, defaultFunction } from './jsPsychInit';
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: undefined}],
+	timeline_variables: [{H0: ""}],
 	randomize_order: true,
 	sampling: undefined,
 	conditional_function: undefined,
