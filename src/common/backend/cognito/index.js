@@ -5,9 +5,7 @@ import {
 	AuthenticationDetails,
 	CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
-
-var AWS = require('aws-sdk');
-AWS.config.region = cognitoConfig.region;
+import AWS from '../aws';
 
 export const userPool = new CognitoUserPool({
   UserPoolId: cognitoConfig.UserPoolId,
@@ -134,4 +132,3 @@ export function logout() {
 	userPool.getCurrentUser().signOut();
 	clearAWSCredentialCache();
 }
-

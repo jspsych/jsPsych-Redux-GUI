@@ -1,10 +1,9 @@
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import { createIdFromTimeStamp } from '../../utils';
+import AWS from '../aws';
 const User_Table_Name = "jsPsych_Builder_Users";
 const Experiment_Table_Name = "jsPsych_Builder_Experiments";
 
-var AWS = require('aws-sdk');
-AWS.config.region = cognitoConfig.region;
 
 /*
 data = {
@@ -26,9 +25,9 @@ function putItem(param, accessInfo) {
 			});
 	dynamodb.put(param, (err, data) => {
 		if (err) {
-			console.log(err, err.stack); 
+			console.log(err, err.stack);
 		} else {
-			console.log(data); 
+			console.log(data);
 		}
 	});
 }
@@ -40,7 +39,7 @@ export function putItemToUserTable(data, accessInfo) {
 			'userId': data.userId,
 			'userState': data.userState,
 		},
-		ReturnConsumedCapacity: "TOTAL", 
+		ReturnConsumedCapacity: "TOTAL",
 	};
 
 	putItem(param, accessInfo);
@@ -53,7 +52,7 @@ export function putItemToExperimentTable(data, accessInfo) {
 			'experimentId': data.experimentId,
 			'experimentState': data.experimentState,
 		},
-		ReturnConsumedCapacity: "TOTAL", 
+		ReturnConsumedCapacity: "TOTAL",
 	}
 
 	putItem(param, accessInfo);
