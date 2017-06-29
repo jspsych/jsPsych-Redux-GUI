@@ -1,34 +1,24 @@
 import React from 'react';
-import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
-import {awsConfig} from '../../../../config/aws.js';
-import {Config} from "aws-sdk";
-import {CognitoUserPool, CognitoUserAttribute} from "amazon-cognito-identity-js";
+import CircularProgress from 'material-ui/CircularProgress';
 
-// console.log(JSON.stringify(awsConfig));
-
-Config.region = awsConfig.region;
-/*Config.credentials = new CognitoIdentityCredentials({
-  IdentityPoolId: awsConfig.IdentityPoolId
-});
-*/
-const userPool = new CognitoUserPool({
-  UserPoolId: awsConfig.UserPoolId,
-  ClientId: awsConfig.ClientId,
-});
+import { signUp } from '../../backend/cognito';
 
 export default class RegisterWindow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      usernameError: null,
-      emailError: null,
-      passwordError: null,
-    };
+  state = {
+    usernameError: null,
+    emailError: null,
+    passwordError: null,
+    ready: true,
+  }
+
+  handleReadyChange = (r) => {
+    this.setState({
+      ready: r
+    });
   }
 
   handleUserNameChange = (e, newVal) => {
@@ -41,8 +31,8 @@ export default class RegisterWindow extends React.Component {
   handleEmailChange = (e, newVal) => {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const validEmail = re.test(newVal);
+    this.props.setEmail(newVal);
     this.setState({
-      email: newVal,
       emailError: validEmail ? null : "Please enter a valid email address"
     });
   }
@@ -55,13 +45,13 @@ export default class RegisterWindow extends React.Component {
   }
 
   handleCreateAccount = () => {
-
+    this.handleReadyChange(false);
     var cont_flag = true;
     if(this.props.username === ''){
       this.setState({usernameError: "Please enter a username"});
       cont_flag = false;
     }
-    if(this.state.email === '' || this.state.emailError !== null){
+    if(this.props.email === '' || this.state.emailError !== null){
       this.setState({emailError: "Please enter a valid email address"});
       cont_flag = false;
     }
@@ -71,29 +61,25 @@ export default class RegisterWindow extends React.Component {
       cont_flag = false;
     }
     if(!cont_flag){
+      this.handleReadyChange(true);
       return;
     }
 
-    var attributeList = [];
-
-    var dataEmail = {
+    var attributes = [{
       Name: 'email',
-      Value: this.state.email,
-    }
+      Value: this.props.email,
+    }];
 
-    attributeList.push(new CognitoUserAttribute(dataEmail));
 
-    var cognitoUser;
-    userPool.signUp(this.props.username, this.props.password, attributeList, null, function(err, result){
-      if(err){
-        alert(err)
+
+    signUp(this.props.username, this.props.password, attributes, (err, result) => {
+      if (err) {
+        this.handleReadyChange(true);
+        alert(err);
         return;
       }
-      cognitoUser = result.user;
       this.props.popVerification();
-      console.log('user name is ' + cognitoUser.getUsername());
-    })
-    console.log(this.props.username + " " + this.state.email + " " + this.props.password);
+    });
   }
 
   render(){
@@ -119,7 +105,7 @@ export default class RegisterWindow extends React.Component {
             fullWidth={true}
             id="email" 
             floatingLabelText="Email" 
-            value={this.state.email} 
+            value={this.props.email} 
             errorText={this.state.emailError} 
             onChange={this.handleEmailChange}>
           </TextField>
@@ -133,11 +119,26 @@ export default class RegisterWindow extends React.Component {
             onChange={this.handlePasswordChange}>
           </TextField>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
-            <RaisedButton label="Create Account" primary={true} onTouchTap={this.handleCreateAccount} fullWidth={true}/>
+            {this.state.ready ?
+              <RaisedButton 
+                label="Create Account" 
+                labelStyle={{
+                      textTransform: "none",
+                      fontSize: 15
+                }}
+                primary={true} 
+                onTouchTap={this.handleCreateAccount} 
+                fullWidth={true}
+              /> :
+              <CircularProgress />
+            }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
           <FlatButton
               label="Not right now"
+              labelStyle={{
+                textTransform: "none",
+              }}
               secondary={true}
               keyboardFocused={true}
               onTouchTap={this.props.handleClose}

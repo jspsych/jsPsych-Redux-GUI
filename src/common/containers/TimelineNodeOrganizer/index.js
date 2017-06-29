@@ -73,7 +73,7 @@ const duplicateNode = (dispatch) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let experimentState = state.experimentState;
+	// let experimentState = state.experimentState;
 
 	return {
 	}

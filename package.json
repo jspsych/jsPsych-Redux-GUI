@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.19.0",
+    "aws-sdk": "^2.77.0",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
     "express": "^4.15.3",
@@ -51,7 +52,8 @@
     "react-responsive": "^1.2.6",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "uuid": "^3.1.0"
   },
   "scripts": {
     "react": "react-scripts start",

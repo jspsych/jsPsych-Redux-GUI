@@ -1,10 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
-import FlatButton from 'material-ui/FlatButton';
-import MenuItem from 'material-ui/MenuItem';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 import SignInWindow from '../../containers/Login/SignInWindowContainer';
@@ -21,47 +18,23 @@ import {
 } from 'material-ui/styles/colors';
 
 import { LoginModes } from '../../reducers/User';
+import { login } from '../../backend/cognito';
 
 
 const signInDialogStyle = {
 	title: "Sign In",
-	contentStyle: {
-		width: '320px'
-	},
 }
 
 const registerDialogStyle = {
 	title:"Create a new account",
-	contentStyle: {width: '320px'},
 }
 
-const verificationDialogStyle = {
-	title: "Email Verification",
-	contentStyle: {
-		width: '320px'
-	},
-}
-
-const switchDialog = (mode) => {
-	switch(mode) {
-		// sign in 
-		case LoginModes.signIn:
-			return signInDialogStyle;
-		// register
-		case LoginModes.register:
-			return registerDialogStyle;
-		// verification
-		case LoginModes.verification:
-			return verificationDialogStyle;
-		default:
-			return signInDialogStyle;
-	}
-}
 
 export default class Login extends React.Component {
 	state = {
 		username: '',
       	password: '',
+      	email: '',
 	}
 
 	setUserName = (name) => {
@@ -72,17 +45,45 @@ export default class Login extends React.Component {
 		this.setState({password: password});
 	}
 
-	handleClose = () => {
+	setEmail = (email) => {
+		this.setState({email: email});
+	}
+
+	clearField = () => {
 		this.setState({
 			username: '',
 			password: '',
+			email: '',
 		});
+	}
+
+	handleClose = () => {
+		this.clearField();
 		this.props.handleClose();
 	}
 
+	handleSignIn = (onFailure) => {
+
+		var authenticationData = {
+			Username: this.state.username,
+			Password: this.state.password
+		}
+
+
+		login(this.state.username,
+			authenticationData,
+			() => {
+				this.props.signIn();
+				this.clearField();
+			},
+			onFailure);
+		
+	}
+
+
 	render() {
-		let { open, handleOpen, loginMode } = this.props;
-		let { renderContent, handleClose, } = this;
+		let { open } = this.props;
+		let { renderContent, handleClose } = this;
 
 		return (
 			<Dialog
@@ -125,14 +126,15 @@ export default class Login extends React.Component {
 			handleClose,
 			popVerification,
 			setLoginMode,
-			signIn
 		} = this.props;
-		let { username, password, } = this.state;
+		let { username, password, email } = this.state;
 
 		let {
 			setUserName,
 			setPassword,
-			renderContent,
+			setEmail,
+			handleSignIn,
+			clearField
 		} = this;
 
 		switch(loginMode) {
@@ -141,12 +143,14 @@ export default class Login extends React.Component {
 				return (
 					<Tabs
 				        value={loginMode}
-				        onChange={(mode) => { setLoginMode(mode); }}
+				        onChange={(mode) => { setLoginMode(mode); clearField(); }}
 				      >
 				      <Tab label={signInDialogStyle.title} 
 				      		value={LoginModes.signIn}
 				      		buttonStyle={{
 				      			backgroundColor: (LoginModes.signIn === loginMode) ? null : tabColor,
+				      			textTransform: "none",
+				      			fontSize: 15
 				      		}}
 				      		style={{
 				      		 	color: (LoginModes.signIn === loginMode) ? 'white' : tabTextColor
@@ -159,13 +163,16 @@ export default class Login extends React.Component {
 				      		password={password}
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
-				      		signIn={signIn}
+				      		signIn={handleSignIn}
+
 				      	/>
 				      </Tab>
 				      <Tab label={registerDialogStyle.title} 
 				      		value={LoginModes.register}
 				      		buttonStyle={{
 				      			backgroundColor: (LoginModes.register === loginMode) ? null : tabColor, 
+				      			textTransform: "none",
+				      			fontSize: 15
 				      		}}
 				      		style={{
 				      			color: (LoginModes.register === loginMode) ? 'white' : tabTextColor
@@ -176,8 +183,10 @@ export default class Login extends React.Component {
 				      		popVerification={popVerification}
 				      		username={username}
 				      		password={password}
+				      		email={email}
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
+				      		setEmail={setEmail}
 				      	/>
 				      </Tab>
 				   	</Tabs>
@@ -187,7 +196,7 @@ export default class Login extends React.Component {
 				return (
 					<VerificationWindow 
 						username={username}
-						signIn={signIn}
+						signIn={handleSignIn}
 					/>
 				)
 			default:

@@ -15,8 +15,8 @@ const setLoginMode = (dispatch, mode) => {
 	dispatch(userActions.setLoginWindowAction(true, mode))
 }
 
-const signIn = (dispatch, username) => {
-	dispatch(userActions.signInAction(username))
+const signIn = (dispatch) => {
+	dispatch(userActions.signInAction())
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleClose: () => { handleClose(dispatch); },
 	popVerification: () => { popVerification(dispatch); },
 	setLoginMode: (mode) => { setLoginMode(dispatch, mode); },
-	signIn: (username) => { signIn(dispatch, username); }
+	signIn: () => { signIn(dispatch); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

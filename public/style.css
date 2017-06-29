@@ -5,3 +5,6 @@
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
+.Responsive-input {
+	-moz-appearance:textfield;
+}
