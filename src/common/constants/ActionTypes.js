@@ -43,6 +43,10 @@ export const DELETE_COLUMN = "DELETE_COLUMN";
 export const DELETE_ROW = "DELETE_ROW";
 export const DELETE_COLUMN_HEADER = "DELETE_COLUMN_HEADER";
 
-//User Actions
+// User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
+
+// Backend Actions
+export const SIGN_UP = "SIGN_UP";
+export const SIGN_IN_PULL = "SIGN_IN_PULL";

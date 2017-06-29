@@ -54,7 +54,7 @@ const _base = ['f', '8', 'T', 'z', 'm', 'R', 'w', 'o', 'p', 'A', 'Q', 'V', 'd', 
   // 61          = t
 
 
-export function createIdFromTimeStamp(seeds=_seeds, base=_base) {
+export function getUUID(seeds=_seeds, base=_base) {
 	let x = parseInt(Date.now()) * seeds[(new Date()).getMilliseconds()%60];
 	return _10_to_62R(x, base);
 }
