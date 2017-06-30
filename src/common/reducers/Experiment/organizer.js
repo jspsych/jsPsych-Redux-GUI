@@ -649,17 +649,18 @@ export function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
 	onToggleHelper(new_state, action.id, null);
+	enableTrackBack(new_state, new_state[action.id].parent);
 
 	return new_state;
 }
 
 // When enable one only, enable its ancestors too
-function enableThisOnlyTraceBack(state, parent) {
-	if (parent) {
+function enableTrackBack(state, parent) {
+	if (parent && !state[parent].enabled) {
 		parent = deepCopy(state[parent]);
 		state[parent.id] = parent;
 		parent.enabled = true;
-		enableThisOnlyTraceBack(state, parent.parent);
+		enableTrackBack(state, parent.parent);
 	}
 }
 
@@ -684,7 +685,7 @@ export function setToggleCollectively(state, action) {
 	if (spec) {
 		onToggleHelper(new_state, spec, true);
 		let specNode = new_state[spec];
-		enableThisOnlyTraceBack(new_state, specNode.parent);
+		enableTrackBack(new_state, specNode.parent);
 	}
 
 	return new_state;
