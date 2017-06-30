@@ -28,7 +28,7 @@ export initState = {
 
 */
 
-import { deepCopy } from '../../utils';
+import { deepCopy, convertEmptyStringToNull } from '../../utils';
 
 export const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 

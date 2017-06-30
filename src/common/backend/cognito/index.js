@@ -126,9 +126,6 @@ export function getLoginSessionFromLocalStorage() {
 		accessToken: window.localStorage[accessTokenkey],
 		idToken: window.localStorage[idTokenkey],
 		refreshToken: window.localStorage[refreshTokenkey],
-		accessKeyId: window.sessionStorage.accessKeyId,
-		secretAccessKey: window.sessionStorage.secretAccessKey,
-		sessionToken: window.sessionStorage.sessionToken,
 	}
 }
 

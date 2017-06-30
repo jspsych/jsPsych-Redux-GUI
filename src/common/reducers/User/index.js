@@ -21,6 +21,12 @@ export const initState = {
 	lastEdittingId: null,
 
 	// repository
+	/*
+	{
+	name: experiment name,
+	id: experiment id
+	}
+	*/ 
 	experiments: [],
 
 	// gui
@@ -37,7 +43,11 @@ function setLoginWindow(state, action) {
 	})
 }
 
-// simple update user info from localstorage which was set by cognito
+/*
+
+
+
+*/
 export function signInOut(state, action) {
 	let { signIn } = action;
 	let new_state = Object.assign({}, state);
@@ -45,18 +55,13 @@ export function signInOut(state, action) {
 		new_state.windowOpen = false;
 	} else {
 		logout();
+		window.location.reload(false);
 	}
 	new_state.user = getUserInfoFromLocalStorage();
 	new_state.loginSession = getLoginSessionFromLocalStorage();
 	// console.log(new_state.user);
 	// console.log(new_state.loginSession)
 	return new_state;
-}
-
-function test(a) {
-	return new Promise(function(resolve, reject) {
-		resolve(a);
-	})
 }
 
 

@@ -2,8 +2,10 @@ import { connect } from 'react-redux';
 import * as experimentSettingActions from '../../../actions/experimentSettingActions';
 
 import jsPsychInitEditor from '../../../components/Appbar/jsPsychInitEditor';
+import { convertEmptyStringToNull } from '../../../utils';
 
 const setJsPsychInit = (dispatch, key, value) => {
+	value = convertEmptyStringToNull(value);
 	dispatch(experimentSettingActions.setJspyschInitAction(key, value));
 }
 

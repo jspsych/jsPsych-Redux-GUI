@@ -44,7 +44,7 @@ export const initState = {
 		collapsed: false,
 		childrenById: ["TRIAL--1", "TRIAL--2"],
 		parameters: {
-			timeline_variables: [{H0: ""}],
+			timeline_variables: [{H0: null}],
 			randomize_order: true,
 			sample: undefined,
 			conditional_function: undefined,

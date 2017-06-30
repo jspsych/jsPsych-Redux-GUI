@@ -40,6 +40,9 @@ export function deepCopy(target) {
 	}
 }
 
+export const convertEmptyStringToNull = (s) => ((s === '') ? null : s);
+
+export const convertNullToEmptyString = (s) => ((!s) ? '' : s);
 
 const _seeds = [43, 71, 131, 163, 11, 281, 47, 173, 89, 149, 223, 271, 269, 139, 227, 17, 83, 3, 211, 251, 277, 37, 
 197, 61, 19, 13, 167, 97, 73, 233, 239, 257, 191, 29, 7, 137, 151, 2, 241, 107, 113, 53, 101, 5, 157, 23, 109, 31, 

@@ -1,9 +1,7 @@
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import { getUUID } from '../../utils';
-const User_Table_Name = "jsPsych_Builder_Users";
-const Experiment_Table_Name = "jsPsych_Builder_Experiments";
 
-var AWS = require('aws-sdk-promise');
+var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
 
 if (typeof Promise === 'undefined') {
@@ -13,13 +11,19 @@ if (typeof Promise === 'undefined') {
 }
 
 const API_VERSION = '2012-08-10';
+const User_Table_Name = "jsPsych_Builder_Users";
+const Experiment_Table_Name = "jsPsych_Builder_Experiments";
 
-function connectDynamoDB(accessInfo) {
-	let access = {};
-	if (accessInfo.accessKeyId &&
-		accessInfo.secretAccessKey &&
-		accessInfo.sessionToken) {
-		access = accessInfo;
+function connectDynamoDB() {
+	let access = {
+		accessKeyId: window.sessionStorage.accessKeyId,
+		secretAccessKey: window.sessionStorage.secretAccessKey,
+		sessionToken: window.sessionStorage.sessionToken,
+	};
+	if (access.accessKeyId === 'undefined' ||
+		access.secretAccessKey === 'undefined' ||
+		access.sessionToken === 'undefined') {
+		access = {};
 	}
 	return new (AWS.DynamoDB.DocumentClient)({
 				apiVersion: API_VERSION,
@@ -34,19 +38,19 @@ data = {
 	experimentId: experimentState
 }
 */
-function putItem(param, accessInfo) {
-	let dynamodb = connectDynamoDB(accessInfo);
+function putItem(param) {
+	let dynamodb = connectDynamoDB();
 	dynamodb.put(param, (err, data) => {
 		if (err) {
-			console.log(err, err.stack); 
+			console.log(err); 
 		} else {
 			console.log(data); 
 		}
 	});
 }
 
-function getItem(param, accessInfo) {
-	let dynamodb = connectDynamoDB(accessInfo);
+function getItem(param) {
+	let dynamodb = connectDynamoDB();
 	return dynamodb.get(param).promise();
 }
 
@@ -58,42 +62,38 @@ data = {
 	// an object of update-userState-needed data
 	fetch: {
 		lastEdittingId: last editting experiment id,
-		medias: array,
 		experiments: array
 	}, 
 }
-
-accessInfo = { // from cognito
-	accessKeyId: id,
-	secretAccessKey: key,
-	sessionToken: token
-}
 */
-export function putItemToUserTable(data, accessInfo) {
+function putItemToUserTable(data) {
 	let param = {
 		TableName: User_Table_Name,
 		Item: {
-			'userId': data.userId,
-			'username': data.username,
-			'fetch': data.fetch
+			...data
 		},
 		ReturnConsumedCapacity: "TOTAL", 
 	};
 
-	putItem(param, accessInfo);
+	putItem(param);
 }
 
-export function putItemToExperimentTable(data, accessInfo) {
+/*
+data = {
+	experimentId: assigned id,
+	fetch: experimentState, 
+}
+*/
+function putItemToExperimentTable(data) {
 	let param = {
 		TableName: Experiment_Table_Name,
 		Item: {
-			'experimentId': data.experimentId,
-			'fetch': data.fetch,
+			...data
 		},
 		ReturnConsumedCapacity: "TOTAL", 
 	}
 
-	putItem(param, accessInfo);
+	putItem(param);
 }
 
 
@@ -115,8 +115,13 @@ function extractExperimentData(experimentState) {
 	};
 }
 
+/*
+Fetch case: sign in
 
-export function signInfetchUser(userState) {
+userState should be already processed.
+Detail is in reducers/backend.
+*/
+export function signInFetchUserData(userState) {
 	let param = {
 		TableName: User_Table_Name,
 		Key: {
@@ -124,10 +129,16 @@ export function signInfetchUser(userState) {
 		},
 		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
 	};
-	return getItem(param, userState.loginSession);
+	return getItem(param);
 }
 
-export function fetchExperimentById(id, loginSession) {
+/*
+Fetch case: fetch experiment by id
+
+userState should be already processed.
+Detail is in reducers/backend.
+*/
+export function fetchExperimentById(id) {
 	let param = {
 		TableName: Experiment_Table_Name,
 		Key: {
@@ -135,36 +146,41 @@ export function fetchExperimentById(id, loginSession) {
 		},
 		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
 	};
-	return getItem(param, loginSession);
+	return getItem(param);
 }
 
-export function signUpSave(state) {
+/*
+Save case: create account
+
+At this point, state is already processed for uploading
+Detail is in reducers/backend.
+*/
+export function signUpPush(state) {
 	let { userState, experimentState } = state;
 
+	// update user data
 	let userData = extractUserData(userState);
-	putItemToUserTable(userData, userState.loginSession);
-	// console.log(userState.loginSession)
+	putItemToUserTable(userData);
+
+	// if there is any change in experiment, save it too
 	if (experimentState.experimentId) {
 		let experimentData = extractExperimentData(experimentState);
-		putItemToExperimentTable(experimentData, userState.loginSession);
+		putItemToExperimentTable(experimentData);
 	}
 }
 
+/*
+Save case: click save
 
-export function save(state, dispatch) {
+At this point, state is already processed for uploading
+Detail is in reducers/backend.
+*/
+export function clickSavePush(state) {
 	let { userState, experimentState } = state;
 
 	let userData = extractUserData(userState);
+	putItemToUserTable(userData);
 
-	putItemToUserTable(userData, userState.loginSession);
-
-	let experimentId = experimentState.experimentId;
-	if (!experimentId) {
-		experimentId = getUUID();
-		experimentState.experimentId = experimentId;
-	}
 	let experimentData = extractExperimentData(experimentState);
-
-	putItemToExperimentTable(experimentData, userState.loginSession);
-
+	putItemToExperimentTable(experimentData);
 }
