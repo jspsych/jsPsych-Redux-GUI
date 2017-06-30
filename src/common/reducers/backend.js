@@ -10,7 +10,8 @@ login information from local storage.
 import * as actionTypes from '../constants/ActionTypes';
 import { deepCopy, getUUID } from '../utils';
 import { signInOut } from './User';
-
+import { initState as experimentInitState } from './Experiment';
+ 
 /*
 *Note, will handle deep copy for you
 
@@ -127,6 +128,7 @@ function clickSavePush(state, action) {
 				item.name = experimentState.experimentName;
 			}
 		}
+		// if new
 	} else {
 		registerNewExperiment(new_state);
 	}
@@ -146,6 +148,44 @@ function pullExperiment(state, action) {
 	return new_state;
 }
 
+/*
+action = {
+	id: experimentId
+}
+
+*/
+function deleteExperiment(state, action) {
+	let new_state = Object.assign({}, state, {
+		userState: Object.assign({}, state.userState, {
+			lastEdittingId: (state.userState.lastEdittingId === action.id) ? null : state.userState.lastEdittingId,
+			experiments: state.userState.experiments.filter((item) => (item.id !== action.id))
+		}),
+		experimentState: (state.experimentState.experimentId === action.id) ? experimentInitState : state.experimentState
+	});
+
+	return new_state;
+}
+
+/*
+action = {
+	experimentItem: {
+		id: experimentId,
+		name: eperimentName
+	}
+}
+
+*/
+function duplicateExperiment(state, action) {
+	let new_state = Object.assign({}, state, {
+		userState: Object.assign({}, state.userState, {
+			experiments: state.userState.experiments.slice()
+		})
+	});
+
+	new_state.userState.experiments.push(action.experimentItem);
+	return new_state;
+}
+
 function backendReducer(state, action) {
 	switch(action.type) {
 		case actionTypes.SIGN_UP_PUSH:
@@ -156,6 +196,10 @@ function backendReducer(state, action) {
 			return clickSavePush(state, action);
 		case actionTypes.PULL_EXPERIMENT:
 			return pullExperiment(state, action);
+		case actionTypes.DELETE_EXPERIMENT:
+			return deleteExperiment(state, action);
+		case actionTypes.DUPLICATE_EXPERIMENT:
+			return duplicateExperiment(state, action);
 		default:
 			return state;
 	}

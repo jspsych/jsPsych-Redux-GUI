@@ -48,21 +48,20 @@ data = {
 }
 */
 function putItem(param) {
-	let dynamodb = connectDynamoDB();
-	dynamodb.put(param, (err, data) => {
+	connectDynamoDB().put(param, (err, data) => {
 		if (err) {
 			console.log(err); 
-		} else {
-			console.log(data); 
 		}
 	});
 }
 
 function getItem(param) {
-	let dynamodb = connectDynamoDB();
-	return dynamodb.get(param).promise();
+	return connectDynamoDB().get(param).promise();
 }
 
+function deleteItem(param) {
+	return connectDynamoDB().delete(param).promise();
+}
 
 /*
 data = {
@@ -190,9 +189,21 @@ Save case: click save
 At this point, state is already processed for uploading
 Detail is in reducers/backend.
 */
-export function clickSavePush(state) {
+export function pushState(state) {
 	let { userState, experimentState } = state;
 
 	pushUserData(userState);
 	pushExperimentData(experimentState);
+}
+
+/**/
+export function deleteExperiment(experimentId) {
+	let param = {
+		TableName: Experiment_Table_Name,
+		Key: {
+			experimentId: experimentId
+		}
+	}
+
+	return deleteItem(param);
 }

@@ -4,6 +4,13 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
+import ExperimentIcon from 'material-ui/svg-icons/action/book';
+import SignOut from 'material-ui/svg-icons/action/exit-to-app';
+import {
+  indigo500 as hoverColor,
+  cyan500 as iconColor,
+} from 'material-ui/styles/colors';
+
 import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/ExperimentList';
 
@@ -61,10 +68,12 @@ export default class UserMenu extends React.Component {
             <Divider />
             <MenuItem
               primaryText={"Experiments"}
+              leftIcon={<ExperimentIcon hoverColor={hoverColor} color={iconColor} />}
               onTouchTap={() => { this.openExperimentList(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
               primaryText={"Sign Out"}
+              leftIcon={<SignOut hoverColor={hoverColor} color={iconColor} />}
               onTouchTap={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
         </Menu>
       )

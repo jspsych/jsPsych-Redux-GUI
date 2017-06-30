@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import * as backendActions from '../../actions/backendActions';
 import Appbar from '../../components/Appbar';
-import { clickSavePush } from '../../backend/dynamoDB';
+import { pushState } from '../../backend/dynamoDB';
 import { convertEmptyStringToNull, convertNullToEmptyString } from '../../utils';
 
 const changeExperimentName = (dispatch, text) => {
@@ -10,13 +10,19 @@ const changeExperimentName = (dispatch, text) => {
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
-const save = (dispatch) => {
+const save = (dispatch, feedback) => {
 	dispatch((dispatch, getState) => {
 		if (!getState().experimentState.anyChange) {
+			feedback('Nothing has changed so far!', false);
 			return;
 		}
 		dispatch(backendActions.clickSavePushAction());
-		clickSavePush(getState());
+		try {
+			pushState(getState());
+			feedback('Saved!', true);
+		} catch(e) {
+			feedback('Save failed!', false);
+		}
 	});
 }
 
@@ -29,7 +35,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	changeExperimentName: (e, text) => { changeExperimentName(dispatch, text); },
-	save: () => { save(dispatch); },
+	save: (feedback) => { save(dispatch, feedback); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Appbar);

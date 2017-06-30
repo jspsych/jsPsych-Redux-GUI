@@ -69,8 +69,10 @@ const signIn = (dispatch) => {
 				// if there is no change
 				// 1. Fetch last editted experiment data
 				// 2. Update experiment state locally
+				let memorizedId = getState().userState.lastEdittingId;
+				if (!memorizedId) return;
 				fetchExperimentById(
-					getState().userState.lastEdittingId,
+					memorizedId,
 					).then(
 					(data) => {
 						dispatch(backendActions.signInPullAction(null, data));

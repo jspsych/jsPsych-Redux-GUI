@@ -26,3 +26,24 @@ export function pullExperimentAction(data) {
 		data: data
 	};
 }
+
+export function deleteExperimentAction(id) {
+	return {
+		type: actionTypes.DELETE_EXPERIMENT,
+		id: id
+	};
+}
+
+/*
+experimentItem = {
+	id: id,
+	name: name
+}
+
+*/
+export function duplicateExperimentAction(experimentItem) {
+	return {
+		type: actionTypes.DUPLICATE_EXPERIMENT,
+		experimentItem: experimentItem
+	};
+}

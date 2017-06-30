@@ -14,7 +14,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Close from 'material-ui/svg-icons/navigation/close';
 import Delete from 'material-ui/svg-icons/action/delete';
 import Duplicate from 'material-ui/svg-icons/content/content-copy';
-import ExperimentIcon from 'material-ui/svg-icons/action/assignment';
+import ExperimentIcon from 'material-ui/svg-icons/action/assessment';
 
 import {
 	grey100 as dialogBodyColor,
@@ -51,12 +51,14 @@ export default class ExperimentList extends React.Component {
 		return (
 			<IconMenu iconButtonElement={iconButtonElement}>
 			    <MenuItem
-			    	 rightIcon={<Duplicate hoverColor={hoverColor} color={iconColor}/>}
+			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={iconColor}/>}
+			    	 onTouchTap={() => { this.props.duplicateExperiment(id); }}
 			    >
 			    	Duplicate
 			    </MenuItem>
 			    <MenuItem
-			    	rightIcon={<Delete hoverColor={hoverColor} color={iconColor}/>}
+			    	leftIcon={<Delete hoverColor={hoverColor} color={iconColor}/>}
+			    	onTouchTap={() => { this.props.deleteExperiment(id); }}
 			    >
 			    	Delete
 			    </MenuItem>
@@ -92,10 +94,11 @@ export default class ExperimentList extends React.Component {
 		let { open, handleClose, experiments } = this.props;
 		const actions = [
 			<FlatButton
-					label="Open Experiment"
-					primary={true}
-        			keyboardFocused={true}
-					onTouchTap={() => { this.props.pullExperiment(this.state.selected); }}
+				label="Open Experiment"
+				primary={true}
+				labelStyle={{textTransform: "none", }}
+    			keyboardFocused={true}
+				onTouchTap={() => { this.props.pullExperiment(this.state.selected); handleClose(); }}
 			/>
 		]
 
@@ -106,7 +109,7 @@ export default class ExperimentList extends React.Component {
 				titleStyle={{padding: 0,}}
 				title={
 					<div style={{display: 'flex'}}>
-	          			<Subheader style={{fontSize: 24, color: hoverColor}}>Experiment Repository</Subheader>
+	          			<Subheader style={{fontSize: 24, color: hoverColor}}>Your experiments</Subheader>
 	          			<IconButton 
 	          				hoveredStyle={{
 	          					backgroundColor: CloseBackHighlightColor,
@@ -126,7 +129,7 @@ export default class ExperimentList extends React.Component {
 			>
 			<div style={{paddingTop: 10}}>
 				<Paper style={{minHeight: 400, maxHeight: 400}}>
-					<List style={{maxHeight: 400, overflowY: 'auto'}}>
+					<List style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
 					{
 						experiments.map((item) => (renderItem(item)))
 					}
