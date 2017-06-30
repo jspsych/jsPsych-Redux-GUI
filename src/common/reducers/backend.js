@@ -134,6 +134,18 @@ function clickSavePush(state, action) {
 	return new_state;
 }
 
+function pullExperiment(state, action) {
+	let experimentState = action.data.Item.fetch;
+	let new_state = Object.assign({}, state, {
+		userState: Object.assign({}, state.userState, {
+			lastEdittingId: experimentState.experimentId
+		}),
+		experimentState: experimentState
+	})
+
+	return new_state;
+}
+
 function backendReducer(state, action) {
 	switch(action.type) {
 		case actionTypes.SIGN_UP_PUSH:
@@ -142,12 +154,14 @@ function backendReducer(state, action) {
 			return signInPull(state, action);
 		case actionTypes.CLICK_SAVE_PUSH:
 			return clickSavePush(state, action);
+		case actionTypes.PULL_EXPERIMENT:
+			return pullExperiment(state, action);
 		default:
 			return state;
 	}
 }
 
-function detectSave(state, action) {
+function detectPush(state, action) {
 	switch(action.type) {
 		case actionTypes.SIGN_UP_PUSH:
 		case actionTypes.CLICK_SAVE_PUSH:
@@ -163,5 +177,5 @@ function detectSave(state, action) {
 }
 
 export default function(state, action) {
-	return detectSave(backendReducer(state, action), action);
+	return detectPush(backendReducer(state, action), action);
 }

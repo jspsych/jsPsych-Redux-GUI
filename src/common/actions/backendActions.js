@@ -19,3 +19,10 @@ export function clickSavePushAction() {
 		type: actionTypes.CLICK_SAVE_PUSH
 	};
 }
+
+export function pullExperimentAction(data) {
+	return {
+		type: actionTypes.PULL_EXPERIMENT,
+		data: data
+	};
+}
