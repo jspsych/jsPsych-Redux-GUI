@@ -28,47 +28,51 @@ export const initState = {
 	// if want to play all
 	previewAll: false,
 
+	// counts
+	timelineCount: 0,
+	trialCount: 0,
+
 	// the main timeline. array of ids
-	// mainTimeline: [],
+	mainTimeline: [],
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
 
-	mainTimeline: ["TIMTELINE--1"],
-	"TIMTELINE--1": {
-		id: "TIMTELINE--1",
-		type: "TIMELINE",
-		name: "Timeline -1",
-		parent: null,
-		enabled: true,
-		collapsed: false,
-		childrenById: ["TRIAL--1", "TRIAL--2"],
-		parameters: {
-			timeline_variables: [{H0: null}],
-			randomize_order: true,
-			sample: undefined,
-			conditional_function: undefined,
-			loop_function: undefined,
-		}
-	},
+	// mainTimeline: ["TIMTELINE--1"],
+	// "TIMTELINE--1": {
+	// 	id: "TIMTELINE--1",
+	// 	type: "TIMELINE",
+	// 	name: "Timeline -1",
+	// 	parent: null,
+	// 	enabled: true,
+	// 	collapsed: false,
+	// 	childrenById: ["TRIAL--1", "TRIAL--2"],
+	// 	parameters: {
+	// 		timeline_variables: [{H0: null}],
+	// 		randomize_order: true,
+	// 		sample: undefined,
+	// 		conditional_function: undefined,
+	// 		loop_function: undefined,
+	// 	}
+	// },
 
-	"TRIAL--1": {
-		id: "TRIAL--1",
-		type: "TRIAL",
-		name: "Trial -1",
-		parent: "TIMTELINE--1",
-		enabled: true,
-		parameters: { type: 'text', text: "Test -1", choices: ['A'], allow_mouse_click: false },
-	},
+	// "TRIAL--1": {
+	// 	id: "TRIAL--1",
+	// 	type: "TRIAL",
+	// 	name: "Trial -1",
+	// 	parent: "TIMTELINE--1",
+	// 	enabled: true,
+	// 	parameters: { type: 'text', text: "Test -1", choices: ['A'], allow_mouse_click: false },
+	// },
 
-	"TRIAL--2": {
-		id: "TRIAL--2",
-		type: "TRIAL",
-		name: "Trial -2",
-		parent: "TIMTELINE--1",
-		enabled: true,
-		parameters: { type: 'text', text: "Test -2", choices: ['D'], allow_mouse_click: false },
-	},
+	// "TRIAL--2": {
+	// 	id: "TRIAL--2",
+	// 	type: "TRIAL",
+	// 	name: "Trial -2",
+	// 	parent: "TIMTELINE--1",
+	// 	enabled: true,
+	// 	parameters: { type: 'text', text: "Test -2", choices: ['D'], allow_mouse_click: false },
+	// },
 }
 
 
@@ -78,7 +82,7 @@ const setExperimentName = (state, action) => {
 	})
 }
 
-function experimentReducer(state=initState, action) {
+export function experimentReducer(state=initState, action) {
 	// console.log(action)
 
 	switch(action.type) {

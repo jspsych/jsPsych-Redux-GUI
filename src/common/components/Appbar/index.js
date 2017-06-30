@@ -79,7 +79,10 @@ export default class Appbar extends React.Component {
   							<Toolbar style={{height: 40, backgroundColor: 'white'}}>
                   <ToolbarGroup firstChild={true}>
                     <InitEditor />
-                    <IconButton onTouchTap={() => { this.props.save(this.handleOpenSnackBar); }}> 
+                    <IconButton 
+                      tooltip="Save"
+                      onTouchTap={() => { this.props.save(this.handleOpenSnackBar); }}
+                      > 
                       <Save hoverColor={hoverColor} />
                     </IconButton>
                   </ToolbarGroup>

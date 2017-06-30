@@ -1,9 +1,7 @@
 import { connect } from 'react-redux';
 import * as organizerActions from '../../actions/organizerActions';
 import TimelineNodeOrganizer from '../../components/TimelineNodeOrganizer';
-import { isTimeline, 
-		getTimelineId, 
-		getTrialId, } from '../../reducers/Experiment/utils';
+import { isTimeline } from '../../reducers/Experiment/utils';
 
 
 const insertTrial = (dispatch) => {
@@ -11,14 +9,14 @@ const insertTrial = (dispatch) => {
 		let experimentState = getState().experimentState;
 		let previewId = experimentState.previewId;
 		if (previewId === null) {
-			dispatch(organizerActions.addTrialAction(getTrialId(), null));
+			dispatch(organizerActions.addTrialAction(null));
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(organizerActions.addTrialAction(getTrialId(), previewId));
+			dispatch(organizerActions.addTrialAction(previewId));
 			// its a trial
 		} else {
 			let parent = experimentState[previewId].parent;
-			dispatch(organizerActions.addTrialAction(getTrialId(), parent));
+			dispatch(organizerActions.addTrialAction(parent));
 		}
 	})
 }
@@ -28,14 +26,14 @@ const insertTimeline = (dispatch) => {
 		let experimentState = getState().experimentState;
 		let previewId = experimentState.previewId;
 		if (previewId === null) {
-			dispatch(organizerActions.addTimelineAction(getTimelineId(), null));
+			dispatch(organizerActions.addTimelineAction(null));
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(organizerActions.addTimelineAction(getTimelineId(), previewId));
+			dispatch(organizerActions.addTimelineAction(previewId));
 			// its a trial
 		} else {
 			let parent = experimentState[previewId].parent;
-			dispatch(organizerActions.addTimelineAction(getTimelineId(), parent));
+			dispatch(organizerActions.addTimelineAction(parent));
 		}
 	})
 }
@@ -64,10 +62,10 @@ const duplicateNode = (dispatch) => {
 			return;
 			// its a timeline
 		} else if (isTimeline(experimentState[previewId])) {
-			dispatch(organizerActions.duplicateTimelineAction(getTimelineId(), previewId, getTimelineId, getTrialId));
+			dispatch(organizerActions.duplicateTimelineAction(previewId));
 			// its a trial
 		} else {
-			dispatch(organizerActions.duplicateTrialAction(getTrialId(), previewId));
+			dispatch(organizerActions.duplicateTrialAction(previewId));
 		}
 	})
 }
