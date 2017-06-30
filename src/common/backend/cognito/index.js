@@ -1,3 +1,12 @@
+/*
+This file handles login using APIs of cognito. 
+
+Possibly related files:
+reducers/User/index.js
+containers/Login/*
+*/
+
+
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import {
 	CognitoUser,
@@ -5,7 +14,6 @@ import {
 	AuthenticationDetails,
 	CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
-
 var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
 if (typeof Promise === 'undefined') {
@@ -19,7 +27,6 @@ export const userPool = new CognitoUserPool({
   ClientId: cognitoConfig.ClientId,
 });
 
-const convertUndefinedString = (s) => (s === 'undefined' ? undefined : s);
 
 function clearAWSCredentialCache() {
 	AWS.config.credentials.clearCachedId();
@@ -126,9 +133,6 @@ export function getLoginSessionFromLocalStorage() {
 		accessToken: window.localStorage[accessTokenkey],
 		idToken: window.localStorage[idTokenkey],
 		refreshToken: window.localStorage[refreshTokenkey],
-		accessKeyId: window.sessionStorage.accessKeyId,
-		secretAccessKey: window.sessionStorage.secretAccessKey,
-		sessionToken: window.sessionStorage.sessionToken,
 	}
 }
 

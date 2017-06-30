@@ -13,7 +13,6 @@ import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 
 import Save from 'material-ui/svg-icons/content/save';
-import { save as saveToDynamoDB } from '../../backend/dynamoDB'
 
 export default class Appbar extends React.Component {
 
@@ -55,7 +54,7 @@ export default class Appbar extends React.Component {
   							<Toolbar style={{height: 40, backgroundColor: 'white'}}>
                   <ToolbarGroup firstChild={true}>
                     <InitEditor />
-                    <IconButton onTouchTap={() => { saveToDynamoDB(this.props.state); }}> 
+                    <IconButton onTouchTap={this.props.save}> 
                       <Save />
                     </IconButton>
                   </ToolbarGroup>

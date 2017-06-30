@@ -62,20 +62,21 @@ export default class Login extends React.Component {
 		this.props.handleClose();
 	}
 
+	// isFirstTime denotes if it is first signIn after signing up
 	handleSignIn = (onFailure, isFirstTime=false) => {
-
 		var authenticationData = {
 			Username: this.state.username,
 			Password: this.state.password
 		}
 
-
 		login(this.state.username,
 			authenticationData,
 			() => {
 				if (isFirstTime) {
+					// signUpPush flow, see container
 					this.props.signUp();
 				} else {
+					// signIn pull, see container
 					this.props.signIn();
 				}
 				this.clearField();
