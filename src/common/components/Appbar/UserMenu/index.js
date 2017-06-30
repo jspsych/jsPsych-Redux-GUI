@@ -4,15 +4,22 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 
+import ExperimentIcon from 'material-ui/svg-icons/action/book';
+import SignOut from 'material-ui/svg-icons/action/exit-to-app';
+import {
+  indigo500 as hoverColor,
+  cyan500 as iconColor,
+} from 'material-ui/styles/colors';
+
 import Login from '../../../containers/Login';
+import ExperimentList from '../../../containers/Appbar/ExperimentList';
 
 export default class UserMenu extends React.Component {
   state = {
       open: false,
+      experimentListOpen: false,
   }
 
-  componentWillMount() {
-  }
 
   handleTouchTap = (event) => {
     this.setState({
@@ -24,6 +31,18 @@ export default class UserMenu extends React.Component {
   handleRequestClose = () => {
     this.setState({
       open: false
+    })
+  }
+
+  openExperimentList = () => {
+    this.setState({
+      experimentListOpen: true
+    })
+  }
+
+  closeExperimentList = () => {
+    this.setState({
+      experimentListOpen: false
     })
   }
 
@@ -49,10 +68,12 @@ export default class UserMenu extends React.Component {
             <Divider />
             <MenuItem
               primaryText={"Experiments"}
-              onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
+              leftIcon={<ExperimentIcon hoverColor={hoverColor} color={iconColor} />}
+              onTouchTap={() => { this.openExperimentList(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
               primaryText={"Sign Out"}
+              leftIcon={<SignOut hoverColor={hoverColor} color={iconColor} />}
               onTouchTap={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
         </Menu>
       )
@@ -73,6 +94,11 @@ export default class UserMenu extends React.Component {
         />
       </div>
        <Login />
+       <ExperimentList 
+        open={this.state.experimentListOpen} 
+        handleOpen={this.openExperimentList}
+        handleClose={this.closeExperimentList}
+       />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}

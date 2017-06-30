@@ -1,8 +1,3 @@
-// track id
-var timelineId = 0;
-var trialId = 0;
-// var index = 2; 
-
 const TIMELINE_ID_PREFIX = "TIMELINE-";
 const TRIAL_ID_PREFIX = "TRIAL-";
 
@@ -11,24 +6,16 @@ export const TRIAL_TYPE = "TRIAL";
 
 
 export const standardizeTimelineId = (id) => {
-	if (isNaN(id))
-		throw new TypeError("Should pass in a number!");
 	return TIMELINE_ID_PREFIX + id;
 }
 
 export const standardizeTrialId = (id) => {
-	if (isNaN(id))
-		throw new TypeError("Should pass in a number!");
 	return TRIAL_ID_PREFIX + id;
 }
 
-export function getTimelineId() {
-	return standardizeTimelineId(timelineId++);
-}
+export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
 
-export function getTrialId() {
-	return standardizeTrialId(trialId++);
-}
+export const isTrial = (node) => (node.type === TRIAL_TYPE);
 
 export function startFromTwo(array, index) {
 	if(array[0] !== array[1]) {
@@ -39,10 +26,6 @@ export function startFromTwo(array, index) {
 
 	return index;
 }
-
-export const isTimeline = (node) => (node.type === TIMELINE_TYPE);
-
-export const isTrial = (node) => (node.type === TRIAL_TYPE);
 
 export function arrayOfArrays(arrayOfObjects) {
 	var newArray = [];
@@ -82,7 +65,6 @@ export function arrayOfObjects(arrayOfArrays) {
 		 	array[i] = currentObj;
 		}
 	}
-
 	return array;
 }
 
@@ -101,7 +83,6 @@ export function arrayOfColumns(arrayOfRows) {
 			array[j].push(arrayOfRows[i][j]); 
 		}
 	}
-	console.log(array);
 	return array;
 }
 
@@ -117,6 +98,5 @@ export function backToArrayOfArrays(arrayOfColumns) {
 			array[j].push(arrayOfColumns[i][j]);	
 		}
 	}
-
 	return array;
 }

@@ -6,10 +6,10 @@ import TextField from 'material-ui/TextField';
 
 import {
   grey800 as normalColor,
-  cyan600 as iconHighlightColor,
+  cyan500 as iconHighlightColor,
   green500 as checkColor,
 } from 'material-ui/styles/colors';
-import InitSettingIcon from 'material-ui/svg-icons/action/settings';
+import InitSettingIcon from 'material-ui/svg-icons/action/build';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 

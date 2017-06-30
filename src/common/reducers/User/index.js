@@ -1,9 +1,4 @@
-import {
-	fetchCredential,
-	logout,
-	getLoginSessionFromLocalStorage,
-	getUserInfoFromLocalStorage,
-} from '../../backend/cognito';
+import { logout, getLoginSessionFromLocalStorage, getUserInfoFromLocalStorage } from '../../backend/cognito';
 import * as actionTypes from '../../constants/ActionTypes';
 
 export const LoginModes = {
@@ -12,17 +7,24 @@ export const LoginModes = {
 	verification: 2,
 }
 
-fetchCredential();
 export const initState = {
-	user: getUserInfoFromLocalStorage(),
-	loginSession: getLoginSessionFromLocalStorage(),
+	user: {
+		username: null,
+		identityId: null,
+	},
+	loginSession: null,
 
 	// last
 	lastEdittingId: null,
 
 	// repository
+	/*
+	{
+	name: experiment name,
+	id: experiment id
+	}
+	*/ 
 	experiments: [],
-	medias: [],
 
 	// gui
 	windowOpen: false,
@@ -38,13 +40,19 @@ function setLoginWindow(state, action) {
 	})
 }
 
-function signInOut(state, action) {
+/*
+
+
+
+*/
+export function signInOut(state, action) {
 	let { signIn } = action;
 	let new_state = Object.assign({}, state);
 	if (signIn) {
 		new_state.windowOpen = false;
 	} else {
 		logout();
+		window.location.reload(false);
 	}
 	new_state.user = getUserInfoFromLocalStorage();
 	new_state.loginSession = getLoginSessionFromLocalStorage();
@@ -52,6 +60,7 @@ function signInOut(state, action) {
 	// console.log(new_state.loginSession)
 	return new_state;
 }
+
 
 export default function userReducer(state = initState, action) {
 	switch (action.type) {

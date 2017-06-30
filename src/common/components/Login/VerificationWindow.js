@@ -1,10 +1,10 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import Snackbar from 'material-ui/Snackbar';
-import { CognitoUser } from "amazon-cognito-identity-js";
 
 import Verified from 'material-ui/svg-icons/action/verified-user';
 import Sent from 'material-ui/svg-icons/action/check-circle';
@@ -72,7 +72,7 @@ export default class VerificationWindow extends React.Component {
         this.handleCodeError('');
         this.props.signIn((err) => {
           console.log(err.code);
-        })
+        }, true)
       }
     });
   }
@@ -121,11 +121,11 @@ export default class VerificationWindow extends React.Component {
         <Snackbar
             open={this.state.open}
             message={ 
-              <FlatButton 
-                label="Verification code was resent."
-                labelStyle={{textTransform: "none", color: 'white' }}
+              <MenuItem 
+                primaryText="Verification code was resent."
+                style={{color: 'white' }}
                 disabled={true}
-                icon={<Sent color={verifyColor} />} 
+                rightIcon={<Sent color={verifyColor} />} 
               /> 
             }
             autoHideDuration={2500}

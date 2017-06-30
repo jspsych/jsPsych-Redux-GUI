@@ -36,7 +36,7 @@ import { deepCopy } from '../../utils';
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: undefined,
+	timeline_variables: [{H0: null}],
 	randomize_order: true,
 	sampling: undefined,
 	conditional_function: undefined,
@@ -44,8 +44,8 @@ const DEFAULT_TIMELINE_PARAM = {
 };
 const DEFAULT_TRIAL_PARAM = {
 		type: 'text',
-		text: '',
-		chocies: '',
+		text: null,
+		chocies: null,
 		allow_mouse_click: false,
 };
 
@@ -61,21 +61,32 @@ export function enterTest() {
 	__TEST__ = 1;
 }
 
+const TIMELINE_ID_PREFIX = "TIMELINE-";
+const TRIAL_ID_PREFIX = "TRIAL-";
+
+export const standardizeTimelineId = (id) => {
+	return TIMELINE_ID_PREFIX + id;
+}
+
+export const standardizeTrialId = (id) => {
+	return TRIAL_ID_PREFIX + id;
+}
+
 function getNodeById(state, id) {
 	if (id === null)
 		return null;
 	return state[id];
 }
 
-const getDefaultTimelineName = () => {
+const getDefaultTimelineName = (n=null) => {
 	if (__TEST__)
 		return DEFAULT_TIMELINE_NAME;
-	return DEFAULT_TIMELINE_NAME + " " + (timeline++);
+	return DEFAULT_TIMELINE_NAME + " " + n;
 };
-const getDefaultTrialName = () => {
-	if (__TEST__)
+const getDefaultTrialName = (n=null) => {
+	if (__TEST__ || n === null)
 		return DEFAULT_TRIAL_NAME;
-	return DEFAULT_TRIAL_NAME + " " + (trial++);
+	return DEFAULT_TRIAL_NAME + " " + n;
 };
 
 export function createTimeline(id,
@@ -125,7 +136,8 @@ action = {
 export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let id = action.id;
+	let n = new_state.timelineCount++;
+	let id = standardizeTimelineId(n);
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -139,7 +151,7 @@ export function addTimeline(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let timeline = createTimeline(id, action.parent)
+	let timeline = createTimeline(id, action.parent, getDefaultTimelineName(n));
 
 	new_state[id] = timeline;
 
@@ -155,7 +167,8 @@ action = {
 export function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let id = action.id;
+	let n = new_state.trialCount++;
+	let id = standardizeTrialId(n);
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -169,7 +182,7 @@ export function addTrial(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let trial = createTrial(id, action.parent)
+	let trial = createTrial(id, action.parent, getDefaultTrialName(n));
 
 	new_state[id] = trial;
 	return new_state;
@@ -181,10 +194,10 @@ export function insertNodeAfterTrial(state, action) {
 
 	// if inserted node is a timeline
 	if (action.isTimeline) {
-		new_state = addTimeline(state, {id: action.id, parent: targetParent});
+		new_state = addTimeline(state, { parent: targetParent});
 	// if it is a trial
 	} else {
-		new_state = addTrial(state, {id: action.id, parent: targetParent});
+		new_state = addTrial(state, { parent: targetParent});
 	}
 
 	let arr;
@@ -270,7 +283,7 @@ export function deleteTrial(state, action) {
 	return deleteTrialHelper(new_state, action.id);
 }
 
-function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrialId) {
+function duplicateTimelineHelper(state, dupId, targetId) {
 
 	// find target
 	let target = state[targetId];
@@ -291,11 +304,11 @@ function duplicateTimelineHelper(state, dupId, targetId, getTimelineId, getTrial
 		// if this descendant is a timeline, call duplicate recusively to
 		// reach all nodes
 		if (utils.isTimeline(dupTarget)) {
-			newId = getTimelineId();
-			dupChild = duplicateTimelineHelper(state, newId, dupTargetId, getTimelineId, getTrialId);
+			newId = standardizeTimelineId(state.timelineCount++);
+			dupChild = duplicateTimelineHelper(state, newId, dupTargetId);
 		// if this descendant is a trial, simply duplicated it
 		} else {
-			newId = getTrialId();
+			newId = standardizeTrialId(state.trialCount++);
 			dupChild = deepCopy(dupTarget);
 		}
 
@@ -317,12 +330,13 @@ action = {
 }
 */
 export function duplicateTimeline(state, action) {
-	const { dupId, targetId, getTimelineId, getTrialId } = action;
+	const { targetId } = action;
 
 	let new_state = Object.assign({}, state);
+	let dupId = standardizeTimelineId(new_state.timelineCount++);
 
 	// duplicate
-	let dup = duplicateTimelineHelper(new_state, dupId, targetId, getTimelineId, getTrialId);
+	let dup = duplicateTimelineHelper(new_state, dupId, targetId);
 	new_state[dup.id] = dup;
 	let target = state[targetId];
 	let parent = target.parent;
@@ -349,13 +363,14 @@ action = {
 }
 */
 export function duplicateTrial(state, action) {
-	const { dupId, targetId } = action;
+	const { targetId } = action;
 
 	let target = state[targetId];
 	let parent = target.parent;
 
 	// duplicate
 	let new_state = Object.assign({}, state);
+	let dupId = standardizeTrialId(new_state.trialCount++);
 	let dup = deepCopy(target);
 	// get its own id
 	dup.id = dupId;
@@ -649,9 +664,21 @@ export function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
 	onToggleHelper(new_state, action.id, null);
+	enableTrackBack(new_state, new_state[action.id].parent);
 
 	return new_state;
 }
+
+// When enable one only, enable its ancestors too
+function enableTrackBack(state, parent) {
+	if (parent && !state[parent].enabled) {
+		parent = deepCopy(state[parent]);
+		state[parent.id] = parent;
+		parent.enabled = true;
+		enableTrackBack(state, parent.parent);
+	}
+}
+
 
 /*
 action = {
@@ -673,12 +700,7 @@ export function setToggleCollectively(state, action) {
 	if (spec) {
 		onToggleHelper(new_state, spec, true);
 		let specNode = new_state[spec];
-		let parent = specNode.parent;
-		if (parent) {
-			parent = deepCopy(new_state[parent]);
-			new_state[parent.id] = parent;
-			parent.enabled = true;
-		}
+		enableTrackBack(new_state, specNode.parent);
 	}
 
 	return new_state;

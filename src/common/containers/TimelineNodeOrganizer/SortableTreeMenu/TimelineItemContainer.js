@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import * as organizerActions from '../../../actions/organizerActions';
 import TimelineItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TimelineItem';
-import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	dispatch((dispatch, getState) => {
@@ -40,11 +39,11 @@ const toggleCollapsed = (dispatch, ownProps) => {
 }
 
 const insertTimeline = (dispatch, ownProps) => {
-	dispatch(organizerActions.addTimelineAction(getTimelineId(), ownProps.id));
+	dispatch(organizerActions.addTimelineAction(ownProps.id));
 }
 
 const insertTrial = (dispatch, ownProps) => {
-	dispatch(organizerActions.addTrialAction(getTrialId(), ownProps.id));
+	dispatch(organizerActions.addTrialAction(ownProps.id));
 }
 
 const deleteTimeline = (dispatch, ownProps) => {
@@ -52,7 +51,7 @@ const deleteTimeline = (dispatch, ownProps) => {
 }
 
 const duplicateTimeline = (dispatch, ownProps) => {
-	dispatch(organizerActions.duplicateTimelineAction(getTimelineId(), ownProps.id, getTimelineId, getTrialId));
+	dispatch(organizerActions.duplicateTimelineAction(ownProps.id));
 }
 
 export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {

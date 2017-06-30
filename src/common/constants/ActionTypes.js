@@ -32,7 +32,6 @@ export const CHANGE_PARAM_INT = "CHANGE_PARAM_INT";
 export const CHANGE_PARAM_FLOAT = "CHANGE_PARAM_FLOAT";
 
 //EditableTable Actions
-export const CHANGE_FIRST_HEADER = "CHANGE_FIRST_HEADER";
 export const CHANGE_HEADER = "CHANGE_HEADER";
 export const CHANGE_CELL = "CHANGE_CELL";
 export const ADD_COLUMN = "ADD_COLUMN";
@@ -44,6 +43,15 @@ export const DELETE_COLUMN = "DELETE_COLUMN";
 export const DELETE_ROW = "DELETE_ROW";
 export const DELETE_COLUMN_HEADER = "DELETE_COLUMN_HEADER";
 
-//User Actions
+// User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
+
+// Backend Actions
+export const SIGN_UP_PUSH = "SIGN_UP_PUSH";
+export const SIGN_IN_PULL = "SIGN_IN_PULL";
+export const CLICK_SAVE_PUSH = "CLICK_SAVE_PUSH";
+export const PULL_EXPERIMENT = "PULL_EXPERIMENT";
+export const DELETE_EXPERIMENT = "DELETE_EXPERIMENT";
+export const NEW_EXPERIMENT = "NEW_EXPERIMENT";
+export const DUPLICATE_EXPERIMENT = "DUPLICATE_EXPERIMENT";
