@@ -51,3 +51,4 @@ export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
 export const SIGN_UP_PUSH = "SIGN_UP_PUSH";
 export const SIGN_IN_PULL = "SIGN_IN_PULL";
 export const CLICK_SAVE_PUSH = "CLICK_SAVE_PUSH";
+export const PULL_EXPERIMENT = "PULL_EXPERIMENT";

@@ -158,6 +158,14 @@ export function fetchExperimentById(id) {
 	return getItem(param);
 }
 
+export function pushUserData(userState) {
+	putItemToUserTable(extractUserData(userState));
+}
+
+export function pushExperimentData(experimentState) {
+	putItemToExperimentTable(extractExperimentData(experimentState));
+}
+
 /*
 Save case: create account
 
@@ -168,13 +176,11 @@ export function signUpPush(state) {
 	let { userState, experimentState } = state;
 
 	// update user data
-	let userData = extractUserData(userState);
-	putItemToUserTable(userData);
+	pushUserData(userState);
 
 	// if there is any change in experiment, save it too
 	if (experimentState.experimentId) {
-		let experimentData = extractExperimentData(experimentState);
-		putItemToExperimentTable(experimentData);
+		pushExperimentData(experimentState);
 	}
 }
 
@@ -187,9 +193,6 @@ Detail is in reducers/backend.
 export function clickSavePush(state) {
 	let { userState, experimentState } = state;
 
-	let userData = extractUserData(userState);
-	putItemToUserTable(userData);
-
-	let experimentData = extractExperimentData(experimentState);
-	putItemToExperimentTable(experimentData);
+	pushUserData(userState);
+	pushExperimentData(experimentState);
 }

@@ -32,8 +32,8 @@ const registerDialogStyle = {
 
 export default class Login extends React.Component {
 	state = {
-		username: 'test',
-      	password: '1234567890',
+		username: '',
+      	password: '',
       	email: '',
 	}
 
@@ -95,19 +95,18 @@ export default class Login extends React.Component {
           		open={open}
           		titleStyle={{padding: 0}}
           		title={
-          			<div style={{display: 'flex', backgroundColor: dialogBodyColor}}>
-          			<Subheader style={{fontSize: 24}}></Subheader>
-          			<IconButton 
-          				hoveredStyle={{
-          					backgroundColor: CloseBackHighlightColor,
-          				}}
-          				onTouchTap={handleClose}
-						disableTouchRipple={true}
-					>
-					<Close hoverColor={CloseDrawerHoverColor} />
-					</IconButton>
-				</div>
-
+	          		<div style={{display: 'flex', backgroundColor: dialogBodyColor}}>
+	          			<Subheader style={{fontSize: 24}}></Subheader>
+	          			<IconButton 
+	          				hoveredStyle={{
+	          					backgroundColor: CloseBackHighlightColor,
+	          				}}
+	          				onTouchTap={handleClose}
+							disableTouchRipple={true}
+						>
+						<Close hoverColor={CloseDrawerHoverColor} />
+						</IconButton>
+					</div>
           		}
           		onRequestClose={handleClose}
           		contentStyle={{width: 450, height: 600,}}
