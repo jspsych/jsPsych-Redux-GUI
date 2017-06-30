@@ -119,7 +119,11 @@ function extractUserData(userState) {
 function extractExperimentData(experimentState) {
 	return {
 		experimentId: experimentState.experimentId,
-		fetch: experimentState
+		fetch: experimentState,
+		accessInfo: {
+			private: experimentState.private
+		},
+		ownership: experimentState.owner,
 	};
 }
 
@@ -129,11 +133,11 @@ Fetch case: sign in
 userState should be already processed.
 Detail is in reducers/backend.
 */
-export function signInFetchUserData(userState) {
+export function signInFetchUserData(id) {
 	let param = {
 		TableName: User_Table_Name,
 		Key: {
-			'userId': userState.user.identityId
+			'userId': id
 		},
 		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
 	};

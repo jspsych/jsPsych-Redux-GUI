@@ -47,14 +47,14 @@ if there is any change in experiment:
 else:
 	2. update experiment data locally
 */
-const signIn = (dispatch) => {
+export const signIn = (dispatch) => {
 	dispatch((dispatch, getState) => {
 		// sign in handled by cognito first
 		// sync user state from local storage
 		dispatch(userActions.signInAction());
 
 		// fetch user data
-		signInFetchUserData(getState().userState).then((data) => {
+		signInFetchUserData(getState().userState.user.identityId).then((data) => {
 			// update user data locally
 			dispatch(backendActions.signInPullAction(data, null));
 		}).then(() => {

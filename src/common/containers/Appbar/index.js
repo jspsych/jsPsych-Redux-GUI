@@ -29,7 +29,6 @@ const save = (dispatch, feedback) => {
 const mapStateToProps = (state, ownProps) => {
 	return {
 		experimentName: convertNullToEmptyString(state.experimentState.experimentName),
-		state: state
 	}
 };
 
