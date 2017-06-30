@@ -12,6 +12,9 @@ const changeExperimentName = (dispatch, text) => {
 
 const save = (dispatch) => {
 	dispatch((dispatch, getState) => {
+		if (!getState().experimentState.anyChange) {
+			return;
+		}
 		dispatch(backendActions.clickSavePushAction());
 		clickSavePush(getState());
 	});

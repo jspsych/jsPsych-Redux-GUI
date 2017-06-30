@@ -1,10 +1,18 @@
+/*
+This file handles processing of state before or after
+communicating with database or server.
+
+Note that signInOut is imported from ./User since cognito will
+handle all the communications for us. signInOut handles fetching
+login information from local storage.
+*/
+
 import * as actionTypes from '../constants/ActionTypes';
 import { deepCopy, getUUID } from '../utils';
 import { signInOut } from './User';
 
-
 /*
-*Note, before using, remember do deep copies
+*Note, will handle deep copy for you
 
 Register a new experiment under a user
 For experiment state:
@@ -16,7 +24,10 @@ For user state:
 2. populate experiment repository
 
 */
-function registerNewExperiment(userState, experimentState) {
+function registerNewExperiment(state) {
+	state.userState.experiments = deepCopy(state.userState.experiments);
+	state.experimentState = Object.assign({}, state.experimentState);
+	let { userState, experimentState } = state;
 	// assign id
 	// set owner
 	if (!experimentState.experimentId) {
@@ -34,6 +45,8 @@ function registerNewExperiment(userState, experimentState) {
 
 /*
 Save case: create account
+It will process state before communicating with database
+
 It is called when the first sign in of a verified user.
 Typically happens when the account is created and gets 
 verified immediately. (will automatically sign in)
@@ -51,10 +64,7 @@ function signUpPush(state, action) {
 	// is experiment modified?
 	// yes
 	if (new_state.experimentState.anyChange) {
-		new_state.userState.experiments = deepCopy(new_state.userState.experiments);
-		new_state.experimentState = Object.assign({}, new_state.experimentState);
-		registerNewExperiment(new_state.userState, new_state.experimentState);
-		new_state.experimentState.anyChange = false;
+		registerNewExperiment(new_state);
 	}
 
 	return new_state;
@@ -62,6 +72,8 @@ function signUpPush(state, action) {
 
 /*
 Fetch case: sign in
+It will process state after communicating with database
+
 It is called after signing in by cognito.
 It serves to fetch data from database and sync
 local states.
@@ -92,6 +104,7 @@ function signInPull(state, action) {
 
 /*
 Save case: click save
+It will process state before communicating with database
 
 //xx if no change return; xx// should be handled before dispatching
 If saving an old experiment:
@@ -103,20 +116,19 @@ else:
 function clickSavePush(state, action) {
 	let new_state = Object.assign({}, state);
 	let { userState, experimentState } = new_state;
-
-	new_state.userState = Object.assign({}, userState, {
-		experiments: deepCopy(userState.experiments),
-	});
+	
 	// if old experiment
 	if (experimentState.experimentId) {
+		new_state.userState = Object.assign({}, userState, {
+			experiments: deepCopy(userState.experiments),
+		});
 		for (let item of new_state.userState.experiments) {
 			if (item.id === experimentState.experimentId) {
 				item.name = experimentState.experimentName;
 			}
 		}
 	} else {
-		new_state.experimentState = Object.assign({}, experimentState);
-		registerNewExperiment(new_state.userState, new_state.experimentState);
+		registerNewExperiment(new_state);
 	}
 
 	return new_state;

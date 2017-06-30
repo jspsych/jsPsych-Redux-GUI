@@ -1,3 +1,12 @@
+/*
+This file handles login using APIs of cognito. 
+
+Possibly related files:
+reducers/User/index.js
+containers/Login/*
+*/
+
+
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import {
 	CognitoUser,

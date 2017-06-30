@@ -1,3 +1,22 @@
+/*
+This file handles firing flows of actions.
+The important two are 1. signIn 2. signUp
+
+1. signIn
+This flow of actions involves both pulling and pushing.
+It is called when sign in happens as long as it is not user's first time sign in.
+
+2. signUp
+This flow of actions involves pushing only.
+It is called after user is verified and gets automatically signed in.
+It involves pushing only because database does not have any information of this newly
+registered user.
+Note that its code will be borrowed by signIn when user does some change and then signs in.
+
+Before or after all pushing and pulling, the state will be processed by redux store.
+*/
+
+
 import { connect } from 'react-redux';
 import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;

@@ -1,5 +1,16 @@
+/*
+This file handles direct communication with database (dynamoDB).
+The data recevied in all functions in this file should be pre-processed by
+the functions defined in reducers/backend
+
+Possibly related files:
+
+reducers/backend.js
+containers/Login/*
+containers/Appbar/index.js
+*/
+
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
-import { getUUID } from '../../utils';
 var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
 if (typeof Promise === 'undefined') {
