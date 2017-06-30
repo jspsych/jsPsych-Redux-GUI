@@ -47,6 +47,13 @@ export default class ExperimentList extends React.Component {
 		});
 	}
 
+	handleClose = () => {
+		this.props.handleClose();
+		this.setState({
+			selected: null
+		});
+	}
+
 	renderIconMenu = (id) => {
 		return (
 			<IconMenu iconButtonElement={iconButtonElement}>
@@ -90,8 +97,8 @@ export default class ExperimentList extends React.Component {
 
 	render() {
 		// let { open } = this.state;
-		let { renderItem } = this;
-		let { open, handleClose, experiments } = this.props;
+		let { handleClose, renderItem } = this;
+		let { open, experiments } = this.props;
 		const actions = [
 			<FlatButton
 				label="Open Experiment"
