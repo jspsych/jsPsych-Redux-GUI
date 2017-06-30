@@ -28,7 +28,7 @@ export const initState = {
 	// if want to play all
 	previewAll: false,
 
-	// counts
+	// id counts
 	timelineCount: 0,
 	trialCount: 0,
 
