@@ -1,9 +1,4 @@
-import {
-	fetchCredential,
-	logout,
-	getLoginSessionFromLocalStorage,
-	getUserInfoFromLocalStorage,
-} from '../../backend/cognito';
+import { logout, getLoginSessionFromLocalStorage, getUserInfoFromLocalStorage } from '../../backend/cognito';
 import * as actionTypes from '../../constants/ActionTypes';
 
 export const LoginModes = {
@@ -12,10 +7,12 @@ export const LoginModes = {
 	verification: 2,
 }
 
-fetchCredential();
 export const initState = {
-	user: getUserInfoFromLocalStorage(),
-	loginSession: getLoginSessionFromLocalStorage(),
+	user: {
+		username: null,
+		identityId: null,
+	},
+	loginSession: null,
 
 	// last
 	lastEdittingId: null,
