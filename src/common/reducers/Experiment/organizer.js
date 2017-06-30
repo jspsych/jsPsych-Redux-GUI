@@ -36,7 +36,7 @@ import { deepCopy } from '../../utils';
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: ""}],
+	timeline_variables: [{H0: null}],
 	randomize_order: true,
 	sampling: undefined,
 	conditional_function: undefined,
@@ -44,8 +44,8 @@ const DEFAULT_TIMELINE_PARAM = {
 };
 const DEFAULT_TRIAL_PARAM = {
 		type: 'text',
-		text: '',
-		chocies: '',
+		text: null,
+		chocies: null,
 		allow_mouse_click: false,
 };
 
@@ -649,17 +649,18 @@ export function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
 	onToggleHelper(new_state, action.id, null);
+	enableTrackBack(new_state, new_state[action.id].parent);
 
 	return new_state;
 }
 
 // When enable one only, enable its ancestors too
-function enableThisOnlyTraceBack(state, parent) {
-	if (parent) {
+function enableTrackBack(state, parent) {
+	if (parent && !state[parent].enabled) {
 		parent = deepCopy(state[parent]);
 		state[parent.id] = parent;
 		parent.enabled = true;
-		enableThisOnlyTraceBack(state, parent.parent);
+		enableTrackBack(state, parent.parent);
 	}
 }
 
@@ -684,7 +685,7 @@ export function setToggleCollectively(state, action) {
 	if (spec) {
 		onToggleHelper(new_state, spec, true);
 		let specNode = new_state[spec];
-		enableThisOnlyTraceBack(new_state, specNode.parent);
+		enableTrackBack(new_state, specNode.parent);
 	}
 
 	return new_state;
