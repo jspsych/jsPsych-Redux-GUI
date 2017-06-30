@@ -5,7 +5,6 @@ import {
 	AuthenticationDetails,
 	CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
-
 var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
 if (typeof Promise === 'undefined') {
@@ -19,7 +18,6 @@ export const userPool = new CognitoUserPool({
   ClientId: cognitoConfig.ClientId,
 });
 
-const convertUndefinedString = (s) => (s === 'undefined' ? undefined : s);
 
 function clearAWSCredentialCache() {
 	AWS.config.credentials.clearCachedId();

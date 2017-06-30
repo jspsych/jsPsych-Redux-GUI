@@ -1,9 +1,7 @@
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import { getUUID } from '../../utils';
-
 var AWS = require('aws-sdk');
 AWS.config.region = cognitoConfig.region;
-
 if (typeof Promise === 'undefined') {
   AWS.config.setPromisesDependency(require('bluebird'));
 } else {

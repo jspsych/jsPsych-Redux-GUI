@@ -34,9 +34,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.19.0",
-    "aws-promised": "^2.14.0",
     "aws-sdk": "^2.77.0",
-    "aws-sdk-promise": "0.0.2",
     "bluebird": "^3.5.0",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
@@ -57,7 +55,7 @@
     "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
-    "uuid": "^3.1.0"
+    "short-uuid": "^2.3.3"
   },
   "scripts": {
     "react": "react-scripts start",
