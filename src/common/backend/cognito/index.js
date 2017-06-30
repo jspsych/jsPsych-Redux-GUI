@@ -5,8 +5,6 @@ Possibly related files:
 reducers/User/index.js
 containers/Login/*
 */
-
-
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
 import {
 	CognitoUser,
@@ -14,13 +12,8 @@ import {
 	AuthenticationDetails,
 	CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
-var AWS = require('aws-sdk');
-AWS.config.region = cognitoConfig.region;
-if (typeof Promise === 'undefined') {
-	AWS.config.setPromisesDependency(require('bluebird'));
-} else {
-	AWS.config.setPromisesDependency(Promise);
-}
+import AWS from '../aws';
+
 
 export const userPool = new CognitoUserPool({
   UserPoolId: cognitoConfig.UserPoolId,
@@ -153,4 +146,3 @@ export function logout() {
 	userPool.getCurrentUser().signOut();
 	clearAWSCredentialCache();
 }
-

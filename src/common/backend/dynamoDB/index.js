@@ -11,13 +11,7 @@ containers/Appbar/index.js
 */
 
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
-var AWS = require('aws-sdk');
-AWS.config.region = cognitoConfig.region;
-if (typeof Promise === 'undefined') {
-  AWS.config.setPromisesDependency(require('bluebird'));
-} else {
-	AWS.config.setPromisesDependency(Promise);
-}
+import AWS from '../aws';
 
 const API_VERSION = '2012-08-10';
 const User_Table_Name = "jsPsych_Builder_Users";
@@ -80,7 +74,7 @@ function putItemToUserTable(data) {
 		Item: {
 			...data
 		},
-		ReturnConsumedCapacity: "TOTAL", 
+		ReturnConsumedCapacity: "TOTAL",
 	};
 
 	putItem(param);
@@ -98,7 +92,7 @@ function putItemToExperimentTable(data) {
 		Item: {
 			...data
 		},
-		ReturnConsumedCapacity: "TOTAL", 
+		ReturnConsumedCapacity: "TOTAL",
 	}
 
 	putItem(param);
@@ -168,6 +162,7 @@ export function pushUserData(userState) {
 export function pushExperimentData(experimentState) {
 	putItemToExperimentTable(extractExperimentData(experimentState));
 }
+
 
 /*
 Save case: create account

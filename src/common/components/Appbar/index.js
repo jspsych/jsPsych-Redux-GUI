@@ -15,9 +15,11 @@ import {
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
+import MediaManager from '../../containers/Appbar/MediaManager';
 import Save from 'material-ui/svg-icons/content/save';
 import Done from 'material-ui/svg-icons/action/check-circle';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
+
 
 export default class Appbar extends React.Component {
   state = {
@@ -85,6 +87,7 @@ export default class Appbar extends React.Component {
                       > 
                       <Save hoverColor={hoverColor} />
                     </IconButton>
+										<MediaManager />
                   </ToolbarGroup>
   							</Toolbar>
   						</div>
