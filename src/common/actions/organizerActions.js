@@ -1,17 +1,15 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function addTimelineAction(id, parent) {
+export function addTimelineAction(parent) {
 	return {
 		type: actionTypes.ADD_TIMELINE,
-		id: id,
 		parent: parent, 
 	};
 }
 
-export function addTrialAction(id, parent) {
+export function addTrialAction(parent) {
 	return {
 		type: actionTypes.ADD_TRIAL,
-		id: id,
 		parent: parent, 
 	};
 }
@@ -85,29 +83,24 @@ export function setCollapsed(id, toggle=true) {
 	};
 }
 
-export function insertNodeAfterTrialAction(id, targetId, isTimeline=false) {
+export function insertNodeAfterTrialAction(targetId, isTimeline=false) {
 	return {
 		type: actionTypes.INSERT_NODE_AFTER_TRIAL,
-		id: id,
 		targetId: targetId,
 		isTimeline: isTimeline
 	};
 }
 
-export function duplicateTimelineAction(dupId, targetId, getTimelineIdCallback, getTrialIdCallback) {
+export function duplicateTimelineAction(targetId) {
 	return {
 		type: actionTypes.DUPLICATE_TIMELINE,
-		dupId: dupId,
 		targetId: targetId,
-		getTimelineId: getTimelineIdCallback,
-		getTrialId: getTrialIdCallback,
 	};
 }
 
-export function duplicateTrialAction(dupId, targetId) {
+export function duplicateTrialAction(targetId) {
 	return {
 		type: actionTypes.DUPLICATE_TRIAL,
-		dupId: dupId,
 		targetId: targetId,
 	};
 }

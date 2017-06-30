@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import * as organizerActions from '../../../actions/organizerActions';
 import TrialItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TrialItem';
-import { getTimelineId, getTrialId } from '../../../reducers/Experiment/utils';
 import {
 	toggleAll,
 	untoggleAll,
@@ -31,11 +30,11 @@ const onToggle = (dispatch, ownProps) => {
 }
 
 const insertTimeline = (dispatch, ownProps) => {
-	dispatch(organizerActions.insertNodeAfterTrialAction(getTimelineId(), ownProps.id, true));
+	dispatch(organizerActions.insertNodeAfterTrialAction(ownProps.id, true));
 }
 
 const insertTrial = (dispatch, ownProps) => {
-	dispatch(organizerActions.insertNodeAfterTrialAction(getTrialId(), ownProps.id, false));
+	dispatch(organizerActions.insertNodeAfterTrialAction(ownProps.id, false));
 }
 
 const deleteTrial = (dispatch, ownProps) => {
@@ -43,7 +42,7 @@ const deleteTrial = (dispatch, ownProps) => {
 }
 
 const duplicateTrial = (dispatch, ownProps) => {
-	dispatch(organizerActions.duplicateTrialAction(getTrialId(), ownProps.id));
+	dispatch(organizerActions.duplicateTrialAction(ownProps.id));
 }
 
 const mapStateToProps = (state, ownProps) => {
