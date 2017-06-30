@@ -1,6 +1,7 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import Snackbar from 'material-ui/Snackbar';
@@ -120,11 +121,11 @@ export default class VerificationWindow extends React.Component {
         <Snackbar
             open={this.state.open}
             message={ 
-              <FlatButton 
-                label="Verification code was resent."
-                labelStyle={{textTransform: "none", color: 'white' }}
+              <MenuItem 
+                primaryText="Verification code was resent."
+                style={{color: 'white' }}
                 disabled={true}
-                icon={<Sent color={verifyColor} />} 
+                rightIcon={<Sent color={verifyColor} />} 
               /> 
             }
             autoHideDuration={2500}
