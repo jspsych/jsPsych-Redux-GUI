@@ -91,8 +91,13 @@ export function resendVerification(username, callback) {
 }
 
 const LoginsKey = 'cognito-idp.' + cognitoConfig.region + '.amazonaws.com/' + cognitoConfig.UserPoolId;
-export function fetchCredential(cognitoUser = userPool.getCurrentUser(), dispatchAction = () => {}) {
-	if (!cognitoUser) return;
+export function fetchCredential(cognitoUser = null, callback = () => {}) {
+	if (!cognitoUser) {
+		cognitoUser = userPool.getCurrentUser();
+		if (!cognitoUser) {
+			return;
+		}
+	}
 
 	cognitoUser.getSession((err, result) => {
 		if (err) {
@@ -114,7 +119,7 @@ export function fetchCredential(cognitoUser = userPool.getCurrentUser(), dispatc
 					return;
 				} else {
 					updateAWSCredentialLocalSession();
-					dispatchAction();
+					callback();
 				}
 			});
 		}

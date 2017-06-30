@@ -17,13 +17,14 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 
 
 window.addEventListener('load', () => {
-	fetchCredential();
-	let userLoginInfo = getUserInfoFromLocalStorage();
-	if (userLoginInfo &&
-		userLoginInfo.username &&
-		userLoginInfo.identityId) {
-		signIn(store.dispatch);
-	}
+	fetchCredential(null, () => {
+		let userLoginInfo = getUserInfoFromLocalStorage();
+		if (userLoginInfo &&
+			userLoginInfo.username &&
+			userLoginInfo.identityId) {
+			signIn(store.dispatch);
+		}
+	});
 });
 
 injectTapEventPlugin();
