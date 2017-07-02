@@ -61,10 +61,19 @@ export function arrayOfObjects(arrayOfArrays) {
 		for(let j=0; j<arrayOfArrays[0].length; j++) {
 			let currentHeader = headers[j]; 
 		 	currentObj = array[i]; 
-		 	currentObj[headers[j]] = arrayOfArrays[i+1][j];
-		 	array[i] = currentObj;
+		 	// console.log(currentObj[headers[j]]);
+		 	// if(array[i][j] === '') {
+		 	// 	currentObj[headers[j]] = undefined;
+		 	// 	array[i] = currentObj;
+		 	// } else {
+		 		currentObj[headers[j]] = arrayOfArrays[i+1][j];
+		 	    array[i] = currentObj;
+		 	// }
+		 	
 		}
 	}
+	console.log("arrayOfObjects");
+	console.log(array);
 	return array;
 }
 
@@ -83,6 +92,8 @@ export function arrayOfColumns(arrayOfRows) {
 			array[j].push(arrayOfRows[i][j]); 
 		}
 	}
+	console.log("in array of columns");
+	console.log(array);
 	return array;
 }
 

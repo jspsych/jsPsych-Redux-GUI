@@ -36,9 +36,10 @@ import { deepCopy } from '../../utils';
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
 const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: null}],
+	timeline_variables: [{H0: undefined}],
 	randomize_order: true,
-	sampling: undefined,
+	repetitions: undefined,
+	sampling: {type: undefined, size: undefined},
 	conditional_function: undefined,
 	loop_function: undefined,
 };

@@ -42,6 +42,7 @@ export const CHANGE_RANDOMIZE = "CHANGE_RANDOMIZE";
 export const DELETE_COLUMN = "DELETE_COLUMN";
 export const DELETE_ROW = "DELETE_ROW";
 export const DELETE_COLUMN_HEADER = "DELETE_COLUMN_HEADER";
+export const CHANGE_REPS = "CHANGE_REPS";
 
 // User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";

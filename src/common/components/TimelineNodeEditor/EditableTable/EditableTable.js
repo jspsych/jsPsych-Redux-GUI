@@ -243,7 +243,7 @@ render(){
 				onToggle={this.props.onToggle} />
 				<div style={{display: 'flex'}}>
 				<SelectField floatingLabelText="Sampling"
-				deafultValue="with-replacement"
+				value={this.props.samplingType}
 				onChange={this.props.onChange} >
 				<MenuItem value="with-replacement"
 				primaryText="with-replacement" />
@@ -256,7 +256,7 @@ render(){
 				</SelectField>
 				<TextField
 				floatingLabelText="Sampling Size"
-				value={1}
+				value={this.props.samplingSize}
 				style={tableStyles.size}
 				onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
 				</div>

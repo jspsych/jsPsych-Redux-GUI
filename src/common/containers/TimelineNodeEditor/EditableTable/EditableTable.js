@@ -18,8 +18,8 @@ export const onAddRow = (dispatch, ownProps) => {
 	dispatch(tableActions.addRow(ownProps.id));
 }
 
-const onChangeSampling = (dispatch, newVal) => {
-	dispatch(tableActions.changeSampling(newVal));
+const onChangeSampling = (dispatch, key, newVal) => {
+	dispatch(tableActions.changeSampling(key, newVal));
 }
 
 const onChangeSize = (dispatch, newVal) => {
@@ -45,11 +45,38 @@ const deleteColumnByHeader = (dispatch, titleIndex) => {
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let timeline = experimentState[experimentState.previewId];
+	let tv = timeline.parameters.timeline_variables;
+	let headers = Object.keys(tv[0]);
+	let nullToString = []; 
+	let object; 
+	let newObj;
+
+	//each object in the array
+	for(let i=0; i<tv.length; i++){
+		nullToString.push({});
+		console.log(nullToString);
+		for(let j=0; j<headers.length; j++) {
+			object = tv[i];
+			if(object[headers[j]] === undefined) {
+				newObj = nullToString[i];
+				newObj[headers[j]] = '';
+				nullToString[i] = newObj;
+			} else {
+				newObj = nullToString[i];
+				newObj[headers[j]] = object[headers[j]];
+				nullToString[i] = newObj
+			}
+		}
+	}
+
+	console.log("newObj");
+	console.log(nullToString);
 
 	return{
-		timeline_variables: timeline.parameters.timeline_variables,
+		timeline_variables: nullToString,
 		randomize_order: timeline.parameters.randomize_order,
-		sampling: timeline.parameters.sampling,
+		samplingType: timeline.parameters.sampling.type,
+		samplingSize: timeline.parameters.sampling.size
 	}
 };
 
@@ -58,7 +85,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleTableChange: (cellId, newVal) =>  { onChangeCells(dispatch, cellId, newVal) },
 	handleAddColumn: (e) => { onAddColumn(dispatch, ownProps) },
 	handleAddRow: (e) => { onAddRow(dispatch, ownProps) },
-	onChange: (e, key, newVal) => { onChangeSampling(dispatch, newVal) },
+	onChange: (e, key, newVal) => { onChangeSampling(dispatch, key, newVal) },
 	handleSampleSize: (newVal) => { onChangeSize(dispatch, newVal) },
 	onToggle: (e, newBool) => { onChangeRandomize(dispatch, newBool) },
 	onColumnDelete: (rowIndex, titleIndex) => { deleteColumn(dispatch, rowIndex, titleIndex) },

@@ -30,9 +30,10 @@ export function addRow(id) {
 	};
 }
 
-export function changeSampling(newVal) {
+export function changeSampling(key, newVal) {
 	return {
 		type: actionTypes.CHANGE_SAMPLING,
+		key: key,
 		newVal: newVal
 	};
 }
@@ -71,6 +72,13 @@ export function columnHeaderDelete(titleIndex) {
 	return {
 		type: actionTypes.DELETE_COLUMN_HEADER,
 		titleIndex: titleIndex
+	};
+}
+
+export function changeRepetitions(newVal) {
+	return {
+		type: actionTypes.CHANGE_REPS,
+		newVal: newVal
 	};
 }
 

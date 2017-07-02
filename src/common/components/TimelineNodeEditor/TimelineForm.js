@@ -10,10 +10,9 @@ class TimelineForm extends React.Component {
 			var form = 
 			<div className="TimelineForm">
 			<EditableTable id={this.props.id} />
-			<Toggle label="randomize_order"
-			defaultToggled={false} />
 			<TextField floatingLabelText="repetitions"
-			value={0} />
+			value={this.props.repetitions}
+			onChange={this.props.onChange} />
 			</div>
 		} else {
 			var form = <div></div>

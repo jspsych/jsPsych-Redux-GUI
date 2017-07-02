@@ -1,6 +1,12 @@
 import { connect } from 'react-redux';
 import { isTimeline } from '../../reducers/Experiment/utils/index';
 import TimelineForm from '../../components/TimelineNodeEditor/TimelineForm';
+import * as tableActions from '../../actions/tableAction';
+
+
+const onRepetitions = (dispatch,newVal) => {
+	dispatch(tableActions.changeRepetitions(newVal));
+}
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
@@ -11,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
 		return {
 			id: timeline.id,
 			isTimeline: isTimeline(timeline),
-			timeline_variable: timeline.parameters.timeline_variable
+			repetitions: timeline.parameters.repetitions,
 		}
 	} else {
 		return {
@@ -20,7 +26,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-
+	onChange: (e, newVal) => { onRepetitions(dispatch, newVal) },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineForm);

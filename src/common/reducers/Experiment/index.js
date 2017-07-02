@@ -161,6 +161,8 @@ export function experimentReducer(state=initState, action) {
 		 	return editor.deleteRow(state, action);
 		 case actionTypes.DELETE_COLUMN_HEADER:
 		 	return editor.deleteColumnHeader(state, action);
+		 case actionTypes.CHANGE_REPS: 
+		 	return editor.changeReps(state, action);
 		default:
 			return state;
 	}
