@@ -120,7 +120,6 @@ export function changeCell(state, action) {
     newArray[cellRow][cellColumn] = action.newVal;
 
     node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-    console.log(node);
     return new_state;
 
 }
@@ -135,15 +134,11 @@ export function addColumnHelper(array) {
 var index = 1;
 export function addColumn(state, action) {
 	let node = state[state.previewId];
-	console.log("in add column");
-	console.log(node);
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
 
 	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-    console.log('newArray');
-    console.log(newArray);
 	newArray[0].push(DEFAULT_HEADER + '' + index++);
 	addColumnHelper(newArray);
 	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
@@ -178,8 +173,6 @@ export function addRow(state, action) {
 
 export function deleteColumn(state, action) {
 	let node = state[state.previewId];
-	console.log("in delete column");
-	console.log(node);
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
@@ -194,15 +187,11 @@ export function deleteColumn(state, action) {
     	node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
     }
     new_state[state.previewId] = node;
-    console.log("aftre delete column");
-    console.log(node);
 	return new_state;
 }
 
 export function deleteRow(state, action) {
 	let node = state[state.previewId];
-	console.log("in delete row");
-	console.log(node);
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
@@ -214,8 +203,6 @@ export function deleteRow(state, action) {
     	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
     }
  	new_state[state.previewId] = node;
- 	console.log('after delete row');
- 	console.log(node);
 	return new_state;
 }
 
