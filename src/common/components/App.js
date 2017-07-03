@@ -5,10 +5,8 @@ import ZoomBar from './PreviewWindow/ZoomBar';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
-// import RegisterWindow from '../containers/RegisterWindow';
-// import SignInWindow from '../containers/SignInWindow';
+import Notification from '../containers/Notification';
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { getFullScreenState } from './PreviewWindow';
 
@@ -348,6 +346,7 @@ class App extends React.Component {
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
 	  			</div>
+	  			<Notification />
   			</div>
   		);
 	}

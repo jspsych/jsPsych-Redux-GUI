@@ -18,8 +18,6 @@ export const initState = {
 
 	// is private?
 	private: true,
-	// any new edit?
-	anyChange: false,
 	// repository
 	medias: [],
 
@@ -37,42 +35,6 @@ export const initState = {
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
-
-	// mainTimeline: ["TIMTELINE--1"],
-	// "TIMTELINE--1": {
-	// 	id: "TIMTELINE--1",
-	// 	type: "TIMELINE",
-	// 	name: "Timeline -1",
-	// 	parent: null,
-	// 	enabled: true,
-	// 	collapsed: false,
-	// 	childrenById: ["TRIAL--1", "TRIAL--2"],
-	// 	parameters: {
-	// 		timeline_variables: [{H0: null}],
-	// 		randomize_order: true,
-	// 		sample: undefined,
-	// 		conditional_function: undefined,
-	// 		loop_function: undefined,
-	// 	}
-	// },
-
-	// "TRIAL--1": {
-	// 	id: "TRIAL--1",
-	// 	type: "TRIAL",
-	// 	name: "Trial -1",
-	// 	parent: "TIMTELINE--1",
-	// 	enabled: true,
-	// 	parameters: { type: 'text', text: "Test -1", choices: ['A'], allow_mouse_click: false },
-	// },
-
-	// "TRIAL--2": {
-	// 	id: "TRIAL--2",
-	// 	type: "TRIAL",
-	// 	name: "Trial -2",
-	// 	parent: "TIMTELINE--1",
-	// 	enabled: true,
-	// 	parameters: { type: 'text', text: "Test -2", choices: ['D'], allow_mouse_click: false },
-	// },
 }
 
 
@@ -82,9 +44,7 @@ const setExperimentName = (state, action) => {
 	})
 }
 
-export function experimentReducer(state=initState, action) {
-	// console.log(action)
-
+export default function experimentReducer(state=initState, action) {
 	switch(action.type) {
 		// organizer starts
 		case actionTypes.ADD_TIMELINE:
@@ -166,49 +126,4 @@ export function experimentReducer(state=initState, action) {
 		default:
 			return state;
 	}
-}
-
-
-function detectChange(state, action) {
-	switch(action.type) {
-		case actionTypes.ADD_TIMELINE:
-		case actionTypes.DELETE_TIMELINE:
-		case actionTypes.ADD_TRIAL:
-		case actionTypes.DELETE_TRIAL:
-		case actionTypes.INSERT_NODE_AFTER_TRIAL:
-		case actionTypes.DUPLICATE_TRIAL:
-		case actionTypes.DUPLICATE_TIMELINE:
-		case actionTypes.MOVE_TO:
-		case actionTypes.MOVE_INTO:
-		case actionTypes.MOVE_BY_KEYBOARD:
-		case actionTypes.ON_PREVIEW:
-		case actionTypes.ON_TOGGLE:
-		case actionTypes.SET_TOGGLE_COLLECTIVELY:
-		case actionTypes.SET_COLLAPSED:
-		case actionTypes.SET_JSPSYCH_INIT:
-		case actionTypes.SET_EXPERIMENT_NAME:
-		case actionTypes.SET_NAME:
-		case actionTypes.CHANGE_PLUGIN_TYPE:
-		case actionTypes.TOGGLE_PARAM_VALUE:
-		case actionTypes.CHANGE_PARAM_TEXT:
-		case actionTypes.CHANGE_PARAM_INT: 
-		case actionTypes.CHANGE_PARAM_FLOAT:
-		case actionTypes.CHANGE_HEADER:
-		case actionTypes.CHANGE_CELL:
-		case actionTypes.ADD_COLUMN:
-		case actionTypes.ADD_ROW:
-		case actionTypes.CHANGE_SAMPLING: 
-		case actionTypes.CHANGE_SIZE:
-		case actionTypes.CHANGE_RANDOMIZE:
-			if (state.anyChange) return state;
-			return Object.assign({}, state, {
-				anyChange: true,
-			});
-		default:
-			return state;
-	}
-}
-
-export default function(state, action) {
-	return detectChange(experimentReducer(state, action), action);
 }

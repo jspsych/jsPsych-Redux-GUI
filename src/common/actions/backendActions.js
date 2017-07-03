@@ -1,8 +1,9 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function signUpPushAction() {
+export function signUpPushAction(anyChange) {
 	return {
-		type: actionTypes.SIGN_UP_PUSH
+		type: actionTypes.SIGN_UP_PUSH,
+		anyChange: anyChange
 	};
 }
 

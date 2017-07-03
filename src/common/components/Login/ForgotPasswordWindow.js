@@ -76,6 +76,7 @@ export default class forgotPasswordWindow extends React.Component {
         this.handleModeChange(Modes.ready);
       },
       (data) => {
+        this.handleModeChange(Modes.reset);
         this.handlePrompt("The verification code has been sent to " + data.CodeDeliveryDetails.Destination);
       }) 
   }
@@ -91,7 +92,7 @@ export default class forgotPasswordWindow extends React.Component {
         })
       },
       onFailuer: (err) => {
-        console.log(err.message)
+        this.props.notifyError(err.message);
       }
     }
     forgotPasswordReset(username, code, password, callback);

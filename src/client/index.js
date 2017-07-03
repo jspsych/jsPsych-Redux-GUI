@@ -6,10 +6,16 @@ import thunk from 'redux-thunk';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import rootReducer from '../common/reducers';
 import App from '../common/containers/AppContainer';
+import $ from "jquery";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { signIn } from '../common/containers/Login';
+import { notifyError } from '../common/containers/Notification';
+import { initState as experimentInitState } from '../common/reducers/Experiment';
 import { getUserInfoFromLocalStorage, fetchCredential } from '../common/backend/cognito';
+import { fetchExperimentById } from '../common/backend/dynamoDB';
+
+var deepEqual = require('deep-equal');
 
 const preloadedState = window.__PRELOADED_STATE__;
 
@@ -25,6 +31,15 @@ window.addEventListener('load', () => {
 			signIn(store.dispatch);
 		}
 	});
+});
+
+window.addEventListener('beforeunload', (e) => {
+	let { userState, experimentState } = store.getState();
+	// new 
+	if (!deepEqual(userState.lastEdittingExperimentState, experimentState)) {
+		e.returnValue = true;
+		return true;
+	}
 });
 
 injectTapEventPlugin();

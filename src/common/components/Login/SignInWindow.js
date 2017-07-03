@@ -68,7 +68,9 @@ export default class SignInWindow extends React.Component {
       }
       if (err.code === "UserNotConfirmedException") {
         this.props.popVerification();
+        return;
       }
+      this.props.notifyError(err.message);
     });
   }
 
