@@ -47,3 +47,16 @@ export function duplicateExperimentAction(experimentItem) {
 		experimentItem: experimentItem
 	};
 }
+
+export function newExperimentAction() {
+	return {
+		type: actionTypes.NEW_EXPERIMENT
+	};
+}
+
+export function saveAsAction(newName) {
+	return {
+		type: actionTypes.SAVE_AS_PUSH,
+		newName: newName
+	};
+}

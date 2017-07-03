@@ -42,11 +42,7 @@ data = {
 }
 */
 function putItem(param) {
-	connectDynamoDB().put(param, (err, data) => {
-		if (err) {
-			console.log(err); 
-		}
-	});
+	return connectDynamoDB().put(param).promise();
 }
 
 function getItem(param) {
@@ -77,7 +73,7 @@ function putItemToUserTable(data) {
 		ReturnConsumedCapacity: "TOTAL",
 	};
 
-	putItem(param);
+	return putItem(param);
 }
 
 /*
@@ -95,7 +91,7 @@ function putItemToExperimentTable(data) {
 		ReturnConsumedCapacity: "TOTAL",
 	}
 
-	putItem(param);
+	return putItem(param);
 }
 
 
@@ -156,11 +152,11 @@ export function fetchExperimentById(id) {
 }
 
 export function pushUserData(userState) {
-	putItemToUserTable(extractUserData(userState));
+	return putItemToUserTable(extractUserData(userState));
 }
 
 export function pushExperimentData(experimentState) {
-	putItemToExperimentTable(extractExperimentData(experimentState));
+	return putItemToExperimentTable(extractExperimentData(experimentState));
 }
 
 
@@ -191,8 +187,7 @@ Detail is in reducers/backend.
 export function pushState(state) {
 	let { userState, experimentState } = state;
 
-	pushUserData(userState);
-	pushExperimentData(experimentState);
+	return pushUserData(userState).then(() => { pushExperimentData(experimentState); });
 }
 
 /**/

@@ -7,6 +7,8 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SignInWindow from '../../containers/Login/SignInWindowContainer';
 import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
 import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
+// import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
+import ForgotPasswordWindow from './ForgotPasswordWindow'
 
 import Close from 'material-ui/svg-icons/navigation/close';
 import {
@@ -202,6 +204,18 @@ export default class Login extends React.Component {
 						username={username}
 						signIn={handleSignIn}
 					/>
+				)
+			case LoginModes.forgotPassword:
+				return (
+					<ForgotPasswordWindow 
+						handleClose={handleClose}
+						username={username}
+						password={password}
+						setUserName={setUserName}
+						setPassword={setPassword}
+						signIn={handleSignIn}
+					/>
+
 				)
 			default:
 				return null;

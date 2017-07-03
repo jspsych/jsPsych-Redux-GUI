@@ -25,13 +25,13 @@ For user state:
 2. populate experiment repository
 
 */
-function registerNewExperiment(state) {
+function registerNewExperiment(state, forceNewId=false) {
 	state.userState.experiments = deepCopy(state.userState.experiments);
 	state.experimentState = Object.assign({}, state.experimentState);
 	let { userState, experimentState } = state;
 	// assign id
 	// set owner
-	if (!experimentState.experimentId) {
+	if (!experimentState.experimentId || forceNewId) {
 		experimentState.experimentId = getUUID();
 		experimentState.owner = Object.assign({}, userState.user);
 	}
@@ -136,6 +136,11 @@ function clickSavePush(state, action) {
 	return new_state;
 }
 
+/*
+Update last editting experiment
+Update local experiment state
+
+*/
 function pullExperiment(state, action) {
 	let experimentState = action.data.Item.fetch;
 	let new_state = Object.assign({}, state, {
@@ -186,6 +191,29 @@ function duplicateExperiment(state, action) {
 	return new_state;
 }
 
+
+function newExperiment(state, action) {
+	let new_state = Object.assign({}, state, {
+		experimentState: experimentInitState
+	});
+
+	registerNewExperiment(new_state);
+
+	return new_state;
+}
+
+function saveAs(state, action) {
+	let new_state = Object.assign({}, state, {
+		experimentState: Object.assign({}, state.experimentState, {
+			experimentName: action.newName
+		})
+	});
+
+	registerNewExperiment(new_state, true);
+
+	return new_state;
+}
+
 function backendReducer(state, action) {
 	switch(action.type) {
 		case actionTypes.SIGN_UP_PUSH:
@@ -200,6 +228,10 @@ function backendReducer(state, action) {
 			return deleteExperiment(state, action);
 		case actionTypes.DUPLICATE_EXPERIMENT:
 			return duplicateExperiment(state, action);
+		case actionTypes.NEW_EXPERIMENT:
+			return newExperiment(state, action);
+		case actionTypes.SAVE_AS_PUSH:
+			return saveAs(state, action);
 		default:
 			return state;
 	}

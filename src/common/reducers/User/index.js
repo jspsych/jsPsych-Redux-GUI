@@ -5,6 +5,7 @@ export const LoginModes = {
 	signIn: 0,
 	register: 1,
 	verification: 2,
+	forgotPassword: 3,
 }
 
 export const initState = {
