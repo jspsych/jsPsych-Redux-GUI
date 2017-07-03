@@ -1,4 +1,5 @@
 import { logout, getLoginSessionFromLocalStorage, getUserInfoFromLocalStorage } from '../../backend/cognito';
+import { initState as experimentInitState } from '../Experiment';
 import * as actionTypes from '../../constants/ActionTypes';
 
 export const LoginModes = {
@@ -30,6 +31,7 @@ export const initState = {
 	// gui
 	windowOpen: false,
 	loginMode: LoginModes.signIn,
+	lastEdittingExperimentState: experimentInitState,
 };
 
 

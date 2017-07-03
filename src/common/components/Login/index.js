@@ -7,8 +7,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SignInWindow from '../../containers/Login/SignInWindowContainer';
 import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
 import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
-// import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
-import ForgotPasswordWindow from './ForgotPasswordWindow'
+import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
 
 import Close from 'material-ui/svg-icons/navigation/close';
 import {
@@ -70,7 +69,7 @@ export default class Login extends React.Component {
 			Username: this.state.username,
 			Password: this.state.password
 		}
-
+		
 		login(this.state.username,
 			authenticationData,
 			() => {

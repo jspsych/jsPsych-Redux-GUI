@@ -66,6 +66,7 @@ function signUpPush(state, action) {
 	// yes
 	if (action.anyChange) {
 		registerNewExperiment(new_state);
+		new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
 	}
 
 	return new_state;
@@ -99,7 +100,9 @@ function signInPull(state, action) {
 	if (experimentData) {
 		experimentData = experimentData.Item.fetch;
 		new_state.experimentState = experimentData;
+		new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
 	}
+
 	return new_state;
 }
 
@@ -132,6 +135,7 @@ function clickSavePush(state, action) {
 	} else {
 		registerNewExperiment(new_state);
 	}
+	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
 }
@@ -150,6 +154,8 @@ function pullExperiment(state, action) {
 		experimentState: experimentState
 	})
 
+	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+
 	return new_state;
 }
 
@@ -163,7 +169,8 @@ function deleteExperiment(state, action) {
 	let new_state = Object.assign({}, state, {
 		userState: Object.assign({}, state.userState, {
 			lastEdittingId: (state.userState.lastEdittingId === action.id) ? null : state.userState.lastEdittingId,
-			experiments: state.userState.experiments.filter((item) => (item.id !== action.id))
+			experiments: state.userState.experiments.filter((item) => (item.id !== action.id)),
+			lastEdittingExperimentState: (state.userState.lastEdittingId === action.id) ? null : state.userState.lastEdittingExperimentState,
 		}),
 		experimentState: (state.experimentState.experimentId === action.id) ? experimentInitState : state.experimentState
 	});
@@ -198,7 +205,8 @@ function newExperiment(state, action) {
 	});
 
 	registerNewExperiment(new_state);
-
+	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+	
 	return new_state;
 }
 
@@ -210,6 +218,7 @@ function saveAs(state, action) {
 	});
 
 	registerNewExperiment(new_state, true);
+	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
 }

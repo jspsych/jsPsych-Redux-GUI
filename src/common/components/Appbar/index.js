@@ -18,6 +18,7 @@ import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/Appbar/MediaManager';
 
+import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import * as actionTypes from '../../constants/ActionTypes';
 
 
@@ -27,6 +28,12 @@ export default class Appbar extends React.Component {
     saveAsName: '',
     saveAsNameError: '',
     performing: null,
+    confirmOpen: false,
+    confirmMessage: "",
+    proceedWithOperation: () => {},
+    proceedWithOperationLabel: "",
+    proceed: () => {},
+    proceedLabel: "",
   }
 
   setPerforming = (p) => {
@@ -56,6 +63,23 @@ export default class Appbar extends React.Component {
       saveAsNameError: (/\S/.test(n)) ? '' : "New experiment name can't be empty."
     })
   } 
+
+  handleConfirmClose = () => {
+    this.setState({
+      confirmOpen: false
+    })
+  }
+
+  popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
+    this.setState({
+      confirmOpen: true,
+      confirmMessage: message,
+      proceedWithOperation: proceedWithOperation,
+      proceedWithOperationLabel: proceedWithOperationLabel,
+      proceed: proceed,
+      proceedLabel: proceedLabel,
+    })
+  }
 
 	render() {
 		return (
@@ -99,7 +123,7 @@ export default class Appbar extends React.Component {
                     <ToolbarSeparator />
                     <IconButton 
                       tooltip="New Experiment"
-                      onTouchTap={this.props.newExperiment}
+                      onTouchTap={() => { this.props.newExperiment(this.popUpConfirm); }}
                       > 
                       <New hoverColor={hoverColor} />
                     </IconButton>
@@ -118,7 +142,7 @@ export default class Appbar extends React.Component {
                     }
                     <IconButton 
                       tooltip="Save As"
-                      onTouchTap={this.handleSaveAsOpen}
+                      onTouchTap={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
                       > 
                       <SaveAs hoverColor={hoverColor} />
                     </IconButton>
@@ -128,7 +152,16 @@ export default class Appbar extends React.Component {
   							</Toolbar>
   						</div>
 
-              
+              <ConfirmationDialog
+                open={this.state.confirmOpen}
+                message={this.state.confirmMessage}
+                handleClose={this.handleConfirmClose}
+                proceedWithOperation={this.state.proceedWithOperation}
+                proceedWithOperationLabel={this.state.proceedWithOperationLabel}
+                proceed={this.state.proceed}
+                proceedLabel={this.state.proceedLabel}
+                />
+
 
               <Dialog
                 open={this.state.saveAsOpen}

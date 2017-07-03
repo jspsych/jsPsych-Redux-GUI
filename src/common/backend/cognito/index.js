@@ -72,7 +72,7 @@ export function verify(username, code, callback) {
 		Username: username,
 		Pool: userPool,
 	});
-	cognitoUser.confirmRegistration(code, true, callback);
+	cognitoUser.confirmRegistration(code, false, callback);
 }
 
 export function resendVerification(username, callback) {
