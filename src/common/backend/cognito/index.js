@@ -83,6 +83,27 @@ export function resendVerification(username, callback) {
 	cognitoUser.resendConfirmationCode(callback);
 }
 
+export function forgotPassword(username, onSuccess, onFailure, inputVerificationCode) {
+	let cognitoUser = new CognitoUser({
+		Username: username,
+		Pool: userPool,
+	});
+
+	cognitoUser.forgotPassword({
+        onSuccess: onSuccess,
+        onFailure: onFailure,
+        inputVerificationCode: inputVerificationCode
+    });
+}
+
+export function forgotPasswordReset(username, verificationCode, newPassword, callback) {
+	let cognitoUser = new CognitoUser({
+		Username: username,
+		Pool: userPool,
+	});
+	cognitoUser.confirmPassword(verificationCode, newPassword, callback);
+}
+
 const LoginsKey = 'cognito-idp.' + cognitoConfig.region + '.amazonaws.com/' + cognitoConfig.UserPoolId;
 export function fetchCredential(cognitoUser = null, callback = () => {}) {
 	if (!cognitoUser) {

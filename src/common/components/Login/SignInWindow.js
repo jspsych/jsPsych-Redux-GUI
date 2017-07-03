@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 
+
 export default class SignInWindow extends React.Component {
 
   state = {
@@ -72,7 +73,7 @@ export default class SignInWindow extends React.Component {
   }
 
   render(){
-    let { username, password } = this.props;
+    let { username, password, popForgotPassword } = this.props;
     let { handleSignIn } = this;
 
     return(
@@ -119,6 +120,7 @@ export default class SignInWindow extends React.Component {
               label="Forgot my password" 
               labelStyle={{textTransform: "none", }}
               secondary={true}
+              onTouchTap={popForgotPassword}
             />
           </div>
           

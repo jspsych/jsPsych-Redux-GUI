@@ -17,12 +17,25 @@ const save = (dispatch, feedback) => {
 			return;
 		}
 		dispatch(backendActions.clickSavePushAction());
-		try {
-			pushState(getState());
-			feedback('Saved!', true);
-		} catch(e) {
+		pushState(getState()).then(() => { 
+			feedback('Saved!', true); 
+		}).catch((e) => {
 			feedback('Save failed!', false);
-		}
+		});
+	});
+}
+
+const newExperiment = (dispatch) => {
+	dispatch((dispatch ,getState) => {
+		dispatch(backendActions.newExperimentAction());
+		// pushState(getState());
+	});
+}
+
+const saveAs = (dispatch, newName) => {
+	dispatch((dispatch, getState) => {
+		dispatch(backendActions.saveAsAction(newName));
+		pushState(getState());
 	});
 }
 
@@ -35,6 +48,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	changeExperimentName: (e, text) => { changeExperimentName(dispatch, text); },
 	save: (feedback) => { save(dispatch, feedback); },
+	newExperiment: () => { newExperiment(dispatch); },
+	saveAs: (newName) => { saveAs(dispatch, newName); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Appbar);
