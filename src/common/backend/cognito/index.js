@@ -115,7 +115,7 @@ export function fetchCredential(cognitoUser = null, callback = () => {}) {
 
 	cognitoUser.getSession((err, result) => {
 		if (err) {
-			console.log(err);
+			console.log(err.message);
 			return;
 		}
 		if (result) {

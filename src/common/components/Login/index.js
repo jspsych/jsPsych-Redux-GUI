@@ -132,6 +132,7 @@ export default class Login extends React.Component {
 			handleClose,
 			popVerification,
 			setLoginMode,
+			notifyError
 		} = this.props;
 		let { username, password, email } = this.state;
 
@@ -170,6 +171,7 @@ export default class Login extends React.Component {
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
 				      		signIn={handleSignIn}
+				      		notifyError={notifyError}
 
 				      	/>
 				      </Tab>
@@ -193,6 +195,7 @@ export default class Login extends React.Component {
 				      		setUserName={setUserName}
 				      		setPassword={setPassword}
 				      		setEmail={setEmail}
+				      		notifyError={notifyError}
 				      	/>
 				      </Tab>
 				   	</Tabs>
@@ -203,6 +206,7 @@ export default class Login extends React.Component {
 					<VerificationWindow 
 						username={username}
 						signIn={handleSignIn}
+				      	notifyError={notifyError}
 					/>
 				)
 			case LoginModes.forgotPassword:
@@ -214,6 +218,7 @@ export default class Login extends React.Component {
 						setUserName={setUserName}
 						setPassword={setPassword}
 						signIn={handleSignIn}
+				      	notifyError={notifyError}
 					/>
 
 				)

@@ -7,10 +7,10 @@ handle all the communications for us. signInOut handles fetching
 login information from local storage.
 */
 
-import * as actionTypes from '../constants/ActionTypes';
-import { deepCopy, getUUID } from '../utils';
-import { signInOut } from './User';
-import { initState as experimentInitState } from './Experiment';
+import * as actionTypes from '../../constants/ActionTypes';
+import { deepCopy, getUUID } from '../../utils';
+import { signInOut } from '../User';
+import { initState as experimentInitState } from '../Experiment';
  
 /*
 *Note, will handle deep copy for you
@@ -64,7 +64,7 @@ function signUpPush(state, action) {
 
 	// is experiment modified?
 	// yes
-	if (new_state.experimentState.anyChange) {
+	if (action.anyChange) {
 		registerNewExperiment(new_state);
 	}
 
@@ -214,7 +214,7 @@ function saveAs(state, action) {
 	return new_state;
 }
 
-function backendReducer(state, action) {
+export default function backendReducer(state, action) {
 	switch(action.type) {
 		case actionTypes.SIGN_UP_PUSH:
 			return signUpPush(state, action);
@@ -237,21 +237,3 @@ function backendReducer(state, action) {
 	}
 }
 
-function detectPush(state, action) {
-	switch(action.type) {
-		case actionTypes.SIGN_UP_PUSH:
-		case actionTypes.CLICK_SAVE_PUSH:
-			if (!state.experimentState.anyChange) return state;
-			return Object.assign({}, state, {
-				experimentState: Object.assign({}, state.experimentState, {
-					anyChange: false,
-				})
-			});
-		default:
-			return state;
-	}
-}
-
-export default function(state, action) {
-	return detectPush(backendReducer(state, action), action);
-}

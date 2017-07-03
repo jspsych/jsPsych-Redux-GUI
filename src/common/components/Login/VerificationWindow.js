@@ -71,7 +71,7 @@ export default class VerificationWindow extends React.Component {
         this.handleModeChange(Modes.success);
         this.handleCodeError('');
         this.props.signIn((err) => {
-          console.log(err.code);
+          this.props.notifyError(err.message);
         }, true)
       }
     });
@@ -82,7 +82,7 @@ export default class VerificationWindow extends React.Component {
     this.handleSnackbarOpen(); 
     resendVerification(this.props.username, (err, result) => {
       if (err) {
-        // alert(err);
+        this.props.notifyError(err.message);
         return;
       }
     });

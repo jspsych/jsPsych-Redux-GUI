@@ -75,7 +75,7 @@ export default class RegisterWindow extends React.Component {
     signUp(this.props.username, this.props.password, attributes, (err, result) => {
       if (err) {
         this.handleReadyChange(true);
-        alert(err);
+        this.props.notifyError(err.message);
         return;
       }
       this.props.popVerification();

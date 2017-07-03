@@ -57,8 +57,7 @@ export function signInOut(state, action) {
 	}
 	new_state.user = getUserInfoFromLocalStorage();
 	new_state.loginSession = getLoginSessionFromLocalStorage();
-	// console.log(new_state.user);
-	// console.log(new_state.loginSession)
+	
 	return new_state;
 }
 

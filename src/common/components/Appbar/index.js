@@ -1,52 +1,38 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
-import MenuItem from 'material-ui/MenuItem';
+import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import { GridTile } from 'material-ui/GridList';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; // , ToolbarSeparator, ToolbarTitle
-import Snackbar from 'material-ui/Snackbar';
 
+import Save from 'material-ui/svg-icons/content/save';
+import New from 'material-ui/svg-icons/action/note-add';
+import SaveAs from 'material-ui/svg-icons/content/content-copy';
 import {
   cyan500 as hoverColor,
-  green500 as successColor,
-  yellow500 as failColor
 } from 'material-ui/styles/colors';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/Appbar/MediaManager';
-import Save from 'material-ui/svg-icons/content/save';
-import Done from 'material-ui/svg-icons/action/check-circle';
-import ErrorIcon from 'material-ui/svg-icons/alert/warning';
-import New from 'material-ui/svg-icons/action/note-add';
-import SaveAs from 'material-ui/svg-icons/content/content-copy';
+
+import * as actionTypes from '../../constants/ActionTypes';
 
 
 export default class Appbar extends React.Component {
   state = {
-    snackBarOpen: false,
-    snackBarSuccess: false,
     saveAsOpen: false,
     saveAsName: '',
     saveAsNameError: '',
+    performing: null,
   }
 
-  handleOpenSnackBar = (m, f) => {
+  setPerforming = (p) => {
     this.setState({
-      snackBarOpen: true,
-      snackBarMessage: m,
-      snackBarSuccess: f
-    })
-  }
-
-  handleCloseSnackBar = () => {
-    this.setState({
-      snackBarOpen: false,
-      snackBarMessage: '',
-      snackBarSuccess: false
-    })
+      performing: p
+    });
   }
 
   handleSaveAsOpen = () => {
@@ -117,12 +103,19 @@ export default class Appbar extends React.Component {
                       > 
                       <New hoverColor={hoverColor} />
                     </IconButton>
-                    <IconButton 
-                      tooltip="Save"
-                      onTouchTap={() => { this.props.save(this.handleOpenSnackBar); }}
+                    {(this.state.performing === actionTypes.CLICK_SAVE_PUSH) ?
+                      <CircularProgress /> :
+                      <IconButton 
+                        tooltip="Save"
+                        onTouchTap={() => { this.props.save(()=>{
+                          this.setPerforming(actionTypes.CLICK_SAVE_PUSH);
+                        }, () => {
+                          this.setPerforming(null);
+                        });}}
                       > 
-                      <Save hoverColor={hoverColor} />
-                    </IconButton>
+                        <Save hoverColor={hoverColor} />
+                      </IconButton>
+                    }
                     <IconButton 
                       tooltip="Save As"
                       onTouchTap={this.handleSaveAsOpen}
@@ -135,19 +128,7 @@ export default class Appbar extends React.Component {
   							</Toolbar>
   						</div>
 
-              <Snackbar
-                open={this.state.snackBarOpen}
-                message={ 
-                  <MenuItem 
-                    primaryText={this.state.snackBarMessage}
-                    style={{color: 'white'}}
-                    disabled={true}
-                    rightIcon={(this.state.snackBarSuccess) ? <Done color={successColor} /> : <ErrorIcon color={failColor} />} 
-                  /> 
-                }
-                autoHideDuration={2500}
-                onRequestClose={this.handleCloseSnackBar}
-              />
+              
 
               <Dialog
                 open={this.state.saveAsOpen}
