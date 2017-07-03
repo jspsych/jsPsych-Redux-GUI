@@ -32,7 +32,7 @@ export function arrayOfArrays(arrayOfObjects) {
 	var headers = Object.keys(arrayOfObjects[0]);
 	var firstRow = [];
 	//For each object in the array
-	for(let i=0; i<headers.length; i++) { 
+	for(let i=0; i<headers.length; i++) {
 		firstRow.push(headers[i]);
 	}
 	newArray.push(firstRow);
@@ -59,8 +59,7 @@ export function arrayOfObjects(arrayOfArrays) {
 		array.push({});
 		//For number of headers
 		for(let j=0; j<arrayOfArrays[0].length; j++) {
-			let currentHeader = headers[j]; 
-		 	currentObj = array[i]; 
+		 	currentObj = array[i];
 		 	currentObj[headers[j]] = arrayOfArrays[i+1][j];
 		 	array[i] = currentObj;
 		}
@@ -80,7 +79,7 @@ export function arrayOfColumns(arrayOfRows) {
 	for(let i=0; i<arrayOfRows.length; i++) {
 		//For each element in each row
 		for(let j=0; j<arrayOfRows[0].length; j++) {
-			array[j].push(arrayOfRows[i][j]); 
+			array[j].push(arrayOfRows[i][j]);
 		}
 	}
 	return array;
@@ -95,7 +94,7 @@ export function backToArrayOfArrays(arrayOfColumns) {
 
 	for(let i=0; i<arrayOfColumns.length; i++) {
 		for(let j=0; j<arrayOfColumns[0].length; j++) {
-			array[j].push(arrayOfColumns[i][j]);	
+			array[j].push(arrayOfColumns[i][j]);
 		}
 	}
 	return array;

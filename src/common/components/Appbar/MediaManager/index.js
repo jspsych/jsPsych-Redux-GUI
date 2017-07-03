@@ -2,7 +2,6 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import Checkbox from 'material-ui/Checkbox';
 import Dropzone from 'react-dropzone';
 import CircularProgress from 'material-ui/CircularProgress';
 const mime = require('mime-types');
@@ -12,8 +11,7 @@ import { upload, deleteObjects, listBucketContents } from '../../../backend/s3';
 
 import {
   grey800 as normalColor,
-  cyan600 as iconHighlightColor,
-  green500 as checkColor,
+  cyan600 as iconHighlightColor
 } from 'material-ui/styles/colors';
 import MediaManagerIcon from 'material-ui/svg-icons/image/photo-library';
 import ImageIcon from 'material-ui/svg-icons/image/photo';
@@ -26,7 +24,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
 function fileIconFromTitle(title) {
 	const type = mime.lookup(title);
-	if(type == false){
+	if(type === false){
 		return <FileIcon />
 	} else if(type.indexOf('image') > -1){
 		return <ImageIcon />

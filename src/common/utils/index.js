@@ -3,7 +3,7 @@ var short = require('short-uuid');
 
 /*
 Simple deepCopy,
-Target can be 
+Target can be
 object
 boolean
 number
@@ -49,7 +49,7 @@ export const convertNullToEmptyString = (s) => ((!s) ? '' : s);
 
 export function getUUID() {
 	var translator = short();
-	var decimalTranslator = short("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	//var decimalTranslator = short("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	let res = translator.new();
 	return res;
 }

@@ -17,8 +17,6 @@ import { fetchExperimentById } from '../common/backend/dynamoDB';
 
 var deepEqual = require('deep-equal');
 
-const preloadedState = window.__PRELOADED_STATE__;
-
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 

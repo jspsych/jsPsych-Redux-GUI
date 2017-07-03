@@ -7,7 +7,6 @@ import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 import Notification from '../containers/Notification';
 
-
 import { getFullScreenState } from './PreviewWindow';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
@@ -37,7 +36,7 @@ const checkValidSize = (s) => {
 }
 
 class App extends React.Component {
-	
+
 	constructor(props) {
 		super(props);
 
@@ -269,7 +268,7 @@ class App extends React.Component {
 		window.removeEventListener("resize", this.setZoomMaxHeight);
 	}
 
-	
+
 	render() {
 		const {
 			timelineOrganizerDrawerToggle,
@@ -300,7 +299,7 @@ class App extends React.Component {
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
 				</div>
-				
+
 	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
@@ -311,7 +310,7 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
-	  				<div 
+	  				<div
 	  					className="main-body"
 	  					id="main-body"
 	  					style={{
@@ -323,7 +322,7 @@ class App extends React.Component {
 						 	display: 'flex-col'
 	  					}}
 	  				>
-	  				<ZoomBar 
+	  				<ZoomBar
 	  						zoomScale={zoomScale}
 	  						zoomWidth={zoomWidth}
 	  						zoomHeight={zoomHeight}
@@ -335,7 +334,7 @@ class App extends React.Component {
 	  						onInputZoomWidth={onInputZoomWidth}
 	  						onSelect={onSelect}
 	  				/>
-	  				<PreviewWindow 
+	  				<PreviewWindow
 	  						zoomScale={zoomScale}
 	  						zoomWidth={zoomWidth}
 	  						zoomHeight={zoomHeight}
@@ -354,6 +353,3 @@ class App extends React.Component {
 
 
 export default App;
-
-
-				

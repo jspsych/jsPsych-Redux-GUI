@@ -29,7 +29,7 @@ A trial state = {
 
 
 
-import * as utils from './utils'; 
+import * as utils from './utils';
 import { deepCopy } from '../../utils';
 // import { createFuncObj, defaultFunction } from './jsPsychInit';
 
@@ -49,10 +49,6 @@ const DEFAULT_TRIAL_PARAM = {
 		chocies: null,
 		allow_mouse_click: false,
 };
-
-
-var timeline = 0;
-var trial = 0;
 
 
 /**************************  Helper functions  ********************************/
@@ -327,7 +323,7 @@ function duplicateTimelineHelper(state, dupId, targetId) {
 /*
 action = {
 	dupId: id, // assigned id
-	targetId: id, // target to be copyed 
+	targetId: id, // target to be copyed
 }
 */
 export function duplicateTimeline(state, action) {
@@ -360,7 +356,7 @@ export function duplicateTimeline(state, action) {
 /*
 action = {
 	dupId: id, // assigned id
-	targetId: id, // target to be copyed 
+	targetId: id, // target to be copyed
 }
 */
 export function duplicateTrial(state, action) {
@@ -390,7 +386,7 @@ export function duplicateTrial(state, action) {
 	arr.splice(arr.indexOf(targetId)+1, 0, dupId);
 
 	return new_state;
-} 
+}
 
 /*
 See if source is an ancestor of target
@@ -408,7 +404,7 @@ function isAncestor(state, sourceId, targetId) {
 }
 
 /*
-Move source to a wanted position in the tree. 
+Move source to a wanted position in the tree.
 Either right at or one slot behind the original node at that pos.
 action = {
 	sourceId: id, // source
@@ -425,7 +421,7 @@ export function moveTo(state, action) {
 		!action.targetId ||
 		isAncestor(state, action.sourceId, action.targetId))
 		return state;
-	
+
 	let source = state[action.sourceId];
 	let target = state[action.targetId];
 
@@ -452,8 +448,8 @@ export function moveTo(state, action) {
 		let to = arr.indexOf(target.id);
 		arr.move(from, to);
 
-	// if not 
-	} else { 
+	// if not
+	} else {
 		// delete source from old parent
 		let sourceParent = source.parent;
 		if (sourceParent === null) {
@@ -517,7 +513,7 @@ export function moveInto(state, action) {
 	let hasParentCandidate =  index > 0 &&
 		utils.isTimeline(state[parentChildren[index-1]]);
 
-	
+
 	if (hasParentCandidate) {
 		// deep copies
 		let new_state = Object.assign({}, state);
@@ -550,7 +546,7 @@ export function moveInto(state, action) {
 	} else {
 		return state;
 	}
- 
+
 
 }
 
@@ -589,7 +585,7 @@ export function moveByKeyboard(state, action) {
 		case 40:
 			// if already last
 			if (currentIndex === parent.length - 1) {
-				return state; 
+				return state;
 			} else {
 				targetId = parent[currentIndex + 1];
 			}
