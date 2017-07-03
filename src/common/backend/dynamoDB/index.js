@@ -170,12 +170,12 @@ export function signUpPush(state) {
 	let { userState, experimentState } = state;
 
 	// update user data
-	pushUserData(userState);
-
-	// if there is any change in experiment, save it too
-	if (experimentState.experimentId) {
-		pushExperimentData(experimentState);
-	}
+	return pushUserData(userState).then(() => {
+		// if there is any change in experiment, save it too
+		if (experimentState.experimentId) {
+			pushExperimentData(experimentState);
+		}
+	});
 }
 
 /*

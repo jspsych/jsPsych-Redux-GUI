@@ -20,9 +20,13 @@ Before or after all pushing and pulling, the state will be processed by redux st
 import { connect } from 'react-redux';
 import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;
+import * as notificationActions from '../../actions/notificationActions' ;
 import Login from '../../components/Login';
 import { LoginModes } from '../../reducers/User';
+import { initState as experimentInitState } from '../../reducers/Experiment';
+import { Notify_Method, Notify_Type } from '../../reducers/Notification';
 import { signUpPush, signInFetchUserData, fetchExperimentById } from '../../backend/dynamoDB';
+var deepEqual = require('deep-equal')
 
 const handleClose = (dispatch) => {
 	dispatch(userActions.setLoginWindowAction(false));
@@ -34,6 +38,13 @@ const popVerification = (dispatch) => {
 
 const setLoginMode = (dispatch, mode) => {
 	dispatch(userActions.setLoginWindowAction(true, mode))
+}
+
+const notifyError = (dispatch, message) => {
+	dispatch(notificationActions.notifyAction(
+				Notify_Method.dialog,
+				Notify_Type.error,
+				message));
 }
 
 /*
@@ -54,17 +65,27 @@ export const signIn = (dispatch) => {
 		dispatch(userActions.signInAction());
 
 		// fetch user data
-		signInFetchUserData(getState().userState.user.identityId).then((data) => {
+		signInFetchUserData(
+			getState().userState.user.identityId
+		).then((data) => {
 			// update user data locally
 			dispatch(backendActions.signInPullAction(data, null));
 		}).then(() => {
+			let anyChange = !deepEqual(experimentInitState, getState().experimentState);
 			// if there is any change
-			if (getState().experimentState.anyChange) {
+			if (anyChange) {
 				// almost same logic with signUp since we are
 				// 1. updating user data anyway (due to new experiment)
 				// 2. inserting a new experiment to data base as well
-				dispatch(backendActions.signUpPushAction());
-				signUpPush(getState());
+				dispatch(backendActions.signUpPushAction(anyChange));
+				signUpPush(getState()).catch((err) => {
+					notifyError(dispatch, err.message);
+				}).then(() => {
+					dispatch(notificationActions.notifyAction(
+						Notify_Method.snackbar,
+						Notify_Type.success,
+						'Saved !'));
+				});
 			} else {
 				// if there is no change
 				// 1. Fetch last editted experiment data
@@ -73,14 +94,18 @@ export const signIn = (dispatch) => {
 				if (!memorizedId) return;
 				fetchExperimentById(
 					memorizedId,
-					).then(
+				).catch((err) => {
+					notifyError(dispatch, err.message);
+				}).then(
 					(data) => {
 						dispatch(backendActions.signInPullAction(null, data));
 					}
 				)
 			}
-		})
-	})
+		}).catch((err) => {
+			notifyError(dispatch, err.message);
+		});
+	});
 }
 
 /*
@@ -92,8 +117,16 @@ Save case: create account.
 */
 const signUp = (dispatch) => {
 	dispatch((dispatch, getState) => {
-		dispatch(backendActions.signUpPushAction());
-		signUpPush(getState());
+		let anyChange = !deepEqual(experimentInitState, getState().experimentState);
+		dispatch(backendActions.signUpPushAction(anyChange));
+		signUpPush(getState()).then(() => {
+			dispatch(notificationActions.notifyAction(
+				Notify_Method.snackbar,
+				Notify_Type.success,
+				'Saved !'));
+		}).catch((err) => {
+			notifyError(dispatch, err.message);
+		});
 	});
 }
 
@@ -111,6 +144,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	setLoginMode: (mode) => { setLoginMode(dispatch, mode); },
 	signIn: () => { signIn(dispatch); },
 	signUp: () => { signUp(dispatch); },
+	notifyError: (message) => { notifyError(dispatch, message); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

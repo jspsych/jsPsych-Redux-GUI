@@ -68,7 +68,8 @@ const duplicateExperiment = (dispatch, id) => {
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		experiments: state.userState.experiments
+		experiments: state.userState.experiments,
+		currentId: state.userState.lastEdittingId
 	};
 };
 

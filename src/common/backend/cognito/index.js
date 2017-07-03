@@ -72,7 +72,7 @@ export function verify(username, code, callback) {
 		Username: username,
 		Pool: userPool,
 	});
-	cognitoUser.confirmRegistration(code, true, callback);
+	cognitoUser.confirmRegistration(code, false, callback);
 }
 
 export function resendVerification(username, callback) {
@@ -115,7 +115,7 @@ export function fetchCredential(cognitoUser = null, callback = () => {}) {
 
 	cognitoUser.getSession((err, result) => {
 		if (err) {
-			console.log(err);
+			console.log(err.message);
 			return;
 		}
 		if (result) {

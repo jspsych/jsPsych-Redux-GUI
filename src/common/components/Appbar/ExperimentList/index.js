@@ -82,6 +82,7 @@ export default class ExperimentList extends React.Component {
 					key={id}
 					id={id}
 					primaryText={name}
+					secondaryText={(id === this.props.currentId) ? "Currently open" : ""}
 					onTouchTap={()=>{this.setSeletected(id);}}
 					rightIconButton={
 						this.renderIconMenu(id)
@@ -105,7 +106,7 @@ export default class ExperimentList extends React.Component {
 				primary={true}
 				labelStyle={{textTransform: "none", }}
     			keyboardFocused={true}
-				onTouchTap={() => { this.props.pullExperiment(this.state.selected); handleClose(); }}
+				onTouchTap={() => { this.props.pullExperiment(this.state.selected); /*handleClose();*/ }}
 			/>
 		]
 
