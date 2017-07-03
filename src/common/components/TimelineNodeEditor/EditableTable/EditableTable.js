@@ -1,17 +1,12 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
-import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
 import RaisedButton from 'material-ui/RaisedButton';
 import Popover from 'material-ui/Popover';
 import Toggle from 'material-ui/Toggle';
 import SelectField from 'material-ui/SelectField';
-import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-
 import TableContextMenu from './TableContextMenu';
 
-import { grey900 } from 'material-ui/styles/colors';
 
 const tableStyles = {
 	numbers: {
@@ -111,24 +106,24 @@ class EditableTable extends React.Component {
 				case 'ArrowUp': this.onUpPress(event);
 				break;
 				case 'ArrowDown': this.onDownPress(event);
-				break; 
+				break;
 				case 'ArrowLeft': this.onLeftPress(event);
 				break;
 				case 'ArrowRight': this.onRightPress(event);
 				break;
 				default: console.log("key pressed "+event.key);
-			}	
+			}
 		}
 
 		this.onUpPress = (event) => {
 			let cell = document.getElementById(event.target.id);
-			let isFirstRow = cell.dataset.row; 
+			let isFirstRow = cell.dataset.row;
 			let nextRowCell = cell.dataset.row-1;
 			let column = cell.dataset.column;
 
-			if(event.target.name == "tableHeader") {
+			if(event.target.name === "tableHeader") {
 			//Do nothing
-		} else if(isFirstRow == 1) {
+		} else if(isFirstRow === 1) {
 			document.getElementById(column).focus();
 		} else {
 			document.getElementById(nextRowCell+" "+column).focus();
@@ -142,21 +137,21 @@ class EditableTable extends React.Component {
 		let column = cell.dataset.column;
 
 
-		if(event.target.name == "tableHeader" && cell != null) {
+		if(event.target.name === "tableHeader" && cell != null) {
 			document.getElementById(1+" "+column).focus();
-		} else if(document.getElementById(nextRowCell+" "+column) == null) {
+		} else if(document.getElementById(nextRowCell+" "+column) === null) {
 			this.props.handleAddRow(event.target.id);
 		} else {
 			document.getElementById(nextRowCell+" "+column).focus();
 		}
-	}		
+	}
 
 	this.onLeftPress = (event) => {
 		let cell = document.getElementById(event.target.id);
 		let nextColumn = cell.dataset.column-1;
 		let row = cell.dataset.row;
 
-		if(event.target.name == "tableHeader") {
+		if(event.target.name === "tableHeader") {
 			document.getElementById(nextColumn).focus();
 		} else {
 			document.getElementById(row+" "+nextColumn).focus();
@@ -169,11 +164,11 @@ class EditableTable extends React.Component {
 		let nextColumn = cell.dataset.column*1+1;
 		let row = cell.dataset.row;
 
-		if(event.target.name == "tableHeader" && document.getElementById(nextColumn) != null) {
+		if(event.target.name === "tableHeader" && document.getElementById(nextColumn) != null) {
 			document.getElementById(nextColumn).focus();
-		} else if(event.target.name == "tableHeader" && document.getElementById(nextColumn) == null) {
+		} else if(event.target.name === "tableHeader" && document.getElementById(nextColumn) == null) {
 			this.props.handleAddColumn(event.target.id);
-		} else if(document.getElementById(nextColumn) == null) {
+		} else if(document.getElementById(nextColumn) === null) {
 			this.props.handleAddColumn(event.target.id);
 		} else {
 			document.getElementById(row+" "+nextColumn).focus();
@@ -191,11 +186,11 @@ render(){
 	<thead>
 		<tr className="headerRow">
 			<td style={tableStyles.numbers}></td>
-			{	
+			{
 				headers.map((title, index) => {
-					return <td><input name="tableHeader" data-row={0} data-column={index} id={index} value={title} 
+					return <td><input name="tableHeader" data-row={0} data-column={index} id={index} value={title}
 					key={index}
-					onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)} 
+					onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)}
 					onKeyDown={(event) => this.bindKeyboard(event)}
 					onContextMenu={(event) => this.handleColumnContextMenu(event, index)}
 					style={tableStyles.header} /></td>
@@ -206,12 +201,12 @@ render(){
 	<tbody>
 	{
 		timelineRows.map((row, rowIndex) => {////rowIndex is number of rows
-			return <tr id={"row"+" "+rowIndex} key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
+			return <tr id={"row "+rowIndex} key={rowIndex}><td style={tableStyles.numbers}>{rowIndex+1}</td>{
 				headers.map((title, titleIndex) => {
-					return <td><input name={"cells"} data-row={rowIndex+1} data-column={titleIndex} id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header} 
-					key={[rowIndex+1] +" "+ titleIndex} 
-					value={row[headers[titleIndex]]} 
-					onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)} 
+					return <td><input name={"cells"} data-row={rowIndex+1} data-column={titleIndex} id={[rowIndex+1] +" "+ titleIndex} style={tableStyles.header}
+					key={[rowIndex+1] +" "+ titleIndex}
+					value={row[headers[titleIndex]]}
+					onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)}
 					onKeyDown={(event) => this.bindKeyboard(event)}
 					onContextMenu={(event) => this.handleContextMenu(event, rowIndex+1, titleIndex)} /></td>
 					})
@@ -266,7 +261,7 @@ render(){
 				anchorEl={this.state.anchorElContext}
 				onDeleteColumn={(event) => this.onColumn(event, this.state.rowIndex, this.state.titleIndex)}
 				onDeleteRow={(event) => this.onRow(event, this.state.rowIndex, this.state.titleIndex)}
-				handleCloseContext={this.closeContext} 
+				handleCloseContext={this.closeContext}
 
 				openHeader={this.state.isOpenHeader}
 				anchorElHeader={this.state.anchorElColumn}
@@ -278,6 +273,3 @@ render(){
 	}
 }
 export default EditableTable;
-
-
-

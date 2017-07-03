@@ -11,8 +11,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { signIn } from '../common/containers/Login';
 import { getUserInfoFromLocalStorage, fetchCredential } from '../common/backend/cognito';
 
-const preloadedState = window.__PRELOADED_STATE__;
-
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 

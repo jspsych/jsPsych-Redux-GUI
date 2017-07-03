@@ -1,13 +1,12 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import Toggle from 'material-ui/Toggle';
 import EditableTable from '../../containers/TimelineNodeEditor/EditableTable/EditableTable';
 
 class TimelineForm extends React.Component {
 	render(){
 		var form;
 		if(this.props.isTimeline) {
-			var form = 
+			form =
 			<div className="TimelineForm">
 			<EditableTable id={this.props.id} />
 			<TextField floatingLabelText="repetitions"
@@ -15,7 +14,7 @@ class TimelineForm extends React.Component {
 			onChange={this.props.onChange} />
 			</div>
 		} else {
-			var form = <div></div>
+			form = <div></div>
 		}
 		return(
 			<div>
