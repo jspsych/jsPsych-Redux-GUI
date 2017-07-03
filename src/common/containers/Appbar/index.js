@@ -15,6 +15,24 @@ const changeExperimentName = (dispatch, text) => {
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
+const $save = (dispatch, getState) => {
+	// process state
+	dispatch(backendActions.clickSavePushAction());
+
+	return pushState(getState()).catch((err) => {
+		dispatch(notificationActions.notifyAction(
+			Notify_Method.dialog,
+			Notify_Type.error,
+			err.message));
+		// feedback
+	}).then(() => {
+		dispatch(notificationActions.notifyAction(
+			Notify_Method.snackbar,
+			Notify_Type.success,
+			'Saved !'));
+	});
+}
+
 const save = (dispatch, onStart=()=>{}, onFinish=()=>{}) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
@@ -37,21 +55,7 @@ const save = (dispatch, onStart=()=>{}, onFinish=()=>{}) => {
 		p.then((anyChange) => {
 			// if there is any change
 			if (anyChange) {
-				// process state
-				dispatch(backendActions.clickSavePushAction());
-				// push change
-				pushState(getState()).catch((err) => {
-					dispatch(notificationActions.notifyAction(
-						Notify_Method.dialog,
-						Notify_Type.error,
-						err.message));
-					// feedback
-				}).then(() => {
-					dispatch(notificationActions.notifyAction(
-						Notify_Method.snackbar,
-						Notify_Type.success,
-						'Saved !'));
-				});
+				$save(dispatch, getState);
 			} else {
 				dispatch(notificationActions.notifyAction(
 					Notify_Method.snackbar,
@@ -77,15 +81,7 @@ const newExperiment = (dispatch, popUpConfirm) => {
 			popUpConfirm(
 				"Do you want to save the changes before creating new experiment?",
 				() => {
-					// process state
-					dispatch(backendActions.clickSavePushAction());
-					// push change
-					pushState(getState()).then(() => {
-						dispatch(notificationActions.notifyAction(
-						Notify_Method.snackbar,
-						Notify_Type.success,
-						'Saved !'));
-					}).then(() => {
+					$save(dispatch, getState).then(() => {
 						dispatch(backendActions.newExperimentAction());
 					}).catch((err) => {
 						dispatch(notificationActions.notifyAction(
