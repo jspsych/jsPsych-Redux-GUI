@@ -201,7 +201,10 @@ function duplicateExperiment(state, action) {
 
 function newExperiment(state, action) {
 	let new_state = Object.assign({}, state, {
-		experimentState: experimentInitState
+		experimentState: experimentInitState,
+		userState: Object.assign({}, state.userState, {
+			lastEdittingId: null
+		})
 	});
 
 	// registerNewExperiment(new_state);
