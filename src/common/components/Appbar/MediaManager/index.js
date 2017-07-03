@@ -161,7 +161,7 @@ export default class MediaManager extends React.Component {
 			mediaList = this.state.s3files.Contents.map( (f, i) =>
 				<ListItem
 					key={f.ETag}
-					primaryText={f.Key}
+					primaryText={f.Key.replace(this.state.s3files.Prefix, '')}
 					leftIcon={fileIconFromTitle(f.Key)}
 					rightIconButton={
 						<IconButton

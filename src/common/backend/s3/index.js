@@ -9,7 +9,7 @@ function uploadFile(file, success, failure){
   });
 
   s3.upload({
-      Key: file.name,
+      Key: AWS.config.credentials.identityId + '/' + file.name,
       Body: file
     }, function(err, data) {
       if (err) {
@@ -49,38 +49,45 @@ export function listBucketContents(success, failure){
     params: {Bucket: bucketName}
   });
 
-  s3.listObjectsV2({}, function(err, data){
-    if(err) {
-      console.log(err);
-      failure(err);
-    } else {
-      //console.log(data);
-      success(data);
+  s3.listObjectsV2(
+    {
+      Delimiter: '/',
+      Prefix:AWS.config.credentials.identityId+"/"
+    }, function(err, data){
+      if(err) {
+        console.log(err);
+        failure(err);
+      } else {
+        console.log(data);
+        success(data);
+      }
     }
-  });
+  );
 
 }
 
 export function upload(files, success, failure){
   var completed = 0;
+  var updateCount = function(){
+    completed++;
+    if(completed === files.length){
+      success();
+    }
+  }
   for(var i=0; i<files.length; i++){
-    uploadFile(files[i], function(){
-      completed++;
-      if(completed == files.length){
-        success();
-      }
-    }, failure);
+    uploadFile(files[i], updateCount, failure);
   }
 }
 
 export function deleteObjects(files, success, failure){
   var completed = 0;
+  var updateCount = function(){
+    completed++;
+    if(completed === files.length){
+      success();
+    }
+  }
   for(var i=0; i<files.length; i++){
-    deleteFile(files[i], function(){
-      completed++;
-      if(completed == files.length){
-        success();
-      }
-    }, failure);
+    deleteFile(files[i], updateCount, failure);
   }
 }

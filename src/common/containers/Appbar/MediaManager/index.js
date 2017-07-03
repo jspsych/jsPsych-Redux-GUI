@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import MediaManager from '../../../components/Appbar/MediaManager';
 
 const mapStateToProps = (state, ownProps) => {
-
+ return {}
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
