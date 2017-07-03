@@ -217,7 +217,7 @@ function saveAs(state, action) {
 		})
 	});
 
-	registerNewExperiment(new_state, true);
+	// registerNewExperiment(new_state, true);
 	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
