@@ -28,6 +28,10 @@ const mapStateToProps = (state, ownProps) => {
 
 	let trial = experimentState[experimentState.previewId];
 
+	if (!trial) {
+		return {};
+	}
+	
 	return {
 		id: trial.id,
 		isTrial: isTrial(trial),

@@ -53,9 +53,9 @@ jsPsych.plugins['survey-text'] = (function() {
       },
       button_label: {
         type: [jsPsych.plugins.parameterType.STRING],
-        default: '',
+        default: 'Next',
         no_function: false,
-        description: 'Submit Answers'
+        description: ''
       }
     }
   }
@@ -63,7 +63,7 @@ jsPsych.plugins['survey-text'] = (function() {
   plugin.trial = function(display_element, trial) {
 
     trial.preamble = typeof trial.preamble == 'undefined' ? "" : trial.preamble;
-    trial.button_label = typeof trial.button_label === 'undefined' ? 'Submit Answers' : trial.button_label;
+    trial.button_label = typeof trial.button_label === 'undefined' ? 'Next' : trial.button_label;
 
     if (typeof trial.rows == 'undefined') {
       trial.rows = [];
@@ -97,7 +97,7 @@ jsPsych.plugins['survey-text'] = (function() {
       html += '<div id="jspsych-survey-text-"'+i+'" class="jspsych-survey-text-question" style="margin: 2em 0em;">';
       html += '<p class="jspsych-survey-text">' + trial.questions[i] + '</p>';
       if(trial.rows[i] == 1){
-        html += '<input type="text" name="#jspsych-survey-text-response-' + i + '">'+trial.values[i]+'</input>';
+        html += '<input type="text" name="#jspsych-survey-text-response-' + i + '" size="'+trial.columns[i]+'">'+trial.values[i]+'</input>';
       } else {
         html += '<textarea name="#jspsych-survey-text-response-' + i + '" cols="' + trial.columns[i] + '" rows="' + trial.rows[i] + '">'+trial.values[i]+'</textarea>';
       }

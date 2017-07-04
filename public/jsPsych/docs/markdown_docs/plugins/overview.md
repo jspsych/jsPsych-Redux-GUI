@@ -74,17 +74,16 @@ This table is a description of all plugins that are currently bundled with jsPsy
  [jspsych&#8209;html](jspsych-html) | Displays an external HTML page (such as a consent form) and lets the subject respond by clicking a button or pressing a key. Plugin can validate their response, which is useful for making sure that a subject has granted consent before starting the experiment.
  [jspsych&#8209;instructions](jspsych-instructions) | For displaying instructions to the subject.
  [jspsych&#8209;multi&#8209;stim&#8209;multi&#8209;response](jspsych-multi-stim-multi-response) | A more generalized version of the single-stim plugin. Can display multiple stimuli in a single trial, and collect multiple responses in a single trial.
- [jspsych&#8209;palmer](jspsych-palmer) | Shows grid-like stimuli inspired by Stephen Palmer's work. The stimuli are editable: subjects can add and subtract parts interactively. Also contains a method for generating the HTML code to render the stimuli, allowing them to be used in other plugins.
  [jspsych&#8209;reconstruction](jspsych-reconstruction) | The subject interacts with a stimulus by modifying a parameter of the stimulus and observing the change in the stimulus in real-time.
  [jspsych&#8209;resize](jspsych-resize) | Calibrate the display so that materials display with a known physical size.
  [jspsych&#8209;same&#8209;different](jspsych-same-different) | A same-different judgment task. A stimulus is shown, followed by a brief gap, and then another stimulus is shown. The subject indicates whether the stimuli are the same or different.
  [jspsych&#8209;serial&#8209;reaction&#8209;time](jspsych-serial-reaction-time) | A set of boxes are displayed on the screen and one of them changes color. The subject presses a key that corresponds to the different color box as fast as possible.
   [jspsych&#8209;serial&#8209;reaction&#8209;time&#8209;mouse](jspsych-serial-reaction-time-mouse) | A set of boxes are displayed on the screen and one of them changes color. The subjects clicks the box that changed color as fast as possible.
- [jspsych&#8209;similarity](jspsych-similarity) | Two stimuli are shown sequentially, and the subject indicates how similar they are by dragging a slider object.
  [jspsych&#8209;single&#8209;audio](jspsych-single-audio) | A basic plugin for playing an audio stimulus and getting a keyboard response.
  [jspsych&#8209;single&#8209;stim](jspsych-single-stim) | A basic plugin for displaying a stimulus and getting a keyboard response.
  [jspsych&#8209;survey&#8209;likert](jspsych-survey-likert) | Displays likert-style questions.
- [jspsych&#8209;survey&#8209;multi&#8209;choice](jspsych-survey-multi-choice) | Displays multiple choice questions.
+ [jspsych&#8209;survey&#8209;multi&#8209;choice](jspsych-survey-multi-choice) | Displays multiple choice questions with one answer allowed per question.
+ [jspsych&#8209;survey&#8209;multi&#8209;select](jspsych-survey-multi-select) | Displays multiple choice questions with multiple answes allowed per question.
  [jspsych&#8209;survey&#8209;text](jspsych-survey-text) | Shows a prompt with a text box. The subject writes a response and then submits by clicking a button.
  [jspsych&#8209;text](jspsych-text) | Shows HTML-formatted text on the screen.
  [jspsych&#8209;video](jspsych-video) | Displays a video file and autoadvances to the next trial when the video is complete.
