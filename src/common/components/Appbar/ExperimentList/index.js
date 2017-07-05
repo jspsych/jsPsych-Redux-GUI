@@ -109,7 +109,7 @@ export default class ExperimentList extends React.Component {
 			    >
 			    	Duplicate
 			    </MenuItem> :
-			    <CircularProgress />
+			    <CircularProgress size={30}/>
 				}
 				{(this.state.performing !== Actions.delete) ?
 			    <MenuItem
@@ -124,7 +124,7 @@ export default class ExperimentList extends React.Component {
 			    >
 			    	Delete
 			    </MenuItem> :
-			    <CircularProgress />
+			    <CircularProgress size={30}/>
 			    }
 			</IconMenu>
 		)

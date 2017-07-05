@@ -99,11 +99,14 @@ const saveAsOpen = (dispatch, callback) => {
 	});
 }
 
-const saveAs = (dispatch, newName) => {
+const saveAs = (dispatch, newName, onStart, onFinish) => {
 	dispatch((dispatch, getState) => {
 		dispatch(backendActions.saveAsAction(newName));
+		onStart();
 		pushState(getState()).catch((err) => {
 			notifyErrorByDialog(dispatch, err.message);
+		}).then(() => {
+			onFinish();
 		});
 	});
 }
@@ -118,7 +121,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	changeExperimentName: (e, text) => { changeExperimentName(dispatch, text); },
 	save: (onStart, onFinish) => { save(dispatch, onStart, onFinish); },
 	newExperiment: (popUpConfirm) => { newExperiment(dispatch, popUpConfirm); },
-	saveAs: (newName) => { saveAs(dispatch, newName); },
+	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
 	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); }
 })
 

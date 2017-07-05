@@ -21,7 +21,8 @@ import MediaManager from '../../containers/Appbar/MediaManager';
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 
 const Actions = {
-  save: "SAVE"
+  save: "SAVE",
+  saveAs: "SAVEAS"
 }
 
 export default class Appbar extends React.Component {
@@ -142,12 +143,15 @@ export default class Appbar extends React.Component {
                         <Save hoverColor={hoverColor} />
                       </IconButton>
                     }
-                    <IconButton 
-                      tooltip="Save As"
-                      onTouchTap={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
-                      > 
-                      <SaveAs hoverColor={hoverColor} />
-                    </IconButton>
+                    {(this.state.performing === Actions.saveAs) ?
+                      <CircularProgress size={30}/> :
+                      <IconButton 
+                        tooltip="Save As"
+                        onTouchTap={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
+                        > 
+                        <SaveAs hoverColor={hoverColor} />
+                      </IconButton>
+                    }
                     <ToolbarSeparator />
 										<MediaManager />
                   </ToolbarGroup>
@@ -179,7 +183,13 @@ export default class Appbar extends React.Component {
                     keyboardFocused={true}
                     onTouchTap={() => { 
                         if (this.state.saveAsNameError === '') {
-                          this.props.saveAs(this.state.saveAsName);
+                          this.props.saveAs(
+                            this.state.saveAsName,
+                            ()=>{
+                              this.setPerforming(Actions.saveAs);
+                            }, () => {
+                              this.setPerforming(null);
+                            });
                         }
                         this.handleSaveAsClose();
                       }
