@@ -2,13 +2,17 @@ import React from 'react';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import { ListItem } from 'material-ui/List';
+import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
 
+import Profile from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 import {
   indigo500 as hoverColor,
   cyan500 as iconColor,
+  blue400 as avatarBackgroundColor
 } from 'material-ui/styles/colors';
 
 import Login from '../../../containers/Login';
@@ -63,6 +67,7 @@ export default class UserMenu extends React.Component {
       return (
         <Menu>
             <MenuItem
+              leftIcon={<Profile hoverColor={hoverColor} color={iconColor}/>}
               primaryText={"Profile"}
               onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
             <Divider />
@@ -80,6 +85,17 @@ export default class UserMenu extends React.Component {
     }
   }
 
+  renderUserPic = (login, size=36) => {
+    return ((!login) ? 
+            null:
+            <Avatar 
+              size={size} 
+              backgroundColor={avatarBackgroundColor}
+            >
+              {this.props.username.charAt(0)}
+            </Avatar>)
+  }
+
   render() {
     let login = this.props.username !== null;
     let buttonLabel = (!login) ? 'Your Account' : this.props.username;
@@ -87,10 +103,11 @@ export default class UserMenu extends React.Component {
     return (
       <div>
       <div style={{float: 'right', paddingRight: 1}}>
-        <MenuItem 
+        <ListItem 
           primaryText={buttonLabel} 
           onTouchTap={this.handleTouchTap} 
           style={{textDecoration: (login) ? 'underline' : 'none'}}
+          leftAvatar={this.renderUserPic(login)}
         />
       </div>
        <Login />
