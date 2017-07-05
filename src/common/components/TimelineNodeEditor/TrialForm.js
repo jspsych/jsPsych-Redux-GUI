@@ -27,6 +27,7 @@ class TrialForm extends React.Component {
 			return (<MenuItem primaryText={plugin} key={plugin} value={plugin} />);
 		});
 		var form;
+		console.log(this.props.isTrial);
 		if(this.props.isTrial){
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {

@@ -12,15 +12,15 @@ const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 
 	let timeline = experimentState[experimentState.previewId];
-
-	if(timeline != null) {
+	console.log("timeline container getting called");
+	if(!timeline) {
+		return {}
+	} else {
+		console.log("is timeline");
 		return {
 			id: timeline.id,
 			isTimeline: isTimeline(timeline),
 			repetitions: timeline.parameters.repetitions,
-		}
-	} else {
-		return {
 		}
 	}
 };

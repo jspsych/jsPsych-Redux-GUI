@@ -26,12 +26,13 @@ const onChangeFloatParam = (dispatch, e, newVal) => {
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let trial = experimentState[experimentState.previewId];
-
-	if (!trial) {
-		return {};
 	let choices;
 	let joined; 
 
+	if (!trial) {
+		return {};
+	} else {
+		console.log("trial");
 	if(trial.parameters.choices != undefined) {
 		console.log("not null")
 		choices = trial.parameters.choices;
@@ -49,7 +50,7 @@ const mapStateToProps = (state, ownProps) => {
 		choices: joined,
 		pluginType: trial.parameters.type,
 	}
-
+}
 };
 
 const mapDispatchToProps = (dispatch,ownProps) => ({

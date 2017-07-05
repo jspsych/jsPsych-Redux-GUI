@@ -14,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
 	if (!node) return {
 		previewId: null,
 	};
-
+	
 	return {
 		previewId: experimentState.previewId,
 		pluginType: node.parameters.type,

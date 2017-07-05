@@ -5,6 +5,8 @@ import EditableTable from '../../containers/TimelineNodeEditor/EditableTable/Edi
 class TimelineForm extends React.Component {
 	render(){
 		var form;
+		console.log("timeline");
+		console.log(this.props.isTimeline);
 		if(this.props.isTimeline) {
 			form =
 			<div className="TimelineForm">
