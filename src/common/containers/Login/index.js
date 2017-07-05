@@ -18,15 +18,16 @@ Before or after all pushing and pulling, the state will be processed by redux st
 
 
 import { connect } from 'react-redux';
+import deepEqual from 'deep-equal';
 import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;
 import * as notificationActions from '../../actions/notificationActions' ;
+import * as Errors from '../../constants/Errors' ;
 import Login from '../../components/Login';
 import { notifyErrorByDialog, notifySuccessBySnackbar } from '../Notification';
 import { LoginModes } from '../../reducers/User';
 import { initState as experimentInitState } from '../../reducers/Experiment';
 import { signUpPush, signInFetchUserData, fetchExperimentById } from '../../backend/dynamoDB';
-var deepEqual = require('deep-equal')
 
 const handleClose = (dispatch) => {
 	dispatch(userActions.setLoginWindowAction(false));
@@ -62,6 +63,9 @@ export const signIn = (dispatch) => {
 		signInFetchUserData(
 			getState().userState.user.identityId
 		).then((data) => {
+			if (!data) {
+				throw Errors.internetError;
+			}
 			// update user data locally
 			dispatch(backendActions.signInPullAction(data, null));
 		}).then(() => {
@@ -72,10 +76,10 @@ export const signIn = (dispatch) => {
 				// 1. updating user data anyway (due to new experiment)
 				// 2. inserting a new experiment to data base as well
 				dispatch(backendActions.signUpPushAction(anyChange));
-				signUpPush(getState()).catch((err) => {
-					notifyErrorByDialog(dispatch, err.message);
-				}).then(() => {
+				signUpPush(getState()).then(() => {
 					notifySuccessBySnackbar(dispatch, "Saved !");
+				}, (err) => {
+					notifyErrorByDialog(dispatch, err.message);
 				});
 			} else {
 				// if there is no change
@@ -85,20 +89,20 @@ export const signIn = (dispatch) => {
 				if (!memorizedId) return;
 				fetchExperimentById(
 					memorizedId,
-				).catch((err) => {
-					notifyErrorByDialog(dispatch, err.message);
-				}).then(
-					(data) => {
-						dispatch(backendActions.signInPullAction(null, data));
+				).then((data) => {
+					if (!data) {
+						throw Errors.internetError;
 					}
-				)
+					dispatch(backendActions.signInPullAction(null, data));
+				}).catch((err) => {
+					notifyErrorByDialog(dispatch, err.message);
+				});
 			}
 		}).catch((err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		});
 	});
 }
-
 /*
 Save case: create account.
 
@@ -112,7 +116,7 @@ const signUp = (dispatch) => {
 		dispatch(backendActions.signUpPushAction(anyChange));
 		signUpPush(getState()).then(() => {
 			notifySuccessBySnackbar(dispatch, "Saved !");
-		}).catch((err) => {
+		}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		});
 	});

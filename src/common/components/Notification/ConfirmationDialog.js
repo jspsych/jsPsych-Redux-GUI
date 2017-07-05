@@ -1,18 +1,14 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
-import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
-import MenuItem from 'material-ui/MenuItem';
 
-import Close from 'material-ui/svg-icons/navigation/close';
 import Warning from 'material-ui/svg-icons/alert/warning';
 import {
 	grey50 as dialogBodyColor,
-	grey300 as CloseBackHighlightColor,
-	grey50 as CloseDrawerHoverColor,
-  	yellow500 as warningColor,
+  	yellow600 as warningColor,
 } from 'material-ui/styles/colors';
+import { renderDialogTitle } from '../gadgets';
 
 export default class ConfirmationDialog extends React.Component {
 	render() {
@@ -30,22 +26,17 @@ export default class ConfirmationDialog extends React.Component {
 			<Dialog
 				open={open}
 				titleStyle={{padding: 0}}
-	      		title={
-	          		<div style={{display: 'flex'}}>
-	          			<Subheader>
-	          				<MenuItem leftIcon={<Warning color={warningColor}/>} primaryText="Warning !"/>
-	          			</Subheader>
-	          			<IconButton 
-	          				hoveredStyle={{
-	          					backgroundColor: CloseBackHighlightColor,
-	          				}}
-	          				onTouchTap={handleClose}
-							disableTouchRipple={true}
-						>
-						<Close hoverColor={CloseDrawerHoverColor} />
-						</IconButton>
-					</div>
-	      		}
+	      		title={renderDialogTitle(
+	      			(<Subheader>
+	      				<FlatButton 
+	      					icon={<Warning color={warningColor}/>} 
+	      					label="Warning !"
+	      					labelStyle={{textTransform: "none", fontSize: 20}}
+	      				/>
+	      			</Subheader>),
+	      			handleClose,
+	      			null
+	      			)}
 	      		onRequestClose={handleClose}
 	      		contentStyle={{minWidth: 450, minHeight: 400,}}
 	      		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}

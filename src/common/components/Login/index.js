@@ -1,6 +1,5 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
-import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
@@ -9,18 +8,15 @@ import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
 import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
 import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
 
-import Close from 'material-ui/svg-icons/navigation/close';
 import {
 	grey50 as dialogBodyColor,
 	grey200 as tabColor,
 	grey900 as tabTextColor,
-	grey300 as CloseBackHighlightColor,
-	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
 import { LoginModes } from '../../reducers/User';
 import { login } from '../../backend/cognito';
-
+import { renderDialogTitle } from '../gadgets';
 
 const signInDialogStyle = {
 	title: "Sign In",
@@ -95,20 +91,7 @@ export default class Login extends React.Component {
 			<Dialog
           		open={open}
           		titleStyle={{padding: 0}}
-          		title={
-	          		<div style={{display: 'flex', backgroundColor: dialogBodyColor}}>
-	          			<Subheader style={{fontSize: 24}}></Subheader>
-	          			<IconButton 
-	          				hoveredStyle={{
-	          					backgroundColor: CloseBackHighlightColor,
-	          				}}
-	          				onTouchTap={handleClose}
-							disableTouchRipple={true}
-						>
-						<Close hoverColor={CloseDrawerHoverColor} />
-						</IconButton>
-					</div>
-          		}
+          		title={renderDialogTitle(null, handleClose)}
           		onRequestClose={handleClose}
           		contentStyle={{width: 450, height: 600,}}
           		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}

@@ -1,5 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
+import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import TextField from 'material-ui/TextField';
@@ -8,13 +9,14 @@ import {
   grey800 as normalColor,
   cyan500 as iconHighlightColor,
   green500 as checkColor,
+  grey500 as titleIconColor
 } from 'material-ui/styles/colors';
 import InitSettingIcon from 'material-ui/svg-icons/action/build';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 import CodeEditorTrigger from '../../CodeEditorTrigger';
-
+import { renderDialogTitle } from '../../gadgets';
 import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
 export default class jsPsychInitEditor extends React.Component {
@@ -41,7 +43,7 @@ export default class jsPsychInitEditor extends React.Component {
 
   textFieldRow = (key, type="number", unit=null) => (
   <div style={{display: 'flex'}}>
-    <div style={{padding: 15}}>{key + ((unit) ? " (" + unit + ")" : "")}: </div>
+    <div style={{padding: 15, color: 'black'}}>{key + ((unit) ? " (" + unit + ")" : "")}: </div>
     <TextField
       id={"text-field-"+key}
       value={this.props[key]}
@@ -53,7 +55,7 @@ export default class jsPsychInitEditor extends React.Component {
 
   toggleRow = (key) => (
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
-      <div style={{padding: 15}}>{key}</div>
+      <div style={{padding: 15, color: 'black'}}>{key}</div>
         <IconButton 
           style={{position: 'absolute', right: 0}}
           onTouchTap={() => { this.props.setJsPsychInit(null, null, key); }} 
@@ -65,7 +67,7 @@ export default class jsPsychInitEditor extends React.Component {
 
   codeRow = (key) => (
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
-      <div style={{padding: 15}}>{key}</div>
+      <div style={{padding: 15, color: 'black'}}>{key}</div>
       <div style={{position: 'absolute', right: 0}}>
         <CodeEditorTrigger initCode={this.props[key].code} 
                     submitCallback={(newCode) => { 
@@ -100,7 +102,22 @@ export default class jsPsychInitEditor extends React.Component {
           </IconButton>
           <Dialog
             contentStyle={{minHeight: 500}}
-            title="jsPsych.init Properties"
+            titleStyle={{padding: 0}}
+            title={
+                renderDialogTitle(
+                  <Subheader style={{maxHeight: 48}}>
+                    <div style={{display: 'flex'}}>
+                    <div style={{paddingTop: 8, paddingRight: 10}}>
+                      <InitSettingIcon color={titleIconColor}/>
+                    </div>
+                    <div style={{fontSize: 16,}}>
+                        jsPsych.init properties
+                    </div>
+                    </div>
+                  </Subheader>,
+                  this.handleClose,
+                  null)
+            }
             actions={actions}
             modal={true}
             open={this.state.open}

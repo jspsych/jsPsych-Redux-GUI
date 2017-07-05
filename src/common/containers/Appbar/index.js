@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import deepEqual from 'deep-equal';
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import * as backendActions from '../../actions/backendActions';
 import * as notificationActions from '../../actions/notificationActions' ;
@@ -15,7 +16,7 @@ import {
 	convertNullToEmptyString
 } from '../../utils';
 import { pushState } from '../../backend/dynamoDB';
-var deepEqual = require('deep-equal');
+
 
 const changeExperimentName = (dispatch, text) => {
 	text = convertEmptyStringToNull(text);
@@ -26,12 +27,12 @@ const $save = (dispatch, getState) => {
 	// process state
 	dispatch(backendActions.clickSavePushAction());
 
-	return pushState(getState()).catch((err) => {
-		notifyErrorByDialog(dispatch, err.message);
-		// feedback
-	}).then(() => {
-		notifySuccessBySnackbar(dispatch, "Saved !");
-	});
+	return pushState(getState()).then(
+		() => {
+			notifySuccessBySnackbar(dispatch, "Saved !");
+		}, (err) => {
+			notifyErrorByDialog(dispatch, err.message);
+		});
 }
 
 const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
@@ -50,9 +51,7 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 		// if there is any change
 		if (anyChange) {
 			onStart();
-			$save(dispatch, getState).catch((err) => {
-				notifyErrorByDialog(dispatch, err.message);
-			}).then(() => {
+			$save(dispatch, getState).then(() => {
 				onFinish();
 			});;
 		} else {
@@ -73,9 +72,7 @@ const newExperiment = (dispatch, popUpConfirm) => {
 				() => {
 					$save(dispatch, getState).then(() => {
 						dispatch(backendActions.newExperimentAction());
-					}).catch((err) => {
-						notifyErrorByDialog(dispatch, err.message);
-					})
+					});
 				},
 				"Yes (Continue with saving)",
 				() => { dispatch(backendActions.newExperimentAction()); },
@@ -103,7 +100,9 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 	dispatch((dispatch, getState) => {
 		dispatch(backendActions.saveAsAction(newName));
 		onStart();
-		pushState(getState()).catch((err) => {
+		pushState(getState()).then(() => {
+			notifySuccessBySnackbar(dispatch, "Saved !");
+		}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		}).then(() => {
 			onFinish();

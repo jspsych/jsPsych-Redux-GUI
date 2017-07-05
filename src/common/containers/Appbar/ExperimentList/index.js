@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
+import deepEqual from 'deep-equal';
 import * as backendActions from '../../../actions/backendActions';
-
 import ExperimentList from '../../../components/Appbar/ExperimentList';
+import * as Errors from '../../../constants/Errors' ;
 import {
 	fetchExperimentById,
 	pushUserData,
@@ -15,7 +16,6 @@ import {
 	notifyWarningBySnackbar
 } from '../../Notification';
 import { getUUID } from '../../../utils';
-var deepEqual = require('deep-equal');
 
 /*
 Fetch experiment data
@@ -39,22 +39,20 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 			"Do you want to save the changes before creating new experiment?",
 			() => {
 				onStart();
-				pushState(
-					getState()
-				).then(() => {
+				pushState(getState()).then(() => {
 					$pullExperiment(dispatch, getState, selected);
-				}).catch((err) => {
+				}, (err) => {
 					notifyErrorByDialog(dispatch, err.message);
 				}).then(() => {
 					onFinish();
 				});
 			},
 			"Yes (Continue with saving)",
-			() => { 
+			() => {
 				onStart();
 				$pullExperiment(dispatch, getState, selected).then(() => {
 					onFinish();
-				}); 
+				});
 			},
 			"No (Continue without saving)"
 		);
@@ -64,11 +62,13 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 const $pullExperiment = (dispatch, getState, selected) => {
 	return fetchExperimentById(selected).then((data) => {
 		if (!data) {
-			throw new Error("Your internet may be disconnected !");
+			throw Errors.internetError;
 		}
 		dispatch(backendActions.pullExperimentAction(data));
 	}).then(() => {
-		pushUserData(getState().userState);
+		pushUserData(getState().userState).then(() => {}, (err) => {
+			notifyErrorByDialog(dispatch, err.message);
+		});
 	}).catch((err) => {
 		notifyErrorByDialog(dispatch, err.message);
 	});
@@ -98,10 +98,12 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 				onStart();
 				$deleteExperiment(id).then((data) => {
 					dispatch(backendActions.deleteExperimentAction(id));
-					pushUserData(getState().userState);
-				}).then(() => {
-					notifySuccessBySnackbar(dispatch, "Deleted !");
-				}).catch((err) => {
+					pushUserData(getState().userState).then(() => {
+						notifySuccessBySnackbar(dispatch, "Deleted !");
+					}, (err) => {
+						notifyErrorByDialog(dispatch, err.message);
+					});
+				}, (err) => {
 					notifyErrorByDialog(dispatch, err.message);
 				}).then(() => {
 					onFinish();
@@ -127,7 +129,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 		onStart();
 		fetchExperimentById(id).then((data) => {
 			if (!data) {
-				throw new Error("Your internet may be disconnected !");
+				throw Errors.internetError;
 			}
 			let now = Date.now();
 			let experimentState = Object.assign({}, data.Item.fetch, {
@@ -143,10 +145,12 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				details: experimentState.experimentDetails
 			}));
 			pushUserData(getState().userState).then(() => {
-				pushExperimentData(experimentState)
-			}).then(() => {
-				notifySuccessBySnackbar(dispatch, "Duplicated !");
-			}).catch((err) => {
+				pushExperimentData(experimentState).then(() => {
+					notifySuccessBySnackbar(dispatch, "Duplicated !");
+				}, (err) => {
+					notifyErrorByDialog(dispatch, err.message);
+				})
+			}, (err) => {
 				notifyErrorByDialog(dispatch, err.message);
 			});
 		}).catch((err) => {

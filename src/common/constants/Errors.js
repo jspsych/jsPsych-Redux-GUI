@@ -1,0 +1,1 @@
+export const internetError = new Error("Your internet may be disconnected !");
