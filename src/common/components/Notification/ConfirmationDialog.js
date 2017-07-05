@@ -15,7 +15,6 @@ import {
 } from 'material-ui/styles/colors';
 
 export default class ConfirmationDialog extends React.Component {
-
 	render() {
 		let {
 			open,

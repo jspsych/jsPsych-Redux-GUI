@@ -32,11 +32,11 @@ export default class Appbar extends React.Component {
     saveAsNameError: '',
     performing: null,
     confirmOpen: false,
-    confirmMessage: "",
+    confirmMessage: "Null",
     proceedWithOperation: () => {},
-    proceedWithOperationLabel: "",
+    proceedWithOperationLabel: "Yes",
     proceed: () => {},
-    proceedLabel: "",
+    proceedLabel: "No",
   }
 
   setPerforming = (p) => {
