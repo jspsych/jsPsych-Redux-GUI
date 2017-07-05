@@ -52,11 +52,11 @@ export default class ExperimentList extends React.Component {
 		selected: null,
 		performing: null,
 	    confirmOpen: false,
-	    confirmMessage: "",
+	    confirmMessage: "Null",
 	    proceedWithOperation: () => {},
-	    proceedWithOperationLabel: "",
+	    proceedWithOperationLabel: "Yes",
 	    proceed: () => {},
-	    proceedLabel: "",
+	    proceedLabel: "No",
 	}
 
 	setSeletected = (id) => {

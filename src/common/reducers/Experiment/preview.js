@@ -44,7 +44,15 @@ export function generateCode(state) {
 		include = (!state.previewAll) ? true : node.enabled;
 		if (include) {
 			if (isTimeline(node)) {
-				blocks.push(generateTimeline(state, node));
+				if (node.childrenById.length > 0) {
+					blocks.push(generateTimeline(state, node));
+				} else {
+					blocks.push({
+						type: 'text',
+						text: 'No trial is under this timeline!',
+						choice: ""
+					})
+				}
 			} else {
 				blocks.push(generateTrial(state, node));
 			}
