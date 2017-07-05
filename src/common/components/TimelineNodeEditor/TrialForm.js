@@ -14,10 +14,6 @@ const pluginStyle = {
 	}
 
 class TrialForm extends React.Component {
-	// constructor(props) {
-	// 	super(props);
-	//
-	// }
 	render(){
 		var plugins = Object.keys(jsPsych.plugins);
 		if(plugins.indexOf('parameterType') >= 0){

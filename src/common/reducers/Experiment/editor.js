@@ -56,18 +56,54 @@ export function choicesHelper(string) {
 		word = [],
 		joined,
 		s,
-		newString;
+		newString='';
 
-	if(string.match(/{([^}]*)}/g) != undefined) {
-		s = string.match(/{([^}]*)}/g);
-		array.push(s[1]);
-		newString = string.replace(string.match(/{([^}]*)}/g),'');
-		console.log(newString);
-	} 
+	// if(string.match(/{([^}]*)}/g) != undefined) {
+	// 	s = string.match(/{([^}]*)}/g);
+	// 	array.push(s[1]);
+	// 	newString = string.replace(string.match(/{([^}]*)}/g),'');
+	// 	console.log(newString);
+	// } 
 
+	// if(newString.length > 0) {
+	// 	for(let i=0; i<newString.length; i++) {
+	// 		array.push(newString[i]);	
+	// 	}
+	// } else {
+	// 	for(let i=0; i<string.length; i++) {
+	// 		array.push(string[i]);
+	// 	}
+	// }
+ 	
+ 	//turns string into array
 	for(let i=0; i<string.length; i++) {
-		array.push(string[i]);	
+		array.push(string[i]);
 	}
+
+	//look for '{'
+	let beginningCurly;
+	for(let j=0; j<array.length; j++) {
+		if(array[j] == '{') {
+			beginningCurly = j;
+		}
+	}
+
+	let endingCurly;
+	for(let k=0; k<array.length; k++) {
+		if(array[k] == '}') {
+			endingCurly = k; 
+		}
+	}
+	let removed;
+	removed = array.splice(beginningCurly, (endingCurly - (beginningCurly)) + 1);
+	console.log('removed');
+	console.log(removed);
+	console.log(removed.join(''));
+	console.log('array');
+	console.log(array);
+
+	array.push(removed.join(''));
+
 	
 	console.log(array);
 	return array;
