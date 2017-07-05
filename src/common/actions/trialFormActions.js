@@ -23,6 +23,14 @@ export function onParamTextChange(paramId, newVal) {
 	};
 }
 
+export function onChoicesChange(paramId, newVal) {
+	return {
+		type: actionTypes.CHANGE_CHOICES,
+		paramId: paramId,
+		newVal: newVal
+	};
+}
+
 export function onParamIntChange(paramId, newVal) {
 	return {
 		type: actionTypes.CHANGE_PARAM_INT,

@@ -15,6 +15,10 @@ const onChangeTextParam = (dispatch, e, newVal) => {
 	dispatch(trialFormActions.onParamTextChange(e, newVal));
 }
 
+const onChangeChoicesParam = (dispatch, e, newVal) => {
+	dispatch(trialFormActions.onChoicesChange(e, newVal));
+}
+
 const onChangeIntParam = (dispatch, e, newVal) => {
 		dispatch(trialFormActions.onParamIntChange(e, newVal));
 }
@@ -32,22 +36,20 @@ const mapStateToProps = (state, ownProps) => {
 	if (!trial) {
 		return {};
 	} else {
-		console.log("trial");
-	if(trial.parameters.choices != undefined) {
-		console.log("not null")
-		choices = trial.parameters.choices;
-		console.log(choices);
-		for(let i=0; i<choices.length; i++) {
-			joined = choices.join('');
-			console.log(joined);
-		}
-	}
+	// if(trial.parameters.choices != undefined) {
+	// 	choices = trial.parameters.choices;
+	// 	console.log(choices);
+	// 	for(let i=0; i<choices.length; i++) {
+	// 		joined = choices.join('');
+	// 		console.log(joined);
+	// 	}
+	// }
 	
 	return {
 		id: trial.id,
 		isTrial: isTrial(trial),
 		parameters: trial.parameters,
-		choices: joined,
+		//choices: trial.parameters.joined,
 		pluginType: trial.parameters.type,
 	}
 }
@@ -57,6 +59,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	onChange: (newPluginVal) => { onChangePluginType(dispatch, newPluginVal) },
 	onToggle: (e, newVal) => { onToggleParam(dispatch, e, newVal) },
 	onChangeText: (e, newVal) => { onChangeTextParam(dispatch, e, newVal) },
+	onChangeChoices: (e, newVal) => { onChangeChoicesParam(dispatch, e, newVal) },
 	onChangeInt: (e, newVal) => { onChangeIntParam(dispatch, e, newVal) },
 	onChangeFloat: (e, newVal) => { onChangeFloatParam(dispatch, e, newVal) },
 	// onChangeParamSelect: (key) => { onParamSelectChange(dispatch, key) },

@@ -58,23 +58,6 @@ export function choicesHelper(string) {
 		s,
 		newString='';
 
-	// if(string.match(/{([^}]*)}/g) != undefined) {
-	// 	s = string.match(/{([^}]*)}/g);
-	// 	array.push(s[1]);
-	// 	newString = string.replace(string.match(/{([^}]*)}/g),'');
-	// 	console.log(newString);
-	// } 
-
-	// if(newString.length > 0) {
-	// 	for(let i=0; i<newString.length; i++) {
-	// 		array.push(newString[i]);	
-	// 	}
-	// } else {
-	// 	for(let i=0; i<string.length; i++) {
-	// 		array.push(string[i]);
-	// 	}
-	// }
- 	
  	//turns string into array
 	for(let i=0; i<string.length; i++) {
 		array.push(string[i]);
@@ -109,7 +92,7 @@ export function choicesHelper(string) {
 	return array;
 }
 
-export function changeParamText(state, action) {
+export function changeChoices(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 	let array;
@@ -121,6 +104,18 @@ export function changeParamText(state, action) {
 
 	node.parameters[action.paramId] = choicesHelper(action.newVal);
 	console.log(node);
+
+	return new_state;
+}
+
+export function changeParamText(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters[action.paramId] = action.newVal;
 
 	return new_state;
 }

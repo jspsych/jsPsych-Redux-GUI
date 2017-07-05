@@ -68,9 +68,9 @@ class TrialForm extends React.Component {
 							<TextField
 							 id={plug} 
 							 key={plug+" "+this.props.id} 
-							 value={this.props.choices} 
+							 value={this.props.parameters[plug]} 
 							 floatingLabelText={plug} 
-							 onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />
+							 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
 							 <Checkbox
 							 	label="ALLKEYS"
 							 	checked={this.props.isChecked}
