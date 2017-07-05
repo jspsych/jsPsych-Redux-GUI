@@ -65,7 +65,6 @@ export default class ConfirmationDialog extends React.Component {
 	      				secondary={true}
 	      				labelStyle={{textTransform: "none", }}
 	      				onTouchTap={() => { proceed(); handleClose(); }}
-	      				keyboardFocused={true}
 	      			/>,
 	      			<FlatButton
 	      				label="Cancel"

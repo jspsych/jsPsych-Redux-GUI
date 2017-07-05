@@ -4,10 +4,17 @@ import * as backendActions from '../../actions/backendActions';
 import * as notificationActions from '../../actions/notificationActions' ;
 import * as userActions from '../../actions/userActions' ;
 import Appbar from '../../components/Appbar';
-import { pushState, fetchExperimentById } from '../../backend/dynamoDB';
-import { Notify_Method, Notify_Type } from '../../reducers/Notification';
 import { LoginModes } from '../../reducers/User';
-import { convertEmptyStringToNull, convertNullToEmptyString } from '../../utils';
+import {
+	notifyErrorByDialog,
+	notifySuccessBySnackbar,
+	notifyWarningBySnackbar
+} from '../Notification';
+import {
+	convertEmptyStringToNull,
+	convertNullToEmptyString
+} from '../../utils';
+import { pushState } from '../../backend/dynamoDB';
 var deepEqual = require('deep-equal');
 
 const changeExperimentName = (dispatch, text) => {
@@ -20,54 +27,37 @@ const $save = (dispatch, getState) => {
 	dispatch(backendActions.clickSavePushAction());
 
 	return pushState(getState()).catch((err) => {
-		dispatch(notificationActions.notifyAction(
-			Notify_Method.dialog,
-			Notify_Type.error,
-			err.message));
+		notifyErrorByDialog(dispatch, err.message);
 		// feedback
 	}).then(() => {
-		dispatch(notificationActions.notifyAction(
-			Notify_Method.snackbar,
-			Notify_Type.success,
-			'Saved !'));
+		notifySuccessBySnackbar(dispatch, "Saved !");
 	});
 }
 
-const save = (dispatch, onStart=()=>{}, onFinish=()=>{}) => {
+const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
-			dispatch(notificationActions.notifyAction(
-				Notify_Method.snackbar,
-				Notify_Type.warning,
-				'You need to sign in before saving your work !'));
+			notifyWarningBySnackbar(dispatch, 'You need to sign in before saving your work !');
 			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
 			return;
 		}
 
 		// on start effect
-		onStart();
-		let p = Promise.resolve(
-			!deepEqual(getState().userState.lastEdittingExperimentState, 
-				getState().experimentState)
-			);
+		let anyChange = !deepEqual(getState().userState.lastEdittingExperimentState,
+			getState().experimentState)
 
-		p.then((anyChange) => {
-			// if there is any change
-			if (anyChange) {
-				$save(dispatch, getState);
-			} else {
-				dispatch(notificationActions.notifyAction(
-					Notify_Method.snackbar,
-					Notify_Type.warning,
-					'Nothing has changed since last save !'));
-			}
-		}).catch((err) => {
-			dispatch(notificationActions.notifyAction(
-				Notify_Method.dialog,
-				Notify_Type.error,
-				err.message));
-		}).then(() => { onFinish(); });
+		// if there is any change
+		if (anyChange) {
+			onStart();
+			$save(dispatch, getState).catch((err) => {
+				notifyErrorByDialog(dispatch, err.message);
+			}).then(() => {
+				onFinish();
+			});;
+		} else {
+			notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
+		}
 	});
 }
 
@@ -84,10 +74,7 @@ const newExperiment = (dispatch, popUpConfirm) => {
 					$save(dispatch, getState).then(() => {
 						dispatch(backendActions.newExperimentAction());
 					}).catch((err) => {
-						dispatch(notificationActions.notifyAction(
-							Notify_Method.dialog,
-							Notify_Type.error,
-							err.message));
+						notifyErrorByDialog(dispatch, err.message);
 					})
 				},
 				"Yes (Continue with saving)",
@@ -104,10 +91,7 @@ const saveAsOpen = (dispatch, callback) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
-			dispatch(notificationActions.notifyAction(
-				Notify_Method.snackbar,
-				Notify_Type.warning,
-				'You need to sign in before saving your work !'));
+			notifyWarningBySnackbar(dispatch, 'You need to sign in before saving your work !');
 			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
 			return;
 		}
@@ -119,10 +103,7 @@ const saveAs = (dispatch, newName) => {
 	dispatch((dispatch, getState) => {
 		dispatch(backendActions.saveAsAction(newName));
 		pushState(getState()).catch((err) => {
-			dispatch(notificationActions.notifyAction(
-				Notify_Method.dialog,
-				Notify_Type.error,
-				err.message));
+			notifyErrorByDialog(dispatch, err.message);
 		});
 	});
 }

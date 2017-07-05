@@ -9,6 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Avatar from 'material-ui/Avatar';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Close from 'material-ui/svg-icons/navigation/close';
@@ -26,6 +27,15 @@ import {
 	indigo200 as avatarColor,
 } from 'material-ui/styles/colors';
 
+import ConfirmationDialog from '../../Notification/ConfirmationDialog';
+
+
+const Actions = {
+	browse: "BROWSE",
+	delete: "DELETE",
+	duplicate: "DUPLICATE"
+}
+
 const iconButtonElement = (
 	<IconButton
 	    touch={true}
@@ -39,6 +49,13 @@ const iconButtonElement = (
 export default class ExperimentList extends React.Component {
 	state = {
 		selected: null,
+		performing: null,
+	    confirmOpen: false,
+	    confirmMessage: "",
+	    proceedWithOperation: () => {},
+	    proceedWithOperationLabel: "",
+	    proceed: () => {},
+	    proceedLabel: "",
 	}
 
 	setSeletected = (id) => {
@@ -54,21 +71,61 @@ export default class ExperimentList extends React.Component {
 		});
 	}
 
+	setPerforming = (p) => {
+		this.setState({
+			performing: p
+		});
+	}
+
+	popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
+		this.setState({
+			confirmOpen: true,
+			confirmMessage: message,
+			proceedWithOperation: proceedWithOperation,
+			proceedWithOperationLabel: proceedWithOperationLabel,
+			proceed: proceed,
+			proceedLabel: proceedLabel,
+		});
+	}
+
+	handleConfirmClose = () => {
+		this.setState({
+			confirmOpen: false
+		});
+	}
+
 	renderIconMenu = (id) => {
 		return (
 			<IconMenu iconButtonElement={iconButtonElement}>
+			    {(this.state.performing !== Actions.duplicate) ?
 			    <MenuItem
 			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={iconColor}/>}
-			    	 onTouchTap={() => { this.props.duplicateExperiment(id); }}
+			    	 onTouchTap={() => { 
+			    	 	this.props.duplicateExperiment(
+			    	 		id,
+			    	 		() => { this.setPerforming(Actions.duplicate); },
+							() => { this.setPerforming(null); })
+			    	 }}
 			    >
 			    	Duplicate
-			    </MenuItem>
+			    </MenuItem> :
+			    <CircularProgress />
+				}
+				{(this.state.performing !== Actions.delete) ?
 			    <MenuItem
 			    	leftIcon={<Delete hoverColor={hoverColor} color={iconColor}/>}
-			    	onTouchTap={() => { this.props.deleteExperiment(id); }}
+			    	onTouchTap={() => { 
+			    		this.props.deleteExperiment(
+			    			id, 
+			    			this.popUpConfirm,
+			    	 		() => { this.setPerforming(Actions.delete); },
+							() => { this.setPerforming(null); }); 
+			    	}}
 			    >
 			    	Delete
-			    </MenuItem>
+			    </MenuItem> :
+			    <CircularProgress />
+			    }
 			</IconMenu>
 		)
 	}
@@ -101,13 +158,21 @@ export default class ExperimentList extends React.Component {
 		let { handleClose, renderItem } = this;
 		let { open, experiments } = this.props;
 		const actions = [
+		(this.state.performing !== Actions.browse) ?
 			<FlatButton
 				label="Open Experiment"
 				primary={true}
 				labelStyle={{textTransform: "none", }}
     			keyboardFocused={true}
-				onTouchTap={() => { this.props.pullExperiment(this.state.selected); /*handleClose();*/ }}
-			/>
+				onTouchTap={() => { 
+					this.props.pullExperiment(this.state.selected, 
+											  this.popUpConfirm,
+											  () => { this.setPerforming(Actions.browse); },
+											  () => { this.setPerforming(null); }); 
+					}
+				}
+			/> :
+			<CircularProgress />
 		]
 
 		return (
@@ -145,6 +210,16 @@ export default class ExperimentList extends React.Component {
 				</Paper>
 			</div>
 			</Dialog>
+
+			<ConfirmationDialog
+                open={this.state.confirmOpen}
+                message={this.state.confirmMessage}
+                handleClose={this.handleConfirmClose}
+                proceedWithOperation={this.state.proceedWithOperation}
+                proceedWithOperationLabel={this.state.proceedWithOperationLabel}
+                proceed={this.state.proceed}
+                proceedLabel={this.state.proceedLabel}
+                />
 		</div>
 		)
 	}

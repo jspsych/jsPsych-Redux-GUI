@@ -90,7 +90,7 @@ export default class UserMenu extends React.Component {
         <MenuItem 
           primaryText={buttonLabel} 
           onTouchTap={this.handleTouchTap} 
-          style={{textDecoration: (login) ? 'none' : 'none'}}
+          style={{textDecoration: (login) ? 'underline' : 'none'}}
         />
       </div>
        <Login />
