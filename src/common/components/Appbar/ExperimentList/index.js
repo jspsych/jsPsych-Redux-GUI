@@ -12,24 +12,23 @@ import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import Close from 'material-ui/svg-icons/navigation/close';
 import Delete from 'material-ui/svg-icons/action/delete-forever';
 import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import ExperimentIcon from 'material-ui/svg-icons/action/assessment';
-
+import Repository from 'material-ui/svg-icons/device/storage';
 import {
 	grey100 as dialogBodyColor,
 	indigo500 as hoverColor,
 	cyan500 as selectedColor,
-	grey300 as CloseBackHighlightColor,
-	grey50 as CloseDrawerHoverColor,
 	pink500 as deleteColor,
 	orange500 as duplicateColor,
-	indigo200 as avatarColor,
+	blue400 as avatarColor,
+	indigo400 as progressColor,
+	blue800 as titleIconColor
 } from 'material-ui/styles/colors';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
-
+import { renderDialogTitle } from '../../gadgets';
 
 const Actions = {
 	browse: "BROWSE",
@@ -98,35 +97,29 @@ export default class ExperimentList extends React.Component {
 	renderIconMenu = (id) => {
 		return (
 			<IconMenu iconButtonElement={iconButtonElement}>
-			    {(this.state.performing !== Actions.duplicate) ?
 			    <MenuItem
 			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={duplicateColor}/>}
 			    	 onTouchTap={() => { 
 			    	 	this.props.duplicateExperiment(
 			    	 		id,
-			    	 		() => { this.setPerforming(Actions.duplicate); },
+			    	 		() => { this.setPerforming(id); },
 							() => { this.setPerforming(null); })
 			    	 }}
 			    >
 			    	Duplicate
-			    </MenuItem> :
-			    <CircularProgress size={30}/>
-				}
-				{(this.state.performing !== Actions.delete) ?
-			    <MenuItem
+			    </MenuItem>
+				<MenuItem
 			    	leftIcon={<Delete hoverColor={hoverColor} color={deleteColor}/>}
 			    	onTouchTap={() => { 
 			    		this.props.deleteExperiment(
 			    			id, 
 			    			this.popUpConfirm,
-			    	 		() => { this.setPerforming(Actions.delete); },
+			    	 		() => { this.setPerforming(id); },
 							() => { this.setPerforming(null); }); 
 			    	}}
 			    >
 			    	Delete
-			    </MenuItem> :
-			    <CircularProgress size={30}/>
-			    }
+			    </MenuItem>
 			</IconMenu>
 		)
 	}
@@ -174,8 +167,9 @@ export default class ExperimentList extends React.Component {
 						"Last modified: " + displayedTime}
 					onTouchTap={()=>{this.setSeletected(id);}}
 					rightIconButton={
-						this.renderIconMenu(id)
+						(this.state.performing === id) ? null : this.renderIconMenu(id)
 					}
+					rightIcon={(this.state.performing === id) ? <CircularProgress color={progressColor}/> : null}
 					leftAvatar={
 						<Avatar backgroundColor={avatarColor} icon={<ExperimentIcon hoverColor={hoverColor}/>} />
 					}
@@ -213,18 +207,20 @@ export default class ExperimentList extends React.Component {
 				open={open}
 				titleStyle={{padding: 0,}}
 				title={
-					<div style={{display: 'flex'}}>
-	          			<Subheader style={{fontSize: 24, color: hoverColor}}>Your experiments</Subheader>
-	          			<IconButton 
-	          				hoveredStyle={{
-	          					backgroundColor: CloseBackHighlightColor,
-	          				}}
-	          				onTouchTap={handleClose}
-							disableTouchRipple={true}
-						>
-						<Close hoverColor={CloseDrawerHoverColor} />
-						</IconButton>
-					</div>
+					renderDialogTitle(
+						<Subheader style={{maxHeight: 48}}>
+		      				<div style={{display: 'flex'}}>
+							<div style={{paddingTop: 8, paddingRight: 10}}>
+								<Repository color={titleIconColor}/>
+							</div>
+							<div style={{fontSize: 20,}}>
+		      					Your experiments
+		      				</div>
+		      				</div>
+	      				</Subheader>,
+						handleClose,
+						null
+					)
 				}
 				onRequestClose={handleClose}
 				bodyStyle={{backgroundColor: dialogBodyColor}}
