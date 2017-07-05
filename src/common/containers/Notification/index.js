@@ -3,11 +3,25 @@ import * as notificationActions from '../../actions/notificationActions' ;
 import { Notify_Method, Notify_Type } from '../../reducers/Notification';
 import Notification from '../../components/Notification';
 
-export const notifyError = (dispatch, message) => {
+export const notifyErrorByDialog = (dispatch, message) => {
 	dispatch(notificationActions.notifyAction(
 				Notify_Method.dialog,
 				Notify_Type.error,
 				message));
+}
+
+export const notifySuccessBySnackbar = (dispatch, message) => {
+	dispatch(notificationActions.notifyAction(
+		Notify_Method.snackbar,
+		Notify_Type.success,
+		message));
+}
+
+export const notifyWarningBySnackbar = (dispatch, message) => {
+	dispatch(notificationActions.notifyAction(
+		Notify_Method.snackbar,
+		Notify_Type.warning,
+		message));
 }
 
 const handleClose = (dispatch) => {

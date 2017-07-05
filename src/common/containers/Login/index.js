@@ -22,9 +22,9 @@ import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;
 import * as notificationActions from '../../actions/notificationActions' ;
 import Login from '../../components/Login';
+import { notifyErrorByDialog, notifySuccessBySnackbar } from '../Notification';
 import { LoginModes } from '../../reducers/User';
 import { initState as experimentInitState } from '../../reducers/Experiment';
-import { Notify_Method, Notify_Type } from '../../reducers/Notification';
 import { signUpPush, signInFetchUserData, fetchExperimentById } from '../../backend/dynamoDB';
 var deepEqual = require('deep-equal')
 
@@ -40,12 +40,6 @@ const setLoginMode = (dispatch, mode) => {
 	dispatch(userActions.setLoginWindowAction(true, mode))
 }
 
-const notifyError = (dispatch, message) => {
-	dispatch(notificationActions.notifyAction(
-				Notify_Method.dialog,
-				Notify_Type.error,
-				message));
-}
 
 /*
 Save/fetch case: sign in .
@@ -79,12 +73,9 @@ export const signIn = (dispatch) => {
 				// 2. inserting a new experiment to data base as well
 				dispatch(backendActions.signUpPushAction(anyChange));
 				signUpPush(getState()).catch((err) => {
-					notifyError(dispatch, err.message);
+					notifyErrorByDialog(dispatch, err.message);
 				}).then(() => {
-					dispatch(notificationActions.notifyAction(
-						Notify_Method.snackbar,
-						Notify_Type.success,
-						'Saved !'));
+					notifySuccessBySnackbar(dispatch, "Saved !");
 				});
 			} else {
 				// if there is no change
@@ -95,7 +86,7 @@ export const signIn = (dispatch) => {
 				fetchExperimentById(
 					memorizedId,
 				).catch((err) => {
-					notifyError(dispatch, err.message);
+					notifyErrorByDialog(dispatch, err.message);
 				}).then(
 					(data) => {
 						dispatch(backendActions.signInPullAction(null, data));
@@ -103,7 +94,7 @@ export const signIn = (dispatch) => {
 				)
 			}
 		}).catch((err) => {
-			notifyError(dispatch, err.message);
+			notifyErrorByDialog(dispatch, err.message);
 		});
 	});
 }
@@ -120,12 +111,9 @@ const signUp = (dispatch) => {
 		let anyChange = !deepEqual(experimentInitState, getState().experimentState);
 		dispatch(backendActions.signUpPushAction(anyChange));
 		signUpPush(getState()).then(() => {
-			dispatch(notificationActions.notifyAction(
-				Notify_Method.snackbar,
-				Notify_Type.success,
-				'Saved !'));
+			notifySuccessBySnackbar(dispatch, "Saved !");
 		}).catch((err) => {
-			notifyError(dispatch, err.message);
+			notifyErrorByDialog(dispatch, err.message);
 		});
 	});
 }
@@ -144,7 +132,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	setLoginMode: (mode) => { setLoginMode(dispatch, mode); },
 	signIn: () => { signIn(dispatch); },
 	signUp: () => { signUp(dispatch); },
-	notifyError: (message) => { notifyError(dispatch, message); },
+	notifyErrorByDialog: (message) => { notifyErrorByDialog(dispatch, message); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
