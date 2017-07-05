@@ -51,14 +51,40 @@ export function changeToggleValue(state, action) {
 	return new_state;
 }
 
+export function choicesHelper(string) {
+	let array = [],
+		word = [],
+		joined,
+		s,
+		newString;
+
+	if(string.match(/{([^}]*)}/g) != undefined) {
+		s = string.match(/{([^}]*)}/g);
+		array.push(s[1]);
+		newString = string.replace(string.match(/{([^}]*)}/g),'');
+		console.log(newString);
+	} 
+
+	for(let i=0; i<string.length; i++) {
+		array.push(string[i]);	
+	}
+	
+	console.log(array);
+	return array;
+}
+
 export function changeParamText(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
+	let array;
+	let nonSingleKey = [];
+	let inCurly = false; 
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters[action.paramId] = action.newVal;
+	node.parameters[action.paramId] = choicesHelper(action.newVal);
+	console.log(node);
 
 	return new_state;
 }

@@ -3,11 +3,11 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
+import Checkbox from 'material-ui/Checkbox';
 
 let jsPsych = window.jsPsych;
 
 const pluginStyle = {
-		//top: 20,
 		height:'15vh',
 		width: '100%',
 		left: '0px',
@@ -67,13 +67,20 @@ class TrialForm extends React.Component {
 					case 4:
 					case 5:
 						return (
+							<div>
 							<TextField
-							 id={plug}
-							 key={plug+" "+this.props.id}
-							 value={this.props.parameters[plug]}
-							 floatingLabelText={plug}
-							 onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
-					case 6:
+							 id={plug} 
+							 key={plug+" "+this.props.id} 
+							 value={this.props.choices} 
+							 floatingLabelText={plug} 
+							 onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />
+							 <Checkbox
+							 	label="ALLKEYS"
+							 	checked={this.props.isChecked}
+							 	onCheck={this.props.handleCheck}
+							 />
+							 </div>);
+					case 6: 
 						return (
 							<SelectField
 							id={plug}
