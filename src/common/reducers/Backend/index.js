@@ -34,13 +34,21 @@ function registerNewExperiment(state, forceNewId=false) {
 	if (!experimentState.experimentId || forceNewId) {
 		experimentState.experimentId = getUUID();
 		experimentState.owner = Object.assign({}, userState.user);
+
+		let now = Date.now();
+		experimentState.experimentDetails = Object.assign({}, experimentState.experimentDetails, {
+			createdDate: now,
+			lastEditDate: now,
+			description: experimentState.experimentDetails.description
+		});
 	}
 	// set last edit
 	// populate repository
 	userState.lastEdittingId = experimentState.experimentId;
 	userState.experiments.push({
 		name: experimentState.experimentName,
-		id: experimentState.experimentId
+		id: experimentState.experimentId,
+		details: experimentState.experimentDetails
 	});
 }
 
@@ -123,12 +131,23 @@ function clickSavePush(state, action) {
 	
 	// if old experiment
 	if (experimentState.experimentId) {
+		// make copy
 		new_state.userState = Object.assign({}, userState, {
 			experiments: deepCopy(userState.experiments),
 		});
+
+		// update last edit date
+		new_state.experimentState = Object.assign({}, experimentState, {
+			experimentDetails: Object.assign({}, experimentState.experimentDetails, {
+				lastEditDate: Date.now()
+			})
+		});
+
+		// update experiment list
 		for (let item of new_state.userState.experiments) {
-			if (item.id === experimentState.experimentId) {
-				item.name = experimentState.experimentName;
+			if (item.id === new_state.experimentState.experimentId) {
+				item.name = new_state.experimentState.experimentName;
+				item.details = new_state.experimentState.experimentDetails
 			}
 		}
 		// if new
@@ -183,6 +202,7 @@ action = {
 	experimentItem: {
 		id: experimentId,
 		name: eperimentName
+		details: experimentDetails
 	}
 }
 

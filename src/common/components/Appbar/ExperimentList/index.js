@@ -23,7 +23,8 @@ import {
 	cyan500 as selectedColor,
 	grey300 as CloseBackHighlightColor,
 	grey50 as CloseDrawerHoverColor,
-	pink500 as iconColor,
+	pink500 as deleteColor,
+	orange500 as duplicateColor,
 	indigo200 as avatarColor,
 } from 'material-ui/styles/colors';
 
@@ -99,7 +100,7 @@ export default class ExperimentList extends React.Component {
 			<IconMenu iconButtonElement={iconButtonElement}>
 			    {(this.state.performing !== Actions.duplicate) ?
 			    <MenuItem
-			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={iconColor}/>}
+			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={duplicateColor}/>}
 			    	 onTouchTap={() => { 
 			    	 	this.props.duplicateExperiment(
 			    	 		id,
@@ -113,7 +114,7 @@ export default class ExperimentList extends React.Component {
 				}
 				{(this.state.performing !== Actions.delete) ?
 			    <MenuItem
-			    	leftIcon={<Delete hoverColor={hoverColor} color={iconColor}/>}
+			    	leftIcon={<Delete hoverColor={hoverColor} color={deleteColor}/>}
 			    	onTouchTap={() => { 
 			    		this.props.deleteExperiment(
 			    			id, 
@@ -131,7 +132,35 @@ export default class ExperimentList extends React.Component {
 	}
 
 	renderItem = (item) => {
-		let { name, id } = item;
+		let { name, id, details } = item;
+		
+		let today = new Date();
+		let lastEditDate = new Date(details.lastEditDate);
+
+		let isSameDay = today.getYear() === lastEditDate.getYear() &&
+						today.getMonth() === lastEditDate.getMonth() &&
+						today.getDate() === lastEditDate.getDate();
+		let displayedTime;
+		if (isSameDay) {
+			let diffH = today.getHours() - lastEditDate.getHours(),
+				diffM = today.getMinutes() - lastEditDate.getMinutes();
+			let tail;
+			if (diffH) {
+				if (diffH > 1) tail = " hours ago";
+				else tail = " hour ago"
+				displayedTime = diffH + tail;
+			} else if (diffM) {
+				if (diffM > 1) tail = " minutes ago";
+				else tail = " minute ago"
+				displayedTime = diffM + tail;
+			} else {
+				displayedTime = "less than 1 minute ago";
+			}
+			
+		} else {
+			displayedTime = lastEditDate.toDateString();
+		}
+
 		return (
 			<div key={id+'-ExperimentItem-Container'}>
 				<ListItem
@@ -139,7 +168,10 @@ export default class ExperimentList extends React.Component {
 					key={id}
 					id={id}
 					primaryText={name}
-					secondaryText={(id === this.props.currentId) ? "Currently open" : ""}
+					secondaryText={
+						(id === this.props.currentId) ? 
+						"Currently open" : 
+						((isSameDay) ? "Last edit time: " : "Last edit date: ") + displayedTime}
 					onTouchTap={()=>{this.setSeletected(id);}}
 					rightIconButton={
 						this.renderIconMenu(id)
