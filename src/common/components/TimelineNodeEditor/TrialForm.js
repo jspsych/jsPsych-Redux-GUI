@@ -3,6 +3,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
+import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 
 let jsPsych = window.jsPsych;
@@ -64,18 +65,19 @@ class TrialForm extends React.Component {
 					case 4:
 					case 5:
 						return (
-							<div>
-							<TextField
-							 id={plug} 
-							 key={plug+" "+this.props.id} 
-							 value={this.props.parameters[plug]} 
-							 floatingLabelText={plug} 
-							 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
-							 <Checkbox
-							 	label="ALLKEYS"
-							 	checked={this.props.isChecked}
-							 	onCheck={this.props.handleCheck}
-							 />
+							<div key={plug+" "+this.props.id+"-container"}>
+								<TextField
+								 id={plug} 
+								 key={plug+" "+this.props.id} 
+								 value={this.props.parameters[plug]} 
+								 floatingLabelText={plug} 
+								 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
+								 <Checkbox
+								 	label="ALLKEYS"
+								 	key={plug+" "+this.props.id+"-check"}
+								 	checked={this.props.isChecked}
+								 	onCheck={this.props.handleCheck}
+								 />
 							 </div>);
 					case 6: 
 						return (
@@ -93,15 +95,18 @@ class TrialForm extends React.Component {
 							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
 				}
 			});
-			form = (<div className="trialForm"><SelectField
-			value={this.props.pluginType}
-			floatingLabelText="Plugin Type"
-			maxHeight={300}
-			style={pluginStyle}
-			onChange={(event, key) => this.props.onChange(plugins[key])} >
-			{pluginItems}
-			</SelectField>
-			{pluginParameters}
+			form = (
+			<div className="trialForm">
+				<SelectField
+					value={this.props.pluginType}
+					floatingLabelText="Plugin Type"
+					underlineStyle={{display: 'none'}}
+					onChange={(event, key) => this.props.onChange(plugins[key])} 
+				>
+					{pluginItems}
+				</SelectField>
+				<Divider />
+				{pluginParameters}
 			</div>)
 		} else {
 			form = null;

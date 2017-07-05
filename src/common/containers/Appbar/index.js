@@ -44,7 +44,7 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 		}
 
 		// on start effect
-		let anyChange = !deepEqual(getState().userState.lastEdittingExperimentState,
+		let anyChange = !deepEqual(getState().userState.lastModifiedExperimentState,
 			getState().experimentState)
 
 		// if there is any change
@@ -64,7 +64,7 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 const newExperiment = (dispatch, popUpConfirm) => {
 	dispatch((dispatch ,getState) => {
 		let anyChange = !deepEqual(
-			getState().userState.lastEdittingExperimentState,
+			getState().userState.lastModifiedExperimentState,
 			getState().experimentState
 		);
 		if (anyChange) {

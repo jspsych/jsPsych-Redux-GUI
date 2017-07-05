@@ -44,7 +44,7 @@ function registerNewExperiment(state, forceNewId=false) {
 	}
 	// set last edit
 	// populate repository
-	userState.lastEdittingId = experimentState.experimentId;
+	userState.lastModifiedExperimentId = experimentState.experimentId;
 	userState.experiments.push({
 		name: experimentState.experimentName,
 		id: experimentState.experimentId,
@@ -74,7 +74,7 @@ function signUpPush(state, action) {
 	// yes
 	if (action.anyChange) {
 		registerNewExperiment(new_state);
-		new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+		new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 	}
 
 	return new_state;
@@ -102,13 +102,13 @@ function signInPull(state, action) {
 	if (userData) {
 		userData = userData.Item.fetch;
 		new_state.userState = Object.assign({}, new_state.userState);
-		new_state.userState.lastEdittingId = userData.lastEdittingId;
+		new_state.userState.lastModifiedExperimentId = userData.lastModifiedExperimentId;
 		new_state.userState.experiments = userData.experiments;
 	}
 	if (experimentData) {
 		experimentData = experimentData.Item.fetch;
 		new_state.experimentState = experimentData;
-		new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+		new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 	}
 
 	return new_state;
@@ -154,7 +154,7 @@ function clickSavePush(state, action) {
 	} else {
 		registerNewExperiment(new_state);
 	}
-	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
 }
@@ -168,12 +168,12 @@ function pullExperiment(state, action) {
 	let experimentState = action.data.Item.fetch;
 	let new_state = Object.assign({}, state, {
 		userState: Object.assign({}, state.userState, {
-			lastEdittingId: experimentState.experimentId
+			lastModifiedExperimentId: experimentState.experimentId
 		}),
 		experimentState: experimentState
 	})
 
-	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
 }
@@ -187,9 +187,9 @@ action = {
 function deleteExperiment(state, action) {
 	let new_state = Object.assign({}, state, {
 		userState: Object.assign({}, state.userState, {
-			lastEdittingId: (state.userState.lastEdittingId === action.id) ? null : state.userState.lastEdittingId,
+			lastModifiedExperimentId: (state.userState.lastModifiedExperimentId === action.id) ? null : state.userState.lastModifiedExperimentId,
 			experiments: state.userState.experiments.filter((item) => (item.id !== action.id)),
-			lastEdittingExperimentState: (state.userState.lastEdittingId === action.id) ? null : state.userState.lastEdittingExperimentState,
+			lastModifiedExperimentState: (state.userState.lastModifiedExperimentId === action.id) ? null : state.userState.lastModifiedExperimentState,
 		}),
 		experimentState: (state.experimentState.experimentId === action.id) ? experimentInitState : state.experimentState
 	});
@@ -223,12 +223,12 @@ function newExperiment(state, action) {
 	let new_state = Object.assign({}, state, {
 		experimentState: experimentInitState,
 		userState: Object.assign({}, state.userState, {
-			lastEdittingId: null
+			lastModifiedExperimentId: null
 		})
 	});
 
 	// registerNewExperiment(new_state);
-	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 	
 	return new_state;
 }
@@ -241,7 +241,7 @@ function saveAs(state, action) {
 	});
 
 	registerNewExperiment(new_state, true);
-	new_state.userState.lastEdittingExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
 
 	return new_state;
 }

@@ -19,15 +19,16 @@ const Experiment_Table_Name = "jsPsych_Builder_Experiments";
 
 function connectDynamoDB() {
 	let access = {
-		accessKeyId: window.sessionStorage.accessKeyId,
-		secretAccessKey: window.sessionStorage.secretAccessKey,
-		sessionToken: window.sessionStorage.sessionToken,
+		accessKeyId: AWS.config.credentials.accessKeyId,
+		secretAccessKey: AWS.config.credentials.secretAccessKey,
+		sessionToken: AWS.config.credentials.sessionToken,
 	};
 	if (access.accessKeyId === 'undefined' ||
 		access.secretAccessKey === 'undefined' ||
 		access.sessionToken === 'undefined') {
 		access = {};
 	}
+
 	return new (AWS.DynamoDB.DocumentClient)({
 				apiVersion: API_VERSION,
 				region: cognitoConfig.region,
@@ -59,7 +60,7 @@ data = {
 	username: username,
 	// an object of update-userState-needed data
 	fetch: {
-		lastEdittingId: last editting experiment id,
+		lastModifiedExperimentId: last editting experiment id,
 		experiments: array
 	}, 
 }
@@ -100,7 +101,7 @@ function extractUserData(userState) {
 		userId: userState.user.identityId,
 		username: userState.user.username,
 		fetch: {
-			lastEdittingId: userState.lastEdittingId,
+			lastModifiedExperimentId: userState.lastModifiedExperimentId,
 			experiments: userState.experiments,
 		}
 	};

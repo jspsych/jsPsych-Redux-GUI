@@ -26,13 +26,6 @@ function clearAWSCredentialCache() {
 	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 		IdentityPoolId: cognitoConfig.IdentityPoolId,
 	});
-	updateAWSCredentialLocalSession();
-}
-
-function updateAWSCredentialLocalSession() {
-	window.sessionStorage.setItem("accessKeyId", AWS.config.credentials.accessKeyId);
-	window.sessionStorage.setItem("secretAccessKey", AWS.config.credentials.secretAccessKey);
-	window.sessionStorage.setItem("sessionToken", AWS.config.credentials.sessionToken);
 }
 
 
@@ -132,7 +125,6 @@ export function fetchCredential(cognitoUser = null, callback = () => {}) {
 					console.error(error);
 					return;
 				} else {
-					updateAWSCredentialLocalSession();
 					callback();
 				}
 			});
@@ -142,23 +134,22 @@ export function fetchCredential(cognitoUser = null, callback = () => {}) {
 
 const cogLocalBaseKey = 'CognitoIdentityServiceProvider.' + cognitoConfig.ClientId + '.';
 const lastAuthUserKey = cogLocalBaseKey + 'LastAuthUser';
-export function getLoginSessionFromLocalStorage() {
+export function getLoginSessionFromCognito() {
 	let lastAuthUser = window.localStorage[lastAuthUserKey];
 	let accessTokenkey = cogLocalBaseKey + lastAuthUser + '.accessToken'
 	let idTokenkey = cogLocalBaseKey + lastAuthUser + '.idToken'
 	let refreshTokenkey = cogLocalBaseKey + lastAuthUser + '.refreshToken'
 
 	return {
-		accessToken: window.localStorage[accessTokenkey],
-		idToken: window.localStorage[idTokenkey],
-		refreshToken: window.localStorage[refreshTokenkey],
+		accessToken: (AWS.config.credentials) ? AWS.config.credentials.storage[accessTokenkey] : undefined,
+		idToken: (AWS.config.credentials) ? AWS.config.credentials.storage[idTokenkey] : undefined,
+		refreshToken: (AWS.config.credentials) ? AWS.config.credentials.storage[refreshTokenkey] : undefined,
 	}
 }
 
-
-export function getUserInfoFromLocalStorage() {
+export function getUserInfoFromCognito() {
 	return {
-		username: window.localStorage[lastAuthUserKey],
+		username: (AWS.config.credentials) ? AWS.config.credentials.storage[lastAuthUserKey] : undefined,
 		identityId: (AWS.config.credentials) ? AWS.config.credentials.identityId : undefined,
 	}
 }

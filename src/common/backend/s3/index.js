@@ -1,14 +1,20 @@
 import AWS from '../aws';
+
 const bucketName = "jspsych-builder";
+const API_VERSION = '2006-03-01';
+
+function connectS3() {
+  return new AWS.S3({
+    apiVersion: API_VERSION,
+    params: {
+      Bucket: bucketName
+    }
+  });
+}
 
 function uploadFile(file, success, failure){
 
-  var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: bucketName}
-  });
-
-  s3.upload({
+  connectS3().upload({
       Key: AWS.config.credentials.identityId + '/' + file.name,
       Body: file
     }, function(err, data) {
@@ -24,12 +30,7 @@ function uploadFile(file, success, failure){
 
 function deleteFile(file, success, failure){
 
-  var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: bucketName}
-  });
-
-  s3.deleteObject({
+  connectS3().deleteObject({
       Key: file
     }, function(err, data) {
       if (err) {
@@ -44,12 +45,7 @@ function deleteFile(file, success, failure){
 
 export function listBucketContents(success, failure){
 
-  var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {Bucket: bucketName}
-  });
-
-  s3.listObjectsV2(
+  connectS3().listObjectsV2(
     {
       Delimiter: '/',
       Prefix:AWS.config.credentials.identityId+"/"

@@ -11,7 +11,8 @@ import { upload, deleteObjects, listBucketContents } from '../../../backend/s3';
 
 import {
   grey800 as normalColor,
-  cyan600 as iconHighlightColor
+  cyan600 as iconHighlightColor,
+  cyan500 as checkColor,
 } from 'material-ui/styles/colors';
 import MediaManagerIcon from 'material-ui/svg-icons/image/photo-library';
 import ImageIcon from 'material-ui/svg-icons/image/photo';
@@ -39,67 +40,78 @@ function fileIconFromTitle(title) {
 }
 
 export default class MediaManager extends React.Component {
-  constructor(props) {
-    super(props);
+	constructor(props) {
+		super(props);
 
-    this.state = {
-      open: false,
+		this.state = {
+			open: false,
 			files: [],
 			s3files: {},
 			dropzoneActive: false,
 			uploadComplete: true,
 			selected: []
-    };
+		};
 
 		this.handleEnter = () => {
-			this.setState({dropzoneActive: true});
+			this.setState({
+				dropzoneActive: true
+			});
 		}
 
 		this.handleExit = () => {
-			console.log('exit dropzone');
-			this.setState({dropzoneActive: false});
+			this.setState({
+				dropzoneActive: false
+			});
 		}
 
-    this.handleOpen = () => {
+		this.handleOpen = () => {
 			this.updateList();
-      this.setState({
-        open: true,
+			this.setState({
+				open: true,
 				dropzoneActive: false,
-      });
-    };
+			});
+		};
 
-    this.handleClose = () => {
-      this.setState({
-        open: false,
+		this.handleClose = () => {
+			this.setState({
+				open: false,
 				dropzoneActive: false,
-      });
-    };
+			});
+		};
 
 		this.onDrop = (files) => {
-			this.setState({dropzoneActive: false});
+			this.setState({
+				dropzoneActive: false
+			});
 			this.handleUpload(files)
 		}
 
 		this.handleSelect = (i) => {
 			let selected = this.state.selected;
 			selected[i] = !selected[i];
-			this.setState({selected: selected});
+			this.setState({
+				selected: selected
+			});
 		}
 
 		this.handleUpload = (files) => {
 			//console.log(s3);
-			this.setState({uploadComplete: false});
-			upload(files,
-			() => {
-				this.setState({uploadComplete: true});
-				this.updateList();
+			this.setState({
+				uploadComplete: false
 			});
+			upload(files,
+				() => {
+					this.setState({
+						uploadComplete: true
+					});
+					this.updateList();
+				});
 		}
 
 		this.handleDelete = () => {
 			var keys = [];
-			for(var i=0;i<this.state.selected.length;i++){
-				if(this.state.selected[i]){
+			for (var i = 0; i < this.state.selected.length; i++) {
+				if (this.state.selected[i]) {
 					keys.push(this.state.s3files.Contents[i].Key)
 				}
 			}
@@ -115,7 +127,7 @@ export default class MediaManager extends React.Component {
 			listBucketContents(
 				(data) => {
 					let selected = [];
-					for(var i=0; i<data.Contents.length; i++){
+					for (var i = 0; i < data.Contents.length; i++) {
 						selected.push(false);
 					}
 					this.setState({
@@ -127,20 +139,22 @@ export default class MediaManager extends React.Component {
 				(err) => {},
 			)
 		}
-  }
+	}
 
   render() {
     const actions = [
-			<FlatButton
-				label="Delete Selected Items"
-				onTouchTap={this.handleDelete}
-			/>,
-      <FlatButton
-        label="Close"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleClose}
-      />,
+		<FlatButton
+			label="Delete selected items"
+			labelStyle={{textTransform: "none", color: 'red'}}
+			onTouchTap={this.handleDelete}
+		/>,
+        <FlatButton
+            label="Close"
+            primary={true}
+            keyboardFocused={true}
+            labelStyle={{textTransform: "none",}}
+            onTouchTap={this.handleClose}
+        />,
     ];
 
 		const overlayStyle = {
@@ -156,7 +170,7 @@ export default class MediaManager extends React.Component {
 
 		let mediaList = null;
 		if(typeof this.state.s3files.Contents !== 'undefined'){
-			mediaList = this.state.s3files.Contents.map( (f, i) =>
+			mediaList = this.state.s3files.Contents.map((f, i) =>
 				<ListItem
 					key={f.ETag}
 					primaryText={f.Key.replace(this.state.s3files.Prefix, '')}
@@ -165,7 +179,7 @@ export default class MediaManager extends React.Component {
 						<IconButton
 							onTouchTap={() => {this.handleSelect(i)}}
 							>
-							{this.state.selected[i] ? <CheckYesIcon /> : <CheckNoIcon />}
+							{this.state.selected[i] ? <CheckYesIcon color={checkColor}/> : <CheckNoIcon color={checkColor}/>}
 						</IconButton>}
 				/>)
 		}
@@ -190,16 +204,16 @@ export default class MediaManager extends React.Component {
             onRequestClose={this.handleClose}
             autoScrollBodyContent={true}
           >
-						<Dropzone
-							disableClick
-							onDrop={this.onDrop.bind(this)}
-							onDragEnter={this.handleEnter}
-							onDragLeave={this.handleExit}
-							style={{width:"100%", minHeight: '200px', position: 'relative'}}>
-							{this.state.uploadComplete && <List>{mediaList}</List>}
-							{!this.state.uploadComplete && <CircularProgress size={80} thickness={5} />}
-							{this.state.dropzoneActive && <div style={overlayStyle}>Drop files...</div>}
-						</Dropzone>
+			<Dropzone
+				disableClick
+				onDrop={this.onDrop.bind(this)}
+				onDragEnter={this.handleEnter}
+				onDragLeave={this.handleExit}
+				style={{width:"100%", minHeight: '200px', position: 'relative'}}>
+				{this.state.uploadComplete && <List>{mediaList}</List>}
+				{!this.state.uploadComplete && <CircularProgress size={80} thickness={5} />}
+				{this.state.dropzoneActive && <div style={overlayStyle}>Drop files...</div>}
+			</Dropzone>
           </Dialog>
         </div>
     )
