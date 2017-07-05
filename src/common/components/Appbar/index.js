@@ -19,8 +19,10 @@ import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/Appbar/MediaManager';
 
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
-import * as actionTypes from '../../constants/ActionTypes';
 
+const Actions = {
+  save: "SAVE"
+}
 
 export default class Appbar extends React.Component {
   state = {
@@ -127,12 +129,12 @@ export default class Appbar extends React.Component {
                       > 
                       <New hoverColor={hoverColor} />
                     </IconButton>
-                    {(this.state.performing === actionTypes.CLICK_SAVE_PUSH) ?
-                      <CircularProgress /> :
+                    {(this.state.performing === Actions.save) ?
+                      <CircularProgress size={30}/> :
                       <IconButton 
                         tooltip="Save"
                         onTouchTap={() => { this.props.save(()=>{
-                          this.setPerforming(actionTypes.CLICK_SAVE_PUSH);
+                          this.setPerforming(Actions.save);
                         }, () => {
                           this.setPerforming(null);
                         });}}

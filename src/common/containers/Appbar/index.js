@@ -34,7 +34,7 @@ const $save = (dispatch, getState) => {
 	});
 }
 
-const save = (dispatch, onStart=()=>{}, onFinish=()=>{}) => {
+const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
@@ -44,22 +44,20 @@ const save = (dispatch, onStart=()=>{}, onFinish=()=>{}) => {
 		}
 
 		// on start effect
-		onStart();
-		let p = Promise.resolve(
-			!deepEqual(getState().userState.lastEdittingExperimentState, 
-				getState().experimentState)
-			);
+		let anyChange = !deepEqual(getState().userState.lastEdittingExperimentState,
+			getState().experimentState)
 
-		p.then((anyChange) => {
-			// if there is any change
-			if (anyChange) {
-				$save(dispatch, getState);
-			} else {
-				notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
-			}
-		}).catch((err) => {
-			notifyErrorByDialog(dispatch, err.message);
-		}).then(() => { onFinish(); });
+		// if there is any change
+		if (anyChange) {
+			onStart();
+			$save(dispatch, getState).catch((err) => {
+				notifyErrorByDialog(dispatch, err.message);
+			}).then(() => {
+				onFinish();
+			});;
+		} else {
+			notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
+		}
 	});
 }
 
