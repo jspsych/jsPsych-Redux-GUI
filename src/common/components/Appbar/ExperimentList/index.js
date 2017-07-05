@@ -13,7 +13,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Close from 'material-ui/svg-icons/navigation/close';
-import Delete from 'material-ui/svg-icons/action/delete';
+import Delete from 'material-ui/svg-icons/action/delete-forever';
 import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import ExperimentIcon from 'material-ui/svg-icons/action/assessment';
 

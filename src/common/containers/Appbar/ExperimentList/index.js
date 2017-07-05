@@ -27,7 +27,7 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 	dispatch((dispatch, getState) => {
 		if (getState().experimentState.experimentId === selected) return;
 		if (deepEqual(
-				getState().userState.lastEdittingExperimentState,
+				getState().userState.lastModifiedExperimentState,
 				getState().experimentState)) {
 			onStart();
 			$pullExperiment(dispatch, getState, selected).then(() => {
@@ -159,9 +159,31 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 
 
 const mapStateToProps = (state, ownProps) => {
+	let experiments = state.userState.experiments.slice();
+	experiments.sort((a, b) => {
+		let at = a.details.lastEditDate, bt = b.details.lastEditDate;
+		if (at > bt) {
+			return -1;
+		} else if (at < bt) {
+			return 1;
+		} else {
+			return 0;
+		}
+	})
+	let currentId =  state.userState.lastModifiedExperimentId, index = -1;
+	for (let i = 0; i < experiments.length; i++) {
+		if (experiments[i].id === currentId) {
+			index = i;
+			break;
+		}
+	}
+	if (index > 0) {
+		experiments.move(index, 0);
+	}
+
 	return {
-		experiments: state.userState.experiments,
-		currentId: state.userState.lastEdittingId
+		experiments: experiments,
+		currentId: currentId
 	};
 };
 

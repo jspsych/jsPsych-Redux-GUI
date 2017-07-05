@@ -68,16 +68,15 @@ export default class UserMenu extends React.Component {
         <Menu>
             <MenuItem
               leftIcon={<Profile hoverColor={hoverColor} color={iconColor}/>}
-              primaryText={"Profile"}
+              primaryText={"Your profile"}
               onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
-            <Divider />
             <MenuItem
-              primaryText={"Experiments"}
+              primaryText={"Your experiments"}
               leftIcon={<ExperimentIcon hoverColor={hoverColor} color={iconColor} />}
               onTouchTap={() => { this.openExperimentList(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
-              primaryText={"Sign Out"}
+              primaryText={"Sign out"}
               leftIcon={<SignOut hoverColor={hoverColor} color={iconColor} />}
               onTouchTap={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
         </Menu>

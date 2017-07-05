@@ -3,11 +3,11 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
+import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 
 import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
-
 
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
@@ -50,19 +50,30 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						</div>
 						<Divider />
 						{(this.props.previewId) ?
-						<List style={{padding: 5, overflowY: 'auto', maxHeight: 455, minHeight: 455}}>
-							<TextField
-									floatingLabelText={this.props.label}
-									id="Node-Name-Textfield"
-	                				value={this.props.nodeName}
-									onChange={this.props.changeNodeName} />
-							<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
-							<TimelineForm id={this.props.previewId} />
+							<Paper style={{
+								padding: 5, 
+								overflowY: 'auto', 
+								maxHeight: 455, 
+								minHeight: 455,
+								paddingTop: 0
+							}} 
+								zDepth={0}
+							>
+								<List style={{padding: 5, paddingTop: 0, width: '95%'}}>
+									<TextField
+											floatingLabelText={this.props.label}
+											id="Node-Name-Textfield"
+			                				value={this.props.nodeName}
+											onChange={this.props.changeNodeName} />
+									<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
+									<TimelineForm id={this.props.previewId} />
 
-						</List> :
+								</List> 
+							</Paper> :
 						null}
-						</div> : null}
-						<Divider />
+					</div> : 
+					null}
+					<Divider />
 				</div>
   				{(this.props.open) ? null :
   					<IconButton

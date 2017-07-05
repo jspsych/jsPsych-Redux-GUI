@@ -10,7 +10,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { signIn } from '../common/containers/Login';
 import { initState as experimentInitState } from '../common/reducers/Experiment';
-import { getUserInfoFromLocalStorage, fetchCredential } from '../common/backend/cognito';
+import { getUserInfoFromCognito, fetchCredential } from '../common/backend/cognito';
 import { fetchExperimentById } from '../common/backend/dynamoDB';
 var deepEqual = require('deep-equal');
 
@@ -19,7 +19,7 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('load', () => {
 	fetchCredential(null, () => {
-		let userLoginInfo = getUserInfoFromLocalStorage();
+		let userLoginInfo = getUserInfoFromCognito();
 		if (userLoginInfo &&
 			userLoginInfo.username &&
 			userLoginInfo.identityId) {
@@ -31,7 +31,7 @@ window.addEventListener('load', () => {
 window.addEventListener('beforeunload', (e) => {
 	let { userState, experimentState } = store.getState();
 	// new 
-	if (!deepEqual(userState.lastEdittingExperimentState, experimentState)) {
+	if (!deepEqual(userState.lastModifiedExperimentState, experimentState)) {
 		e.returnValue = true;
 		return true;
 	}

@@ -1,4 +1,4 @@
-import { logout, getLoginSessionFromLocalStorage, getUserInfoFromLocalStorage } from '../../backend/cognito';
+import { logout, getLoginSessionFromCognito, getUserInfoFromCognito } from '../../backend/cognito';
 import { initState as experimentInitState } from '../Experiment';
 import * as actionTypes from '../../constants/ActionTypes';
 
@@ -17,7 +17,7 @@ export const initState = {
 	loginSession: null,
 
 	// last
-	lastEdittingId: null,
+	lastModifiedExperimentId: null,
 
 	// repository
 	/*
@@ -39,7 +39,7 @@ export const initState = {
 	// gui
 	windowOpen: false,
 	loginMode: LoginModes.signIn,
-	lastEdittingExperimentState: experimentInitState,
+	lastModifiedExperimentState: experimentInitState,
 };
 
 
@@ -65,8 +65,8 @@ export function signInOut(state, action) {
 		logout();
 		window.location.reload(false); // will intiate all
 	}
-	new_state.user = getUserInfoFromLocalStorage();
-	new_state.loginSession = getLoginSessionFromLocalStorage();
+	new_state.user = getUserInfoFromCognito();
+	new_state.loginSession = getLoginSessionFromCognito();
 	
 	return new_state;
 }

@@ -81,7 +81,7 @@ export const signIn = (dispatch) => {
 				// if there is no change
 				// 1. Fetch last editted experiment data
 				// 2. Update experiment state locally
-				let memorizedId = getState().userState.lastEdittingId;
+				let memorizedId = getState().userState.lastModifiedExperimentId;
 				if (!memorizedId) return;
 				fetchExperimentById(
 					memorizedId,
