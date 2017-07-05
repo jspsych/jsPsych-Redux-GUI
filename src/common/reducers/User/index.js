@@ -24,6 +24,13 @@ export const initState = {
 	{
 	name: experiment name,
 	id: experiment id,
+	/*
+	{
+	createdDate: date,
+	lasEditDate: date,
+	description: string
+	}
+	/
 	details: experiment details
 	}
 	*/ 
@@ -56,7 +63,7 @@ export function signInOut(state, action) {
 		new_state.windowOpen = false;
 	} else {
 		logout();
-		window.location.reload(false);
+		window.location.reload(false); // will intiate all
 	}
 	new_state.user = getUserInfoFromLocalStorage();
 	new_state.loginSession = getLoginSessionFromLocalStorage();

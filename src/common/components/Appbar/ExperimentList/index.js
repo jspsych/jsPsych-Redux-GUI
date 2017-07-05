@@ -171,7 +171,7 @@ export default class ExperimentList extends React.Component {
 					secondaryText={
 						(id === this.props.currentId) ? 
 						"Currently open" : 
-						"Last modified" + displayedTime}
+						"Last modified: " + displayedTime}
 					onTouchTap={()=>{this.setSeletected(id);}}
 					rightIconButton={
 						this.renderIconMenu(id)

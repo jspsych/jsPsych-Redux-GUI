@@ -21,7 +21,7 @@ For experiment state:
 2. set owner
 
 For user state:
-1. set last edit experiment id
+1. set last edit experiment id, date
 2. populate experiment repository
 
 */
