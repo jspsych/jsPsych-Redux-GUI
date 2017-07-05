@@ -9,7 +9,6 @@ import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { signIn } from '../common/containers/Login';
-import { notifyError } from '../common/containers/Notification';
 import { initState as experimentInitState } from '../common/reducers/Experiment';
 import { getUserInfoFromLocalStorage, fetchCredential } from '../common/backend/cognito';
 import { fetchExperimentById } from '../common/backend/dynamoDB';
