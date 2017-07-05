@@ -23,7 +23,8 @@ export const initState = {
 	/*
 	{
 	name: experiment name,
-	id: experiment id
+	id: experiment id,
+	details: experiment details
 	}
 	*/ 
 	experiments: [],

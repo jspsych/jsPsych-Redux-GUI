@@ -5,6 +5,7 @@ import * as preview from './preview';
 import * as editor from './editor';
 
 export const initState = {
+	// ********** experiment info
 	experimentName: "Untitled Experiment",
 	// key in db
 	experimentId: null,
@@ -18,9 +19,17 @@ export const initState = {
 
 	// is private?
 	private: true,
+
+	// experiment details
+	experimentDetails: {
+		createdDate: null,
+		lastEditDate: null,
+		description: null,
+	},
+
+	// ********** experiment contents
 	// repository
 	medias: [],
-
 	// id of which is being previewed/editted
 	previewId: null,
 	// if want to play all

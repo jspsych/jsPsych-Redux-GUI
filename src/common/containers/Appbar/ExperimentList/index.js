@@ -129,12 +129,18 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 			if (!data) {
 				throw new Error("Your internet may be disconnected !");
 			}
+			let now = Date.now();
 			let experimentState = Object.assign({}, data.Item.fetch, {
-				experimentId: getUUID()
+				experimentId: getUUID(),
+				experimentDetails: Object.assign({}, data.Item.fetch.experimentDetails, {
+					createDate: now,
+					lastEditDate: now,
+				})
 			});
 			dispatch(backendActions.duplicateExperimentAction({
 				id: experimentState.experimentId,
-				name: experimentState.experimentName
+				name: experimentState.experimentName,
+				details: experimentState.experimentDetails
 			}));
 			pushUserData(getState().userState).then(() => {
 				pushExperimentData(experimentState)

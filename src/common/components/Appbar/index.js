@@ -85,6 +85,19 @@ export default class Appbar extends React.Component {
   }
 
 	render() {
+    const saveAsCallback = () => {
+      if (this.state.saveAsNameError === '') {
+        this.props.saveAs(
+          this.state.saveAsName,
+          () => {
+            this.setPerforming(Actions.saveAs);
+          }, () => {
+            this.setPerforming(null);
+          });
+      }
+      this.handleSaveAsClose();
+    }
+
 		return (
       		<div className="Appbar"
       				style={{
@@ -181,19 +194,7 @@ export default class Appbar extends React.Component {
                     }}
                     primary={true}
                     keyboardFocused={true}
-                    onTouchTap={() => { 
-                        if (this.state.saveAsNameError === '') {
-                          this.props.saveAs(
-                            this.state.saveAsName,
-                            ()=>{
-                              this.setPerforming(Actions.saveAs);
-                            }, () => {
-                              this.setPerforming(null);
-                            });
-                        }
-                        this.handleSaveAsClose();
-                      }
-                    }
+                    onTouchTap={saveAsCallback}
                   />,
                   <FlatButton
                     label="Cancel"
@@ -205,7 +206,13 @@ export default class Appbar extends React.Component {
                   />
                 ]}
               >
-              <div style={{width: 400, margin: 'auto'}}>
+              <div style={{width: 400, margin: 'auto'}}
+                onKeyPress={(e)=>{
+                  if (e.which === 13) {
+                    saveAsCallback();
+                  }
+                 }}
+              >
                 <TextField
                   id="Save-as-new-experiment-name"
                   floatingLabelFixed={true}
