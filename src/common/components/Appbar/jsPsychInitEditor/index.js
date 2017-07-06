@@ -9,7 +9,7 @@ import {
   grey800 as normalColor,
   cyan500 as iconHighlightColor,
   green500 as checkColor,
-  grey500 as titleIconColor
+  blue500 as titleIconColor
 } from 'material-ui/styles/colors';
 import InitSettingIcon from 'material-ui/svg-icons/action/build';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
@@ -107,7 +107,7 @@ export default class jsPsychInitEditor extends React.Component {
                 renderDialogTitle(
                   <Subheader style={{maxHeight: 48}}>
                     <div style={{display: 'flex'}}>
-                    <div style={{paddingTop: 8, paddingRight: 10}}>
+                    <div style={{paddingTop: 8, paddingRight: 15}}>
                       <InitSettingIcon color={titleIconColor}/>
                     </div>
                     <div style={{fontSize: 16,}}>

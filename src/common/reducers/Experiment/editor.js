@@ -1,8 +1,13 @@
-import { deepCopy } from '../../utils';
+import { deepCopy, convertEmptyStringToNull } from '../../utils';
 import * as utils from './utils';
 
 const DEFAULT_HEADER = 'H';
 
+/*
+action = {
+	name: new experiment name
+}
+*/
 export function setName(state, action) {
 	let node = state[state.previewId];
 	if (!node) return state;
@@ -12,6 +17,23 @@ export function setName(state, action) {
 	new_state[node.id] = node;
 
 	node.name = action.name;
+
+	return new_state;
+}
+
+/*
+action = {
+	key: name of param,
+	value: new value
+}
+*/
+export function setPluginParam(state, action) {
+	let { key, value } = action;
+
+	let new_state = Object.assign({}, state);
+	let node = deepCopy(new_state[new_state.previewId]);
+	new_state[node.id] = node;
+	node.parameters[key] = value;
 
 	return new_state;
 }
@@ -28,7 +50,7 @@ export function changePlugin(state, action) {
 	var paramsObject = { type: action.newPluginVal };
 
 	for(let i=0; i<paramKeys.length; i++) {
-		paramsObject[paramKeys[i]] = params[paramKeys[i]].default;
+		paramsObject[paramKeys[i]] = convertEmptyStringToNull(params[paramKeys[i]].default);
 	}
 
 	node = deepCopy(node);

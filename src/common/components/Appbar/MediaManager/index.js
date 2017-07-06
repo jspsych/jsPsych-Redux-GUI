@@ -6,8 +6,6 @@ import Dropzone from 'react-dropzone';
 import CircularProgress from 'material-ui/CircularProgress';
 const mime = require('mime-types');
 import {List, ListItem} from 'material-ui/List';
-import { upload, deleteObjects, listBucketContents } from '../../../backend/s3';
-// import TextField from 'material-ui/TextField';
 
 import {
   grey800 as normalColor,
@@ -23,7 +21,7 @@ import PDFIcon from 'material-ui/svg-icons/image/picture-as-pdf';
 import CheckNoIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
-function fileIconFromTitle(title) {
+export function fileIconFromTitle(title) {
 	const type = mime.lookup(title);
 	if(type === false){
 		return <FileIcon />
@@ -95,50 +93,20 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.handleUpload = (files) => {
-			//console.log(s3);
-			this.setState({
-				uploadComplete: false
-			});
-			upload(files,
-				() => {
-					this.setState({
-						uploadComplete: true
-					});
-					this.updateList();
-				});
+			this.props.uploadFiles(files, (update) => { this.setState(update); });
 		}
 
 		this.handleDelete = () => {
-			var keys = [];
-			for (var i = 0; i < this.state.selected.length; i++) {
-				if (this.state.selected[i]) {
-					keys.push(this.state.s3files.Contents[i].Key)
-				}
-			}
-			deleteObjects(keys,
-				() => {
-					this.updateList();
-				},
-				() => {}
-			)
+			this.props.deleteFiles(
+				this.state.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
+				(update) => { this.setState(update); }
+			);
 		}
 
 		this.updateList = () => {
-			listBucketContents(
-				(data) => {
-					let selected = [];
-					for (var i = 0; i < data.Contents.length; i++) {
-						selected.push(false);
-					}
-					this.setState({
-						s3files: data,
-						selected: selected,
-					});
-					console.log('files updated!')
-				},
-				(err) => {},
-			)
+			this.props.updateFileList((update) => { this.setState(update); });
 		}
+
 	}
 
   render() {
@@ -169,7 +137,7 @@ export default class MediaManager extends React.Component {
 		}
 
 		let mediaList = null;
-		if(typeof this.state.s3files.Contents !== 'undefined'){
+		if (this.state.s3files.Contents) {
 			mediaList = this.state.s3files.Contents.map((f, i) =>
 				<ListItem
 					key={f.ETag}

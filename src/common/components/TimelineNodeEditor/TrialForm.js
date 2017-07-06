@@ -6,117 +6,62 @@ import SelectField from 'material-ui/SelectField';
 import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 
-let jsPsych = window.jsPsych;
+import { convertNullToEmptyString } from '../../utils';
+import MediaSelector from '../../containers/TimelineNodeEditor/MediaSelector';
 
-const pluginStyle = {
-		height:'15vh',
-		width: '100%',
-		left: '0px',
-	}
+const jsPsych = window.jsPsych;
+const EnumPluginType = jsPsych.plugins.parameterType;
+const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType'));
 
 class TrialForm extends React.Component {
-	render(){
-		var plugins = Object.keys(jsPsych.plugins);
-		if(plugins.indexOf('parameterType') >= 0){
-			plugins.splice(plugins.indexOf('parameterType'), 1);
-		}
-		const pluginItems = plugins.map((plugin) => {
-			return (<MenuItem primaryText={plugin} key={plugin} value={plugin} />);
-		});
-		var form;
-		console.log(this.props.isTrial);
-		if(this.props.isTrial){
-			var getPluginType = jsPsych.plugins[this.props.pluginType];
-			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
-				switch(getPluginType.info.parameters[plug].type[0]) {
-					case 0:
-						return (
-							<Toggle
-							id={plug}
-							key={plug+" "+this.props.id}
-							label={plug}
-							defaultToggled={this.props.parameters[plug]}
-							onToggle={(event, newValue) => this.props.onToggle(event.target.id, newValue)} />);
+	renderPluginParams = () => {
+		let parameters = jsPsych.plugins[this.props.pluginType].info.parameters;
+		return Object.keys(parameters).map((param) => {
+			switch(parameters[param].type[0]) {
+				case EnumPluginType.AUDIO:
+				case EnumPluginType.IMAGE:
+				case EnumPluginType.VIDEO:
+					return (
+						<MediaSelector parameterName={param} key={"Trial-form-"+param} />
+					)
+				case EnumPluginType.BOOL:
+				case EnumPluginType.INT:
+				case EnumPluginType.FLOAT:
+				case EnumPluginType.FUNCTION:
+				case EnumPluginType.SELECT:
+				case EnumPluginType.KEYCODE:
+				case EnumPluginType.HTML_STRING:
+				case EnumPluginType.STRING:
+				default:
+					return <TextField
+								id={param}
+								key={"Trial-form-"+param}
+								value={convertNullToEmptyString(this.props.parameters[param])}
+								floatingLabelText={param}
+								onChange={(e, v) => { this.props.setText(param, v); }}
+							/>
 
-					case 1:
-						return (
-							<TextField
-							id={plug}
-							key={plug+" "+this.props.id}
-							value={this.props.parameters[plug]}
-							floatingLabelText={plug}
-							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
-					case 2:
-						return (
-							<TextField
-							id={plug}
-							key={plug+" "+this.props.id}
-							value={this.props.parameters[plug]}
-							floatingLabelText={plug}
-							onChange={(event, newValue) => this.props.onChangeInt(event.target.id, newValue)} />);
-					case 3:
-						return (
-							<TextField
-							id={plug}
-							key={plug+" "+this.props.id}
-							value={this.props.parameters[plug]}
-							floatingLabelText={plug}
-							onChange={(event, newValue) => this.props.onChangeFloat(event.target.id, newValue)} />);
-					case 4:
-					case 5:
-						return (
-							<div key={plug+" "+this.props.id+"-container"}>
-								<TextField
-								 id={plug} 
-								 key={plug+" "+this.props.id} 
-								 value={this.props.parameters[plug]} 
-								 floatingLabelText={plug} 
-								 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
-								 <Checkbox
-								 	label="ALLKEYS"
-								 	key={plug+" "+this.props.id+"-check"}
-								 	checked={this.props.isChecked}
-								 	onCheck={this.props.handleCheck}
-								 />
-							 </div>);
-					case 6: 
-						return (
-							<SelectField
-							id={plug}
-							value={this.props.parameters[plug]}
-							floatingLabelText={plug}
-							onChange={(event, newValue) => this.props.onChangeSelectField(event.target.id, newValue)} />);
-					default:
-						return (
-							<TextField
-							id={plug} key={plug}
-							value={this.props.parameters[plug]}
-							floatingLabelText={plug}
-							onChange={(event, newValue) => this.props.onChangeText(event.target.id, newValue)} />);
-				}
-			});
-			form = (
+			}	
+		});
+	}
+
+	render() {
+		return (
 			<div className="trialForm">
 				<SelectField
 					value={this.props.pluginType}
 					floatingLabelText="Plugin Type"
 					underlineStyle={{display: 'none'}}
-					onChange={(event, key) => this.props.onChange(plugins[key])} 
+					onChange={(event, key) => this.props.onChange(PluginList[key])} 
 				>
-					{pluginItems}
+					{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
 				</SelectField>
 				<Divider />
-				{pluginParameters}
-			</div>)
-		} else {
-			form = null;
-		}
-		return(
-			<div>
-				{form}
+				{this.renderPluginParams()}
 			</div>
-			)
+		)
 	}
 }
+
 
 export default TrialForm;
