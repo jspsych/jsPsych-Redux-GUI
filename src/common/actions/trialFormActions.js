@@ -7,6 +7,14 @@ export function onPluginTypeChange(newPluginVal) {
 	};
 }
 
+export function setPluginParamAction(key, value) {
+	return {
+		type: actionTypes.SET_PLUGIN_PARAMTER,
+		key: key,
+		value: value
+	};
+}
+
 export function onToggleValue(paramId, newVal) {
 	return {
 		type: actionTypes.TOGGLE_PARAM_VALUE,

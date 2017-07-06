@@ -100,6 +100,10 @@ export default function experimentReducer(state=initState, action) {
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
+		case actionTypes.SET_PLUGIN_PARAMTER:
+			return editor.setPluginParam(state, action);
+
+
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return editor.changePlugin(state, action);
 		case actionTypes.TOGGLE_PARAM_VALUE:

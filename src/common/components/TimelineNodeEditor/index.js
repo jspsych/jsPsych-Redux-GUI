@@ -65,8 +65,10 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 											id="Node-Name-Textfield"
 			                				value={this.props.nodeName}
 											onChange={this.props.changeNodeName} />
-									<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
-									<TimelineForm id={this.props.previewId} />
+									{this.props.isTimeline ?
+										<TimelineForm id={this.props.previewId} /> :
+										<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
+									}
 
 								</List> 
 							</Paper> :

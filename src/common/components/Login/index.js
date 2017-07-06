@@ -1,5 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
+import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
@@ -91,7 +92,7 @@ export default class Login extends React.Component {
 			<Dialog
           		open={open}
           		titleStyle={{padding: 0}}
-          		title={renderDialogTitle(null, handleClose)}
+          		title={renderDialogTitle(<Subheader></Subheader>, handleClose)}
           		onRequestClose={handleClose}
           		contentStyle={{width: 450, height: 600,}}
           		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}

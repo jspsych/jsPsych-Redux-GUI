@@ -11,14 +11,17 @@ const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 
 	let node = experimentState[experimentState.previewId];
-	if (!node) return {
-		previewId: null,
-	};
+	if (!node) {
+		return {
+			previewId: null,
+		};
+	}
 	
 	return {
 		previewId: experimentState.previewId,
 		pluginType: node.parameters.type,
 		nodeName: node.name,
+		isTimeline: isTimeline(node),
 		label: ((isTimeline(node)) ? "Timeline" : "Trial") + " Name"
 	}
 };
