@@ -62,15 +62,30 @@ export function choicesHelper(string) {
 	return array;
 }
 
+export function getCurlyIndex(string) {
+	let array = [];
+
+	for(let i=0; i<string.length; i++) {
+		if(string[i] === '{') {
+			array.push(i);
+		}
+	}
+	console.log(array);
+	return array;
+}
+
 export function changeChoices(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 	let str,
+		index,
 		results = [],
 		re = /{([^}]+)}/g, text;
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
+
+	index = getCurlyIndex(action.newVal); //Index to put {...}
 
 	str = (action.newVal).replace(/{([^}]+)}/g, "");
 	console.log(str);
@@ -79,7 +94,11 @@ export function changeChoices(state, action) {
     	results.push(text[0]);
   	}
 
-	node.parameters[action.paramId] = results.concat(choicesHelper(str));
+  	node.parameters[action.paramId] = choicesHelper(str);
+
+  	for(let i=0; i<index.length; i++) {
+  		node.parameters[action.paramId].splice(index[i], 0, results[i]);
+  	}
 
 	console.log(node);
 
