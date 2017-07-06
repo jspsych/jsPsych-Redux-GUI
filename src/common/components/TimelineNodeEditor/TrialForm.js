@@ -14,6 +14,7 @@ const pluginStyle = {
 		left: '0px',
 	}
 
+
 class TrialForm extends React.Component {
 	render(){
 		var plugins = Object.keys(jsPsych.plugins);
@@ -24,7 +25,14 @@ class TrialForm extends React.Component {
 			return (<MenuItem primaryText={plugin} key={plugin} value={plugin} />);
 		});
 		var form;
-		console.log(this.props.isTrial);
+		var allkeys;
+		if(this.props.choices === 'allkeys') {
+			console.log("is all keys");
+			allkeys = true;
+		} else {
+			console.log("is not all keys");
+			allkeys = false;
+		}
 		if(this.props.isTrial){
 			var getPluginType = jsPsych.plugins[this.props.pluginType];
 			const pluginParameters = Object.keys(getPluginType.info.parameters).map((plug) => {
@@ -65,19 +73,18 @@ class TrialForm extends React.Component {
 					case 4:
 					case 5:
 						return (
-							<div key={plug+" "+this.props.id+"-container"}>
-								<TextField
-								 id={plug} 
-								 key={plug+" "+this.props.id} 
-								 value={this.props.parameters[plug]} 
-								 floatingLabelText={plug} 
-								 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
-								 <Checkbox
-								 	label="ALLKEYS"
-								 	key={plug+" "+this.props.id+"-check"}
-								 	checked={this.props.isChecked}
-								 	onCheck={this.props.handleCheck}
-								 />
+							<div>
+							<TextField
+							 id={plug} 
+							 key={plug+" "+this.props.id} 
+							 value={this.props.choices} 
+							 floatingLabelText={plug} 
+							 onChange={(event, newValue) => this.props.onChangeChoices(event.target.id, newValue)} />
+							 <Checkbox
+							 	id={plug}
+							 	label="ALLKEYS"
+							 	checked={allkeys}
+							 	onCheck={(event, newVal) => this.props.onHandleCheck(event.target.id, newVal)} />
 							 </div>);
 					case 6: 
 						return (

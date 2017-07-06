@@ -31,6 +31,14 @@ export function onChoicesChange(paramId, newVal) {
 	};
 }
 
+export function onCheckChange(paramId, newVal) {
+	return {
+		type: actionTypes.CHANGE_CHECK,
+		paramId: paramId,
+		newVal: newVal
+	};
+}
+
 export function onParamIntChange(paramId, newVal) {
 	return {
 		type: actionTypes.CHANGE_PARAM_INT,
