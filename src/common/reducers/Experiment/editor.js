@@ -52,11 +52,7 @@ export function changeToggleValue(state, action) {
 }
 
 export function choicesHelper(string) {
-	let array = [],
-		word = [],
-		joined,
-		s,
-		newString='';
+	let array = [];
 
  	//turns string into array
 	for(let i=0; i<string.length; i++) {
@@ -98,7 +94,7 @@ export function changeCheck(state, action) {
 	new_state[state.previewId] = node;
 
 	if(action.newVal == false) {
-		node.parameters[action.paramId] = '';
+		node.parameters[action.paramId] = null;
 	} else {
 		node.parameters[action.paramId] = ['allkeys'];
 	}

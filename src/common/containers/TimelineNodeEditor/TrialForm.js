@@ -20,8 +20,6 @@ const onChangeChoicesParam = (dispatch, e, newVal) => {
 }
 
 const onChangeCheck = (dispatch, e, newVal) => {
-	console.log(e);
-	console.log(newVal);
 	dispatch(trialFormActions.onCheckChange(e, newVal));
 }
 
@@ -47,12 +45,16 @@ const mapStateToProps = (state, ownProps) => {
 			joined = 'allkeys';
 		} else if (trial.parameters.choices != undefined) {
 			choices = trial.parameters.choices;
+			console.log("choices");
 			console.log(choices);
 			for(let i=0; i<choices.length; i++) {
 				joined = choices.join('');
 				console.log(joined);
-			}
-		} 
+			} 
+			} else {
+				console.log("is null");
+				joined = '';
+			} 
 
 	return {
 		id: trial.id,

@@ -27,10 +27,8 @@ class TrialForm extends React.Component {
 		var form;
 		var allkeys;
 		if(this.props.choices === 'allkeys') {
-			console.log("is all keys");
 			allkeys = true;
 		} else {
-			console.log("is not all keys");
 			allkeys = false;
 		}
 		if(this.props.isTrial){
