@@ -112,6 +112,8 @@ export default function experimentReducer(state=initState, action) {
 			return editor.changeParamText(state, action);
 		case actionTypes.CHANGE_CHOICES:
 			return editor.changeChoices(state, action);
+		case actionTypes.CHANGE_CHECK:
+			return editor.changeCheck(state, action);
 		case actionTypes.CHANGE_PARAM_INT: 
 			return editor.changeParamInt(state, action);
 		case actionTypes.CHANGE_PARAM_FLOAT:

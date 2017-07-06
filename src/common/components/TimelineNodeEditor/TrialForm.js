@@ -13,6 +13,7 @@ const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
 const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType'));
 
+
 class TrialForm extends React.Component {
 	renderPluginParams = () => {
 		let parameters = jsPsych.plugins[this.props.pluginType].info.parameters;

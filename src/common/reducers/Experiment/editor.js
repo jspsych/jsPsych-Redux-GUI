@@ -66,50 +66,32 @@ export function changeToggleValue(state, action) {
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
-	new_state[state.previewId] = node;
 
 	node.parameters[action.paramId] = action.newVal;
+	new_state[state.previewId] = node;
 
 	return new_state;
 }
 
 export function choicesHelper(string) {
-	let array = [],
-		word = [],
-		joined,
-		s,
-		newString='';
+	let array = [];
 
  	//turns string into array
 	for(let i=0; i<string.length; i++) {
 		array.push(string[i]);
 	}
 
-	//look for '{'
-	let beginningCurly;
-	for(let j=0; j<array.length; j++) {
-		if(array[j] == '{') {
-			beginningCurly = j;
+	return array;
+}
+
+export function getCurlyIndex(string) {
+	let array = [];
+
+	for(let i=0; i<string.length; i++) {
+		if(string[i] === '{') {
+			array.push(i);
 		}
 	}
-
-	let endingCurly;
-	for(let k=0; k<array.length; k++) {
-		if(array[k] == '}') {
-			endingCurly = k; 
-		}
-	}
-	let removed;
-	removed = array.splice(beginningCurly, (endingCurly - (beginningCurly)) + 1);
-	console.log('removed');
-	console.log(removed);
-	console.log(removed.join(''));
-	console.log('array');
-	console.log(array);
-
-	array.push(removed.join(''));
-
-	
 	console.log(array);
 	return array;
 }
@@ -117,16 +99,47 @@ export function choicesHelper(string) {
 export function changeChoices(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
-	let array;
-	let nonSingleKey = [];
-	let inCurly = false; 
+	let str,
+		index,
+		results = [],
+		re = /{([^}]+)}/g, text;
 
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters[action.paramId] = choicesHelper(action.newVal);
+	index = getCurlyIndex(action.newVal); //Index to put {...}
+
+	str = (action.newVal).replace(/{([^}]+)}/g, "");
+	console.log(str);
+
+	while(text = re.exec(action.newVal)) {
+    	results.push(text[0]);
+  	}
+
+  	node.parameters[action.paramId] = choicesHelper(str);
+
+  	for(let i=0; i<index.length; i++) {
+  		node.parameters[action.paramId].splice(index[i], 0, results[i]);
+  	}
+
 	console.log(node);
 
+	return new_state;
+}
+
+export function changeCheck(state, action) {
+	let node = state[state.previewId];
+	let new_state = Object.assign({}, state);
+
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	if(action.newVal == false) {
+		node.parameters[action.paramId] = null;
+	} else {
+		node.parameters[action.paramId] = ['allkeys'];
+	}
+	console.log(node);
 	return new_state;
 }
 
