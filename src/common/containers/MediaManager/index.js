@@ -13,13 +13,10 @@ import { convertEmptyStringToNull } from '../../utils';
 import { MediaObject, isS3MediaType } from '../../reducers/Experiment/preview';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
-const uploadFiles = (dispatch, files, setState) => {
+const uploadFiles = (dispatch, files, setState, progressHook) => {
 	dispatch((dispatch, getState) => {
-		// on start
-		setState({
-			uploadComplete: false
-		});
-		$uploadFiles(files, getState().experimentState.experimentId).then(() => {
+
+		$uploadFiles(files, getState().experimentState.experimentId, progressHook).then(() => {
 			// update list
 			updateFileList(dispatch, setState, "Uploaded !");
 		}, (err) => {
@@ -27,7 +24,7 @@ const uploadFiles = (dispatch, files, setState) => {
 		}).then(() => {
 			// on finish
 			setState({
-				uploadComplete: true
+				completed: {}
 			});
 		})
 	});
@@ -116,7 +113,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	uploadFiles: (files, setState) => { uploadFiles(dispatch, files, setState); },
+	uploadFiles: (files, setState, progressHook) => { uploadFiles(dispatch, files, setState, progressHook); },
 	updateFileList: (setState) => { updateFileList(dispatch, setState); },
 	deleteFiles: (filePaths, setState) => { deleteFiles(dispatch, filePaths, setState); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },

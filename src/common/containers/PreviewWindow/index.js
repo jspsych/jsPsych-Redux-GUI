@@ -16,7 +16,6 @@ const playAll = (dispatch, load) => {
 const hotUpdate = (dispatch, load) => {
 	dispatch((dispatch, getState) => {
 		code = generateCode(getState().experimentState);
-		// console.log(code)
 		load(code);
 	})
 }
