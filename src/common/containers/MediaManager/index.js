@@ -68,9 +68,9 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 		}
 		filePaths = MediaObject(convertEmptyStringToNull(filePaths[0].replace(prefix, '')), prefix);
 	} else {
-		filePaths = filePaths.map((f) => (MediaObject(f.replace(prefix, ''), prefix)));
+		filePaths = MediaObject(filePaths.map((f) => (f.replace(prefix, ''))), prefix);
 	}
-
+	
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, filePaths));
 	notify.notifySuccessBySnackbar(dispatch, "Resource Appended !");
 	handleClose();

@@ -34,7 +34,7 @@ export function setPluginParam(state, action) {
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 	node.parameters[key] = value;
-
+	
 	return new_state;
 }
 
