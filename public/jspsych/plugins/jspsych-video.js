@@ -98,7 +98,7 @@ jsPsych.plugins.video = (function() {
       type = type.toLowerCase();
 
       // adding start stop parameters if specified
-      video_html+='<source src="'+s
+      video_html+='<source src="'+trial.sources[i]
 
       if (trial.start) {
         video_html+= '#t=' + trial.start;

@@ -13,10 +13,12 @@ function connectS3() {
   });
 }
 
-function uploadFile(param){
-  return connectS3().upload({
-      ...param
-    }).promise();
+function uploadFile(param, progressHook) {
+  return connectS3().putObject({
+    ...param
+  }).on('httpUploadProgress', function(evt) {
+    progressHook(parseInt((evt.loaded * 100) / evt.total));
+  }).promise();
 }
 
 function uploadParam(file, experimentId) {
@@ -29,9 +31,9 @@ function uploadParam(file, experimentId) {
   };
 }
 
-export function uploadFiles(files, experimentId){
+export function uploadFiles(files, experimentId, progressHook){
   return Promise.all(files.map((file) => (
-    uploadFile(uploadParam(file, experimentId))
+    uploadFile(uploadParam(file, experimentId), (p) => { progressHook(file.name, p) })
     )));
 }
 

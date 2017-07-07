@@ -6,7 +6,7 @@ import AutoComplete from 'material-ui/AutoComplete';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
-import CircularProgress from 'material-ui/CircularProgress';
+import LinearProgress from 'material-ui/LinearProgress';
 const mime = require('mime-types');
 import {List, ListItem} from 'material-ui/List';
 
@@ -31,6 +31,8 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
+
+var __DEBUG__ = 0;
 
 export function fileIconFromTitle(title) {
 	const type = mime.lookup(title);
@@ -68,12 +70,12 @@ export default class MediaManager extends React.Component {
 		super(props);
 
 		this.state = {
-			open: false,
+			open: false || __DEBUG__,
 			files: [],
 			s3files: {},
 			dropzoneActive: false,
-			uploadComplete: true,
 			selected: [],
+			completed: {},
 		};
 
 		this.handleEnter = () => {
@@ -86,6 +88,28 @@ export default class MediaManager extends React.Component {
 			this.setState({
 				dropzoneActive: false
 			});
+		}
+
+		this.progressHook = (filename, percent) => {
+			let completed = this.state.completed;
+			if (completed[filename] === undefined) {
+				completed[filename] = 0;
+			} else if (percent === 100) {
+				delete completed[filename];
+			} else {
+				completed[filename] = percent;
+			}
+			this.setState({
+				completed: completed
+			})
+		}
+
+		this.startProgress = (filename) => {
+			let completed = this.state.completed;
+			completed[filename] = 0;
+			this.setState({
+				completed: completed
+			})
 		}
 
 		this.handleOpen = () => {
@@ -123,7 +147,8 @@ export default class MediaManager extends React.Component {
 		this.handleUpload = (files) => {
 			this.props.uploadFiles(files, (update) => {
 				this.setState(update);
-			});
+			},
+			this.progressHook);
 		}
 
 		this.handleDelete = () => {
@@ -250,6 +275,34 @@ export default class MediaManager extends React.Component {
 				/>)
 		}
 
+		let uploadList = null, completed = Object.keys(this.state.completed);
+		if (completed.length > 0) {
+			uploadList = completed.map((key) =>
+				<div style={{display: 'flex'}} key={"uploading-container-"+key}>
+					<ListItem
+						key={"uploading-"+key}
+						primaryText={key}
+						disabled={true}
+						leftIcon={fileIconFromTitle(key)}
+						/>
+					<div key={"uploading-progress-container"+key} 
+						 style={{width: "100%", marign: 'auto', paddingTop: '22'}}
+					>
+					<LinearProgress 
+						mode="determinate" 
+						key={"uploading-progress-"+key} 
+						value={this.state.completed[key]} 
+					/>
+					</div>
+					<ListItem
+						key={"uploading-number-"+key}
+						primaryText={this.state.completed[key]+"%"}
+						disabled={true}
+						/>
+				</div>
+			)
+		}
+
 	    return (
 	        <div className="mediaManager">
 	          {this.renderTrigger()}
@@ -287,8 +340,10 @@ export default class MediaManager extends React.Component {
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
 					style={{width:"100%", minHeight: '200px', position: 'relative'}}>
-					{this.state.uploadComplete && <List>{mediaList}</List>}
-					{!this.state.uploadComplete && <CircularProgress size={80} thickness={5} />}
+					<List>
+					{mediaList}
+					{uploadList}
+					</List>
 					{this.state.dropzoneActive && <div style={overlayStyle}>Drop files...</div>}
 				</Dropzone>
 	          </Dialog>
