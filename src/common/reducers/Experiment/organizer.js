@@ -46,7 +46,7 @@ const DEFAULT_TIMELINE_PARAM = {
 const DEFAULT_TRIAL_PARAM = {
 		type: 'text',
 		text: null,
-		chocies: null,
+		choices: null,
 		allow_mouse_click: false,
 };
 

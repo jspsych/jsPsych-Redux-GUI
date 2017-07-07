@@ -12,7 +12,6 @@ const setText = (dispatch, key, value) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
-
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	if (!experimentState.previewId) return {};
@@ -20,12 +19,12 @@ const mapStateToProps = (state, ownProps) => {
 	let trial = experimentState[experimentState.previewId];
 	let choices;
 	let joined; 
-	
+
 	return {
 		id: trial.id,
 		isTrial: isTrial(trial),
 		parameters: trial.parameters,
-		//choices: trial.parameters.joined,
+		choices: joined,
 		pluginType: trial.parameters.type,
 	};
 }
