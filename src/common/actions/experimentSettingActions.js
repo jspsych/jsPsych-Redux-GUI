@@ -12,9 +12,3 @@ export function setJspyschInitAction(key, value) {
 		value: value,
 	};
 }
-
-export function playAllAction() {
-	return {
-		type: actionTypes.PLAY_ALL,
-	};
-}

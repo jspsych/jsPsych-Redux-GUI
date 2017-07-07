@@ -28,12 +28,8 @@ export const initState = {
 	},
 
 	// ********** experiment contents
-	// repository
-	medias: [],
 	// id of which is being previewed/editted
 	previewId: null,
-	// if want to play all
-	previewAll: false,
 
 	// id counts
 	timelineCount: 0,
@@ -88,10 +84,6 @@ export default function experimentReducer(state=initState, action) {
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
-
-		// preview
-		case actionTypes.PLAY_ALL:
-			return preview.playAll(state, action);
 
 		// name
 		case actionTypes.SET_EXPERIMENT_NAME:

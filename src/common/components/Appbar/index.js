@@ -16,7 +16,7 @@ import {
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
-import MediaManager from '../../containers/Appbar/MediaManager';
+import MediaManager from '../../containers/MediaManager';
 
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 

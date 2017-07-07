@@ -65,7 +65,7 @@
     "react": "react-scripts start",
     "webpack": "babel-node ./src/server/dev-server",
     "start": "react-scripts start",
-    "build": "webpack",
+    "build": "webpack -p --config config/webpack.config.development.js",
     "eject": "react-scripts eject",
     "test": "jest",
     "test:watch": "npm test -- --watch"
