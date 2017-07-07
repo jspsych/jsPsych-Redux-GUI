@@ -1,27 +1,35 @@
 import { connect } from 'react-redux';
-import * as experimentSettingActions from '../../actions/experimentSettingActions';
+// import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import PreviewWindow from '../../components/PreviewWindow';
 
 import { generateCode, Undefined } from '../../reducers/Experiment/preview';
 
-const playAll = (dispatch) => {
-	dispatch(experimentSettingActions.playAllAction());
+let code = "";
+
+const playAll = (dispatch, load) => {
+	dispatch((dispatch, getState) => {
+		code = generateCode(getState().experimentState, true, false);
+		load(code);
+	})
+}
+
+const hotUpdate = (dispatch, load) => {
+	dispatch((dispatch, getState) => {
+		code = generateCode(getState().experimentState);
+		load(code);
+	})
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let experimentState = state.experimentState;
-	let code = Undefined;
-	if (experimentState.previewId || experimentState.previewAll) {
-		code = generateCode(experimentState);
-	} 
-
 	return {
 		code: code,
+		id: state.experimentState.experimentId
 	};
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	playAll: () => { playAll(dispatch) },
+	playAll: (load) => { playAll(dispatch, load); },
+	hotUpdate: (load) => { hotUpdate(dispatch, load); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreviewWindow);

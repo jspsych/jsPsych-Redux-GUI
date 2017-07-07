@@ -19,7 +19,7 @@ jsPsych.plugins["audio-keyboard-response"] = (function() {
     description: '',
     parameters: {
       stimulus: {
-        type: [jsPsych.plugins.parameterType.AUDIO],
+        type: [jsPsych.plugins.parameterType.STRING],
         default: undefined,
         no_function: false,
         description: ''

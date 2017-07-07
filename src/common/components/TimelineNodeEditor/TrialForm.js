@@ -7,7 +7,8 @@ import Divider from 'material-ui/Divider';
 import Checkbox from 'material-ui/Checkbox';
 
 import { convertNullToEmptyString } from '../../utils';
-import MediaSelector from '../../containers/TimelineNodeEditor/MediaSelector';
+import MediaManager from '../../containers/MediaManager';
+import { MediaManagerMode } from '..//MediaManager';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
@@ -20,9 +21,12 @@ class TrialForm extends React.Component {
 			switch(parameters[param].type[0]) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
+					return (
+						<MediaManager parameterName={param} key={"Trial-form-"+param} mode={MediaManagerMode.select}/>
+					)
 				case EnumPluginType.VIDEO:
 					return (
-						<MediaSelector parameterName={param} key={"Trial-form-"+param} />
+						<MediaManager parameterName={param} key={"Trial-form-"+param} mode={MediaManagerMode.multiSelect}/>
 					)
 				case EnumPluginType.BOOL:
 				case EnumPluginType.INT:

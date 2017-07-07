@@ -38,7 +38,6 @@ export function setPluginParam(state, action) {
 	return new_state;
 }
 
-
 export function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
@@ -47,9 +46,11 @@ export function changePlugin(state, action) {
 	let params = window.jsPsych.plugins[action.newPluginVal].info.parameters;
 	let paramKeys = Object.keys(params);
 
-	var paramsObject = { type: action.newPluginVal };
+	var paramsObject = {
+		type: action.newPluginVal
+	};
 
-	for(let i=0; i<paramKeys.length; i++) {
+	for (let i = 0; i < paramKeys.length; i++) {
 		paramsObject[paramKeys[i]] = convertEmptyStringToNull(params[paramKeys[i]].default);
 	}
 
@@ -60,112 +61,6 @@ export function changePlugin(state, action) {
 
 	return new_state;
 }
-
-export function changeToggleValue(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	node.parameters[action.paramId] = action.newVal;
-
-	return new_state;
-}
-
-export function choicesHelper(string) {
-	let array = [],
-		word = [],
-		joined,
-		s,
-		newString='';
-
- 	//turns string into array
-	for(let i=0; i<string.length; i++) {
-		array.push(string[i]);
-	}
-
-	//look for '{'
-	let beginningCurly;
-	for(let j=0; j<array.length; j++) {
-		if(array[j] == '{') {
-			beginningCurly = j;
-		}
-	}
-
-	let endingCurly;
-	for(let k=0; k<array.length; k++) {
-		if(array[k] == '}') {
-			endingCurly = k; 
-		}
-	}
-	let removed;
-	removed = array.splice(beginningCurly, (endingCurly - (beginningCurly)) + 1);
-	console.log('removed');
-	console.log(removed);
-	console.log(removed.join(''));
-	console.log('array');
-	console.log(array);
-
-	array.push(removed.join(''));
-
-	
-	console.log(array);
-	return array;
-}
-
-export function changeChoices(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-	let array;
-	let nonSingleKey = [];
-	let inCurly = false; 
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	node.parameters[action.paramId] = choicesHelper(action.newVal);
-	console.log(node);
-
-	return new_state;
-}
-
-export function changeParamText(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	node.parameters[action.paramId] = action.newVal;
-
-	return new_state;
-}
-
-export function changeParamInt(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	node.parameters[action.paramId] = action.newVal;
-
-	return new_state;
-}
-
-export function changeParamFloat(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	node.parameters[action.paramId] = action.newVal;
-
-	return new_state;
-}
-
 
 export function changeHeader(state, action) {
 	let node = state[state.previewId];

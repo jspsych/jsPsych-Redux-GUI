@@ -9,7 +9,7 @@ function connectS3() {
     apiVersion: Api_Version,
     params: {
       Bucket: Bucket_Name
-    }
+    },
   });
 }
 
@@ -61,6 +61,6 @@ export function getSignedUrl(filePath) {
 }
 
 export function getSignedUrls(filePaths) {
-  return Promise.all(filePaths.map((filePath) => (getSignedUrl(filePath))));
+  return filePaths.map((filePath) => (getSignedUrl(filePath)));
 }
 
