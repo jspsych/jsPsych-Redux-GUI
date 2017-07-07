@@ -16,7 +16,7 @@ jsPsych.plugins.video = (function() {
     description: '',
     parameters: {
       sources: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: [jsPsych.plugins.parameterType.VIDEO],
         array: true,
         default: undefined,
         no_function: false,
