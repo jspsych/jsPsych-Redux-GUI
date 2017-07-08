@@ -80,6 +80,12 @@ export default class PreviewWindow extends React.Component {
     load(Welcome);
   }
 
+  // shouldComponentUpdate(prevProps) {
+  //   let flag = prevProps.code !== this.props.code ||
+  //              prevProps.id !== this.props.id;
+  //   return flag;
+  // }
+
   componentDidUpdate(prevProps, prevState) {
     this.props.hotUpdate(load);
   }

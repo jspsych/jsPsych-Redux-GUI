@@ -16,7 +16,7 @@ import {
 	cyan500 as checkColor,
 	blue800 as titleIconColor,
 	indigo500 as hoverColor,
-	pink500 as iconColor
+	cyan500 as iconColor
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
 import Media from 'material-ui/svg-icons/action/shopping-cart';
@@ -32,7 +32,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 
-var __DEBUG__ = 0;
+var __DEBUG__ = false;
 
 export function fileIconFromTitle(title) {
 	const type = mime.lookup(title);
@@ -73,6 +73,7 @@ export default class MediaManager extends React.Component {
 			open: false || __DEBUG__,
 			files: [],
 			s3files: {},
+			filenames: [],
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
@@ -176,18 +177,26 @@ export default class MediaManager extends React.Component {
 	}
 
 	renderTrigger = () => {
+		this.updateList();
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
 				return (
 					<div style={{display:'flex'}}>
+						<div style={{paddingTop: 20, paddingRight: 15}} >
+							{this.props.parameterName+":"}
+						</div>
 						<AutoComplete
 							id="Selected-File-Input"
 							fullWidth={true}
 							searchText={this.props.selected}
-							dataSource={[]}
+							title={this.props.selected}
+							dataSource={this.state.filenames}
+							listStyle={{maxHeight: 200, overflowY: 'auto'}}
+							onUpdateInput={(t) => { this.props.autoFileInput(t, this.state.s3files.Prefix, this.state.filenames); }}
 						/>
 						<IconButton 
 							onTouchTap={this.handleOpen}
+							tooltip="Insert Medias"
 						>
 							<Add hoverColor={hoverColor} color={iconColor}/>
 						</IconButton>
@@ -196,6 +205,7 @@ export default class MediaManager extends React.Component {
 			case MediaManagerMode.multiSelect:
 				return (<IconButton 
 							onTouchTap={this.handleOpen}
+							tooltip="Insert Medias"
 						>
 							<Add hoverColor={hoverColor} color={iconColor}/>
 						</IconButton>)
@@ -321,7 +331,7 @@ export default class MediaManager extends React.Component {
 								<div style={{fontSize: 20,}}>
 			      					{(this.props.mode === MediaManagerMode.upload) ?
 			      					"Media Manager" :
-			      					"Pick your resource"}
+			      					"Pick your resources"}
 			      				</div>
 			      				</div>
 		      				</Subheader>,

@@ -23,7 +23,8 @@ const hotUpdate = (dispatch, load) => {
 const mapStateToProps = (state, ownProps) => {
 	return {
 		code: code,
-		id: state.experimentState.experimentId
+		id: state.experimentState.experimentId,
+		
 	};
 }
 
