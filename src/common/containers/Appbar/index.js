@@ -16,6 +16,7 @@ import {
 	convertNullToEmptyString
 } from '../../utils';
 import { pushState } from '../../backend/dynamoDB';
+import { diyDeploy as $diyDeploy } from '../../backend/deploy';
 
 
 const changeExperimentName = (dispatch, text) => {
@@ -110,6 +111,12 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 	});
 }
 
+const diyDeploy = (dispatch) => {
+	dispatch((dispatch, getState) => {
+		$diyDeploy(getState());
+	});
+}
+
 const mapStateToProps = (state, ownProps) => {
 	return {
 		experimentName: convertNullToEmptyString(state.experimentState.experimentName),
@@ -121,7 +128,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	save: (onStart, onFinish) => { save(dispatch, onStart, onFinish); },
 	newExperiment: (popUpConfirm) => { newExperiment(dispatch, popUpConfirm); },
 	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
-	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); }
+	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); },
+	diyDeploy: () => { diyDeploy(dispatch); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Appbar);

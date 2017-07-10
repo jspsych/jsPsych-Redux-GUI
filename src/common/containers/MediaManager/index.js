@@ -10,12 +10,11 @@ import {
 	listBucketContents as $listBucketContents
 } from '../../backend/s3';
 import { convertEmptyStringToNull } from '../../utils';
-import { MediaObject, isS3MediaType } from '../../reducers/Experiment/preview';
+import { MediaObject, isS3MediaType } from '../../backend/deploy';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
 const uploadFiles = (dispatch, files, setState, progressHook) => {
 	dispatch((dispatch, getState) => {
-
 		$uploadFiles(files, getState().experimentState.experimentId, progressHook).then(() => {
 			// update list
 			updateFileList(dispatch, setState, "Uploaded !");
@@ -40,10 +39,12 @@ const deleteFiles = (dispatch, filePaths, setState) => {
 
 const updateFileList = (dispatch, setState, feedback=null) => {
 	dispatch((dispatch, getState) => {
+		if (!getState().experimentState.experimentId) return;
 		$listBucketContents(getState().experimentState.experimentId).then((data) => {
 			setState({
 				s3files: data,
 				selected: data.Contents.map((d) => (false)),
+				filenames: data.Contents.map((f) => (f.Key.replace(data.Prefix, '')))
 			});
 			if (feedback) {
 				notify.notifySuccessBySnackbar(dispatch, feedback);
@@ -69,8 +70,13 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 	}
 	
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, filePaths));
-	notify.notifySuccessBySnackbar(dispatch, "Resource Appended !");
+	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
 	handleClose();
+}
+
+const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
+	if (filenames.indexOf(filename) < 0) return;
+	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(filename, prefix)));
 }
 
 const checkBeforeOpen = (dispatch, handleOpen) => {
@@ -118,6 +124,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	deleteFiles: (filePaths, setState) => { deleteFiles(dispatch, filePaths, setState); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	insertFile: (filePaths, prefix, handleClose) => { insertFile(dispatch, ownProps, filePaths, prefix, handleClose); },
+	autoFileInput: (filename, prefix, filenames) => { autoFileInput(dispatch, ownProps, filename, prefix, filenames); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);
