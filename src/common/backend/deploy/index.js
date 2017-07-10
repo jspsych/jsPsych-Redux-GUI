@@ -57,8 +57,8 @@ export function diyDeploy(state) {
 
   zip.file("index.html", generatePage(deployInfo));
   var assets = zip.folder(Deploy_Folder);
-  getFiles(Object.keys(deployInfo.medias)).then((datas) => {
-    assets.file("eggplant.png", datas[0].Body);
+  getFiles(Object.keys(deployInfo.medias), (key, data) => {
+    assets.file(deployInfo.medias[key], data);
   }).then(() => {
     zip.generateAsync({
         type: "blob"
@@ -87,10 +87,10 @@ function walk(state, childrenById, deployInfo) {
         if (isS3MediaType(item)) {
           if (Array.isArray(item.filename)) {
             for (let name of item.filename) {
-              deployInfo.medias[item.prefix + name] = 1;
+              deployInfo.medias[item.prefix + name] = name;
             }
           } else {
-            deployInfo.medias[item.prefix + item.filename] = 1;
+            deployInfo.medias[item.prefix + item.filename] = item.filename;
           }
         }
       }
