@@ -43,22 +43,35 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
-export function diyDeploy(state) {
+export function diyDeploy(state, progressHook) {
   let experimentState = state.experimentState;
   var zip = new JSZip();
 
   let deployInfo = {
     experimentName: experimentState.experimentName,
     plugins: {},
-    medias: {},
+    media: {},
     code: generateCode(experimentState, true, true),
   }
   walk(experimentState, experimentState.mainTimeline, deployInfo);
 
+  // on start 
+  let filePaths = Object.keys(deployInfo.media);
+  let total = 0;
+  for (let f of experimentState.media.Contents) {
+    if (filePaths.indexOf(f.Key) > -1) {
+      total += f.Size;
+    }
+  }
+  progressHook(0, total);
+
   zip.file("index.html", generatePage(deployInfo));
   var assets = zip.folder(Deploy_Folder);
-  getFiles(Object.keys(deployInfo.medias), (key, data) => {
-    assets.file(deployInfo.medias[key], data);
+
+  return getFiles(filePaths, (key, data) => {
+    assets.file(deployInfo.media[key], data);
+  }, (loaded) => {
+    progressHook(loaded, total);
   }).then(() => {
     zip.generateAsync({
         type: "blob"
@@ -66,6 +79,8 @@ export function diyDeploy(state) {
       .then(function(blob) {
         FileSaver.saveAs(blob, deployInfo.experimentName + ".zip");
       });
+  }).then(() => {
+    progressHook(null, null, true);
   })
 }
 
@@ -87,10 +102,10 @@ function walk(state, childrenById, deployInfo) {
         if (isS3MediaType(item)) {
           if (Array.isArray(item.filename)) {
             for (let name of item.filename) {
-              deployInfo.medias[item.prefix + name] = name;
+              deployInfo.media[item.prefix + name] = name;
             }
           } else {
-            deployInfo.medias[item.prefix + item.filename] = item.filename;
+            deployInfo.media[item.prefix + item.filename] = item.filename;
           }
         }
       }
@@ -136,6 +151,10 @@ export function generateCode(state, all=false, deploy=false) {
     ...state.jsPsychInit,
     timeline: blocks
   };
+
+  if (deploy) {
+    obj["display_element"] = undefined;
+  }
 
   return "jsPsych.init(" + stringify(obj) + ");";
 }

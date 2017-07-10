@@ -61,6 +61,7 @@ export default class MediaManager extends React.Component {
 		parameterName: PropTypes.string,
 		mode: PropTypes.string
 	};
+
 	static defaultProps = {
 		mode: MediaManagerMode.upload,
 		parameterName: null,
@@ -72,8 +73,6 @@ export default class MediaManager extends React.Component {
 		this.state = {
 			open: false || __DEBUG__,
 			files: [],
-			s3files: {},
-			filenames: [],
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
@@ -115,10 +114,10 @@ export default class MediaManager extends React.Component {
 
 		this.handleOpen = () => {
 			this.props.checkBeforeOpen(() => {
-				// this.updateList();
 				this.setState({
 					open: true,
 					dropzoneActive: false,
+					selected: this.props.filenames.map((f) => (false))
 				});
 			});
 		};
@@ -154,30 +153,17 @@ export default class MediaManager extends React.Component {
 
 		this.handleDelete = () => {
 			this.props.deleteFiles(
-				this.state.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-				(update) => {
-					this.setState(update);
-				}
+				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
 			);
-		}
-
-		this.updateList = () => {
-			this.props.updateFileList((update) => {
-				this.setState(update);
-			});
 		}
 
 		this.insertFile = () => {
 			this.props.insertFile(
-				this.state.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-				this.state.s3files.Prefix,
+				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
+				this.props.s3files.Prefix,
 				this.handleClose
 			);
 		}
-	}
-
-	componentDidMount = () => {
-		this.updateList();
 	}
 
 	renderTrigger = () => {
@@ -191,12 +177,12 @@ export default class MediaManager extends React.Component {
 						<AutoComplete
 							id="Selected-File-Input"
 							fullWidth={true}
-							searchText={this.props.selected}
-							title={this.props.selected}
-							dataSource={this.state.filenames}
+							searchText={this.props.selectedFilesString}
+							title={this.props.selectedFilesString}
+							dataSource={this.props.filenames}
 							filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
 							listStyle={{maxHeight: 200, overflowY: 'auto'}}
-							onUpdateInput={(t) => { this.props.autoFileInput(t, this.state.s3files.Prefix, this.state.filenames); }}
+							onUpdateInput={(t) => { this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames); }}
 						/>
 						<IconButton 
 							onTouchTap={this.handleOpen}
@@ -274,11 +260,11 @@ export default class MediaManager extends React.Component {
 		}
 
 		let mediaList = null;
-		if (this.state.s3files && this.state.s3files.Contents) {
-			mediaList = this.state.s3files.Contents.map((f, i) =>
+		if (this.props.s3files && this.props.s3files.Contents) {
+			mediaList = this.props.s3files.Contents.map((f, i) =>
 				<ListItem
 					key={f.ETag}
-					primaryText={f.Key.replace(this.state.s3files.Prefix, '')}
+					primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
 					leftIcon={fileIconFromTitle(f.Key)}
 					rightIconButton={
 						<IconButton
@@ -349,11 +335,12 @@ export default class MediaManager extends React.Component {
 	            autoScrollBodyContent={true}
 	          >
 				<Dropzone
-					disableClick
+					disableClick={true}
 					onDrop={this.onDrop.bind(this)}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
-					style={{width:"100%", minHeight: '200px', position: 'relative'}}>
+					style={{width:"100%", minHeight: '200px', position: 'relative'}}
+					>
 					<List>
 					{mediaList}
 					{uploadList}

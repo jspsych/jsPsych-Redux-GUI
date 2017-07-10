@@ -111,9 +111,9 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 	});
 }
 
-const diyDeploy = (dispatch) => {
+const diyDeploy = (dispatch, progressHook) => {
 	dispatch((dispatch, getState) => {
-		$diyDeploy(getState());
+		$diyDeploy(getState(), progressHook);
 	});
 }
 
@@ -129,7 +129,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	newExperiment: (popUpConfirm) => { newExperiment(dispatch, popUpConfirm); },
 	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
 	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); },
-	diyDeploy: () => { diyDeploy(dispatch); }
+	diyDeploy: (progressHook) => { diyDeploy(dispatch, progressHook); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Appbar);
