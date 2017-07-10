@@ -39,6 +39,9 @@ export const initState = {
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
+
+	// media
+	media: {},
 }
 
 
@@ -93,6 +96,8 @@ export default function experimentReducer(state=initState, action) {
 			return editor.setName(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER:
 			return editor.setPluginParam(state, action);
+		case actionTypes.UPDATE_MEDIA:
+			return editor.updateMedia(state, action);
 
 
 		case actionTypes.CHANGE_PLUGIN_TYPE:

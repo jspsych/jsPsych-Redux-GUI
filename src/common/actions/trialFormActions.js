@@ -14,3 +14,10 @@ export function setPluginParamAction(key, value) {
 		value: value
 	};
 }
+
+export function updateMediaAction(s3files) {
+	return {
+		type: actionTypes.UPDATE_MEDIA,
+		s3files: s3files
+	};
+}

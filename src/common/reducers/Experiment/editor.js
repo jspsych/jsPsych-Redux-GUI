@@ -38,6 +38,11 @@ export function setPluginParam(state, action) {
 	return new_state;
 }
 
+export function updateMedia(state, action) {
+	return Object.assign({}, state, {
+		media: action.s3files
+	});
+}
 
 export function changePlugin(state, action) {
 	let node = state[state.previewId];

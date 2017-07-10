@@ -31,6 +31,7 @@ export default class Appbar extends React.Component {
     saveAsOpen: false,
     saveAsName: '',
     saveAsNameError: '',
+
     performing: null,
     confirmOpen: false,
     confirmMessage: "Null",
@@ -38,11 +39,33 @@ export default class Appbar extends React.Component {
     proceedWithOperationLabel: "Yes",
     proceed: () => {},
     proceedLabel: "No",
+
+    total: 0,
+    loaded: 0,
+    percent: 0,
   }
 
   setPerforming = (p) => {
     this.setState({
       performing: p
+    });
+  }
+
+  progresHook = (loaded, total, onFinish=false) => {
+    if (onFinish) {
+      this.setState({
+        loaded: 0,
+        total: 0,
+        percent: 0,
+      })
+      return;
+    }
+    loaded = this.state.loaded + loaded;
+    let percent = loaded / total * 100;
+    this.setState({
+      loaded: loaded,
+      total: total,
+      percent: (percent > 100) ? 100 : percent
     });
   }
 
@@ -169,12 +192,15 @@ export default class Appbar extends React.Component {
                     <ToolbarSeparator />
 										<MediaManager />
                     <ToolbarSeparator />
+                    {(this.state.total !== 0) ?
+                    <div style={{paddingLeft: 10}}><CircularProgress mode='determinate' size={30} value={this.state.percent}/></div> :
                     <IconButton
                       tooltip="DIY Deploy"
-                      onTouchTap={this.props.diyDeploy}
+                      onTouchTap={() => { this.props.diyDeploy(this.progresHook);}}
                       >
                       <DIYDeploy hoverColor={hoverColor}/>
                     </IconButton>
+                  }
                   </ToolbarGroup>
   							</Toolbar>
   						</div>
