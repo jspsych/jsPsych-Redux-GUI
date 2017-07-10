@@ -39,7 +39,7 @@ export const createFuncObj = (code, info=null) => ({
 })
 
 
-export const jsPsych_Display_Element = "Preview-Window";
+export const jsPsych_Display_Element = "jsPsych-Window";
 
 export const initState = {
 	display_element: jsPsych_Display_Element,

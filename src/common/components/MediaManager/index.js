@@ -115,7 +115,7 @@ export default class MediaManager extends React.Component {
 
 		this.handleOpen = () => {
 			this.props.checkBeforeOpen(() => {
-				this.updateList();
+				// this.updateList();
 				this.setState({
 					open: true,
 					dropzoneActive: false,
@@ -134,7 +134,7 @@ export default class MediaManager extends React.Component {
 			this.setState({
 				dropzoneActive: false
 			});
-			this.handleUpload(files)
+			this.handleUpload(files);
 		}
 
 		this.handleSelect = (index) => {
@@ -176,8 +176,11 @@ export default class MediaManager extends React.Component {
 		}
 	}
 
-	renderTrigger = () => {
+	componentDidMount = () => {
 		this.updateList();
+	}
+
+	renderTrigger = () => {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
 				return (
@@ -191,6 +194,7 @@ export default class MediaManager extends React.Component {
 							searchText={this.props.selected}
 							title={this.props.selected}
 							dataSource={this.state.filenames}
+							filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
 							listStyle={{maxHeight: 200, overflowY: 'auto'}}
 							onUpdateInput={(t) => { this.props.autoFileInput(t, this.state.s3files.Prefix, this.state.filenames); }}
 						/>
@@ -270,7 +274,7 @@ export default class MediaManager extends React.Component {
 		}
 
 		let mediaList = null;
-		if (this.state.s3files.Contents) {
+		if (this.state.s3files && this.state.s3files.Contents) {
 			mediaList = this.state.s3files.Contents.map((f, i) =>
 				<ListItem
 					key={f.ETag}

@@ -1,7 +1,6 @@
 import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
-import * as preview from './preview';
 import * as editor from './editor';
 
 export const initState = {
@@ -98,18 +97,6 @@ export default function experimentReducer(state=initState, action) {
 
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return editor.changePlugin(state, action);
-		case actionTypes.TOGGLE_PARAM_VALUE:
-			return editor.changeToggleValue(state, action);
-		case actionTypes.CHANGE_PARAM_TEXT:
-			return editor.changeParamText(state, action);
-		case actionTypes.CHANGE_CHOICES:
-			return editor.changeChoices(state, action);
-		case actionTypes.CHANGE_CHECK:
-			return editor.changeCheck(state, action);
-		case actionTypes.CHANGE_PARAM_INT: 
-			return editor.changeParamInt(state, action);
-		case actionTypes.CHANGE_PARAM_FLOAT:
-			return editor.changeParamFloat(state, action);
 		case actionTypes.CHANGE_HEADER:
 			return editor.changeHeader(state, action);
 		case actionTypes.CHANGE_CELL:

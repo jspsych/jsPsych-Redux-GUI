@@ -10,12 +10,11 @@ import {
 	listBucketContents as $listBucketContents
 } from '../../backend/s3';
 import { convertEmptyStringToNull } from '../../utils';
-import { MediaObject, isS3MediaType } from '../../reducers/Experiment/preview';
+import { MediaObject, isS3MediaType } from '../../backend/deploy';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
 const uploadFiles = (dispatch, files, setState, progressHook) => {
 	dispatch((dispatch, getState) => {
-
 		$uploadFiles(files, getState().experimentState.experimentId, progressHook).then(() => {
 			// update list
 			updateFileList(dispatch, setState, "Uploaded !");

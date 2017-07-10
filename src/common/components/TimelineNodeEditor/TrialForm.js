@@ -79,6 +79,7 @@ class TrialForm extends React.Component {
 						this.props.setNumber(param, v, EnumPluginType.FLOAT===parameters[param].type[0]);
 					}, "number");
 				case EnumPluginType.FUNCTION:
+				// same different
 				case EnumPluginType.SELECT:
 				case EnumPluginType.KEYCODE:
 				case EnumPluginType.HTML_STRING:

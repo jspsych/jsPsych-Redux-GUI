@@ -10,6 +10,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; /
 import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
+import DIYDeploy from 'material-ui/svg-icons/action/work';
 import {
   cyan500 as hoverColor,
 } from 'material-ui/styles/colors';
@@ -167,6 +168,13 @@ export default class Appbar extends React.Component {
                     }
                     <ToolbarSeparator />
 										<MediaManager />
+                    <ToolbarSeparator />
+                    <IconButton
+                      tooltip="DIY Deploy"
+                      onTouchTap={this.props.diyDeploy}
+                      >
+                      <DIYDeploy hoverColor={hoverColor}/>
+                    </IconButton>
                   </ToolbarGroup>
   							</Toolbar>
   						</div>

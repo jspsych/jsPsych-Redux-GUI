@@ -27,12 +27,7 @@ export const PLAY_ALL = "PLAY_ALL";
 
 //TrialForm Actions
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";
-export const TOGGLE_PARAM_VALUE = "TOGGLE_PARAM_VALUE";
-export const CHANGE_PARAM_TEXT = "CHANGE_PARAM_TEXT";
-export const CHANGE_CHOICES = "CHANGE_CHOICES";
-export const CHANGE_CHECK = "CHANGE_CHECK";
-export const CHANGE_PARAM_INT = "CHANGE_PARAM_INT";
-export const CHANGE_PARAM_FLOAT = "CHANGE_PARAM_FLOAT";
+
 
 //EditableTable Actions
 export const CHANGE_HEADER = "CHANGE_HEADER";

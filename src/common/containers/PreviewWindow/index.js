@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 // import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import PreviewWindow from '../../components/PreviewWindow';
 
-import { generateCode, Undefined } from '../../reducers/Experiment/preview';
+import { generateCode, Undefined } from '../../backend/deploy';
 
 let code = "";
 
@@ -22,9 +22,7 @@ const hotUpdate = (dispatch, load) => {
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		code: code,
-		id: state.experimentState.experimentId,
-		
+		state: state.experimentState,
 	};
 }
 
