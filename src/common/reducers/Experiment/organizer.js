@@ -621,11 +621,10 @@ action = {
 
 */
 export function onPreview(state, action) {
-	let { id, previewAll } = action;
+	let { id } = action;
 
 	let new_state = Object.assign({}, state, {
 		previewId: id,
-		previewAll: previewAll,
 	});
 
 	return new_state;

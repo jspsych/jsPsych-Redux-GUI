@@ -1,5 +1,6 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
+
 import IconButton from 'material-ui/IconButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 
@@ -80,10 +81,7 @@ export default class PreviewWindow extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // meaning code changes
-    if (prevProps.code !== this.props.code) {
-      load(this.props.code);
-    }
+    this.props.hotUpdate(load);
   }
 
   detectFullScreenChange = () => {
@@ -156,7 +154,7 @@ export default class PreviewWindow extends React.Component {
                   <ToolbarGroup style={{margin: '0 auto'}}>
                       <IconButton 
                         tooltip="Play"
-                        onTouchTap={()=>{ this.props.playAll(); load(this.props.code); }}
+                        onTouchTap={()=>{ this.props.playAll(load); }}
                         >
                         <Play hoverColor={hoverColor} />
                       </IconButton>

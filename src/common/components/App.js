@@ -5,9 +5,9 @@ import ZoomBar from './PreviewWindow/ZoomBar';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
-import Notification from '../containers/Notification';
 
 import { getFullScreenState } from './PreviewWindow';
+import Notification from '../containers/Notification';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 

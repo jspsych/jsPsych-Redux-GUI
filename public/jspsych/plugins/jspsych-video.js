@@ -16,7 +16,7 @@ jsPsych.plugins.video = (function() {
     description: '',
     parameters: {
       sources: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: [jsPsych.plugins.parameterType.VIDEO],
         array: true,
         default: undefined,
         no_function: false,
@@ -91,11 +91,14 @@ jsPsych.plugins.video = (function() {
     video_html+=">"
     for(var i=0; i<trial.sources.length; i++){
       var s = trial.sources[i];
+      if(s.indexOf('?') > -1){
+        s = s.substring(0, s.indexOf('?'));
+      }
       var type = s.substr(s.lastIndexOf('.') + 1);
       type = type.toLowerCase();
 
       // adding start stop parameters if specified
-      video_html+='<source src="'+s
+      video_html+='<source src="'+trial.sources[i]
 
       if (trial.start) {
         video_html+= '#t=' + trial.start;

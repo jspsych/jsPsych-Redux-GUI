@@ -1,10 +1,8 @@
 var esprima = require("esprima");
-
-
 var escodegen = require("escodegen");
-
 import { initState as jsPsychInitState } from './jsPsychInit';
 import { isTimeline } from './utils';
+import { getSignedUrl } from '../../backend/s3';
 
 const welcomeObj = {
 	...jsPsychInitState,
@@ -32,8 +30,19 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
-export function generateCode(state) {
-	let timeline = (state.previewAll) ? state.mainTimeline : [state.previewId];
+
+const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
+const DEPLOY_PATH = 'assets/';
+export const MediaObject = (filename, prefix) => ({
+	type: AWS_S3_MEDIA_TYPE,
+	filename: filename,
+	prefix: prefix,
+})
+
+export const isS3MediaType = (item) => (typeof item === 'object' && item && item.type === AWS_S3_MEDIA_TYPE);
+
+export function generateCode(state, all=false, deploy=false) {
+	let timeline = (all) ? state.mainTimeline : [state.previewId];
 	let blocks = [];
 	let node;
 	// bool that descides if this node should be include
@@ -54,7 +63,7 @@ export function generateCode(state) {
 					})
 				}
 			} else {
-				blocks.push(generateTrial(state, node));
+				blocks.push(generateTrial(state, node, deploy));
 			}
 		}
 	}
@@ -71,17 +80,34 @@ export function generateCode(state) {
 	return "jsPsych.init(" + stringify(obj) + ");";
 }
 
-export function playAll(state, action) {
-	return Object.assign({}, state, {
-		previewAll: true,
-	});
+function resolveMediaPath(mediaObject, deploy) {
+	let prefix = mediaObject.prefix;
+	let processFunc = getSignedUrl;
+	if (deploy) {
+		prefix = DEPLOY_PATH;
+		processFunc = p => (p);
+	} 
+	if (typeof mediaObject.filename === 'string') {
+		return processFunc(prefix + mediaObject.filename);
+	} else if (Array.isArray(mediaObject.filename)) {
+		return mediaObject.filename.map((f) => (processFunc(prefix + f)));
+	}
 }
 
-
-function generateTrial(state, trial) {
-	let res = {
-		...trial.parameters
-	};
+/*
+Note that FOR NOW AWS S3 Media Type Object MUST be in the first level
+of trial.paramters
+*/
+function generateTrial(state, trial, deploy=false) {
+	let res = {};
+	let parameters = trial.parameters, item;
+	for (let key of Object.keys(parameters)) {
+		item = parameters[key];
+		if (isS3MediaType(item)) {
+			item = resolveMediaPath(item, deploy);
+		}
+		res[key] = item;
+	}
 
 	if (res.timing_stim && !state.previewAll) {
 		res.timing_stim = -1;

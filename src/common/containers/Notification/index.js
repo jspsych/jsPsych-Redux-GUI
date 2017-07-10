@@ -24,6 +24,13 @@ export const notifyWarningBySnackbar = (dispatch, message) => {
 		message));
 }
 
+export const notifyWarningByDialog = (dispatch, message) => {
+	dispatch(notificationActions.notifyAction(
+				Notify_Method.dialog,
+				Notify_Type.warning,
+				message));
+}
+
 const handleClose = (dispatch) => {
 	dispatch(notificationActions.notificationCloseAction());
 }
