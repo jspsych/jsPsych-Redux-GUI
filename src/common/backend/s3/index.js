@@ -66,16 +66,16 @@ export function getSignedUrls(filePaths) {
   return filePaths.map((filePath) => (getSignedUrl(filePath)));
 }
 
-export function getFile(key, callback, progressHook) {
+export function getFile(key, callback, progressHook, index) {
   return connectS3().getObject({
     Key: key
   }).on('httpDownloadProgress', function(evt) {
-    progressHook(evt.loaded);
+    progressHook({value: evt.loaded, index: index});
   }).promise().then((data) => {
     callback(key, data.Body);
   });
 }
 
 export function getFiles(keys, callback, progressHook) {
-  return Promise.all(keys.map((key) => (getFile(key, callback, progressHook))));
+  return Promise.all(keys.map((key, i) => (getFile(key, callback, progressHook, i))));
 }
