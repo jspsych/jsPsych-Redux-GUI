@@ -63,7 +63,7 @@ export function diyDeploy(state, progressHook) {
       total += f.Size;
     }
   }
-  progressHook(0, total);
+  progressHook(filePaths.map((d) => (0)), total);
 
   zip.file("index.html", generatePage(deployInfo));
   var assets = zip.folder(Deploy_Folder);
