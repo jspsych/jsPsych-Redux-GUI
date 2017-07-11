@@ -20,12 +20,12 @@ import { renderDialogTitle } from '../../gadgets';
 import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
 export default class jsPsychInitEditor extends React.Component {
+  state = {
+    open: false
+  }
+
   constructor(props) {
     super(props);
-
-    this.state = {
-      open: false,
-    };
 
     this.handleOpen = () => {
       this.setState({

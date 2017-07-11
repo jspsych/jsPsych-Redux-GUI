@@ -2,16 +2,23 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import CircularProgress from 'material-ui/CircularProgress';
+import LinearProgress from 'material-ui/LinearProgress';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import Subheader from 'material-ui/Subheader';
+
+import { ListItem } from 'material-ui/List';
 import { GridTile } from 'material-ui/GridList';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; // , ToolbarSeparator, ToolbarTitle
 
 import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
+import DIYDeploy from 'material-ui/svg-icons/action/work';
+import FileIcon from 'material-ui/svg-icons/editor/insert-drive-file';
 import {
   cyan500 as hoverColor,
+  grey100 as dialogBodyColor
 } from 'material-ui/styles/colors';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
@@ -19,6 +26,7 @@ import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/MediaManager';
 
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
+import { renderDialogTitle } from '../gadgets';
 
 const Actions = {
   save: "SAVE",
@@ -30,6 +38,7 @@ export default class Appbar extends React.Component {
     saveAsOpen: false,
     saveAsName: '',
     saveAsNameError: '',
+
     performing: null,
     confirmOpen: false,
     confirmMessage: "Null",
@@ -37,11 +46,34 @@ export default class Appbar extends React.Component {
     proceedWithOperationLabel: "Yes",
     proceed: () => {},
     proceedLabel: "No",
+
+    total: 0,
+    loaded: [],
+    percent: 0,
   }
 
   setPerforming = (p) => {
     this.setState({
       performing: p
+    });
+  }
+
+  progresHook = (loadedInfo, total, onFinish=false) => {
+    if (onFinish) {
+      this.setState({
+        loaded: [],
+        total: 0,
+      })
+      return;
+    }
+    let loaded = this.state.loaded.slice();
+    loaded[loadedInfo.index] = loadedInfo.value;
+
+    let percent = loaded.reduce((sum, val) => (sum+val), 0) / total * 100;
+    this.setState({
+      loaded: loaded,
+      total: total,
+      percent: (percent > 100) ? 100 : parseInt(percent)
     });
   }
 
@@ -97,6 +129,8 @@ export default class Appbar extends React.Component {
       }
       this.handleSaveAsClose();
     }
+
+    let isBundling = this.state.total !== 0;
 
 		return (
       		<div className="Appbar"
@@ -166,7 +200,24 @@ export default class Appbar extends React.Component {
                       </IconButton>
                     }
                     <ToolbarSeparator />
-										<MediaManager />
+										
+                    <MediaManager />
+                    
+                    <ToolbarSeparator />
+                    {isBundling ?
+                      <div style={{display:'flex', paddingLeft: 10}}>
+                        <div style={{paddingTop: 10}}><CircularProgress size={30} value={this.state.percent} mode="determinate"/></div>
+                        <ListItem primaryText={this.state.percent+"%"} disabled={true}/>
+                      </div>:
+                    <IconButton
+                      tooltip="DIY Deploy"
+                      onTouchTap={() => { 
+                        this.props.diyDeploy(this.progresHook);
+                      }}
+                      >
+                      <DIYDeploy hoverColor={hoverColor} />
+                    </IconButton>
+                    }
                   </ToolbarGroup>
   							</Toolbar>
   						</div>
@@ -181,11 +232,13 @@ export default class Appbar extends React.Component {
                 proceedLabel={this.state.proceedLabel}
                 />
 
-
               <Dialog
                 open={this.state.saveAsOpen}
                 onRequestClose={this.handleSaveAsClose}
+                titleStyle={{padding: 0}}
+                title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null)}
                 contentStyle={{width: 450, height: 300, padding: 0}}
+                bodyStyle={{backgroundColor: dialogBodyColor}}
                 actions={[
                   <FlatButton
                     label="Save As"

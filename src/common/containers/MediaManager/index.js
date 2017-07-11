@@ -10,15 +10,24 @@ import {
 	listBucketContents as $listBucketContents
 } from '../../backend/s3';
 import { convertEmptyStringToNull } from '../../utils';
-import { MediaObject, isS3MediaType } from '../../reducers/Experiment/preview';
+import { MediaObject, isS3MediaType } from '../../backend/deploy';
+import { pushExperimentData } from '../../backend/dynamoDB';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
-const uploadFiles = (dispatch, files, setState, progressHook) => {
-	dispatch((dispatch, getState) => {
+const Upload_Limit_MB = 100; 
+const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
 
+const uploadFiles = (dispatch, files, setState, progressHook) => {
+	for (let f of files) {
+		if (f.size > Upload_Limit) {
+			notify.notifyWarningBySnackbar(dispatch, "Exceed upload limit: " + Upload_Limit_MB + " MB !");
+			return;
+		}
+	}
+	dispatch((dispatch, getState) => {
 		$uploadFiles(files, getState().experimentState.experimentId, progressHook).then(() => {
 			// update list
-			updateFileList(dispatch, setState, "Uploaded !");
+			updateFileList(dispatch, "Uploaded !");
 		}, (err) => {
 			notify.notifyErrorByDialog(dispatch, err.message);
 		}).then(() => {
@@ -30,24 +39,28 @@ const uploadFiles = (dispatch, files, setState, progressHook) => {
 	});
 }
 
-const deleteFiles = (dispatch, filePaths, setState) => {
+const deleteFiles = (dispatch, filePaths) => {
 	$deleteFiles(filePaths).then((data) => {
-		updateFileList(dispatch, setState, "Deleted !");
+		updateFileList(dispatch, "Deleted !");
 	}, (err) => {
 		notify.notifyErrorByDialog(dispatch, err.message);
 	});
 }
 
-const updateFileList = (dispatch, setState, feedback=null) => {
+const updateFileList = (dispatch, feedback = null) => {
 	dispatch((dispatch, getState) => {
+		if (!getState().experimentState.experimentId) return;
 		$listBucketContents(getState().experimentState.experimentId).then((data) => {
-			setState({
-				s3files: data,
-				selected: data.Contents.map((d) => (false)),
-			});
-			if (feedback) {
-				notify.notifySuccessBySnackbar(dispatch, feedback);
-			}
+			dispatch(trialFormActions.updateMediaAction(data));
+
+			pushExperimentData(getState().experimentState).then(() => {
+				if (feedback) {
+					notify.notifySuccessBySnackbar(dispatch, feedback);
+				}
+			}, (err) => {
+				notify.notifyErrorByDialog(dispatch, err.message);
+			})
+
 		}, (err) => {
 			notify.notifyErrorByDialog(dispatch, err.message);
 		});
@@ -69,8 +82,13 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 	}
 	
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, filePaths));
-	notify.notifySuccessBySnackbar(dispatch, "Resource Appended !");
+	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
 	handleClose();
+}
+
+const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
+	if (filenames.indexOf(filename) < 0) return;
+	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(filename, prefix)));
 }
 
 const checkBeforeOpen = (dispatch, handleOpen) => {
@@ -100,24 +118,32 @@ const mapStateToProps = (state, ownProps) => {
 	if (!node || isTimeline(node)) {
 		return {};
 	}
-	let selected = "", item;
+	let selectedFilesString = "", item;
 	for (let key of Object.keys(node.parameters)) {
 		item = node.parameters[key];
 		if (isS3MediaType(item)) {
-			selected = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
+			selectedFilesString = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
 		}
 	}
+	let filenames = [];
+	let media = state.experimentState.media;
+	if (media.Contents) {
+		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
+	} 
  	return {
- 		selected: selected
+ 		selectedFilesString: selectedFilesString,
+ 		s3files: media,
+ 		filenames: filenames,
  	};
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	uploadFiles: (files, setState, progressHook) => { uploadFiles(dispatch, files, setState, progressHook); },
-	updateFileList: (setState) => { updateFileList(dispatch, setState); },
-	deleteFiles: (filePaths, setState) => { deleteFiles(dispatch, filePaths, setState); },
+	updateFileList: () => { updateFileList(dispatch); },
+	deleteFiles: (filePaths) => { deleteFiles(dispatch, filePaths); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	insertFile: (filePaths, prefix, handleClose) => { insertFile(dispatch, ownProps, filePaths, prefix, handleClose); },
+	autoFileInput: (filename, prefix, filenames) => { autoFileInput(dispatch, ownProps, filename, prefix, filenames); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);

@@ -34,8 +34,14 @@ export function setPluginParam(state, action) {
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 	node.parameters[key] = value;
-	
+
 	return new_state;
+}
+
+export function updateMedia(state, action) {
+	return Object.assign({}, state, {
+		media: action.s3files
+	});
 }
 
 export function changePlugin(state, action) {

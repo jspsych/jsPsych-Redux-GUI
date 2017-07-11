@@ -11,7 +11,7 @@ import FullScreen from 'material-ui/svg-icons/navigation/fullscreen';
 import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 
 import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
-import { Welcome } from '../../reducers/Experiment/preview';
+import { Welcome } from '../../backend/deploy';
 
 import {
   cyan600 as hoverColor,
@@ -79,6 +79,12 @@ export default class PreviewWindow extends React.Component {
   componentDidMount() {
     load(Welcome);
   }
+
+  // shouldComponentUpdate(prevProps) {
+  //   let flag = prevProps.code !== this.props.code ||
+  //              prevProps.id !== this.props.id;
+  //   return flag;
+  // }
 
   componentDidUpdate(prevProps, prevState) {
     this.props.hotUpdate(load);

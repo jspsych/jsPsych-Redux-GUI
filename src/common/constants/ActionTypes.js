@@ -18,6 +18,7 @@ export const SET_NAME = "SET_NAME";
 // main
 export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
 export const SET_PLUGIN_PARAMTER = "SET_PLUGIN_PARAMTER";
+export const UPDATE_MEDIA = "UPDATE_MEDIA";
 
 // jsPsych init editor
 export const SET_JSPSYCH_INIT = "SET_JSPSYCH_INIT";
@@ -27,12 +28,7 @@ export const PLAY_ALL = "PLAY_ALL";
 
 //TrialForm Actions
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";
-export const TOGGLE_PARAM_VALUE = "TOGGLE_PARAM_VALUE";
-export const CHANGE_PARAM_TEXT = "CHANGE_PARAM_TEXT";
-export const CHANGE_CHOICES = "CHANGE_CHOICES";
-export const CHANGE_CHECK = "CHANGE_CHECK";
-export const CHANGE_PARAM_INT = "CHANGE_PARAM_INT";
-export const CHANGE_PARAM_FLOAT = "CHANGE_PARAM_FLOAT";
+
 
 //EditableTable Actions
 export const CHANGE_HEADER = "CHANGE_HEADER";

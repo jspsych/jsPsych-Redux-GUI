@@ -1,7 +1,6 @@
 import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
-import * as preview from './preview';
 import * as editor from './editor';
 
 export const initState = {
@@ -40,6 +39,9 @@ export const initState = {
 
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
+
+	// media
+	media: {},
 }
 
 
@@ -94,22 +96,12 @@ export default function experimentReducer(state=initState, action) {
 			return editor.setName(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER:
 			return editor.setPluginParam(state, action);
+		case actionTypes.UPDATE_MEDIA:
+			return editor.updateMedia(state, action);
 
 
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return editor.changePlugin(state, action);
-		case actionTypes.TOGGLE_PARAM_VALUE:
-			return editor.changeToggleValue(state, action);
-		case actionTypes.CHANGE_PARAM_TEXT:
-			return editor.changeParamText(state, action);
-		case actionTypes.CHANGE_CHOICES:
-			return editor.changeChoices(state, action);
-		case actionTypes.CHANGE_CHECK:
-			return editor.changeCheck(state, action);
-		case actionTypes.CHANGE_PARAM_INT: 
-			return editor.changeParamInt(state, action);
-		case actionTypes.CHANGE_PARAM_FLOAT:
-			return editor.changeParamFloat(state, action);
 		case actionTypes.CHANGE_HEADER:
 			return editor.changeHeader(state, action);
 		case actionTypes.CHANGE_CELL:

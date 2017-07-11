@@ -16,7 +16,7 @@ import {
 	cyan500 as checkColor,
 	blue800 as titleIconColor,
 	indigo500 as hoverColor,
-	pink500 as iconColor
+	cyan500 as iconColor
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
 import Media from 'material-ui/svg-icons/action/shopping-cart';
@@ -32,7 +32,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 
-var __DEBUG__ = 0;
+var __DEBUG__ = false;
 
 export function fileIconFromTitle(title) {
 	const type = mime.lookup(title);
@@ -61,6 +61,7 @@ export default class MediaManager extends React.Component {
 		parameterName: PropTypes.string,
 		mode: PropTypes.string
 	};
+
 	static defaultProps = {
 		mode: MediaManagerMode.upload,
 		parameterName: null,
@@ -72,7 +73,6 @@ export default class MediaManager extends React.Component {
 		this.state = {
 			open: false || __DEBUG__,
 			files: [],
-			s3files: {},
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
@@ -114,10 +114,10 @@ export default class MediaManager extends React.Component {
 
 		this.handleOpen = () => {
 			this.props.checkBeforeOpen(() => {
-				this.updateList();
 				this.setState({
 					open: true,
 					dropzoneActive: false,
+					selected: this.props.filenames.map((f) => (false))
 				});
 			});
 		};
@@ -133,7 +133,7 @@ export default class MediaManager extends React.Component {
 			this.setState({
 				dropzoneActive: false
 			});
-			this.handleUpload(files)
+			this.handleUpload(files);
 		}
 
 		this.handleSelect = (index) => {
@@ -153,23 +153,14 @@ export default class MediaManager extends React.Component {
 
 		this.handleDelete = () => {
 			this.props.deleteFiles(
-				this.state.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-				(update) => {
-					this.setState(update);
-				}
+				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
 			);
-		}
-
-		this.updateList = () => {
-			this.props.updateFileList((update) => {
-				this.setState(update);
-			});
 		}
 
 		this.insertFile = () => {
 			this.props.insertFile(
-				this.state.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-				this.state.s3files.Prefix,
+				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
+				this.props.s3files.Prefix,
 				this.handleClose
 			);
 		}
@@ -180,14 +171,22 @@ export default class MediaManager extends React.Component {
 			case MediaManagerMode.select:
 				return (
 					<div style={{display:'flex'}}>
+						<div style={{paddingTop: 20, paddingRight: 15}} >
+							{this.props.parameterName+":"}
+						</div>
 						<AutoComplete
 							id="Selected-File-Input"
 							fullWidth={true}
-							searchText={this.props.selected}
-							dataSource={[]}
+							searchText={this.props.selectedFilesString}
+							title={this.props.selectedFilesString}
+							dataSource={this.props.filenames}
+							filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
+							listStyle={{maxHeight: 200, overflowY: 'auto'}}
+							onUpdateInput={(t) => { this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames); }}
 						/>
 						<IconButton 
 							onTouchTap={this.handleOpen}
+							tooltip="Insert Medias"
 						>
 							<Add hoverColor={hoverColor} color={iconColor}/>
 						</IconButton>
@@ -196,6 +195,7 @@ export default class MediaManager extends React.Component {
 			case MediaManagerMode.multiSelect:
 				return (<IconButton 
 							onTouchTap={this.handleOpen}
+							tooltip="Insert Medias"
 						>
 							<Add hoverColor={hoverColor} color={iconColor}/>
 						</IconButton>)
@@ -260,11 +260,11 @@ export default class MediaManager extends React.Component {
 		}
 
 		let mediaList = null;
-		if (this.state.s3files.Contents) {
-			mediaList = this.state.s3files.Contents.map((f, i) =>
+		if (this.props.s3files && this.props.s3files.Contents) {
+			mediaList = this.props.s3files.Contents.map((f, i) =>
 				<ListItem
 					key={f.ETag}
-					primaryText={f.Key.replace(this.state.s3files.Prefix, '')}
+					primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
 					leftIcon={fileIconFromTitle(f.Key)}
 					rightIconButton={
 						<IconButton
@@ -321,7 +321,7 @@ export default class MediaManager extends React.Component {
 								<div style={{fontSize: 20,}}>
 			      					{(this.props.mode === MediaManagerMode.upload) ?
 			      					"Media Manager" :
-			      					"Pick your resource"}
+			      					"Pick your resources"}
 			      				</div>
 			      				</div>
 		      				</Subheader>,
@@ -335,11 +335,12 @@ export default class MediaManager extends React.Component {
 	            autoScrollBodyContent={true}
 	          >
 				<Dropzone
-					disableClick
+					disableClick={true}
 					onDrop={this.onDrop.bind(this)}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
-					style={{width:"100%", minHeight: '200px', position: 'relative'}}>
+					style={{width:"100%", minHeight: '200px', position: 'relative'}}
+					>
 					<List>
 					{mediaList}
 					{uploadList}
