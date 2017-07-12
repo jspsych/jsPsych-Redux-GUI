@@ -1,7 +1,30 @@
 import { deepCopy, convertEmptyStringToNull } from '../../utils';
 import * as utils from './utils';
-
+import { createFuncObj } from './jsPsychInit';
 const DEFAULT_HEADER = 'H';
+
+export const createComposite = (value=null, func=createFuncObj(), useFunc=false) => ({
+	isComposite: true,
+	value: value,
+	func: func,
+	useFunc: useFunc
+})
+
+export const DEFAULT_TIMELINE_PARAM = {
+	timeline_variables: [{H0: undefined}],
+	randomize_order: true,
+	repetitions: undefined,
+	sampling: {type: undefined, size: undefined},
+	conditional_function: undefined,
+	loop_function: undefined,
+};
+
+export const DEFAULT_TRIAL_PARAM = {
+		type: 'text',
+		text: createComposite(),
+		choices: createComposite(),
+		allow_mouse_click: createComposite(),
+};
 
 /*
 action = {
@@ -24,16 +47,34 @@ export function setName(state, action) {
 /*
 action = {
 	key: name of param,
-	value: new value
+	value: new value,
+	setFunc: boolean,
 }
 */
 export function setPluginParam(state, action) {
-	let { key, value } = action;
+	let { key, value, setFunc } = action;
 
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
-	node.parameters[key] = value;
+	node.parameters[key] = Object.assign({}, node.parameters[key]);
+	if (setFunc) {
+		node.parameters[key].func = createFuncObj(value);
+	} else {
+		node.parameters[key].value = value;
+	}
+	return new_state;
+}
+
+export function setPluginParamMode(state, action) {
+	let { key } = action;
+
+	let new_state = Object.assign({}, state);
+	let node = deepCopy(new_state[new_state.previewId]);
+	new_state[node.id] = node;
+	node.parameters[key] = Object.assign({}, node.parameters[key], {
+		useFunc: !node.parameters[key].useFunc
+	});
 
 	return new_state;
 }
@@ -57,7 +98,7 @@ export function changePlugin(state, action) {
 	};
 
 	for (let i = 0; i < paramKeys.length; i++) {
-		paramsObject[paramKeys[i]] = convertEmptyStringToNull(params[paramKeys[i]].default);
+		paramsObject[paramKeys[i]] = createComposite(convertEmptyStringToNull(params[paramKeys[i]].default));
 	}
 
 	node = deepCopy(node);

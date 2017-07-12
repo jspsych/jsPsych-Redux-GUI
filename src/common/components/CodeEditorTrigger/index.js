@@ -3,23 +3,32 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
+import MenuItem from 'material-ui/MenuItem';
+import Subheader from 'material-ui/Subheader';
 
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
 
 import ButtonIcon from 'material-ui/svg-icons/editor/mode-edit';
+import Uncheck from 'material-ui/svg-icons/toggle/star-border';
+import Check from 'material-ui/svg-icons/toggle/star';
 import {
   cyan500 as hoverColor,
   grey800 as normalColor,
+  yellow500 as checkColor
 } from 'material-ui/styles/colors';
+import { renderDialogTitle } from '../gadgets';
 
 export default class CodeEditor extends React.Component {
   static propTypes = { 
-    submitCallback: PropTypes.func.isRequired,
+    submitCallback: PropTypes.func,
     openCallback: PropTypes.func,
   	initCode: PropTypes.string,
   	buttonIcon: PropTypes.object,
-    title: PropTypes.string
+    title: PropTypes.string,
+    showEditMode: PropTypes.bool,
+    useFunc: PropTypes.bool,
+    setParamMode: PropTypes.func
   };
 
   static defaultProps = { 
@@ -27,7 +36,9 @@ export default class CodeEditor extends React.Component {
   	buttonIcon: (<ButtonIcon color={normalColor} hoverColor={hoverColor} />),
     title: "Code Editor",
     openCallback: function() { return; },
+    closeCallback: function() { return; },
     submitCallback: function(newCode) { return; },
+    showEditMode: false,
   };
 
   state = {
@@ -39,12 +50,14 @@ export default class CodeEditor extends React.Component {
   	this.setState({
   		open: true,
   	});
+    this.props.openCallback();
   };
 
   handleClose = () => {
   	this.setState({
   		open: false,
   	});
+    this.props.closeCallback();
   };
 
   onUpdate = (newCode) => {
@@ -54,29 +67,43 @@ export default class CodeEditor extends React.Component {
   }
 
   render() {
-  	const { buttonIcon, title, submitCallback, openCallback } = this.props;
+  	const { buttonIcon, title, submitCallback, openCallback, closeCallback } = this.props;
   	const actions = [
       <FlatButton
         label="Finish"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={() => { this.handleClose(); submitCallback(this.state.code); }}
+        onTouchTap={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
       />,
     ];
 
   	return (
   		<div>
-	  		<IconButton onTouchTap={() => { this.handleOpen(); openCallback()}}>
+	  		<IconButton onTouchTap={this.handleOpen}>
 	  		{buttonIcon}
 	  		</IconButton>
 	  		<Dialog
 	            contentStyle={{minHeight: 500}}
-	            title={title}
+              titleStyle={{padding: 0}}
+	            title={renderDialogTitle(<Subheader style={{fontSize: 18}}>{title}</Subheader>, this.handleClose, null)}
 	            actions={actions}
 	            modal={true}
 	            open={this.state.open}
 	            onRequestClose={this.handleClose}
 	          >
+            {(this.props.showEditMode) ?
+              <div style={{display: 'flex'}}>
+              <p style={{paddingTop: 15, color: (this.props.useFunc) ? 'blue' : 'black'}}>
+                Use Function:
+              </p>
+              <IconButton
+                onTouchTap={this.props.setParamMode}
+                >
+                {(this.props.useFunc) ? <Check color={checkColor} /> : <Uncheck />}
+                </IconButton>
+              </div>:
+              null
+            }
 	          <CodeMirror value={this.state.code} 
                         onChange={this.onUpdate} 
                         options={{lineNumbers: true}}

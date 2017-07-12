@@ -130,6 +130,7 @@ const mapStateToProps = (state, ownProps) => {
 	if (media.Contents) {
 		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
 	} 
+
  	return {
  		selectedFilesString: selectedFilesString,
  		s3files: media,

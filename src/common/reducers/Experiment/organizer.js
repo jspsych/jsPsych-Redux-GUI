@@ -31,24 +31,10 @@ A trial state = {
 
 import * as utils from './utils';
 import { deepCopy } from '../../utils';
-// import { createFuncObj, defaultFunction } from './jsPsychInit';
+import { DEFAULT_TIMELINE_PARAM, DEFAULT_TRIAL_PARAM } from './editor'
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
-const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: undefined}],
-	randomize_order: true,
-	repetitions: undefined,
-	sampling: {type: undefined, size: undefined},
-	conditional_function: undefined,
-	loop_function: undefined,
-};
-const DEFAULT_TRIAL_PARAM = {
-		type: 'text',
-		text: null,
-		choices: null,
-		allow_mouse_click: false,
-};
 
 
 /**************************  Helper functions  ********************************/
