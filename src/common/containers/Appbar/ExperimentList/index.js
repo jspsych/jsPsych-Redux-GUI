@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
 import * as backendActions from '../../../actions/backendActions';
-import * as trialFormActions from '../../../actions/trialFormActions';
 import ExperimentList from '../../../components/Appbar/ExperimentList';
 import * as Errors from '../../../constants/Errors' ;
 import {
@@ -152,6 +151,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 			}
 			let now = Date.now();
 			let newId = getUUID();
+			
 			let experimentState = Object.assign({}, data.Item.fetch, {
 				experimentId: newId,
 				experimentDetails: Object.assign({}, data.Item.fetch.experimentDetails, {
@@ -163,12 +163,11 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
 				(copyParam(f.Key, f.Key.replace(data.Item.fetch.experimentId, newId)))
 			) : [];
-
 			// duplicate s3 bucket
 			copyFiles(params).then(() => {
 				// fetch new media
 				listBucketContents(newId).then((data) => {
-					dispatch(trialFormActions.updateMediaAction(data));
+					experimentState.media = data;
 					dispatch(backendActions.duplicateExperimentAction({
 						id: experimentState.experimentId,
 						name: experimentState.experimentName,
