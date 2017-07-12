@@ -153,12 +153,14 @@ export default class MediaManager extends React.Component {
 				this.setState(update);
 			},
 			this.progressHook);
+			this.resetSelect();
 		}
 
 		this.handleDelete = () => {
 			this.props.deleteFiles(
 				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
 			);
+			this.resetSelect();
 		}
 
 		this.insertFile = () => {
@@ -167,6 +169,13 @@ export default class MediaManager extends React.Component {
 				this.props.s3files.Prefix,
 				this.handleClose
 			);
+			this.resetSelect();
+		}
+
+		this.resetSelect = () => {
+			this.setState({
+				selected: this.props.s3files.Contents.map((f) => (false))
+			})
 		}
 	}
 
