@@ -9,7 +9,7 @@ import Subheader from 'material-ui/Subheader';
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
 
-import ButtonIcon from 'material-ui/svg-icons/editor/mode-edit';
+import ButtonIcon from 'material-ui/svg-icons/action/code';
 import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
 import {
@@ -79,8 +79,8 @@ export default class CodeEditor extends React.Component {
 
   	return (
   		<div>
-	  		<IconButton onTouchTap={this.handleOpen}>
-	  		{buttonIcon}
+	  		<IconButton onTouchTap={this.handleOpen} tooltip="Insert code">
+	  		 {buttonIcon}
 	  		</IconButton>
 	  		<Dialog
 	            contentStyle={{minHeight: 500}}

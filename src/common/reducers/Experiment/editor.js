@@ -63,6 +63,7 @@ export function setPluginParam(state, action) {
 	} else {
 		node.parameters[key].value = value;
 	}
+
 	return new_state;
 }
 

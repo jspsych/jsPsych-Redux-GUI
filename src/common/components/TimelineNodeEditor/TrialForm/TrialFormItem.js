@@ -80,7 +80,7 @@ export default class TrialFormItem extends React.Component {
 		      onChange={onChange}
 		    />
 		}
-		{(this.state.showFunc || this.state.openEditor) ?
+		{(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
 		<CodeEditorTrigger 
 					setParamMode={() => { this.props.setParamMode(param); }}
 					openCallback={this.showFuncEditor}
@@ -111,7 +111,7 @@ export default class TrialFormItem extends React.Component {
 			        {(this.props.parameters[param].value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 			        </IconButton>
 			    }
-			    {(this.state.showFunc || this.state.openEditor) ?
+			    {(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
 			    <CodeEditorTrigger 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={this.props.parameters[param].useFunc}
@@ -136,20 +136,31 @@ export default class TrialFormItem extends React.Component {
 		switch(paramType) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
+				case EnumPluginType.VIDEO:
 				// check if is array
 					return (
-						<MediaManager parameterName={param} key={"Trial-form-"+param} mode={MediaManagerMode.select}/>
-					)
-				case EnumPluginType.VIDEO:
-					return (
-						<MediaManager parameterName={param} key={"Trial-form-"+param} mode={MediaManagerMode.multiSelect}/>
-					)
+						<MediaManager 
+							parameterName={param} 
+							key={"Trial-form-"+param} 
+							mode={(paramType !== EnumPluginType.VIDEO) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+							setParamMode={() => { this.props.setParamMode(param); }}
+							openCallback={this.showFuncEditor}
+							closeCallback={this.hideFuncEditor}
+							useFunc={this.props.parameters[param].useFunc}
+							initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
+		                    submitCallback={(newCode) => { 
+		                    	console.log(newCode)
+		                      this.props.setFunc(param, newCode);
+		                    }}
+		                    codeEditorTitle={param+": "}
+						/>
+					);
 				case EnumPluginType.BOOL:
 					return this.renderToggle(param);
 				case EnumPluginType.INT:
 				case EnumPluginType.FLOAT:
 					return this.renderTextField(param, (e, v) => {
-						this.props.setNumber(param, v, EnumPluginType.FLOAT===parameters[param].type[0]);
+						this.props.setNumber(param, v, EnumPluginType.FLOAT===paramType);
 					}, "number");
 				case EnumPluginType.FUNCTION:
 				// same different
