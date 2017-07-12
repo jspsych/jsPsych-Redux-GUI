@@ -160,7 +160,7 @@ export default class TrialFormItem extends React.Component {
 				case EnumPluginType.INT:
 				case EnumPluginType.FLOAT:
 					return this.renderTextField(param, (e, v) => {
-						this.props.setNumber(param, v, EnumPluginType.FLOAT===parameters[param].type[0]);
+						this.props.setNumber(param, v, EnumPluginType.FLOAT===paramType);
 					}, "number");
 				case EnumPluginType.FUNCTION:
 				// same different

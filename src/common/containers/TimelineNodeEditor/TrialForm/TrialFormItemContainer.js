@@ -29,7 +29,7 @@ const setToggle = (dispatch, key) => {
 }
 
 const setNumber = (dispatch, key, value, isFloat) => {
-	if (!isNaN(value)) {
+	if (isNaN(value)) {
 		return;
 	}
 	if (isFloat) {

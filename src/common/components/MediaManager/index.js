@@ -98,8 +98,6 @@ export default class MediaManager extends React.Component {
 			let completed = this.state.completed;
 			if (completed[filename] === undefined) {
 				completed[filename] = 0;
-			} else if (percent === 100) {
-				delete completed[filename];
 			} else {
 				completed[filename] = percent;
 			}
