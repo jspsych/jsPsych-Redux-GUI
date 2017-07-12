@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
 import LinearProgress from 'material-ui/LinearProgress';
 const mime = require('mime-types');
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 
 import {
 	grey800 as normalColor,

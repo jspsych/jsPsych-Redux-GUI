@@ -30,14 +30,13 @@ export initState = {
 
 import { deepCopy } from '../../utils';
 
-export const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
-
-export const createFuncObj = (code, info=null) => ({
-	isFunc: true,
-	code: code,
-	info: info
+export const createFuncObj = (code=null, info=null) => ({
+  isFunc: true,
+  code: code,
+  info: info
 })
 
+export const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 
 export const jsPsych_Display_Element = "jsPsych-Window";
 

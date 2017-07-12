@@ -7,11 +7,19 @@ export function onPluginTypeChange(newPluginVal) {
 	};
 }
 
-export function setPluginParamAction(key, value) {
+export function setPluginParamAction(key, value, setFunc=false) {
 	return {
 		type: actionTypes.SET_PLUGIN_PARAMTER,
 		key: key,
-		value: value
+		value: value,
+		setFunc: setFunc,
+	};
+}
+
+export function setPluginParamModeAction(key) {
+	return {
+		type: actionTypes.SET_PLUGIN_PARAMTER_MODE,
+		key: key
 	};
 }
 

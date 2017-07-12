@@ -247,8 +247,6 @@ function generateTimeline(state, node, all=false, deploy=false) {
   return res;
 }
 
-
-
 /*
 Specially written for stringify obj in this app to generate code
 For functions, turn it to
@@ -257,17 +255,26 @@ For functions, turn it to
   code: function
 }
 
+For functions and value combined, turn it to
+{
+  isComposite: true,
+  value: value,
+  useFunc: boolean,
+  func: func obj
+}
+
 */
 export function stringify(obj) {
   if (!obj) return JSON.stringify(obj);
 
   let type = typeof obj;
-  switch(type) {
+  switch (type) {
     case 'object':
       let res = [];
       if (Array.isArray(obj)) {
         res.push("[");
-        let l = obj.length, i = 1;
+        let l = obj.length,
+          i = 1;
         for (let item of obj) {
           res.push(stringify(item));
           if (i++ < l) {
@@ -277,10 +284,13 @@ export function stringify(obj) {
         res.push("]");
       } else if (obj.isFunc) {
         return stringifyFunc(obj.code, obj.info);
+      } else if (obj.isComposite) {
+        return (obj.useFunc) ? stringify(obj.func) : stringify(obj.value);
       }else {
         res.push("{");
         let keys = Object.keys(obj);
-        let l = keys.length, i = 1;
+        let l = keys.length,
+          i = 1;
         for (let key of keys) {
           res.push('"' + key + '":' + stringify(obj[key]));
           if (i++ < l) {
@@ -295,20 +305,22 @@ export function stringify(obj) {
   }
 }
 
-function stringifyFunc(code, info=null) {
+function stringifyFunc(code, info = null) {
   try {
     let tree = esprima.parse(code);
     let res = escodegen.generate(tree, {
-            format: {
-                compact: true,
-                semicolons: true,
-                parentheses: false
-            }
-        });
+      format: {
+        compact: true,
+        semicolons: true,
+        parentheses: false
+      }
+    });
     return res;
   } catch (e) {
-    // let log = JSON.stringify({error: e, info: info});
-    let func = "function() { console.log('" + JSON.stringify({error: e, info: info}) + "'); }";
+    let func = "function() { console.log('" + JSON.stringify({
+      error: e,
+      info: info
+    }) + "'); }";
     return func;
   }
 }

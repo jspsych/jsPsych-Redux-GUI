@@ -96,6 +96,8 @@ export default function experimentReducer(state=initState, action) {
 			return editor.setName(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER:
 			return editor.setPluginParam(state, action);
+		case actionTypes.SET_PLUGIN_PARAMTER_MODE:
+			return editor.setPluginParamMode(state, action);
 		case actionTypes.UPDATE_MEDIA:
 			return editor.updateMedia(state, action);
 
