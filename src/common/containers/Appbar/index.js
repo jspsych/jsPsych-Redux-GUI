@@ -4,6 +4,7 @@ import * as experimentSettingActions from '../../actions/experimentSettingAction
 import * as backendActions from '../../actions/backendActions';
 import * as notificationActions from '../../actions/notificationActions' ;
 import * as userActions from '../../actions/userActions' ;
+import * as trialFormActions from '../../actions/trialFormActions';
 import Appbar from '../../components/Appbar';
 import { LoginModes } from '../../reducers/User';
 import {
@@ -17,6 +18,11 @@ import {
 } from '../../utils';
 import { pushState } from '../../backend/dynamoDB';
 import { diyDeploy as $diyDeploy } from '../../backend/deploy';
+import {
+	listBucketContents,
+	copyParam,
+	copyFiles,
+} from '../../backend/s3';
 
 
 const changeExperimentName = (dispatch, text) => {
@@ -99,15 +105,33 @@ const saveAsOpen = (dispatch, callback) => {
 
 const saveAs = (dispatch, newName, onStart, onFinish) => {
 	dispatch((dispatch, getState) => {
+		let oldExperimentId = getState().experimentState.experimentId;
+		// process state, assign new id
 		dispatch(backendActions.saveAsAction(newName));
+
 		onStart();
-		pushState(getState()).then(() => {
-			notifySuccessBySnackbar(dispatch, "Saved !");
+		let experimentState = getState().experimentState;
+		let params = (experimentState.media.Contents) ? experimentState.media.Contents.map((f) =>
+			(copyParam(f.Key, f.Key.replace(oldExperimentId, experimentState.experimentId)))
+		) : [];
+		// s3 duplicate
+		copyFiles(params).then(() => {
+			listBucketContents(experimentState.experimentId).then((data) => {
+				pushState(getState()).then(() => {
+					notifySuccessBySnackbar(dispatch, "Saved !");
+				}, (err) => {
+					notifyErrorByDialog(dispatch, err.message);
+				})
+			}, (err) => {
+				notifyErrorByDialog(dispatch, err.message);
+			})
 		}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		}).then(() => {
 			onFinish();
 		});
+
+
 	});
 }
 

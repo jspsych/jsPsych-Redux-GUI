@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
 import * as backendActions from '../../../actions/backendActions';
+import * as trialFormActions from '../../../actions/trialFormActions';
 import ExperimentList from '../../../components/Appbar/ExperimentList';
 import * as Errors from '../../../constants/Errors' ;
 import {
@@ -10,6 +11,12 @@ import {
 	pushExperimentData,
 	pushState
 } from '../../../backend/dynamoDB';
+import {
+	deleteFiles,
+	copyParam,
+	copyFiles,
+	listBucketContents
+} from '../../../backend/s3';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
@@ -96,17 +103,29 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 			"Are you sure that you want to delete experiment: " + experiment.name + "?",
 			() => {
 				onStart();
-				$deleteExperiment(id).then((data) => {
-					dispatch(backendActions.deleteExperimentAction(id));
-					pushUserData(getState().userState).then(() => {
-						notifySuccessBySnackbar(dispatch, "Deleted !");
+				fetchExperimentById(id).then((data) => {
+					if (!data) {
+						throw Errors.internetError;
+					}
+					let filepaths = data.Item.fetch.media.Contents.map((f) => (f.Key));
+					$deleteExperiment(id).then((data) => {
+						deleteFiles(filepaths).then(() => {
+							dispatch(backendActions.deleteExperimentAction(id));
+							pushUserData(getState().userState).then(() => {
+								notifySuccessBySnackbar(dispatch, "Deleted !");
+							}, (err) => {
+								notifyErrorByDialog(dispatch, err.message);
+							});
+						}, (err) => {
+							notifyErrorByDialog(dispatch, err.message);
+						})
 					}, (err) => {
 						notifyErrorByDialog(dispatch, err.message);
+					}).then(() => {
+						onFinish();
 					});
-				}, (err) => {
+				}).catch((err) => {
 					notifyErrorByDialog(dispatch, err.message);
-				}).then(() => {
-					onFinish();
 				});
 			},
 			"Yes, I want to delete it.",
@@ -132,21 +151,38 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				throw Errors.internetError;
 			}
 			let now = Date.now();
+			let newId = getUUID();
 			let experimentState = Object.assign({}, data.Item.fetch, {
-				experimentId: getUUID(),
+				experimentId: newId,
 				experimentDetails: Object.assign({}, data.Item.fetch.experimentDetails, {
 					createDate: now,
 					lastEditDate: now,
 				})
 			});
-			dispatch(backendActions.duplicateExperimentAction({
-				id: experimentState.experimentId,
-				name: experimentState.experimentName,
-				details: experimentState.experimentDetails
-			}));
-			pushUserData(getState().userState).then(() => {
-				pushExperimentData(experimentState).then(() => {
-					notifySuccessBySnackbar(dispatch, "Duplicated !");
+
+			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
+				(copyParam(f.Key, f.Key.replace(data.Item.fetch.experimentId, newId)))
+			) : [];
+
+			// duplicate s3 bucket
+			copyFiles(params).then(() => {
+				// fetch new media
+				listBucketContents(newId).then((data) => {
+					dispatch(trialFormActions.updateMediaAction(data));
+					dispatch(backendActions.duplicateExperimentAction({
+						id: experimentState.experimentId,
+						name: experimentState.experimentName,
+						details: experimentState.experimentDetails
+					}));
+					pushUserData(getState().userState).then(() => {
+						pushExperimentData(experimentState).then(() => {
+							notifySuccessBySnackbar(dispatch, "Duplicated !");
+						}, (err) => {
+							notifyErrorByDialog(dispatch, err.message);
+						})
+					}, (err) => {
+						notifyErrorByDialog(dispatch, err.message);
+					});
 				}, (err) => {
 					notifyErrorByDialog(dispatch, err.message);
 				})

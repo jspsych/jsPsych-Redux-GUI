@@ -115,14 +115,14 @@ of trial.paramters
 */
 const mapStateToProps = (state, ownProps) => {
 	let node = state.experimentState[state.experimentState.previewId];
-	if (!node || isTimeline(node)) {
-		return {};
-	}
+
 	let selectedFilesString = "", item;
-	for (let key of Object.keys(node.parameters)) {
-		item = node.parameters[key];
-		if (isS3MediaType(item)) {
-			selectedFilesString = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
+	if (node) {
+		for (let key of Object.keys(node.parameters)) {
+			item = node.parameters[key];
+			if (isS3MediaType(item)) {
+				selectedFilesString = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
+			}
 		}
 	}
 	let filenames = [];
