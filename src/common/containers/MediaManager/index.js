@@ -119,7 +119,7 @@ const mapStateToProps = (state, ownProps) => {
 	let selectedFilesString = "", item;
 	if (node) {
 		for (let key of Object.keys(node.parameters)) {
-			item = node.parameters[key];
+			item = node.parameters[key].value;
 			if (isS3MediaType(item)) {
 				selectedFilesString = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
 			}

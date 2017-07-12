@@ -215,7 +215,7 @@ function generateTrial(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = parameters[key];
+    item = (parameters[key].isComposite) ? parameters[key].value : parameters[key];
     if (isS3MediaType(item)) {
       item = resolveMediaPath(item, deploy);
     }
@@ -328,7 +328,7 @@ function stringifyFunc(code, info = null, filePath) {
     console.log("Fail to parse inserted code !");
   }
 
-  let matches = func.match(/<path>(.*?)<\/path>/g);
+  let matches = (func) ? func.match(/<path>(.*?)<\/path>/g) : null;
   if (matches) {
     let url;
     for (let m of matches) {
