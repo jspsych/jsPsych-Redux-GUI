@@ -156,7 +156,8 @@ export function generateCode(state, all=false, deploy=false) {
     obj["display_element"] = undefined;
   }
 
-  return "jsPsych.init(" + stringify(obj) + ");";
+  let s3Path = (state && state.media) ? state.media.Prefix : "";
+  return "jsPsych.init(" + stringify(obj, (deploy) ? DEPLOY_PATH : s3Path) + ");";
 }
 
 function generatePage(deployInfo) {
@@ -185,6 +186,13 @@ function generatePage(deployInfo) {
 `
 }
 
+/*
+mediaObject = {
+  type: AWS_S3_MEDIA_TYPE,
+  filename: filename, // maybe array
+  prefix: prefix,
+}
+*/
 function resolveMediaPath(mediaObject, deploy) {
   let prefix = mediaObject.prefix;
   let processFunc = getSignedUrl;
@@ -264,7 +272,7 @@ For functions and value combined, turn it to
 }
 
 */
-export function stringify(obj) {
+export function stringify(obj, filePath) {
   if (!obj) return JSON.stringify(obj);
 
   let type = typeof obj;
@@ -276,23 +284,23 @@ export function stringify(obj) {
         let l = obj.length,
           i = 1;
         for (let item of obj) {
-          res.push(stringify(item));
+          res.push(stringify(item, filePath));
           if (i++ < l) {
             res.push(",");
           }
         }
         res.push("]");
       } else if (obj.isFunc) {
-        return stringifyFunc(obj.code, obj.info);
+        return stringifyFunc(obj.code, obj.info, filePath);
       } else if (obj.isComposite) {
-        return (obj.useFunc) ? stringify(obj.func) : stringify(obj.value);
-      }else {
+        return (obj.useFunc) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
+      } else {
         res.push("{");
         let keys = Object.keys(obj);
         let l = keys.length,
           i = 1;
         for (let key of keys) {
-          res.push('"' + key + '":' + stringify(obj[key]));
+          res.push('"' + key + '":' + stringify(obj[key], filePath));
           if (i++ < l) {
             res.push(",");
           }
@@ -305,22 +313,28 @@ export function stringify(obj) {
   }
 }
 
-function stringifyFunc(code, info = null) {
+function stringifyFunc(code, info = null, filePath) {
+  let func = code;
   try {
     let tree = esprima.parse(code);
-    let res = escodegen.generate(tree, {
+    func = escodegen.generate(tree, {
       format: {
         compact: true,
         semicolons: true,
         parentheses: false
       }
     });
-    return res;
   } catch (e) {
-    let func = "function() { console.log('" + JSON.stringify({
-      error: e,
-      info: info
-    }) + "'); }";
-    return func;
+    console.log("Fail to parse inserted code !");
   }
+
+  let matches = func.match(/<path>(.*?)<\/path>/g);
+  if (matches) {
+    let url;
+    for (let m of matches) {
+      func = func.replace(m, resolveMediaPath(MediaObject(m.replace(/<\/?path>/g, ''), filePath), filePath === DEPLOY_PATH));
+    }
+  }
+
+  return func;
 }

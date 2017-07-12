@@ -80,7 +80,7 @@ export default class TrialFormItem extends React.Component {
 		      onChange={onChange}
 		    />
 		}
-		{(this.state.showFunc || this.state.openEditor) ?
+		{(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
 		<CodeEditorTrigger 
 					setParamMode={() => { this.props.setParamMode(param); }}
 					openCallback={this.showFuncEditor}
@@ -111,7 +111,7 @@ export default class TrialFormItem extends React.Component {
 			        {(this.props.parameters[param].value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 			        </IconButton>
 			    }
-			    {(this.state.showFunc || this.state.openEditor) ?
+			    {(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
 			    <CodeEditorTrigger 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={this.props.parameters[param].useFunc}

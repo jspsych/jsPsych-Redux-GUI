@@ -23,7 +23,7 @@ const setText = (dispatch, key, value) => {
 const setToggle = (dispatch, key) => {
 	dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState;
-		let flag = experimentState[experimentState.previewId].parameters[key]
+		let flag = experimentState[experimentState.previewId].parameters[key].value;
 		dispatch(trialFormActions.setPluginParamAction(key, !flag));
 	});
 }
