@@ -57,11 +57,12 @@ export function setPluginParam(state, action) {
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
-	if (setFunc) value = createFuncObj(value);
-	node.parameters[key] = Object.assign({}, node.parameters[key], {
-		value: value
-	});
-
+	node.parameters[key] = Object.assign({}, node.parameters[key]);
+	if (setFunc) {
+		node.parameters[key].func = createFuncObj(value);
+	} else {
+		node.parameters[key].value = value;
+	}
 	return new_state;
 }
 
