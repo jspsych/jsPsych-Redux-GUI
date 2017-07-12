@@ -3,6 +3,9 @@ import * as utils from './utils';
 import { createFuncObj } from './jsPsychInit';
 const DEFAULT_HEADER = 'H';
 
+/*
+Every editor items that are from jsPsych plugin parameters are a composite object defined below
+*/
 export const createComposite = (value=null, func=createFuncObj(), useFunc=false) => ({
 	isComposite: true,
 	value: value,

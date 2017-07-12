@@ -172,7 +172,7 @@ export default class MediaManager extends React.Component {
 
 		this.resetSelect = () => {
 			this.setState({
-				selected: this.props.s3files.Contents.map((f) => (false))
+				selected: (this.props.s3files.Contents) ? this.props.s3files.Contents.map((f) => (false)) : []
 			})
 		}
 	}

@@ -117,6 +117,7 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 		// s3 duplicate
 		copyFiles(params).then(() => {
 			listBucketContents(experimentState.experimentId).then((data) => {
+				dispatch(trialFormActions.updateMediaAction(data));
 				pushState(getState()).then(() => {
 					notifySuccessBySnackbar(dispatch, "Saved !");
 				}, (err) => {
