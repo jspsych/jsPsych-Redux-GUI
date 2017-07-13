@@ -278,7 +278,7 @@ class EditableTable extends React.Component {
 						        </div>
 						        <div style={{paddingTop: 20}}>
 						        	<Toggle 
-										label="Randomize_Order"
+										label="Randomize order"
 										defaultToggled={this.props.randomize_order}
 										labelPosition="right"
 										onToggle={this.props.onToggle} 
