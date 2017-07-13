@@ -44,6 +44,7 @@ function $deleteFiles(param){
 }
 
 export function deleteFiles(filePaths) {
+  if (filePaths.length < 1) return Promise.resolve("0 file is requested to be deleted.");
   return $deleteFiles({
     Delete: { Objects: filePaths.map((filePath) => ({Key: filePath})) }
   });
