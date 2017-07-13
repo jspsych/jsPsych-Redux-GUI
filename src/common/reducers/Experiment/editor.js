@@ -14,12 +14,12 @@ export const createComposite = (value=null, func=createFuncObj(), useFunc=false)
 })
 
 export const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: undefined}],
+	timeline_variables: [{H0: null}],
 	randomize_order: true,
-	repetitions: undefined,
-	sampling: {type: undefined, size: undefined},
-	conditional_function: undefined,
-	loop_function: undefined,
+	repetitions: null,
+	sampling: {type: null, size: null},
+	conditional_function: null,
+	loop_function: null,
 };
 
 export const DEFAULT_TRIAL_PARAM = {

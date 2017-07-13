@@ -153,9 +153,9 @@ const mapStateToProps = (state, ownProps) => {
 	let node = state.experimentState[state.experimentState.previewId];
 
 	let selectedFilesString = "", item;
-	if (node) {
+	if (node && !isTimeline(node)) {
 		for (let key of Object.keys(node.parameters)) {
-			item = node.parameters[key].value;
+			item = (node.parameters[key]) ? node.parameters[key].value : null;
 			if (isS3MediaType(item)) {
 				if (Array.isArray(item.filename)) {
 					let i = 0;

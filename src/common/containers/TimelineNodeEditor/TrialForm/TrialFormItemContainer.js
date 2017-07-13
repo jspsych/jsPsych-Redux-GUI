@@ -25,6 +25,7 @@ const setKey = (dispatch, key, keyListStr, useEnum=false) => {
 		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? [keyListStr] : []));
 	} else {
 		let val = [];
+		let hist = {};
 		let i = 0, len = keyListStr.length, part = "", spec = false;
 		while (i < len) {
 			let c = keyListStr[i++];
@@ -39,7 +40,12 @@ const setKey = (dispatch, key, keyListStr, useEnum=false) => {
 					break;
 				default:
 					if (spec) part += c;
-					else val.push(c);
+					else {
+						if (!hist[c]) {
+							val.push(c);
+							hist[c] = true;
+						}
+					}
 			}
 		}
 		dispatch(trialFormActions.setPluginParamAction(key, val));
