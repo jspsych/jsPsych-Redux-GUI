@@ -117,10 +117,10 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 				onStart();
 				// fetch experiment state
 				fetchExperimentById(id).then((data) => {
-					if (!data) {
+					if (!data || !data.Item) {
 						throw Errors.internetError;
 					}
-					let filepaths = data.Item.fetch.media.Contents.map((f) => (f.Key));
+					let filepaths = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) => (f.Key)) : [];
 					// delete it from dynamoDB
 					$deleteExperiment(id).then((data) => {
 						// delete corresponding s3 files
