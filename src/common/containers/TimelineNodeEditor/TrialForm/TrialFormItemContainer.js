@@ -20,6 +20,32 @@ const setText = (dispatch, key, value) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
+const setKey = (dispatch, key, keyListStr, useEnum=false) => {
+	if (useEnum) {
+		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? [keyListStr] : []));
+	} else {
+		let val = [];
+		let i = 0, len = keyListStr.length, part = "", spec = false;
+		while (i < len) {
+			let c = keyListStr[i++];
+			switch(c) {
+				case '{':
+					spec = true;
+					break;
+				case '}':
+					val.push(part);
+					part = "";
+					spec = false;
+					break;
+				default:
+					if (spec) part += c;
+					else val.push(c);
+			}
+		}
+		dispatch(trialFormActions.setPluginParamAction(key, val));
+	}
+}
+
 const setToggle = (dispatch, key) => {
 	dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState;
@@ -57,7 +83,8 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setToggle: (key) => { setToggle(dispatch, key); },
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
 	setFunc: (key, code) => { setFunc(dispatch, key, code); },
-	setParamMode: (key) => { setParamMode(dispatch, key); }
+	setParamMode: (key) => { setParamMode(dispatch, key); },
+	setKey: (key, keyListStr, useEnum) => { setKey(dispatch, key, keyListStr, useEnum); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialFormItem);
