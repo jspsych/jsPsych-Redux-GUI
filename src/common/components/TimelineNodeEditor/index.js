@@ -6,6 +6,8 @@ import { List } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 
+import Draggable from 'react-draggable';
+
 import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 
@@ -17,21 +19,86 @@ import {
 	grey300 as CloseBackHighlightColor,
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
+import { convertPercent } from '../App';
 
-//<TimelineForm id={this.props.id} />
+const MIN_WIDTH = 20;
+const MAX_WIDTH = 45;
+
+const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
+
+const getWidthFromDragging = (e) => {
+	let percent = (1 - (e.pageX / window.innerWidth)) * 100;
+	if (percent < MIN_WIDTH) percent = MIN_WIDTH;
+	if (percent > MAX_WIDTH) percent = MAX_WIDTH;
+	return percent;
+}
+
+function pauseEvent(e){
+    if(e.stopPropagation) e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+    e.cancelBubble=true;
+    e.returnValue=false;
+    return false;
+}
+
 export default class TimelineNodeEditorDrawer extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			dragging: false,
+		}
+
+		this.onDragStart = (e) => {
+			this.setState({
+				dragging: true,
+			});
+		}
+
+		this.onDragEnd = (e) => {
+			this.setState({
+				dragging: false,
+			});
+		}
+
+		this.onDrag = (e) => {
+			this.props.setWidthCallback(getWidthFromDragging(e));
+			pauseEvent(e)
+		}
+
+	}
 
 	render() {
 		return (
 			<div className="TimelineNode-Editor"
-					style={{width: (this.props.open) ? '20%': '0%',
+					style={{width: (this.props.open) ? convertPercent(this.props.width) : '0%',
 						right: '0px',
 						height: '86.5vh',
 						display: 'flex',
-						'WebkitTransition': 'all 0.4s ease',
-						'MozTransition': 'all 0.4s ease',
-						transition: 'all 0.4s ease',
+						'WebkitTransition': enableAnimation(this.state.dragging),
+						'MozTransition': enableAnimation(this.state.dragging),
+						transition: enableAnimation(this.state.dragging),
 						}}>
+				<Draggable
+				        axis="x"
+				        handle=".TimelineNode-Editor-Dragger"
+				        zIndex={10}
+				        position={{x: this.props.width}}
+				        onStart={this.onDragStart}
+				        onDrag={this.onDrag}
+				        onStop={this.onDragEnd}
+				        >
+	  				<div 	className="TimelineNode-Editor-Dragger"
+	  						style={{
+	  							   position: 'fixed',
+								   height:'100%',
+								   width: '10px',
+								   cursor: 'col-resize',
+								   display: 'inline-block',
+	  							}}
+	  						/>
+	  			</Draggable>
+
 				<div className="TimelineNode-Editor-Container"
 					style={{
 						height: '100%',
