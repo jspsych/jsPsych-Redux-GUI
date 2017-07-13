@@ -253,7 +253,6 @@ export default class TrialFormItem extends React.Component {
 							useFunc={this.props.parameters[param].useFunc}
 							initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
 		                    submitCallback={(newCode) => { 
-		                    	console.log(newCode)
 		                      this.props.setFunc(param, newCode);
 		                    }}
 		                    codeEditorTitle={param+": "}

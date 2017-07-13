@@ -98,7 +98,7 @@ function walk(state, childrenById, deployInfo) {
       // search for media
       let item;
       for (let key of Object.keys(parameters)) {
-        item = parameters[key];
+        item = parameters[key].value;
         if (isS3MediaType(item)) {
           if (Array.isArray(item.filename)) {
             for (let name of item.filename) {
