@@ -25,12 +25,18 @@ import { getUUID } from '../../../utils';
 
 /*
 Fetch experiment data
-Sync and Process
-Post new user data
+Expected behavior:
+1. check if save currently open experiment
+2. Fetch experiment state, and update lastModifiedExperimentId property
+   of user state and replace current experiment state
+   and update lastModifiedExperimentState (for checking if need saving)
+3. Update user state on dynamoDB
+
 */
 const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => {
 	if (!selected) return;
 	dispatch((dispatch, getState) => {
+		// check if save current experiment
 		if (getState().experimentState.experimentId === selected) return;
 		if (deepEqual(
 				getState().userState.lastModifiedExperimentState,
@@ -45,7 +51,9 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 			"Do you want to save the changes before creating new experiment?",
 			() => {
 				onStart();
+				// save current first
 				pushState(getState()).then(() => {
+					// do the pull
 					$pullExperiment(dispatch, getState, selected);
 				}, (err) => {
 					notifyErrorByDialog(dispatch, err.message);
@@ -66,12 +74,15 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 }
 
 const $pullExperiment = (dispatch, getState, selected) => {
+	// fetch experiment
 	return fetchExperimentById(selected).then((data) => {
 		if (!data) {
 			throw Errors.internetError;
 		}
+		// set lastModifiedExperiment id
 		dispatch(backendActions.pullExperimentAction(data));
 	}).then(() => {
+		// update user state on dynamoDB
 		pushUserData(getState().userState).then(() => {}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		});
@@ -81,11 +92,13 @@ const $pullExperiment = (dispatch, getState, selected) => {
 }
 
 /*
-Delete experiment from database
-successful: 
-	update local state
-	update user data remotely
-
+Delete experiment
+Expected behavior:
+1. Pop up confirmation
+2. Fetch experiment state
+	Delete corresponding s3 folder
+3. Unregister the fetched experiment from user
+4. Update user state on dynamoDB, delete experiment state from dynamoDB
 */
 const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 	dispatch((dispatch, getState) => {
@@ -102,14 +115,19 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 			"Are you sure that you want to delete experiment: " + experiment.name + "?",
 			() => {
 				onStart();
+				// fetch experiment state
 				fetchExperimentById(id).then((data) => {
 					if (!data) {
 						throw Errors.internetError;
 					}
 					let filepaths = data.Item.fetch.media.Contents.map((f) => (f.Key));
+					// delete it from dynamoDB
 					$deleteExperiment(id).then((data) => {
+						// delete corresponding s3 files
 						deleteFiles(filepaths).then(() => {
+							// unregister experiment from user
 							dispatch(backendActions.deleteExperimentAction(id));
+							// update user state on dynamoDB
 							pushUserData(getState().userState).then(() => {
 								notifySuccessBySnackbar(dispatch, "Deleted !");
 							}, (err) => {
@@ -136,22 +154,25 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 
 
 /*
-Fetch experiment
-Copy it and give new id
-Process state
-Update user data remotely
-Push experiment
+Duplication
+Expected behavior:
+1. Fetch experiment state from dynamoDB
+	Copy it and assign new id and related details
+2. Duplicate resources over S3 and update experimentState media property
+3. Register the new experiment under user
+4. Push experiment state and user state
 */
 const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 	dispatch((dispatch, getState) => {
 		onStart();
+		// fetch experiment
 		fetchExperimentById(id).then((data) => {
 			if (!data) {
 				throw Errors.internetError;
 			}
 			let now = Date.now();
 			let newId = getUUID();
-			
+			// assign new id, date
 			let experimentState = Object.assign({}, data.Item.fetch, {
 				experimentId: newId,
 				experimentDetails: Object.assign({}, data.Item.fetch.experimentDetails, {
@@ -160,19 +181,23 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				})
 			});
 
+			// duplicate resources saved on s3
 			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
 				(copyParam(f.Key, f.Key.replace(data.Item.fetch.experimentId, newId)))
 			) : [];
-			// duplicate s3 bucket
+			// duplicate s3 files
 			copyFiles(params).then(() => {
 				// fetch new media
 				listBucketContents(newId).then((data) => {
+					// update media property
 					experimentState.media = data;
+					// process state: register this duplicated experiment under user
 					dispatch(backendActions.duplicateExperimentAction({
 						id: experimentState.experimentId,
 						name: experimentState.experimentName,
 						details: experimentState.experimentDetails
 					}));
+					// update user state and experiment state on dynamDB
 					pushUserData(getState().userState).then(() => {
 						pushExperimentData(experimentState).then(() => {
 							notifySuccessBySnackbar(dispatch, "Duplicated !");
@@ -199,6 +224,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 
 const mapStateToProps = (state, ownProps) => {
 	let experiments = state.userState.experiments.slice();
+	// sort by last modified date (new --> old)
 	experiments.sort((a, b) => {
 		let at = a.details.lastEditDate, bt = b.details.lastEditDate;
 		if (at > bt) {
@@ -216,6 +242,7 @@ const mapStateToProps = (state, ownProps) => {
 			break;
 		}
 	}
+	// put currently open first
 	if (index > 0) {
 		experiments.move(index, 0);
 	}
