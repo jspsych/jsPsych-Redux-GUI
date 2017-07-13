@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import AutoComplete from 'material-ui/AutoComplete';
+import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
@@ -80,7 +81,27 @@ export default class MediaManager extends React.Component {
 			completed: {},
 			showFunc: false,
 			openEditor: false,
+			fileListStr: "",
+			useFileListStr: false,
 		};
+
+		this.setFileListStr = (str) => {
+			this.setState({
+				fileListStr: str
+			});
+		}
+
+		this.turnOnFileListStr = () => {
+			this.setState({
+				useFileListStr: true
+			});
+		}
+
+		this.turnOffFileListStr = () => {
+			this.setState({
+				useFileListStr: false
+			});
+		}
 
 		this.handleEnter = () => {
 			this.setState({
@@ -204,6 +225,7 @@ export default class MediaManager extends React.Component {
 	renderTrigger = () => {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
+			case MediaManagerMode.multiSelect:
 				return (
 					<div style={{display:'flex', width: "100%"}}>
 						<p style={{paddingTop: 15, paddingRight: 10,}} className="Trial-Form-Label-Container" >
@@ -212,8 +234,28 @@ export default class MediaManager extends React.Component {
 						<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
 							{(this.props.useFunc) ?
 							<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+							(this.props.mode === MediaManagerMode.multiSelect) ?
+							<TextField 
+								id={"Selected-File-Input-"+this.props.parameterName}
+								multiLine={true}
+								rowsMax={3}
+								rows={1}
+								fullWidth={true}
+								value={(this.state.useFileListStr) ? this.state.fileListStr : this.props.selectedFilesString}
+								onChange={(e, v) => { this.setFileListStr(v); }}
+								onFocus={() => {
+									this.turnOnFileListStr();
+									this.setFileListStr(this.props.selectedFilesString);
+								}}
+								onBlur={() => { 
+									this.props.fileArrayInput(this.state.fileListStr, 
+										this.props.s3files.Prefix, 
+										this.props.filenames);
+									this.turnOffFileListStr();
+								}}
+							/> :
 							<AutoComplete
-								id="Selected-File-Input"
+								id={"Selected-File-Input-"+this.props.parameterName}
 								fullWidth={true}
 								searchText={this.props.selectedFilesString}
 								title={this.props.selectedFilesString}
@@ -221,7 +263,9 @@ export default class MediaManager extends React.Component {
 								filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
 								listStyle={{maxHeight: 200, overflowY: 'auto'}}
 								onUpdateInput={(t) => { this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames); }}
-							/>}
+							/>
+							}
+
 							{(this.state.showFunc || this.state.openEditor || this.props.useFunc) ?
 							<CodeEditorTrigger 
 								setParamMode={this.props.setParamMode}
@@ -233,26 +277,17 @@ export default class MediaManager extends React.Component {
 			                    submitCallback={this.props.submitCallback}
 			                    title={this.props.codeEditorTitle}
 					        /> :
-					        null
-					    	}
-					    	{(!this.props.useFunc) ?
-							<IconButton 
+					        <IconButton 
 								onTouchTap={this.handleOpen}
 								tooltip="Insert Medias"
+								onMouseEnter={this.hideFunc} onMouseLeave={this.showFunc}
 							>
 								<Add hoverColor={hoverColor} color={iconColor}/>
-							</IconButton> :
-							null}
+							</IconButton>
+					    	}
 						</div>
 					</div>
-				)
-			case MediaManagerMode.multiSelect:
-				return (<IconButton 
-							onTouchTap={this.handleOpen}
-							tooltip="Insert Medias"
-						>
-							<Add hoverColor={hoverColor} color={iconColor}/>
-						</IconButton>)
+				);
 			case MediaManagerMode.upload:
 			default:
 				return (
