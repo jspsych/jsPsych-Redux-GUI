@@ -64,6 +64,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 											floatingLabelText={this.props.label}
 											id="Node-Name-Textfield"
 			                				value={this.props.nodeName}
+			                				fullWidth={true}
 											onChange={this.props.changeNodeName} />
 									{this.props.isTimeline ?
 										<TimelineForm id={this.props.previewId} /> :

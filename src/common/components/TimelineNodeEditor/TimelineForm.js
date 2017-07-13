@@ -1,26 +1,30 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import EditableTable from '../../containers/TimelineNodeEditor/EditableTable/EditableTable';
+import { labelStyle } from './TrialForm/TrialFormItem';
 
 class TimelineForm extends React.Component {
 	render(){
-		var form;
-		if(this.props.isTimeline) {
-			form =
+		return (
 			<div className="TimelineForm">
-			<EditableTable id={this.props.id} />
-			<TextField floatingLabelText="repetitions"
-			value={this.props.repetitions}
-			onChange={this.props.onChange} />
+				<EditableTable id={this.props.id} />
+				<div style={{display: 'flex', width: "100%"}} >
+					<p
+						className="Trial-Form-Label-Container"
+					    style={labelStyle}
+					>
+					    Repetitions:
+					</p>
+					<div className="Trial-Form-Content-Container">
+						<TextField 
+							id="Timeline_Repetitions_Input"
+							fullWidth={true}
+							value={(this.props.repetitions) ? this.props.repetitions : ""}
+							onChange={this.props.onChange} />
+					</div>
+				</div>
 			</div>
-		} else {
-			form = <div></div>
-		}
-		return(
-			<div>
-			{form}
-			</div>
-			)
+		)
 	}
 }
 

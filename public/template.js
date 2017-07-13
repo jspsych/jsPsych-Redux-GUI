@@ -15,6 +15,8 @@ export default function(preloadedState) {
 	    <script type="text/javascript" src="jsPsych/plugins/jspsych-single-stim.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-audio-keyboard-response.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-video.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-same-different-html.js"></script>
 	    <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
 	    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 	    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>

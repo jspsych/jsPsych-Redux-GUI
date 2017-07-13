@@ -33,7 +33,6 @@ const changeExperimentName = (dispatch, text) => {
 const $save = (dispatch, getState) => {
 	// process state
 	dispatch(backendActions.clickSavePushAction());
-
 	return pushState(getState()).then(
 		() => {
 			notifySuccessBySnackbar(dispatch, "Saved !");
@@ -53,7 +52,7 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 
 		// on start effect
 		let anyChange = !deepEqual(getState().userState.lastModifiedExperimentState,
-			getState().experimentState)
+			getState().experimentState);
 
 		// if there is any change
 		if (anyChange) {

@@ -19,7 +19,7 @@ import CodeEditorTrigger from '../../CodeEditorTrigger';
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
 
-const labelStyle = {
+export const labelStyle = {
 	paddingTop: 15,
 	paddingRight: 10,
 	color: 'black'
@@ -202,6 +202,11 @@ export default class TrialFormItem extends React.Component {
 			      	this.turnOffKeyListStr();
 			      	this.props.setKey(param, this.state.keyListStr);
 			      }}
+			      onKeyPress={(e) => {
+			      	if (e.which === 13) {
+			      		document.activeElement.blur();
+			      	}
+			      }}
 			    />
 			}
 			{((this.state.showFunc || this.state.openEditor || useFunc) && !isAllKey) ?
@@ -234,6 +239,12 @@ export default class TrialFormItem extends React.Component {
 		    </div>
 		  </div>
 	)}
+
+	renderSelect = (param) => {
+		return (
+			<div></div>
+		)
+	}
 
 	renderItem = () => {
 		let { paramType, param, parameters } = this.props;
