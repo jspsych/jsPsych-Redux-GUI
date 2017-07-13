@@ -33,7 +33,7 @@ const setKey = (dispatch, key, keyListStr, useEnum=false) => {
 					spec = true;
 					break;
 				case '}':
-					val.push(part);
+					if (part.trim().length > 0) val.push(part);
 					part = "";
 					spec = false;
 					break;
