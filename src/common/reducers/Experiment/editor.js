@@ -3,14 +3,19 @@ import * as utils from './utils';
 import { createFuncObj } from './jsPsychInit';
 const DEFAULT_HEADER = 'H';
 
+export const ParameterMode = {
+	USE_FUNC: 'USE_FUNC',
+	USE_TV: "USE_TIMELINE_VARIABLE"
+}
+
 /*
 Every editor items that are from jsPsych plugin parameters are a composite object defined below
 */
-export const createComposite = (value=null, func=createFuncObj(), useFunc=false) => ({
+export const createComposite = (value=null, func=createFuncObj(), mode=null) => ({
 	isComposite: true,
 	value: value,
 	func: func,
-	useFunc: useFunc
+	mode: mode
 })
 
 export const DEFAULT_TIMELINE_PARAM = {
@@ -68,13 +73,13 @@ export function setPluginParam(state, action) {
 }
 
 export function setPluginParamMode(state, action) {
-	let { key } = action;
+	let { key, mode } = action;
 
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 	node.parameters[key] = Object.assign({}, node.parameters[key], {
-		useFunc: !node.parameters[key].useFunc
+		mode: (mode === node.parameters[key].mode) ? null : mode
 	});
 
 	return new_state;

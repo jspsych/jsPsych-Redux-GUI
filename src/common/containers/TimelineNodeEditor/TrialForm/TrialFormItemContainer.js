@@ -3,6 +3,7 @@ import { isTrial } from '../../../reducers/Experiment/utils';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
 import * as trialFormActions from '../../../actions/trialFormActions';
 import { convertEmptyStringToNull } from '../../../utils';
+import { ParameterMode } from '../../../reducers/Experiment/editor';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
 	dispatch(trialFormActions.onPluginTypeChange(newPluginVal));
@@ -12,8 +13,8 @@ const setFunc = (dispatch, key, code) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(code), true));
 }
 
-const setParamMode = (dispatch, key) => {
-	dispatch(trialFormActions.setPluginParamModeAction(key));
+const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {
+	dispatch(trialFormActions.setPluginParamModeAction(key, mode));
 }
 
 const setText = (dispatch, key, value) => {
@@ -89,7 +90,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setToggle: (key) => { setToggle(dispatch, key); },
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
 	setFunc: (key, code) => { setFunc(dispatch, key, code); },
-	setParamMode: (key) => { setParamMode(dispatch, key); },
+	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum) => { setKey(dispatch, key, keyListStr, useEnum); },
 })
 

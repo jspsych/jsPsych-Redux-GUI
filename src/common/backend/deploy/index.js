@@ -3,7 +3,7 @@ var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
-import { createComposite } from '../../reducers/Experiment/editor';
+import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
 
@@ -215,8 +215,8 @@ function generateTrial(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = (parameters[key] && parameters[key].isComposite) ? parameters[key].value : parameters[key];
-    if (isS3MediaType(item)) {
+    item = parameters[key];
+    if (item.isComposite && isS3MediaType(item.value)) {
       item = resolveMediaPath(item, deploy);
     }
     res[key] = item;
@@ -269,7 +269,7 @@ For functions and value combined, turn it to
 {
   isComposite: true,
   value: value,
-  useFunc: boolean,
+  mode: string,
   func: func obj
 }
 
@@ -295,7 +295,7 @@ export function stringify(obj, filePath) {
       } else if (obj.isFunc) {
         return stringifyFunc(obj.code, obj.info, filePath);
       } else if (obj.isComposite) {
-        return (obj.useFunc) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
+        return (obj.mode === ParameterMode.USE_FUNC) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
       } else {
         res.push("{");
         let keys = Object.keys(obj);
