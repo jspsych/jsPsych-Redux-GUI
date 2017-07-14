@@ -17,6 +17,7 @@ import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditorTrigger from '../../CodeEditorTrigger';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
+import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
@@ -27,7 +28,13 @@ export const labelStyle = {
 	color: 'black'
 }
 
+/*
+props explanations:
 
+param: Field name of a plugin's parameter
+paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
+
+*/
 export default class TrialFormItem extends React.Component {
 	static defaultProps = {
 		paramInfo: "",
@@ -36,7 +43,9 @@ export default class TrialFormItem extends React.Component {
 
 	state = {
 		showTool: false,
-		openFuncEditor: false, // function editor
+		// function editor dialog
+		openFuncEditor: false, 
+		// timeline variable selector dialog
 		openTimelineVariable: false,
 		keyListStr: "",
 	}
@@ -71,6 +80,18 @@ export default class TrialFormItem extends React.Component {
 		});
 	}
 
+	showTVSelector = () => {
+		this.setState({
+			openTimelineVariable: true
+		});
+	}
+
+	hideTVSelector = () => {
+		this.setState({
+			openTimelineVariable: false
+		});
+	}
+
 	renderLabel = () => (
 		<p
 			className="Trial-Form-Label-Container"
@@ -93,14 +114,18 @@ export default class TrialFormItem extends React.Component {
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
                     }}
-                    title={param+": "}
+                    title={this.props.paramInfo.pretty_name+": "}
         		/>:
         		alternate
 	)
 
 	appendTimelineVariable = (param, alternate=null) => (
-		(this.state.showTool || this.state.openFuncEditor || this.props.parameters[param].mode === ParameterMode.USE_FUNC) ?
-		<div /> :
+		(this.state.showTool || this.state.openTimelineVariable || this.props.parameters[param].mode === ParameterMode.USE_TV) ?
+		<TimelineVariableSelector 
+			openCallback={this.showTVSelector}
+			closeCallback={this.hideTVSelector}
+			title={this.props.paramInfo.pretty_name+": "}
+		/> :
 		null
 	)
 
@@ -109,7 +134,11 @@ export default class TrialFormItem extends React.Component {
 			case ParameterMode.USE_FUNC:
 				return <MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />;
 			case ParameterMode.USE_TV:
-				return <MenuItem primaryText="[Timeline Variable]" style={{paddingTop: 2}} disabled={true} />;
+				return <MenuItem 
+							primaryText="[Timeline Variable]" 
+							secondaryText={this.props.parameters[param].timelineVariable}
+							style={{paddingTop: 2}} 
+							disabled={true} />;
 			default:
 				return node;
 		}
@@ -130,6 +159,7 @@ export default class TrialFormItem extends React.Component {
 			    />)
 			}
 			{this.appendFunctionEditor(param)}
+			{this.appendTimelineVariable(param)}
 		    </div>
 		  </div>
 	  )}
@@ -181,7 +211,11 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
 			{this.renderLabel()}
-		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+		    <div 
+		    	className="Trial-Form-Content-Container" 
+		    	onMouseEnter={this.showTool} 
+		    	onMouseLeave={this.hideTool}
+		    >
 		    {this.renderFieldContent(param,
 			    (isAllKey) ?
 			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:

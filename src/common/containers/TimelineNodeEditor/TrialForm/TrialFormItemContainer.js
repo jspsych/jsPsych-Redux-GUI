@@ -10,7 +10,7 @@ const onChangePluginType = (dispatch, newPluginVal) => {
 }
 
 const setFunc = (dispatch, key, code) => {
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(code), true));
+	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
 }
 
 const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {

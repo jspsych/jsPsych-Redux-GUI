@@ -8,9 +8,9 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
 import { getFullScreenState } from './PreviewWindow';
 import Notification from '../containers/Notification';
+import { MIN_WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
 
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
-const DEFAULT_TIMELINE_EDITOR_WIDTH = 20;
 
 export const convertPercent = (number) => (number + '%');
 
