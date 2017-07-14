@@ -15,43 +15,43 @@ jsPsych.plugins['survey-multi-select'] = (function() {
     description: '',
     parameters: {
       questions: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Questions',
         array: true,
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The strings that will be associated with a group of options.'
       },
       options: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Options',
         array: true,
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Displays options for an individual question.'
       },
       required: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Required',
         array: true,
         default: false,
-        no_function: false,
-        description: ''
+        description: 'Subject will be required to pick an option for each question.'
       },
       horitzontal: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Horitzontal',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'If true, then questions are centered and options are displayed horizontally.'
       },
       preamble: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Preamble',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'HTML formatted string to display at the top of the page above all the questions.'
       },
       button_label: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Label of the button.'
       }
     }
   }
@@ -63,18 +63,6 @@ jsPsych.plugins['survey-multi-select'] = (function() {
       return arr.join(separator = '-');
     }
 
-    // trial defaults
-    trial.preamble = typeof trial.preamble == 'undefined' ? "" : trial.preamble;
-    trial.required = typeof trial.required == 'undefined' ? false : trial.required;
-    trial.required_msg = trial.required_msg || '*please select at least one option!';
-    trial.horizontal = typeof trial.horizontal == 'undefined' ? false : trial.horizontal;
-    //If button_label is empty, the browser's language will be used to determine the button label.
-    trial.button_label = typeof trial.button_label === 'undefined' ? '' : trial.button_label;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     // inject CSS for trial
     display_element.innerHTML = '<style id="jspsych-survey-multi-select-css"></style>';

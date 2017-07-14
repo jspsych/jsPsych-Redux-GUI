@@ -15,117 +15,102 @@ jsPsych.plugins['categorize-html'] = (function() {
     description: '',
     parameters: {
       stimulus: {
-        type: [jsPsych.plugins.parameterType.HTML_STRING],
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Stimulus',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The HTML content to be displayed.'
       },
       key_answer: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Key answer',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The key to indicate the correct response.'
       },
       choices: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Choices',
         default: jsPsych.ALL_KEYS,
         array: true,
-        no_function: false,
-        description: ''
+        description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
       text_answer: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Text answer',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Label that is associated with the correct answer.'
       },
       correct_text: {
-        type: [jsPsych.plugins.parameterType.STRING],
-        default: 'Correct.',
-        no_function: false,
-        description: ''
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Correct text',
+        default: "<p class='feedback'>Correct</p>",
+        description: 'String to show when correct answer is given.'
       },
       incorrect_text: {
-        type: [jsPsych.plugins.parameterType.STRING],
-        default: 'Wrong.',
-        no_function: false,
-        description: ''
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Incorrect text',
+        default: "<p class='feedback'>Incorrect</p>",
+        description: 'String to show when incorrect answer is given.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Any content here will be displayed below the stimulus.'
       },
       force_correct_button_press: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Force correct button press',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'If set to true, then the subject must press the correct response key after feedback in order to advance to next trial.'
       },
       show_stim_with_feedback: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
         default: true,
         no_function: false,
         description: ''
       },
       show_feedback_on_timeout: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Show feedback on timeout',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'If true, stimulus will be shown during feedback. If false, only the text feedback will be displayed during feedback.'
       },
       timeout_message: {
-        type: [jsPsych.plugins.parameterType.STRING],
-        default: 'Please respond faster.',
-        no_function: false,
-        description: ''
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Timeout message',
+        default: "<p>Please respond faster.</p>",
+        description: 'The message displayed on a timeout non-response.'
       },
-      timing_stim: {
-        type: [jsPsych.plugins.parameterType.INT],
+      stimulus_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Stimulus duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to hide stimulus.'
       },
-      timing_response: {
-        type: [jsPsych.plugins.parameterType.INT],
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to show trial'
       },
-      timing_feedback_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+      feedback_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Feedback duration',
         default: 2000,
-        no_function: false,
-        description: ''
+        description: 'How long to show feedback.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    // default parameters
-    trial.choices = trial.choices || jsPsych.ALL_KEYS;
-    trial.text_answer = (typeof trial.text_answer === 'undefined') ? "" : trial.text_answer;
-    trial.correct_text = (typeof trial.correct_text === 'undefined') ? "<p class='feedback'>Correct</p>" : trial.correct_text;
-    trial.incorrect_text = (typeof trial.incorrect_text === 'undefined') ? "<p class='feedback'>Incorrect</p>" : trial.incorrect_text;
-    trial.show_stim_with_feedback = (typeof trial.show_stim_with_feedback === 'undefined') ? true : trial.show_stim_with_feedback;
-    trial.force_correct_button_press = (typeof trial.force_correct_button_press === 'undefined') ? false : trial.force_correct_button_press;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? '' : trial.prompt;
-    trial.show_feedback_on_timeout = (typeof trial.show_feedback_on_timeout === 'undefined') ? false : trial.show_feedback_on_timeout;
-    trial.timeout_message = trial.timeout_message || "<p>Please respond faster.</p>";
-    // timing params
-    trial.timing_stim = trial.timing_stim || -1; // default is to show image until response
-    trial.timing_response = trial.timing_response || -1; // default is no max response time
-    trial.timing_feedback_duration = trial.timing_feedback_duration || 2000;
-
     display_element.innerHTML = '<div id="jspsych-categorize-html-stimulus" class="jspsych-categorize-html-stimulus">'+trial.stimulus+'</div>';
 
     // hide image after time if the timing parameter is set
-    if (trial.timing_stim > 0) {
+    if (trial.stimulus_duration > 0) {
       jsPsych.pluginAPI.setTimeout(function() {
         display_element.querySelector('#jspsych-categorize-html-stimulus').style.visibility = 'hidden';
-      }, trial.timing_stim);
+      }, trial.stimulus_duration);
     }
 
     // if prompt is set, show prompt
@@ -171,13 +156,13 @@ jsPsych.plugins['categorize-html'] = (function() {
       allow_held_key: false
     });
 
-    if (trial.timing_response > 0) {
+    if (trial.trial_duration > 0) {
       jsPsych.pluginAPI.setTimeout(function() {
         after_response({
           key: -1,
           rt: -1
         });
-      }, trial.timing_response);
+      }, trial.trial_duration);
     }
 
     function doFeedback(correct, timeout) {
@@ -219,7 +204,7 @@ jsPsych.plugins['categorize-html'] = (function() {
       } else {
         jsPsych.pluginAPI.setTimeout(function() {
           endTrial();
-        }, trial.timing_feedback_duration);
+        }, trial.feedback_duration);
       }
 
     }

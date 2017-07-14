@@ -87,6 +87,10 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 }
 
 const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
+	if (filenames.indexOf(filename) === -1) {
+		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
+		return;
+	}
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(filename, prefix)));
 }
 

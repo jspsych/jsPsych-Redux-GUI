@@ -23,10 +23,7 @@ export const DEFAULT_TIMELINE_PARAM = {
 };
 
 export const DEFAULT_TRIAL_PARAM = {
-		type: 'text',
-		text: createComposite(),
-		choices: createComposite(),
-		allow_mouse_click: createComposite(),
+		type: null,
 };
 
 /*

@@ -20,10 +20,29 @@ const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterT
 
 class TrialForm extends React.Component {
 	renderPluginParams = () => {
-		let parameters = jsPsych.plugins[this.props.pluginType].info.parameters;
-		return Object.keys(parameters).map((param, i) => (
-				<TrialFormItem paramType={parameters[param].type[0]} param={param} key={param+"-"+i}/>
-			));
+		if (!this.props.pluginType) return null;
+		let pluginInfo = jsPsych.plugins[this.props.pluginType].info;
+		let parameters = pluginInfo.parameters;
+		// params are the keys of plugin.info 
+		/* eg
+		param	--> 
+			stimulus: {
+				type: [jsPsych.plugins.parameterType.AUDIO],
+				default: undefined, 
+				no_function: false,
+				description: ''
+			},
+		*/
+		// paramTypes are the type (jspsych enum) of the above param
+		return Object.keys(parameters).map((param, i) => {
+			
+			return (
+				<TrialFormItem 
+					param={param} 
+					key={param+"-"+i}
+					paramInfo={parameters[param]}
+					/>
+			)});
 	}
 
 	render() {

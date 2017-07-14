@@ -25,18 +25,10 @@ export const labelStyle = {
 	color: 'black'
 }
 
-const renderLabel = (param) => (
-	<p
-		className="Trial-Form-Label-Container"
-	    style={labelStyle}
-	>
-	    {param+": "}
-	</p>
-)
 
 export default class TrialFormItem extends React.Component {
 	static defaultProps = {
-		paramType: "",
+		paramInfo: "",
 		param: "",
 		keyListStr: "",
 		useKeyListStr: false
@@ -89,42 +81,52 @@ export default class TrialFormItem extends React.Component {
 		});
 	}
 
-	renderTextField = (param, onChange=()=>{}, type="text") => (
-	  <div style={{display: 'flex', width: "100%"}} >
-		{renderLabel(param)}
-	    <div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
-	    {(this.props.parameters[param].useFunc) ?
-	    	<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
-		    <TextField
-		      id={"text-field-"+type+"-"+param}
-		      value={convertNullToEmptyString(this.props.parameters[param].value)}
-		      type={type}
-		      fullWidth={true}
-		      onChange={onChange}
-		    />
-		}
-		{(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
-		<CodeEditorTrigger 
-					setParamMode={() => { this.props.setParamMode(param); }}
-					openCallback={this.showFuncEditor}
-					closeCallback={this.hideFuncEditor}
-					useFunc={this.props.parameters[param].useFunc}
-					showEditMode={true}
-					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
-                    }}
-                    title={param+": "}
-        /> :
-        null
-    	}
-	    </div>
-	  </div>
-	  )
+	renderLabel = () => (
+		<p
+			className="Trial-Form-Label-Container"
+		    style={labelStyle}
+		>
+		    {this.props.paramInfo.pretty_name+": "}
+		</p>
+	)
+
+	renderTextField = (param, onChange=()=>{}, type="text") => {
+		return (
+		  <div style={{display: 'flex', width: "100%"}} >
+			{this.renderLabel()}
+		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
+		    {(this.props.parameters[param].useFunc) ?
+		    	<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+			    <TextField
+			      id={"text-field-"+type+"-"+param}
+			      value={convertNullToEmptyString(this.props.parameters[param].value)}
+			      type={type}
+			      fullWidth={true}
+			      onChange={onChange}
+			    />
+			}
+			{(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
+			<CodeEditorTrigger 
+						setParamMode={() => { this.props.setParamMode(param); }}
+						openCallback={this.showFuncEditor}
+						closeCallback={this.hideFuncEditor}
+						useFunc={this.props.parameters[param].useFunc}
+						showEditMode={true}
+						initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
+	                    submitCallback={(newCode) => { 
+	                      this.props.setFunc(param, newCode);
+	                    }}
+	                    title={param+": "}
+	        /> :
+	        null
+	    	}
+		    </div>
+		  </div>
+	  )}
 
 	renderToggle = (param) => (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      	{renderLabel(param)}
+	      	{this.renderLabel()}
 	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc} >
 	      		{(this.props.parameters[param].useFunc) ?
 	      			<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
@@ -155,7 +157,7 @@ export default class TrialFormItem extends React.Component {
 
 	renderFunctionEditor = (param) => (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      	{renderLabel(param)}
+	      	{this.renderLabel()}
 	      	<div className="Trial-Form-Content-Container">
 			    <CodeEditorTrigger 
 					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
@@ -183,7 +185,7 @@ export default class TrialFormItem extends React.Component {
 		let isAllKey = value === jsPsych.ALL_KEYS;
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
-			{renderLabel(param)}
+			{this.renderLabel()}
 		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
 		    {(useFunc) ?
 		    	<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
@@ -247,7 +249,8 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderItem = () => {
-		let { paramType, param, parameters } = this.props;
+		let { paramInfo, param, parameters } = this.props;
+		let paramType = paramInfo.type;
 		switch(paramType) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
@@ -256,6 +259,7 @@ export default class TrialFormItem extends React.Component {
 					return (
 						<MediaManager 
 							parameterName={param} 
+							paramInfo={paramInfo}
 							key={"Trial-form-"+param} 
 							mode={(paramType !== EnumPluginType.VIDEO) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
 							setParamMode={() => { this.props.setParamMode(param); }}

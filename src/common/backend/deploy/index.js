@@ -3,6 +3,7 @@ var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
+import { createComposite } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
 
@@ -13,9 +14,8 @@ const welcomeObj = {
   ...jsPsychInitState,
   timeline: [
     {
-      type: 'text',
-      text: 'Welcome to jsPysch Experiment Builder!',
-      choice: "",
+      type: null,
+      prompt: createComposite('Welcome to jsPysch Experiment Builder!'),
     }
   ]
 }
@@ -24,9 +24,7 @@ const undefinedObj = {
   ...jsPsychInitState,
   timeline: [
     {
-      type: 'text',
-      text: '',
-      choice: "",
+      type: null,
     }
   ]
 }
@@ -138,13 +136,15 @@ export function generateCode(state, all=false, deploy=false) {
           blocks.push(generateTimeline(state, node, all, deploy));
         }
       } else {
-        blocks.push(generateTrial(state, node, all, deploy));
+        if (node.parameters.type) {
+          blocks.push(generateTrial(state, node, all, deploy));
+        }
       }
     }
   }
 
   if (!blocks.length) {
-    return Undefined;
+    return "";
   }
 
   let obj = {
@@ -215,7 +215,7 @@ function generateTrial(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = (parameters[key].isComposite) ? parameters[key].value : parameters[key];
+    item = (parameters[key] && parameters[key].isComposite) ? parameters[key].value : parameters[key];
     if (isS3MediaType(item)) {
       item = resolveMediaPath(item, deploy);
     }
@@ -246,7 +246,9 @@ function generateTimeline(state, node, all=false, deploy=false) {
           timeline.push(generateTimeline(state, desc, all, deploy));
         } 
       } else {
-        timeline.push(generateTrial(state, desc, all, deploy));
+        if (desc.parameters.type) {
+          timeline.push(generateTrial(state, desc, all, deploy));
+        }
       }
     }
   }

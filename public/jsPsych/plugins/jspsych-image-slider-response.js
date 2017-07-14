@@ -19,42 +19,72 @@ jsPsych.plugins['image-slider-response'] = (function() {
     name: 'image-slider-response',
     description: '',
     parameters: {
+      stimulus: {
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Stimulus',
+        default: undefined,
+        description: 'The image to be displayed'
+      },
+      min: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Min slider',
+        default: 0,
+        description: 'Sets the minimum value of the slider.'
+      },
+      max: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Max slider',
+        default: 100,
+        description: 'Sets the maximum value of the slider',
+      },
+      step: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Step',
+        default: 1,
+        description: 'Sets the step of the slider'
+      },
+      labels: {
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name:'Labels',
+        default: [],
+        array: true,
+        description: 'Labels of the slider.',
+      },
+      button_label: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
+        default: undefined,
+        array: false,
+        description: 'Label of the button to advance.'
+      },
+      prompt: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
+        default: '',
+        description: 'Any content here will be displayed below the slider.'
+      },
       stimulus_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Stimulus duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to hide the stimulus.'
       },
       trial_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to show the trial.'
       },
       response_ends_trial: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'If true, trial will end when user makes a response.'
       },
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    trial.min = trial.min || 0;
-    trial.max = trial.max || 100;
-    trial.step = trial.step || 1;
-    trial.button_label = typeof trial.button_label === 'undefined' ? 'Next' : trial.button_label;
-    trial.response_ends_trial = (typeof trial.response_ends_trial == 'undefined') ? true : trial.response_ends_trial;
-    trial.stimulus_duration = trial.stimulus_duration || -1;
-    trial.trial_duration = trial.trial_duration || -1;
-    trial.prompt = trial.prompt || "";
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     var html = '<div id="jspsych-image-slider-response-wrapper" style="margin: 100px 0px;">';
     html += '<div id="jspsych-image-slider-response-stimulus"><img src="' + trial.stimulus + '"></div>';

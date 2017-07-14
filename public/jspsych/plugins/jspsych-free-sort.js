@@ -18,73 +18,59 @@ jsPsych.plugins['free-sort'] = (function() {
     description: '',
     parameters: {
       stimuli: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Stimuli',
         default: undefined,
         array: true,
-        no_function: false,
-        description: ''
+        description: 'Images to be displayed.'
       },
       stim_height: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Stimulus height',
         default: 100,
-        no_function: false,
-        description: ''
+        description: 'Height of images in pixels.'
       },
       stim_width: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Stimulus width',
         default: 100,
-        no_function: false,
-        description: ''
+        description: 'Width of images in pixels'
       },
       sort_area_height: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Sort area height',
         default: 800,
-        no_function: false,
-        description: ''
+        description: 'The height of the container that subjects can move the stimuli in.'
       },
       sort_area_width: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Sort area width',
         default: 800,
-        no_function: false,
-        description: ''
+        description: 'The width of the container that subjects can move the stimuli in.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'It can be used to provide a reminder about the action the subject is supposed to take.'
       },
       prompt_location: {
-        type: [jsPsych.plugins.parameterType.SELECT],
+        type: jsPsych.plugins.parameterType.SELECT,
+        pretty_name: 'Prompt location',
         options: ['above','below'],
         default: 'above',
-        no_function: false,
-        description: ''
+        description: 'Indicates whether to show prompt "above" or "below" the sorting area.'
       },
       button_label: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
         default: 'Done',
-        no_function: false,
-        description: ''
+        description: 'The text that appears on the button to continue to the next trial.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // default values
-    trial.stim_height = trial.stim_height || 100;
-    trial.stim_width = trial.stim_width || 100;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? '' : trial.prompt;
-    trial.prompt_location = trial.prompt_location || "above";
-    trial.sort_area_width = trial.sort_area_width || 800;
-    trial.sort_area_height = trial.sort_area_height || 800;
-    trial.button_label = typeof trial.button_label === 'undefined' ? 'Done' : trial.button_label;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     var start_time = (new Date()).getTime();
 
