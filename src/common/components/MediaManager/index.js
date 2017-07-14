@@ -235,7 +235,11 @@ export default class MediaManager extends React.Component {
 			case MediaManagerMode.multiSelect:
 				return (
 					<div style={{display:'flex', width: "100%"}}>
-						<p style={{paddingTop: 15, paddingRight: 10,}} className="Trial-Form-Label-Container" >
+						<p 
+							style={{paddingTop: 15, paddingRight: 10,}} 
+							className="Trial-Form-Label-Container" 
+							title={this.props.paramInfo.description}
+						>
 							{this.props.paramInfo.pretty_name+":"}
 						</p>
 						<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>

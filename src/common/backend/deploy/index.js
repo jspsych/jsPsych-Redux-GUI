@@ -12,11 +12,15 @@ const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
 const DEPLOY_PATH = 'assets/';
 const welcomeObj = {
   ...jsPsychInitState,
-  timeline: [
-    {
-      type: null,
-      prompt: createComposite('Welcome to jsPysch Experiment Builder!'),
-    }
+  timeline: [{
+        type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>Welcome to jsPysch Experiment Builder!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
+      }
   ]
 }
 
@@ -24,7 +28,13 @@ const undefinedObj = {
   ...jsPsychInitState,
   timeline: [
     {
-      type: null,
+      type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>No trial is defined or selected!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
     }
   ]
 }
@@ -144,7 +154,7 @@ export function generateCode(state, all=false, deploy=false) {
   }
 
   if (!blocks.length) {
-    return "";
+    return Welcome;
   }
 
   let obj = {
