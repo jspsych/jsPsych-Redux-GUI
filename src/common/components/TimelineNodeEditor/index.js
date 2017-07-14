@@ -21,7 +21,7 @@ import {
 } from 'material-ui/styles/colors';
 import { convertPercent } from '../App';
 
-const MIN_WIDTH = 20;
+export const MIN_WIDTH = 25;
 const MAX_WIDTH = 45;
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');

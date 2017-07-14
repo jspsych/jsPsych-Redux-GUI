@@ -24,7 +24,7 @@ class TrialForm extends React.Component {
 		let pluginInfo = jsPsych.plugins[this.props.pluginType].info;
 		let parameters = pluginInfo.parameters;
 		// params are the keys of plugin.info 
-		/* eg
+		/* e.g.
 		param	--> 
 			stimulus: {
 				type: [jsPsych.plugins.parameterType.AUDIO],
@@ -34,8 +34,15 @@ class TrialForm extends React.Component {
 			},
 		*/
 		// paramTypes are the type (jspsych enum) of the above param
+		/*
+		props explanations:
+
+		param: Field name of a plugin's parameter
+		paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
+
+		*/
 		return Object.keys(parameters).map((param, i) => {
-			
+				
 			return (
 				<TrialFormItem 
 					param={param} 

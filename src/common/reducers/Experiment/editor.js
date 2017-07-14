@@ -9,13 +9,15 @@ export const ParameterMode = {
 }
 
 /*
-Every editor items that are from jsPsych plugin parameters are a composite object defined below
+Every editor item that is from jsPsych plugin parameter is a composite object defined below
 */
 export const createComposite = (value=null, func=createFuncObj(), mode=null) => ({
 	isComposite: true,
 	value: value,
 	func: func,
-	mode: mode
+	// ParameterMode
+	mode: mode, 
+	timelineVariable: null,
 })
 
 export const DEFAULT_TIMELINE_PARAM = {
@@ -28,7 +30,7 @@ export const DEFAULT_TIMELINE_PARAM = {
 };
 
 export const DEFAULT_TRIAL_PARAM = {
-		type: null,
+	type: null,
 };
 
 /*
@@ -57,16 +59,19 @@ action = {
 }
 */
 export function setPluginParam(state, action) {
-	let { key, value, setFunc } = action;
+	let { key, value, mode } = action;
 
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 	node.parameters[key] = Object.assign({}, node.parameters[key]);
-	if (setFunc) {
-		node.parameters[key].func = createFuncObj(value);
-	} else {
-		node.parameters[key].value = value;
+	switch(mode) {
+		case ParameterMode.USE_FUNC:
+			node.parameters[key].func = createFuncObj(value);
+		case ParameterMode.USE_TV:
+			node.parameters[key].timelineVariable = value;
+		default:
+			node.parameters[key].value = value;
 	}
 
 	return new_state;

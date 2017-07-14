@@ -267,6 +267,10 @@ function generateTimeline(state, node, all=false, deploy=false) {
   return res;
 }
 
+function processTimelineVariable(value) {
+  return `jsPsych.timelineVariable(${value})`;
+}
+
 /*
 Specially written for stringify obj in this app to generate code
 For functions, turn it to
@@ -281,6 +285,7 @@ For functions and value combined, turn it to
   value: value,
   mode: string,
   func: func obj
+  timelineVariable: string
 }
 
 */
@@ -305,7 +310,14 @@ export function stringify(obj, filePath) {
       } else if (obj.isFunc) {
         return stringifyFunc(obj.code, obj.info, filePath);
       } else if (obj.isComposite) {
-        return (obj.mode === ParameterMode.USE_FUNC) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
+        switch(obj.mode) {
+          case ParameterMode.USE_FUNC:
+            return stringify(obj.func, filePath);
+          case ParameterMode.USE_TV:
+            return stringify(processTimelineVariable(obj.timelineVariable), filePath);
+          default:
+            return stringify(obj.value, filePath);
+        }
       } else {
         res.push("{");
         let keys = Object.keys(obj);
