@@ -16,6 +16,7 @@ import { convertNullToEmptyString } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditorTrigger from '../../CodeEditorTrigger';
+import { ParameterMode } from '../../../reducers/Experiment/editor';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
@@ -31,13 +32,13 @@ export default class TrialFormItem extends React.Component {
 	static defaultProps = {
 		paramInfo: "",
 		param: "",
-		keyListStr: "",
-		useKeyListStr: false
 	}
 
 	state = {
-		showFunc: false,
-		openEditor: false,
+		showTool: false,
+		openFuncEditor: false, // function editor
+		openTimelineVariable: false,
+		keyListStr: "",
 	}
 
 	setKeyListStr = (str) => {
@@ -46,39 +47,27 @@ export default class TrialFormItem extends React.Component {
 		});
 	}
 
-	turnOnKeyListStr = () => {
+	showTool = () => {
 		this.setState({
-			useKeyListStr: true
+			showTool: true
 		});
 	}
 
-	turnOffKeyListStr = () => {
+	hideTool = () => {
 		this.setState({
-			useKeyListStr: false
-		});
-	}
-
-	showFunc = () => {
-		this.setState({
-			showFunc: true
-		});
-	}
-
-	hideFunc = () => {
-		this.setState({
-			showFunc: false
+			showTool: false
 		});
 	}
 
 	showFuncEditor = () => {
 		this.setState({
-			openEditor: true
+			openFuncEditor: true
 		});
 	}
 
 	hideFuncEditor = () => {
 		this.setState({
-			openEditor: false
+			openFuncEditor: false
 		});
 	}
 
@@ -86,16 +75,17 @@ export default class TrialFormItem extends React.Component {
 		<p
 			className="Trial-Form-Label-Container"
 		    style={labelStyle}
+		    title={this.props.paramInfo.description}
 		>
 		    {this.props.paramInfo.pretty_name+": "}
 		</p>
 	)
 
 	appendFunctionEditor = (param, alternate=null) => (
-		(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
+		(this.state.showTool || this.state.openFuncEditor || this.props.parameters[param].mode === ParameterMode.USE_FUNC) ?
 			    <CodeEditorTrigger 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
-					useFunc={this.props.parameters[param].useFunc}
+					useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
 					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
 					openCallback={this.showFuncEditor}
@@ -108,20 +98,36 @@ export default class TrialFormItem extends React.Component {
         		alternate
 	)
 
+	appendTimelineVariable = (param, alternate=null) => (
+		(this.state.showTool || this.state.openFuncEditor || this.props.parameters[param].mode === ParameterMode.USE_FUNC) ?
+		<div /> :
+		null
+	)
+
+	renderFieldContent = (param, node) => {
+		switch(this.props.parameters[param].mode) {
+			case ParameterMode.USE_FUNC:
+				return <MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />;
+			case ParameterMode.USE_TV:
+				return <MenuItem primaryText="[Timeline Variable]" style={{paddingTop: 2}} disabled={true} />;
+			default:
+				return node;
+		}
+	}
+
 	renderTextField = (param, onChange=()=>{}, type="text") => {
 		return (
 		  <div style={{display: 'flex', width: "100%"}} >
 			{this.renderLabel()}
-		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
-		    {(this.props.parameters[param].useFunc) ?
-		    	<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+		    {this.renderFieldContent(param,
 			    <TextField
 			      id={"text-field-"+type+"-"+param}
 			      value={convertNullToEmptyString(this.props.parameters[param].value)}
 			      type={type}
 			      fullWidth={true}
 			      onChange={onChange}
-			    />
+			    />)
 			}
 			{this.appendFunctionEditor(param)}
 		    </div>
@@ -131,14 +137,13 @@ export default class TrialFormItem extends React.Component {
 	renderToggle = (param) => (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel()}
-	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc} >
-	      		{(this.props.parameters[param].useFunc) ?
-	      			<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+	      		{this.renderFieldContent(param,
 			        <IconButton 
 			          onTouchTap={() => { this.props.setToggle(param); }} 
 			          >
 			        {(this.props.parameters[param].value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-			        </IconButton>
+			        </IconButton>)
 			    }
 			    {this.appendFunctionEditor(param)}
 	        </div>
@@ -171,27 +176,24 @@ export default class TrialFormItem extends React.Component {
 			}
 			value = s;
 		}
-		let useFunc = this.props.parameters[param].useFunc;
+		let useFunc = this.props.parameters[param].mode === ParameterMode.USE_FUNC;
 		let isAllKey = value === jsPsych.ALL_KEYS;
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
 			{this.renderLabel()}
-		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
-		    {(useFunc) ?
-		    	<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
-			    (value === jsPsych.ALL_KEYS) ?
+		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+		    {this.renderFieldContent(param,
+			    (isAllKey) ?
 			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
 			    <TextField
 			      id={"text-field-"+"-"+param}
-			      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
+			      value={(this.state.keyListStr !== value) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.setKeyListStr(v); }}
 			      onFocus={() => {
-			      	this.turnOnKeyListStr();
 			      	this.setKeyListStr(convertNullToEmptyString(value));
 			      }}
 			      onBlur={() => {
-			      	this.turnOffKeyListStr();
 			      	this.props.setKey(param, this.state.keyListStr);
 			      }}
 			      onKeyPress={(e) => {
@@ -199,7 +201,7 @@ export default class TrialFormItem extends React.Component {
 			      		document.activeElement.blur();
 			      	}
 			      }}
-			    />
+			    />)
 			}
 			{this.appendFunctionEditor(param,
 				(<IconButton 
@@ -211,7 +213,7 @@ export default class TrialFormItem extends React.Component {
 					}
 				}}
 				tooltip="All Keys"
-				onMouseEnter={this.hideFunc} onMouseLeave={this.showFunc}
+				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
 				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
 			</IconButton>)
@@ -224,9 +226,8 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel()}
-	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc} >
-	      		{(this.props.parameters[param].useFunc) ?
-	      			<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+	      		{this.renderFieldContent(param,
 				    <SelectField
 				    	value={convertNullToEmptyString(this.props.parameters[param].value)}
 				    	onChange={(event, index, value) => {
@@ -236,7 +237,7 @@ export default class TrialFormItem extends React.Component {
 				    {this.props.paramInfo.options.map((op, i) => (
 				    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
 				    ))}
-				    </SelectField>
+				    </SelectField>)
 				}
 				{this.appendFunctionEditor(param)}
 	        </div>
@@ -251,17 +252,18 @@ export default class TrialFormItem extends React.Component {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
-				// check if is array
+					// check if is array
+					let multiSelect = !!paramInfo.array;
 					return (
 						<MediaManager 
 							parameterName={param} 
 							paramInfo={paramInfo}
 							key={"Trial-form-"+param} 
-							mode={(paramType !== EnumPluginType.VIDEO) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+							mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
 							setParamMode={() => { this.props.setParamMode(param); }}
 							openCallback={this.showFuncEditor}
 							closeCallback={this.hideFuncEditor}
-							useFunc={this.props.parameters[param].useFunc}
+							useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
 							initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
 		                    submitCallback={(newCode) => { 
 		                      this.props.setFunc(param, newCode);

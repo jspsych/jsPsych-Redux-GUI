@@ -87,6 +87,7 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 }
 
 const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
+	if (!filename.trim()) return;
 	if (filenames.indexOf(filename) === -1) {
 		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
 		return;
@@ -96,6 +97,7 @@ const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
 
 const fileArrayInput = (dispatch, ownProps, filelistStr, prefix, filenames) => {
 	filelistStr = filelistStr.trim();
+	if (!filelistStr) return;
 	let i = 0;
 	let fileList = [];
 	let ignoreSpace = false;

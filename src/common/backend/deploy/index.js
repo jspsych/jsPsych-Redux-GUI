@@ -3,7 +3,7 @@ var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
-import { createComposite } from '../../reducers/Experiment/editor';
+import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
 
@@ -12,11 +12,15 @@ const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
 const DEPLOY_PATH = 'assets/';
 const welcomeObj = {
   ...jsPsychInitState,
-  timeline: [
-    {
-      type: null,
-      prompt: createComposite('Welcome to jsPysch Experiment Builder!'),
-    }
+  timeline: [{
+        type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>Welcome to jsPysch Experiment Builder!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
+      }
   ]
 }
 
@@ -24,7 +28,13 @@ const undefinedObj = {
   ...jsPsychInitState,
   timeline: [
     {
-      type: null,
+      type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>No trial is defined or selected!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
     }
   ]
 }
@@ -144,7 +154,7 @@ export function generateCode(state, all=false, deploy=false) {
   }
 
   if (!blocks.length) {
-    return "";
+    return Welcome;
   }
 
   let obj = {
@@ -215,9 +225,9 @@ function generateTrial(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = (parameters[key] && parameters[key].isComposite) ? parameters[key].value : parameters[key];
-    if (isS3MediaType(item)) {
-      item = resolveMediaPath(item, deploy);
+    item = parameters[key];
+    if (item.isComposite && isS3MediaType(item.value)) {
+      item = resolveMediaPath(item.value, deploy);
     }
     res[key] = item;
   }
@@ -269,7 +279,7 @@ For functions and value combined, turn it to
 {
   isComposite: true,
   value: value,
-  useFunc: boolean,
+  mode: string,
   func: func obj
 }
 
@@ -295,7 +305,7 @@ export function stringify(obj, filePath) {
       } else if (obj.isFunc) {
         return stringifyFunc(obj.code, obj.info, filePath);
       } else if (obj.isComposite) {
-        return (obj.useFunc) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
+        return (obj.mode === ParameterMode.USE_FUNC) ? stringify(obj.func, filePath) : stringify(obj.value, filePath);
       } else {
         res.push("{");
         let keys = Object.keys(obj);

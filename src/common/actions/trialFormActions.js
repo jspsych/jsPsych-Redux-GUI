@@ -16,10 +16,11 @@ export function setPluginParamAction(key, value, setFunc=false) {
 	};
 }
 
-export function setPluginParamModeAction(key) {
+export function setPluginParamModeAction(key, mode) {
 	return {
 		type: actionTypes.SET_PLUGIN_PARAMTER_MODE,
-		key: key
+		key: key,
+		mode: mode
 	};
 }
 
