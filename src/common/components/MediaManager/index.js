@@ -278,15 +278,16 @@ export default class MediaManager extends React.Component {
 								dataSource={this.props.filenames}
 								filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
 								listStyle={{maxHeight: 200, overflowY: 'auto'}}
-								onUpdateInput={(t) => { this.setFileStr(t); }}
-								onFocus={() => {
-									this.setFileStr(this.props.selectedFilesString);
+								onUpdateInput={(t) => { 
+									this.setFileStr(t); 
+									if (t !== this.props.selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+										this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames);
+									}
 								}}
-								onBlur={() => {
-									this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
-								}}
-								onKeyPress={(e) => {
-									if (e.which === 13) {
+								onNewRequest={(s, i) => {
+									if (i !== -1 && s !== this.props.selectedFilesString) {
+										this.props.autoFileInput(s, this.props.s3files.Prefix, this.props.filenames);
+									} else if (this.state.fileStr !== this.props.selectedFilesString) {
 										this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
 									}
 								}}

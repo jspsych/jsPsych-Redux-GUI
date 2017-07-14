@@ -217,7 +217,7 @@ function generateTrial(state, trial, all=false, deploy=false) {
   for (let key of Object.keys(parameters)) {
     item = parameters[key];
     if (item.isComposite && isS3MediaType(item.value)) {
-      item = resolveMediaPath(item, deploy);
+      item = resolveMediaPath(item.value, deploy);
     }
     res[key] = item;
   }
