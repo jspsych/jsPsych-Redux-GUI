@@ -12,21 +12,90 @@ jsPsych.plugins["serial-reaction-time"] = (function() {
 
   var plugin = {};
 
+  plugin.info = {
+    name: 'serial-reaction-time',
+    description: '',
+    parameters: {
+      grid: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Grid',
+        array: true,
+        default: [[1,1,1,1]],
+        description: 'This array represents the grid of boxes shown on the screen.'
+      },
+      target: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Target',
+        array: true,
+        default: undefined,
+        description: 'The location of the target. The array should be the [row, column] of the target.'
+      },
+      choices: {
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Choices',
+        array: true,
+        default: [['3','5','7','9']],
+        description: ' Each entry in this array is the key that should be pressed for that corresponding location in the grid.'
+      },
+      grid_square_size: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Grid square size',
+        default: 100,
+        description: 'The width and height in pixels of each square in the grid.'
+      },
+      target_color: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Target color',
+        default: "#999",
+        description: 'The color of the target square.'
+      },
+      response_ends_trial: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
+        default: true,
+        description: 'If true, trial ends when user makes a response.'
+      },
+      pre_target_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Pre-target duration',
+        default: 0,
+        description: 'The number of milliseconds to display the grid before the target changes color.'
+      },
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
+        default: -1,
+        description: 'How long to show the trial.'
+      },
+      show_response_feedback: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Show response feedback',
+        default: false,
+        description: 'If true, show feedback indicating where the user responded and whether it was correct.'
+      },
+      feedback_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Feedback duration',
+        default: 200,
+        description: 'The length of time in milliseconds to show the feedback.'
+      },
+      fade_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Fade duration',
+        default: -1,
+        description: 'If a positive number, the target will progressively change color at the start of the trial, with the transition lasting this many milliseconds.'
+      },
+      prompt: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
+        default: '',
+        no_function: false,
+        description: ' Any content here will be displayed below the stimulus.'
+      },
+    }
+  }
+
   plugin.trial = function(display_element, trial) {
-
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
-
-    trial.grid = trial.grid || [[1,1,1,1]];
-    trial.choices = trial.choices || [['3','5','7','9']];
-    trial.grid_square_size = trial.grid_square_size || 100;
-    trial.target_color = trial.target_color || "#999";
-    trial.response_ends_trial = (typeof trial.response_ends_trial === 'undefined') ? true : trial.response_ends_trial;
-    trial.timing_pre_target = (typeof trial.timing_pre_target === 'undefined') ? 0 : trial.timing_pre_target;
-    trial.timing_max_duration = trial.timing_max_duration || -1; // if -1, then wait for response forever
-    trial.show_response_feedback = (typeof trial.show_response_feedback === 'undefined') ? false : trial.show_response_feedback;
-    trial.feedback_duration = (typeof trial.feedback_duration === 'undefined') ? 200 : trial.feedback_duration;
-    trial.fade_duration = (typeof trial.fade_duration === 'undefined') ? -1 : trial.fade_duration;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
 
     // create a flattened version of the choices array
     var flat_choices = jsPsych.utils.flatten(trial.choices);
@@ -38,12 +107,12 @@ jsPsych.plugins["serial-reaction-time"] = (function() {
     var stimulus = this.stimulus(trial.grid, trial.grid_square_size);
     display_element.innerHTML = stimulus;
 
-		if(trial.timing_pre_target <= 0){
+		if(trial.pre_target_duration <= 0){
 			showTarget();
 		} else {
 			jsPsych.pluginAPI.setTimeout(function(){
 				showTarget();
-			}, trial.timing_pre_target);
+			}, trial.pre_target_duration);
 		}
 
 		//show prompt if there is one
@@ -73,8 +142,8 @@ jsPsych.plugins["serial-reaction-time"] = (function() {
         allow_held_key: false
       });
 
-			if(trial.timing_max_duration > -1){
-				jsPsych.pluginAPI.setTimeout(showFeedback, trial.timing_max_duration);
+			if(trial.trial_duration > -1){
+				jsPsych.pluginAPI.setTimeout(showFeedback, trial.trial_duration);
 			}
 
 		}

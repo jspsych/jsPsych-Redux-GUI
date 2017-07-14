@@ -18,54 +18,47 @@ jsPsych.plugins["html-keyboard-response"] = (function() {
     description: '',
     parameters: {
       stimulus: {
-        type: [jsPsych.plugins.parameterType.HTML_STRING],
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'stimulus',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The HTML string to be displayed'
       },
       choices: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
         array: true,
+        pretty_name: 'Choices',
         default: jsPsych.ALL_KEYS,
-        no_function: false,
-        description: ''
+        description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Any content here will be displayed below the stimulus.'
       },
       stimulus_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Stimulus duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to hide the stimulus.'
       },
       trial_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'How long to show trial before it ends.'
       },
       response_ends_trial: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'If true, trial will end when subject makes a response.'
       },
 
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // set default values for the parameters
-    trial.choices = trial.choices || jsPsych.ALL_KEYS;
-    trial.response_ends_trial = (typeof trial.response_ends_trial == 'undefined') ? true : trial.response_ends_trial;
-    trial.stimulus_duration = trial.stimulus_duration || -1;
-    trial.trial_duration = trial.trial_duration || -1;
-    trial.prompt = trial.prompt || "";
 
     var new_html = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.stimulus+'</div>';
 

@@ -11,8 +11,8 @@ export default function(preloadedState) {
 	    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	    <link rel="stylesheet" href="./style.css">
 	    <script type="text/javascript" src="jsPsych/jspsych.js"></script>
-	    <script type="text/javascript" src="jsPsych/plugins/jspsych-text.js"></script>
 	    <script type="text/javascript" src="jsPsych/plugins/jspsych-single-stim.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-html-button-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-audio-keyboard-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-video.js"></script>

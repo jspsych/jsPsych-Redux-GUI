@@ -12,19 +12,76 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
 
   var plugin = {};
 
+  plugin.info = {
+    name: 'serial-reaction-time-mouse',
+    description: '',
+    parameters: {
+      target: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Target',
+        array: true,
+        default: undefined,
+        description: 'The location of the target. The array should be the [row, column] of the target.'
+      },
+      grid: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Grid',
+        array: true,
+        default: [[1,1,1,1]],
+        description: 'This array represents the grid of boxes shown on the screen.'
+      },
+      grid_square_size: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Grid square size',
+        default: 100,
+        description: 'The width and height in pixels of each square in the grid.'
+      },
+      target_color: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Target color',
+        default: "#999",
+        description: 'The color of the target square.'
+      },
+      response_ends_trial: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
+        default: true,
+        description: 'If true, the trial ends after a key press.'
+      },
+      pre_target_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Pre-target duration',
+        default: 0,
+        description: 'The number of milliseconds to display the grid before the target changes color.'
+      },
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
+        default: -1,
+        description: 'How long to show the trial'
+      },
+      fade_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Fade duration',
+        default: -1,
+        description: 'If a positive number, the target will progressively change color at the start of the trial, with the transition lasting this many milliseconds.'
+      },
+      allow_nontarget_responses: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Allow nontarget response',
+        default: false,
+        description: 'If true, then user can make nontarget response.'
+      }, 
+      prompt: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
+        default: '',
+        description: 'Any content here will be displayed below the stimulus'
+      },
+    }
+  }
+
   plugin.trial = function(display_element, trial) {
-
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
-
-    trial.grid = trial.grid || [[1,1,1,1]];
-    trial.grid_square_size = trial.grid_square_size || 100;
-    trial.target_color = trial.target_color || "#999";
-    trial.response_ends_trial = (typeof trial.response_ends_trial === 'undefined') ? true : trial.response_ends_trial;
-    trial.timing_pre_target = (typeof trial.timing_pre_target === 'undefined') ? 0 : trial.timing_pre_target;
-    trial.timing_max_duration = trial.timing_max_duration || -1; // if -1, then wait for response forever
-    trial.fade_duration = (typeof trial.fade_duration === 'undefined') ? -1 : trial.fade_duration;
-    trial.allow_nontarget_responses = (typeof trial.allow_nontarget_responses === 'undefined') ? false : trial.allow_nontarget_responses;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
 
     var startTime = -1;
     var response = {
@@ -38,12 +95,12 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
     display_element.innerHTML = stimulus;
 
 
-		if(trial.timing_pre_target <= 0){
+		if(trial.pre_target_duration <= 0){
 			showTarget();
 		} else {
 			jsPsych.pluginAPI.setTimeout(function(){
 				showTarget();
-			}, trial.timing_pre_target);
+			}, trial.pre_target_duration);
 		}
 
 		//show prompt if there is one
@@ -53,15 +110,7 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
 
 		function showTarget(){
       var resp_targets;
-<<<<<<< HEAD
-<<<<<<< HEAD
       if(!trial.allow_nontarget_responses){
-=======
-      if(trial.allow_nontarget_responses){
->>>>>>> update srt mouse with extra option
-=======
-      if(!trial.allow_nontarget_responses){
->>>>>>> fix backwards plugin
         resp_targets = [display_element.querySelector('#jspsych-serial-reaction-time-stimulus-cell-'+trial.target[0]+'-'+trial.target[1])]
       } else {
         resp_targets = display_element.querySelectorAll('.jspsych-serial-reaction-time-stimulus-cell');
@@ -89,8 +138,8 @@ jsPsych.plugins["serial-reaction-time-mouse"] = (function() {
         display_element.querySelector('#jspsych-serial-reaction-time-stimulus-cell-'+trial.target[0]+'-'+trial.target[1]).style.backgroundColor = trial.target_color;
       }
 
-			if(trial.timing_max_duration > -1){
-				jsPsych.pluginAPI.setTimeout(endTrial, trial.timing_max_duration);
+			if(trial.trial_duration > -1){
+				jsPsych.pluginAPI.setTimeout(endTrial, trial.trial_duration);
 			}
 
 		}

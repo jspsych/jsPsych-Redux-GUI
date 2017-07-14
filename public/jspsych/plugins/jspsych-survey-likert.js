@@ -17,46 +17,43 @@ jsPsych.plugins['survey-likert'] = (function() {
     description: '',
     parameters: {
       questions: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
         array: true,
+        pretty_name: 'Questions',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Questions that are associated with the slider.'
       },
       labels: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
         array: true,
+        pretty_name: 'Labels',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Labels to display for individual question.'
+      },
+      preamble: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Preamble',
+        default: '',
+        description: 'String to display at top of the page.'
       },
       required: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
         array: true,
+        pretty_name: 'Required',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'Makes answering questions required.'
       },
       button_label: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
         default: 'Next',
-        no_function: false,
-        description: ''
+        description: 'Label of the button.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    // default parameters for the trial
-    trial.preamble = typeof trial.preamble === 'undefined' ? "" : trial.preamble;
-    trial.required = typeof trial.required === 'undefined' ? false : trial.required;
-    trial.button_label = typeof trial.button_label === 'undefined' ? 'Next' : trial.button_label;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     var html = "";
     // inject CSS for trial

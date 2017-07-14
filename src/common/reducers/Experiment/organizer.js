@@ -64,12 +64,14 @@ function getNodeById(state, id) {
 const getDefaultTimelineName = (n=null) => {
 	if (__TEST__)
 		return DEFAULT_TIMELINE_NAME;
-	return DEFAULT_TIMELINE_NAME + " " + n;
+	return DEFAULT_TIMELINE_NAME;
+	// return DEFAULT_TIMELINE_NAME + " " + n;
 };
 const getDefaultTrialName = (n=null) => {
 	if (__TEST__ || n === null)
 		return DEFAULT_TRIAL_NAME;
-	return DEFAULT_TRIAL_NAME + " " + n;
+	return DEFAULT_TRIAL_NAME;
+	// return DEFAULT_TRIAL_NAME + " " + n;
 };
 
 export function createTimeline(id,

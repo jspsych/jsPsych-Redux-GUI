@@ -16,21 +16,16 @@ jsPsych.plugins['call-function'] = (function() {
     description: '',
     parameters: {
       func: {
-        type: [jsPsych.plugins.parameterType.FUNCTION],
+        type: jsPsych.plugins.parameterType.FUNCTION,
+        pretty_name: 'Function',
         default: undefined,
-        no_function: false,
-        description: ''
-      }
+        description: 'Function to call'
+      },
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // a rare case where we override the default experiment level
-    // value of this parameter, since this plugin should be invisible
-    // to the subject of the experiment
-    trial.timing_post_trial = typeof trial.timing_post_trial == 'undefined' ? 0 : trial.timing_post_trial
-
+    trial.post_trial_gap = 0;
     var return_val = trial.func();
 
     var trial_data = {

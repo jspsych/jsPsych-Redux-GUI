@@ -18,71 +18,58 @@ jsPsych.plugins.instructions = (function() {
     description: '',
     parameters: {
       pages: {
-        type: [jsPsych.plugins.parameterType.HTML_STRING],
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Pages',
         default: undefined,
         array: true,
-        no_function: false,
-        description: ''
+        description: 'Each element of the array is the content for a single page.'
       },
       key_forward: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Key forward',
         default: 'rightarrow',
-        no_function: false,
-        description: ''
+        description: 'The key the subject can press in order to advance to the next page.'
       },
       key_backward: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Key backward',
         default: 'leftarrow',
-        no_function: false,
-        description: ''
+        description: 'The key that the subject can press to return to the previous page.'
       },
       allow_backward: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Allow backward',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'If true, the subject can return to the previous page of the instructions.'
       },
       allow_keys: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Allow keys',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'If true, the subject can use keyboard keys to navigate the pages.'
       },
       show_clickable_nav: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Show clickable nav',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'If true, then a "Previous" and "Next" button will be displayed beneath the instructions.'
       },
       button_label_previous: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label previous',
         default: 'Previous',
-        no_function: false,
-        description: ''
+        description: 'The text that appears on the button to go backwards.'
       },
       button_label_next: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label next',
         default: 'Next',
-        no_function: false,
-        description: ''
+        description: 'The text that appears on the button to go forwards.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    trial.key_forward = trial.key_forward || 'rightarrow';
-    trial.key_backward = trial.key_backward || 'leftarrow';
-    trial.allow_backward = (typeof trial.allow_backward === 'undefined') ? true : trial.allow_backward;
-    trial.allow_keys = (typeof trial.allow_keys === 'undefined') ? true : trial.allow_keys;
-    trial.show_clickable_nav = (typeof trial.show_clickable_nav === 'undefined') ? false : trial.show_clickable_nav;
-    trial.button_label_previous = (typeof trial.button_label_previous === 'undefined') ? 'Previous' : trial.button_label_previous;
-    trial.button_label_next = (typeof trial.button_label_next === 'undefined') ? 'Next' : trial.button_label_next;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     var current_page = 0;
 

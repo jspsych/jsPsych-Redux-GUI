@@ -82,12 +82,19 @@ export default class MediaManager extends React.Component {
 			showFunc: false,
 			openEditor: false,
 			fileListStr: "",
+			fileStr: "",
 			useFileListStr: false,
 		};
 
 		this.setFileListStr = (str) => {
 			this.setState({
 				fileListStr: str
+			});
+		}
+
+		this.setFileStr = (str) => {
+			this.setState({
+				fileStr: str
 			});
 		}
 
@@ -229,7 +236,7 @@ export default class MediaManager extends React.Component {
 				return (
 					<div style={{display:'flex', width: "100%"}}>
 						<p style={{paddingTop: 15, paddingRight: 10,}} className="Trial-Form-Label-Container" >
-							{this.props.parameterName+":"}
+							{this.props.paramInfo.pretty_name+":"}
 						</p>
 						<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
 							{(this.props.useFunc) ?
@@ -241,28 +248,48 @@ export default class MediaManager extends React.Component {
 								rowsMax={3}
 								rows={1}
 								fullWidth={true}
-								value={(this.state.useFileListStr) ? this.state.fileListStr : this.props.selectedFilesString}
-								onChange={(e, v) => { this.setFileListStr(v); }}
+								value={(this.state.fileListStr !== this.props.selectedFilesString &&
+										this.state.fileListStr)? this.state.fileListStr : this.props.selectedFilesString}
+								onChange={(e, v) => { 
+									this.setFileListStr(v); 
+								}}
 								onFocus={() => {
-									this.turnOnFileListStr();
 									this.setFileListStr(this.props.selectedFilesString);
 								}}
 								onBlur={() => { 
 									this.props.fileArrayInput(this.state.fileListStr, 
 										this.props.s3files.Prefix, 
 										this.props.filenames);
-									this.turnOffFileListStr();
+								}}
+								onKeyPress={(e) => {
+									if (e.which === 13) {
+										this.props.fileArrayInput(this.state.fileListStr, 
+											this.props.s3files.Prefix, 
+											this.props.filenames);
+									}
 								}}
 							/> :
 							<AutoComplete
 								id={"Selected-File-Input-"+this.props.parameterName}
 								fullWidth={true}
-								searchText={this.props.selectedFilesString}
+								searchText={(this.state.fileStr && this.state.fileStr !== this.props.selectedFilesString) ?
+											 this.state.fileStr : this.props.selectedFilesString}
 								title={this.props.selectedFilesString}
 								dataSource={this.props.filenames}
 								filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
 								listStyle={{maxHeight: 200, overflowY: 'auto'}}
-								onUpdateInput={(t) => { this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames); }}
+								onUpdateInput={(t) => { this.setFileStr(t); }}
+								onFocus={() => {
+									this.setFileStr(this.props.selectedFilesString);
+								}}
+								onBlur={() => {
+									this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+								}}
+								onKeyPress={(e) => {
+									if (e.which === 13) {
+										this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
 							/>
 							}
 

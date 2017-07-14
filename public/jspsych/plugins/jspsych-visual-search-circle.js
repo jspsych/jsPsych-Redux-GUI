@@ -25,94 +25,83 @@ jsPsych.plugins["visual-search-circle"] = (function() {
     description: '',
     parameters: {
       target: {
-        type: [jsPsych.plugins.parameterType.IMAGE],
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Target',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The image to be displayed.'
       },
       foil: {
-        type: [jsPsych.plugins.parameterType.IMAGE],
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Foil',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Path to image file that is the foil/distractor.'
       },
       fixation_image: {
-        type: [jsPsych.plugins.parameterType.IMAGE],
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Fixation image',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Path to image file that is a fixation target.'
       },
       set_size: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Set size',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'How many items should be displayed?'
       },
       target_present: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Target present',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'Is the target present?'
       },
       target_size: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Target size',
         array: true,
-        default: 50,
-        no_function: false,
-        description: ''
+        default: [50, 50],
+        description: 'Two element array indicating the height and width of the search array element images.'
       },
       fixation_size: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Fixation size',
         array: true,
-        default: 16,
-        no_function: false,
-        description: ''
+        default: [16, 16],
+        description: 'Two element array indicating the height and width of the fixation image.'
       },
       circle_diameter: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Circle diameter',
         default: 250,
-        no_function: false,
-        description: ''
+        description: 'The diameter of the search array circle in pixels.'
       },
       target_present_key: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Target present key',
         default: 'j',
-        no_function: false,
-        description: ''
+        description: 'The key to press if the target is present in the search array.'
       },
       target_absent_key: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Target absent key',
         default: 'f',
-        no_function: false,
-        description: ''
+        description: 'The key to press if the the target is not present in the search array.'
       },
-      timing_max_search: {
-        type: [jsPsych.plugins.parameterType.INT],
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'The maximum duration to wait for a response.'
       },
-      timing_fixation: {
-        type: [jsPsych.plugins.parameterType.INT],
+      fixation_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Fixation duration',
         default: 1000,
-        no_function: false,
-        description: ''
+        description: 'How long to show the fixation image for before the search array (in milliseconds).'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // default values
-    trial.target_size = trial.target_size || [50, 50];
-    trial.fixation_size = trial.fixation_size || [16, 16];
-    trial.circle_diameter = trial.circle_diameter || 250;
-    trial.target_present_key = trial.target_present_key || 74;
-    trial.target_absent_key = trial.target_absent_key || 70;
-    trial.timing_max_search = (typeof trial.timing_max_search === 'undefined') ? -1 : trial.timing_max_search;
-    trial.timing_fixation = (typeof trial.timing_fixation === 'undefined') ? 1000 : trial.timing_fixation;
-
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     // circle params
     var diam = trial.circle_diameter; // pixels
@@ -163,7 +152,7 @@ jsPsych.plugins["visual-search-circle"] = (function() {
       jsPsych.pluginAPI.setTimeout(function() {
         // after wait is over
         show_search_array();
-      }, trial.timing_fixation);
+      }, trial.fixation_duration);
     }
 
     function show_search_array() {
@@ -215,9 +204,9 @@ jsPsych.plugins["visual-search-circle"] = (function() {
         allow_held_key: false
       });
 
-      if (trial.timing_max_search > -1) {
+      if (trial.trial_duration > -1) {
 
-        if (trial.timing_max_search == 0) {
+        if (trial.trial_duration == 0) {
           if (!trial_over) {
 
             jsPsych.pluginAPI.cancelKeyboardResponse(key_listener);
@@ -250,7 +239,7 @@ jsPsych.plugins["visual-search-circle"] = (function() {
 
               end_trial(rt, correct, key_press);
             }
-          }, trial.timing_max_search);
+          }, trial.trial_duration);
         }
       }
 
