@@ -3,6 +3,7 @@ import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import SelectField from 'material-ui/SelectField';
 import {
   green500 as checkColor,
   cyan500 as boxCheckColor,
@@ -90,6 +91,23 @@ export default class TrialFormItem extends React.Component {
 		</p>
 	)
 
+	appendFunctionEditor = (param, alternate=null) => (
+		(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
+			    <CodeEditorTrigger 
+			    	setParamMode={() => { this.props.setParamMode(param); }}
+					useFunc={this.props.parameters[param].useFunc}
+					showEditMode={true}
+					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
+					openCallback={this.showFuncEditor}
+					closeCallback={this.hideFuncEditor}
+                    submitCallback={(newCode) => { 
+                      this.props.setFunc(param, newCode);
+                    }}
+                    title={param+": "}
+        		/>:
+        		alternate
+	)
+
 	renderTextField = (param, onChange=()=>{}, type="text") => {
 		return (
 		  <div style={{display: 'flex', width: "100%"}} >
@@ -105,21 +123,7 @@ export default class TrialFormItem extends React.Component {
 			      onChange={onChange}
 			    />
 			}
-			{(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
-			<CodeEditorTrigger 
-						setParamMode={() => { this.props.setParamMode(param); }}
-						openCallback={this.showFuncEditor}
-						closeCallback={this.hideFuncEditor}
-						useFunc={this.props.parameters[param].useFunc}
-						showEditMode={true}
-						initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-	                    submitCallback={(newCode) => { 
-	                      this.props.setFunc(param, newCode);
-	                    }}
-	                    title={param+": "}
-	        /> :
-	        null
-	    	}
+			{this.appendFunctionEditor(param)}
 		    </div>
 		  </div>
 	  )}
@@ -136,21 +140,7 @@ export default class TrialFormItem extends React.Component {
 			        {(this.props.parameters[param].value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
 			        </IconButton>
 			    }
-			    {(this.state.showFunc || this.state.openEditor || this.props.parameters[param].useFunc) ?
-			    <CodeEditorTrigger 
-			    	setParamMode={() => { this.props.setParamMode(param); }}
-					useFunc={this.props.parameters[param].useFunc}
-					showEditMode={true}
-					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-					openCallback={this.showFuncEditor}
-					closeCallback={this.hideFuncEditor}
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
-                    }}
-                    title={param+": "}
-        		/>:
-        		null
-        		}
+			    {this.appendFunctionEditor(param)}
 	        </div>
 	    </div>
 	)
@@ -211,20 +201,8 @@ export default class TrialFormItem extends React.Component {
 			      }}
 			    />
 			}
-			{((this.state.showFunc || this.state.openEditor || useFunc) && !isAllKey) ?
-			<CodeEditorTrigger 
-						setParamMode={() => { this.props.setParamMode(param); }}
-						openCallback={this.showFuncEditor}
-						closeCallback={this.hideFuncEditor}
-						useFunc={this.props.parameters[param].useFunc}
-						showEditMode={true}
-						initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-	                    submitCallback={(newCode) => { 
-	                      this.props.setFunc(param, newCode);
-	                    }}
-	                    title={param+": "}
-	        /> :
-	        <IconButton 
+			{this.appendFunctionEditor(param,
+				(<IconButton 
 				onTouchTap={() => {
 					if (isAllKey) {
 						this.props.setKey(param, null, true);
@@ -236,15 +214,33 @@ export default class TrialFormItem extends React.Component {
 				onMouseEnter={this.hideFunc} onMouseLeave={this.showFunc}
 			>
 				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
-			</IconButton>
-	    	}
+			</IconButton>)
+			)}
 		    </div>
 		  </div>
 	)}
 
 	renderSelect = (param) => {
 		return (
-			<div></div>
+			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+	      	{this.renderLabel()}
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc} >
+	      		{(this.props.parameters[param].useFunc) ?
+	      			<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+				    <SelectField
+				    	value={convertNullToEmptyString(this.props.parameters[param].value)}
+				    	onChange={(event, index, value) => {
+				    		this.props.setText(param, value);
+				    	}}
+				    >
+				    {this.props.paramInfo.options.map((op, i) => (
+				    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
+				    ))}
+				    </SelectField>
+				}
+				{this.appendFunctionEditor(param)}
+	        </div>
+	    </div>
 		)
 	}
 
@@ -284,6 +280,7 @@ export default class TrialFormItem extends React.Component {
 					return this.renderFunctionEditor(param);
 				// same different
 				case EnumPluginType.SELECT:
+					return this.renderSelect(param);
 				case EnumPluginType.KEYCODE:
 					return this.renderKeyboardInput(param);
 				case EnumPluginType.HTML_STRING:
