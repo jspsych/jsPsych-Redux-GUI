@@ -1,5 +1,5 @@
-var esprima = require("esprima");
-var escodegen = require("escodegen");
+// var esprima = require("esprima");
+// var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
@@ -196,7 +196,7 @@ function extractDeployInfomation(state, childrenById, deployInfo) {
           }
           // if its value is normal string, check for <path>filename</path>
         } else {
-          let matches = (item) ? item.match(/<path>(.*?)<\/path>/g) : null;
+          let matches = (item && typeof item === 'string') ? item.match(/<path>(.*?)<\/path>/g) : null;
           // if there is match for <path>filename</path>
           if (matches) {
             // populate deployInfo.media
