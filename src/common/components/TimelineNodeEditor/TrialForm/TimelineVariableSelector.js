@@ -105,11 +105,10 @@ export default class TimelineVariableSelector extends React.Component {
 			                </IconButton>
 			         </div>
 					<Paper style={{minHeight: 400, maxHeight: 400}}>
-						
-						<List style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
+						<List style={{minHeight: 400, maxHeight: 400, overflowY: 'auto', width: '98%', margin: 'auto'}}>
 							{this.props.timelineVariables.map((v) => (
 								<ListItem 
-									primaryText={v} 
+									primaryText={!v ? "null" : v} 
 									key={"TimelineVariableSelector-"+v}
 									onTouchTap={() => {
 										this.props.submitCallback(v);

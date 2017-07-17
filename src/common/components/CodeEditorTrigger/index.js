@@ -12,10 +12,12 @@ require('codemirror/lib/codemirror.css');
 import ButtonIcon from 'material-ui/svg-icons/action/code';
 import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
+import DialogIcon from 'material-ui/svg-icons/content/create';
 import {
   cyan500 as hoverColor,
   grey800 as normalColor,
-  yellow500 as checkColor
+  yellow500 as checkColor,
+  blue500 as titleIconColor,
 } from 'material-ui/styles/colors';
 import { renderDialogTitle } from '../gadgets';
 
@@ -85,7 +87,19 @@ export default class CodeEditor extends React.Component {
 	  		<Dialog
 	            contentStyle={{minHeight: 500}}
               titleStyle={{padding: 0}}
-	            title={renderDialogTitle(<Subheader style={{fontSize: 18}}>{title}</Subheader>, this.handleClose, null)}
+	            title={renderDialogTitle(
+                <Subheader style={{fontSize: 18, maxHeight: 48}}>
+                <div style={{display: 'flex'}}>
+                <div style={{paddingTop: 4, paddingRight: 10}}>
+                  <DialogIcon color={titleIconColor}/>
+                </div>
+                <div style={{fontSize: 20,}}>
+                      {title}
+                    </div>
+                  </div>
+                </Subheader>, 
+                this.handleClose, 
+                null)}
 	            actions={actions}
 	            modal={true}
 	            open={this.state.open}
