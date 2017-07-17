@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
 import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
 import * as tableActions from '../../../actions/tableAction';
-import { convertEmptyStringToNull } from '../../../utils';
+//import { convertEmptyStringToNull } from '../../../utils';
 
 const onChangeHeader = (dispatch, headerId, newVal) => {
-	dispatch(tableActions.changeHeaderAction(headerId, convertEmptyStringToNull(newVal)));
+	dispatch(tableActions.changeHeaderAction(headerId, newVal));
 }
 
 const onChangeCells = (dispatch, cellId, newVal) => {
-	dispatch(tableActions.changeCellAction(cellId, convertEmptyStringToNull(newVal)));
+	dispatch(tableActions.changeCellAction(cellId, newVal));
 }
 
 export const onAddColumn = (dispatch, ownProps) => {
@@ -20,11 +20,11 @@ export const onAddRow = (dispatch, ownProps) => {
 }
 
 const onChangeSampling = (dispatch, key, newVal) => {
-	dispatch(tableActions.changeSampling(key, convertEmptyStringToNull(newVal)));
+	dispatch(tableActions.changeSampling(key, newVal));
 }
 
 const onChangeSize = (dispatch, newVal) => {
-	dispatch(tableActions.changeSize(convertEmptyStringToNull(newVal)));
+	dispatch(tableActions.changeSize(newVal));
 }
 
 const onChangeRandomize = (dispatch, newBool) => {
@@ -58,7 +58,7 @@ const mapStateToProps = (state, ownProps) => {
 		nullToString.push({});
 		for(let j=0; j<headers.length; j++) {
 			object = tv[i];
-			if(!object[headers[j]]) {
+			if(object[headers[j]] === null) {
 				newObj = nullToString[i];
 				newObj[headers[j]] = '';
 				nullToString[i] = newObj;

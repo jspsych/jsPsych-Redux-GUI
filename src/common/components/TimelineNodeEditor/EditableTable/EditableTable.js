@@ -214,6 +214,7 @@ class EditableTable extends React.Component {
 	render(){
 		var timelineRows = this.props.timeline_variables;
 		var headers = Object.keys(this.props.timeline_variables[0]);
+		console.log(headers);
 		let displayTable = (
 			<table className="dataTable" style={tableStyles.table}>
 				<thead>
@@ -226,8 +227,8 @@ class EditableTable extends React.Component {
 										name="tableHeader" 
 										data-row={0} 
 										data-column={index} 
-										d={index} 
-										value={convertNullToEmptyString(title)}
+										id={index} 
+										value={title}
 										key={"header-input-"+index}
 										onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)}
 										onKeyDown={(event) => this.bindKeyboard(event)}
@@ -253,7 +254,7 @@ class EditableTable extends React.Component {
 											id={[rowIndex+1] +" "+ titleIndex} 
 											style={tableStyles.header}
 											key={[rowIndex+1] +" "+ titleIndex}
-											value={convertNullToEmptyString(row[headers[titleIndex]])}
+											value={row[headers[titleIndex]]}
 											onChange={(event) => this.props.handleTableChange(event.target.id, event.target.value)}
 											onKeyDown={(event) => this.bindKeyboard(event)}
 											onContextMenu={(event) => this.handleContextMenu(event, rowIndex+1, titleIndex)} 
