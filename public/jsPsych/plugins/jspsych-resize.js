@@ -12,20 +12,50 @@ jsPsych.plugins["resize"] = (function() {
 
   var plugin = {};
 
+  plugin.info = {
+    name: 'resize',
+    description: '',
+    parameters: {
+      item_height: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Item height',
+        default: 1,
+        description: 'The height of the item to be measured.'
+      },
+      item_width: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Item width',
+        default: 1,
+        description: 'The width of the item to be measured.'
+      }, 
+      prompt: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
+        default: '',
+        description: 'The content displayed below the resizable box and above the button.'
+      },
+      pixels_per_unit: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Pixels per unit',
+        default: 100,
+        description: 'After the scaling factor is applied, this many pixels will equal one unit of measurement.'
+      },
+      starting_size: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Starting size',
+        default: 100,
+        description: 'The initial size of the box, in pixels, along the larget dimension.'
+      },
+      button_label: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
+        default: 'Done',
+        description: 'Label to display on the button to complete calibration.'
+      },
+    }
+  }
+
   plugin.trial = function(display_element, trial) {
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
-
-    // default trial paramters
-    trial.item_height = trial.item_height || 1;
-    trial.item_width = trial.item_width || 1;
-    trial.prompt = trial.prompt || ' ';
-    trial.pixels_per_unit = trial.pixels_per_unit ||  100;
-    trial.starting_size = trial.starting_size || 100;
-    trial.button_label = trial.button_label || "Done";
 
     var aspect_ratio = trial.item_width / trial.item_height;
 

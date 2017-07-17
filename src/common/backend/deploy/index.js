@@ -3,6 +3,7 @@ var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
+import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
 
@@ -11,12 +12,15 @@ const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
 const DEPLOY_PATH = 'assets/';
 const welcomeObj = {
   ...jsPsychInitState,
-  timeline: [
-    {
-      type: 'text',
-      text: 'Welcome to jsPysch Experiment Builder!',
-      choice: "",
-    }
+  timeline: [{
+        type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>Welcome to jsPysch Experiment Builder!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
+      }
   ]
 }
 
@@ -24,9 +28,13 @@ const undefinedObj = {
   ...jsPsychInitState,
   timeline: [
     {
-      type: 'text',
-      text: '',
-      choice: "",
+      type: 'image-keyboard-response',
+        stimulus: createComposite(),
+        choices: createComposite(null),
+        prompt: createComposite('<p>No trial is defined or selected!</p>'),
+        stimulus_duration: createComposite(null),
+        trial_duration: createComposite(null),
+        response_ends_trial: createComposite(null),
     }
   ]
 }
@@ -98,7 +106,7 @@ function walk(state, childrenById, deployInfo) {
       // search for media
       let item;
       for (let key of Object.keys(parameters)) {
-        item = parameters[key];
+        item = parameters[key].value;
         if (isS3MediaType(item)) {
           if (Array.isArray(item.filename)) {
             for (let name of item.filename) {
@@ -138,13 +146,15 @@ export function generateCode(state, all=false, deploy=false) {
           blocks.push(generateTimeline(state, node, all, deploy));
         }
       } else {
-        blocks.push(generateTrial(state, node, all, deploy));
+        if (node.parameters.type) {
+          blocks.push(generateTrial(state, node, all, deploy));
+        }
       }
     }
   }
 
   if (!blocks.length) {
-    return Undefined;
+    return Welcome;
   }
 
   let obj = {
@@ -156,7 +166,8 @@ export function generateCode(state, all=false, deploy=false) {
     obj["display_element"] = undefined;
   }
 
-  return "jsPsych.init(" + stringify(obj) + ");";
+  let s3Path = (state && state.media) ? state.media.Prefix : "";
+  return "jsPsych.init(" + stringify(obj, (deploy) ? DEPLOY_PATH : s3Path) + ");";
 }
 
 function generatePage(deployInfo) {
@@ -185,6 +196,13 @@ function generatePage(deployInfo) {
 `
 }
 
+/*
+mediaObject = {
+  type: AWS_S3_MEDIA_TYPE,
+  filename: filename, // maybe array
+  prefix: prefix,
+}
+*/
 function resolveMediaPath(mediaObject, deploy) {
   let prefix = mediaObject.prefix;
   let processFunc = getSignedUrl;
@@ -208,8 +226,8 @@ function generateTrial(state, trial, all=false, deploy=false) {
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
     item = parameters[key];
-    if (isS3MediaType(item)) {
-      item = resolveMediaPath(item, deploy);
+    if (item.isComposite && isS3MediaType(item.value)) {
+      item = resolveMediaPath(item.value, deploy);
     }
     res[key] = item;
   }
@@ -238,7 +256,9 @@ function generateTimeline(state, node, all=false, deploy=false) {
           timeline.push(generateTimeline(state, desc, all, deploy));
         } 
       } else {
-        timeline.push(generateTrial(state, desc, all, deploy));
+        if (desc.parameters.type) {
+          timeline.push(generateTrial(state, desc, all, deploy));
+        }
       }
     }
   }
@@ -247,7 +267,9 @@ function generateTimeline(state, node, all=false, deploy=false) {
   return res;
 }
 
-
+function processTimelineVariable(value) {
+  return `jsPsych.timelineVariable(${value})`;
+}
 
 /*
 Specially written for stringify obj in this app to generate code
@@ -257,32 +279,52 @@ For functions, turn it to
   code: function
 }
 
+For functions and value combined, turn it to
+{
+  isComposite: true,
+  value: value,
+  mode: string,
+  func: func obj
+  timelineVariable: string
+}
+
 */
-export function stringify(obj) {
+export function stringify(obj, filePath) {
   if (!obj) return JSON.stringify(obj);
 
   let type = typeof obj;
-  switch(type) {
+  switch (type) {
     case 'object':
       let res = [];
       if (Array.isArray(obj)) {
         res.push("[");
-        let l = obj.length, i = 1;
+        let l = obj.length,
+          i = 1;
         for (let item of obj) {
-          res.push(stringify(item));
+          res.push(stringify(item, filePath));
           if (i++ < l) {
             res.push(",");
           }
         }
         res.push("]");
       } else if (obj.isFunc) {
-        return stringifyFunc(obj.code, obj.info);
-      }else {
+        return stringifyFunc(obj.code, obj.info, filePath);
+      } else if (obj.isComposite) {
+        switch(obj.mode) {
+          case ParameterMode.USE_FUNC:
+            return stringify(obj.func, filePath);
+          case ParameterMode.USE_TV:
+            return stringify(processTimelineVariable(obj.timelineVariable), filePath);
+          default:
+            return stringify(obj.value, filePath);
+        }
+      } else {
         res.push("{");
         let keys = Object.keys(obj);
-        let l = keys.length, i = 1;
+        let l = keys.length,
+          i = 1;
         for (let key of keys) {
-          res.push('"' + key + '":' + stringify(obj[key]));
+          res.push('"' + key + '":' + stringify(obj[key], filePath));
           if (i++ < l) {
             res.push(",");
           }
@@ -295,20 +337,28 @@ export function stringify(obj) {
   }
 }
 
-function stringifyFunc(code, info=null) {
+function stringifyFunc(code, info = null, filePath) {
+  let func = code;
   try {
     let tree = esprima.parse(code);
-    let res = escodegen.generate(tree, {
-            format: {
-                compact: true,
-                semicolons: true,
-                parentheses: false
-            }
-        });
-    return res;
+    func = escodegen.generate(tree, {
+      format: {
+        compact: true,
+        semicolons: true,
+        parentheses: false
+      }
+    });
   } catch (e) {
-    // let log = JSON.stringify({error: e, info: info});
-    let func = "function() { console.log('" + JSON.stringify({error: e, info: info}) + "'); }";
-    return func;
+    console.log("Fail to parse inserted code !");
   }
+
+  let matches = (func) ? func.match(/<path>(.*?)<\/path>/g) : null;
+  if (matches) {
+    let url;
+    for (let m of matches) {
+      func = func.replace(m, resolveMediaPath(MediaObject(m.replace(/<\/?path>/g, ''), filePath), filePath === DEPLOY_PATH));
+    }
+  }
+
+  return func;
 }

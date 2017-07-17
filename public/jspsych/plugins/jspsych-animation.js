@@ -16,58 +16,47 @@ jsPsych.plugins.animation = (function() {
     description: '',
     parameters: {
       stimuli: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Stimuli',
         default: undefined,
-        no_function: false,
         array: true,
-        description: ''
+        description: 'The images to be displayed.'
       },
       frame_time: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Frame time',
         default: 250,
-        no_function: false,
-        description: ''
+        description: 'Duration to display each image.'
       },
       frame_isi: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Frame gap',
         default: 0,
-        no_function: false,
-        description: ''
+        description: 'Length of gap to be shown between each image.'
       },
       sequence_reps: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Sequence repetitions',
         default: 1,
-        no_function: false,
-        description: ''
+        description: 'Number of times to show entire sequence.'
       },
       choices: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Choices',
         default: jsPsych.ALL_KEYS,
-        no_function: false,
         array: true,
-        description: ''
+        description: 'Keys subject uses to respond to stimuli.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Any content here will be displayed below stimulus.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    trial.frame_time = trial.frame_time || 250;
-    trial.frame_isi = trial.frame_isi || 0;
-    trial.sequence_reps = trial.sequence_reps || 1;
-    trial.choices = trial.choices || jsPsych.ALL_KEYS;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     var interval_time = trial.frame_time + trial.frame_isi;
     var animate_frame = -1;

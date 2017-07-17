@@ -11,10 +11,12 @@ export default function(preloadedState) {
 	    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	    <link rel="stylesheet" href="./style.css">
 	    <script type="text/javascript" src="jsPsych/jspsych.js"></script>
-	    <script type="text/javascript" src="jsPsych/plugins/jspsych-text.js"></script>
 	    <script type="text/javascript" src="jsPsych/plugins/jspsych-single-stim.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-html-button-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
     	<script type="text/javascript" src="jsPsych/plugins/jspsych-audio-keyboard-response.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-video.js"></script>
+    	<script type="text/javascript" src="jsPsych/plugins/jspsych-same-different-html.js"></script>
 	    <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
 	    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 	    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>

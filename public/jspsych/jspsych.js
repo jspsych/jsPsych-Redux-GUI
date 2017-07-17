@@ -42,6 +42,10 @@ window.jsPsych = (function() {
 
   core.init = function(options) {
 
+    if(typeof options.timeline === 'undefined'){
+      console.error('No timeline declared in jsPsych.init. Cannot start experiment.')
+    }
+
     // reset variables
     timeline = null;
     global_trial_index = 0;
@@ -51,8 +55,6 @@ window.jsPsych = (function() {
     waiting = false;
     loaded = false;
     jsPsych.data.reset();
-
-
 
     var defaults = {
       'display_element': undefined,
@@ -226,15 +228,15 @@ window.jsPsych = (function() {
     opts.on_data_update(trial_data_values);
 
     // wait for iti
-    if (typeof current_trial.timing_post_trial == 'undefined') {
+    if (typeof current_trial.post_trial_gap == 'undefined') {
       if (opts.default_iti > 0) {
         setTimeout(nextTrial, opts.default_iti);
       } else {
         nextTrial();
       }
     } else {
-      if (current_trial.timing_post_trial > 0) {
-        setTimeout(nextTrial, current_trial.timing_post_trial);
+      if (current_trial.post_trial_gap > 0) {
+        setTimeout(nextTrial, current_trial.post_trial_gap);
       } else {
         nextTrial();
       }
@@ -702,7 +704,7 @@ window.jsPsych = (function() {
         var trial_type = parameters.type;
         if (typeof trial_type == 'undefined') {
           console.error('Trial level node is missing the "type" parameter. The parameters for the node are: ' + JSON.stringify(parameters));
-        } else if ((typeof jsPsych.plugins[trial_type] == 'undefined') && (typeof jsPsych.plugins[trial_type] != "function () { return timeline.timelineVariable(varname); }")) {
+        } else if ((typeof jsPsych.plugins[trial_type] == 'undefined') && (trial_type.toString().replace(/\s/g,'') != "function(){returntimeline.timelineVariable(varname);}")) {
           console.error('No plugin loaded for trials of type "' + trial_type + '"');
         }
         // create a deep copy of the parameters for the trial
@@ -775,16 +777,73 @@ window.jsPsych = (function() {
 
     current_trial = trial;
 
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
+    // process all timeline variables for this trial
+    trial = evaluateTimelineVariables(trial);
 
-    // check if trial has it's own display element
-    var display_element = DOM_target;
-    if(typeof trial.display_element !== 'undefined'){
-      display_element = trial.display_element;
-    }
+    // evaluate variables that are functions
+    trial = evaluateFunctionParameters(trial);
+
+    // get default values for parameters
+    trial = setDefaultValues(trial);
 
     // execute trial method
-    jsPsych.plugins[trial.type].trial(display_element, trial);
+    jsPsych.plugins[trial.type].trial(DOM_target, trial);
+  }
+
+  function evaluateTimelineVariables(trial){
+    var keys = Object.keys(trial);
+
+    for (var i = 0; i < keys.length; i++) {
+      if (typeof trial[keys[i]] == "function" && trial[keys[i]].toString().replace(/\s/g,'') == "function(){returntimeline.timelineVariable(varname);}") {
+        trial[keys[i]] = trial[keys[i]].call();
+      }
+    }
+
+    return trial;
+  }
+
+  function evaluateFunctionParameters(trial){
+
+    // first, eval the trial type if it is a function
+    if(typeof trial.type === 'function'){
+      trial.type = trial.type.call();
+    }
+
+    // now eval the whole trial
+
+    // keys that are always protected
+    var always_protected = ['on_finish'];
+    var common_across_plugins = ['data', 'post_trial_gap'];
+
+    var keys = Object.keys(trial);
+
+    for (var i = 0; i < keys.length; i++) {
+      if(!always_protected.includes(keys[i])){
+        if(keys[i] !== 'type' &&
+          (common_across_plugins.includes(keys[i]) || jsPsych.plugins[trial.type].info.parameters[keys[i]].type !== jsPsych.plugins.parameterType.FUNCTION)
+        ){
+          if (typeof trial[keys[i]] == "function") {
+            trial[keys[i]] = trial[keys[i]].call();
+          }
+        }
+      }
+    }
+
+    return trial;
+  }
+
+  function setDefaultValues(trial){
+    var trial_parameters = Object.keys(jsPsych.plugins[trial.type].info.parameters);
+    for(var i=0; i<trial_parameters.length; i++){
+      if(typeof trial[trial_parameters[i]] == 'undefined'){
+        if(typeof jsPsych.plugins[trial.type].info.parameters[trial_parameters[i]].default == 'undefined'){
+          console.error('You must specify a value for the '+trial_parameters[i]+' parameter in the '+trial.type+' plugin.');
+        } else {
+          trial[trial_parameters[i]] = jsPsych.plugins[trial.type].info.parameters[trial_parameters[i]].default;
+        }
+      }
+    }
+    return trial;
   }
 
   function loadFail(){
@@ -878,7 +937,7 @@ jsPsych.plugins = {
     FUNCTION: 4,
     KEYCODE: 5,
     SELECT: 6,
-    HMTL_STRING: 7,
+    HTML_STRING: 7,
     IMAGE: 8,
     AUDIO: 9,
     VIDEO: 10
@@ -1783,8 +1842,9 @@ jsPsych.pluginAPI = (function() {
         if(parameters.valid_responses != jsPsych.NO_KEYS){
           for (var i = 0; i < parameters.valid_responses.length; i++) {
             if (typeof parameters.valid_responses[i] == 'string') {
-              if (typeof keylookup[parameters.valid_responses[i]] !== 'undefined') {
-                if (e.keyCode == keylookup[parameters.valid_responses[i]]) {
+              var kc = jsPsych.pluginAPI.convertKeyCharacterToKeyCode(parameters.valid_responses[i]);
+              if (typeof kc !== 'undefined') {
+                if (e.keyCode == kc) {
                   valid_response = true;
                 }
               } else {
@@ -1847,6 +1907,7 @@ jsPsych.pluginAPI = (function() {
 
   module.convertKeyCharacterToKeyCode = function(character) {
     var code;
+    character = character.toLowerCase();
     if (typeof keylookup[character] !== 'undefined') {
       code = keylookup[character];
     }
@@ -1921,32 +1982,6 @@ jsPsych.pluginAPI = (function() {
     'x': 88,
     'y': 89,
     'z': 90,
-    'A': 65,
-    'B': 66,
-    'C': 67,
-    'D': 68,
-    'E': 69,
-    'F': 70,
-    'G': 71,
-    'H': 72,
-    'I': 73,
-    'J': 74,
-    'K': 75,
-    'L': 76,
-    'M': 77,
-    'N': 78,
-    'O': 79,
-    'P': 80,
-    'Q': 81,
-    'R': 82,
-    'S': 83,
-    'T': 84,
-    'U': 85,
-    'V': 86,
-    'W': 87,
-    'X': 88,
-    'Y': 89,
-    'Z': 90,
     '0numpad': 96,
     '1numpad': 97,
     '2numpad': 98,
@@ -1962,18 +1997,18 @@ jsPsych.pluginAPI = (function() {
     'minus': 109,
     'decimal': 110,
     'divide': 111,
-    'F1': 112,
-    'F2': 113,
-    'F3': 114,
-    'F4': 115,
-    'F5': 116,
-    'F6': 117,
-    'F7': 118,
-    'F8': 119,
-    'F9': 120,
-    'F10': 121,
-    'F11': 122,
-    'F12': 123,
+    'f1': 112,
+    'f2': 113,
+    'f3': 114,
+    'f4': 115,
+    'f5': 116,
+    'f6': 117,
+    'f7': 118,
+    'f8': 119,
+    'f9': 120,
+    'f10': 121,
+    'f11': 122,
+    'f12': 123,
     '=': 187,
     ',': 188,
     '.': 190,
@@ -2000,39 +2035,6 @@ jsPsych.pluginAPI = (function() {
     }
     timeout_handlers = [];
   }
-
-  // plugin parameter evaluation //
-
-  module.evaluateFunctionParameters = function(trial, protect) {
-
-    // keys that are always protected
-    var always_protected = ['on_finish'];
-
-    protect = (typeof protect === 'undefined') ? [] : protect;
-
-    protect = protect.concat(always_protected);
-
-    var keys = Object.keys(trial);
-
-    for (var i = 0; i < keys.length; i++) {
-
-      var process = true;
-      for (var j = 0; j < protect.length; j++) {
-        if (protect[j] == keys[i]) {
-          process = false;
-          break;
-        }
-      }
-
-      if (typeof trial[keys[i]] == "function" && process) {
-        trial[keys[i]] = trial[keys[i]].call();
-      }
-
-    }
-
-    return trial;
-
-  };
 
   // audio //
 

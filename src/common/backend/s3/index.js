@@ -44,6 +44,7 @@ function $deleteFiles(param){
 }
 
 export function deleteFiles(filePaths) {
+  if (filePaths.length < 1) return Promise.resolve("0 file is requested to be deleted.");
   return $deleteFiles({
     Delete: { Objects: filePaths.map((filePath) => ({Key: filePath})) }
   });
@@ -78,4 +79,19 @@ export function getFile(key, callback, progressHook, index) {
 
 export function getFiles(keys, callback, progressHook) {
   return Promise.all(keys.map((key, i) => (getFile(key, callback, progressHook, i))));
+}
+
+export function copyParam(source, target) {
+  return {
+    CopySource: Bucket_Name + "/" + source,
+    Key: target
+  };
+}
+
+export function copyFile(param) {
+  return connectS3().copyObject(param).promise();
+}
+
+export function copyFiles(params) {
+  return Promise.all(params.map((param) => (copyFile(param))));
 }

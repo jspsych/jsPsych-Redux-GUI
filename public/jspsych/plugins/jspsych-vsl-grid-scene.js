@@ -22,44 +22,35 @@ jsPsych.plugins['vsl-grid-scene'] = (function() {
     description: '',
     parameters: {
       stimuli: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.IMAGE,
+        pretty_name: 'Stimuli',
         array: true,
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'An array that defines a grid.'
       },
       image_size: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Image size',
         array: true,
         default: [100,100],
-        no_function: false,
-        description: ''
+        description: 'Array specifying the width and height of the images to show.'
       },
-      timing_duration: {
-        type: [jsPsych.plugins.parameterType.INT],
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: 2000,
-        no_function: false,
-        description: ''
+        description: 'How long to show the stimulus for in milliseconds.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    // default parameter values
-    trial.image_size = trial.image_size || [100, 100];
-    trial.timing_duration = typeof trial.timing_duration === 'undefined' ? 2000 : trial.timing_duration;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
-
     display_element.innerHTML = plugin.generate_stimulus(trial.stimuli, trial.image_size);
 
     jsPsych.pluginAPI.setTimeout(function() {
       endTrial();
-    }, trial.timing_duration);
+    }, trial.trial_duration);
 
     function endTrial() {
 

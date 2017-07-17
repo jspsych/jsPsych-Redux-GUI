@@ -19,58 +19,46 @@ jsPsych.plugins["audio-keyboard-response"] = (function() {
     description: '',
     parameters: {
       stimulus: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.AUDIO,
+        pretty_name: 'Stimulus',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The audio to be played.'
       },
       choices: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Choices',
         array: true,
         default: jsPsych.ALL_KEYS,
-        no_function: false,
-        description: ''
+        description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Any content here will be displayed below the stimulus.'
       },
-      timing_response: {
-        type: [jsPsych.plugins.parameterType.INT],
+      trial_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Trial duration',
         default: -1,
-        no_function: false,
-        description: ''
+        description: 'The maximum duration to wait for a response.'
       },
       response_ends_trial: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Response ends trial',
         default: true,
-        no_function: false,
-        description: ''
+        description: 'If true, the trial will end when user makes a response.'
       },
       trial_ends_after_audio: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Trial ends after audio',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'If true, then the trial will end as soon as the audio file finishes playing.'
       },
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // default parameters
-    trial.choices = trial.choices || jsPsych.ALL_KEYS;
-    trial.response_ends_trial = (typeof trial.response_ends_trial === 'undefined') ? true : trial.response_ends_trial;
-    trial.trial_ends_after_audio = (typeof trial.trial_ends_after_audio === 'undefined') ? false : trial.trial_ends_after_audio;
-    trial.timing_response = trial.timing_response || -1; // if -1, then wait for response forever
-    trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     // setup stimulus
     var context = jsPsych.pluginAPI.audioContext();
@@ -182,10 +170,10 @@ jsPsych.plugins["audio-keyboard-response"] = (function() {
     }
 
     // end trial if time limit is set
-    if (trial.timing_response > 0) {
+    if (trial.trial_duration > 0) {
       jsPsych.pluginAPI.setTimeout(function() {
         end_trial();
-      }, trial.timing_response);
+      }, trial.trial_duration);
     }
 
   };

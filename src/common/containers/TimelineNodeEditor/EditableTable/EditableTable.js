@@ -1,13 +1,14 @@
 import { connect } from 'react-redux';
 import EditableTable from '../../../components/TimelineNodeEditor/EditableTable/EditableTable';
 import * as tableActions from '../../../actions/tableAction';
+import { convertEmptyStringToNull } from '../../../utils';
 
 const onChangeHeader = (dispatch, headerId, newVal) => {
-	dispatch(tableActions.changeHeaderAction(headerId, newVal));
+	dispatch(tableActions.changeHeaderAction(headerId, convertEmptyStringToNull(newVal)));
 }
 
 const onChangeCells = (dispatch, cellId, newVal) => {
-	dispatch(tableActions.changeCellAction(cellId, newVal));
+	dispatch(tableActions.changeCellAction(cellId, convertEmptyStringToNull(newVal)));
 }
 
 export const onAddColumn = (dispatch, ownProps) => {
@@ -19,11 +20,11 @@ export const onAddRow = (dispatch, ownProps) => {
 }
 
 const onChangeSampling = (dispatch, key, newVal) => {
-	dispatch(tableActions.changeSampling(key, newVal));
+	dispatch(tableActions.changeSampling(key, convertEmptyStringToNull(newVal)));
 }
 
 const onChangeSize = (dispatch, newVal) => {
-	dispatch(tableActions.changeSize(newVal));
+	dispatch(tableActions.changeSize(convertEmptyStringToNull(newVal)));
 }
 
 const onChangeRandomize = (dispatch, newBool) => {
@@ -31,11 +32,11 @@ const onChangeRandomize = (dispatch, newBool) => {
 }
 
 const deleteColumn = (dispatch, rowIndex, titleIndex) => {
-		dispatch(tableActions.columnDelete(rowIndex, titleIndex));
+	dispatch(tableActions.columnDelete(rowIndex, titleIndex));
 }
 
 const deleteRow = (dispatch, rowIndex, titleIndex) => {
-		dispatch(tableActions.rowDelete(rowIndex, titleIndex));
+	dispatch(tableActions.rowDelete(rowIndex, titleIndex));
 }
 
 const deleteColumnByHeader = (dispatch, titleIndex) => {
@@ -45,6 +46,7 @@ const deleteColumnByHeader = (dispatch, titleIndex) => {
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let timeline = experimentState[experimentState.previewId];
+
 	let tv = timeline.parameters.timeline_variables;
 	let headers = Object.keys(tv[0]);
 	let nullToString = []; 
@@ -54,7 +56,6 @@ const mapStateToProps = (state, ownProps) => {
 	//each object in the array
 	for(let i=0; i<tv.length; i++){
 		nullToString.push({});
-		console.log(nullToString);
 		for(let j=0; j<headers.length; j++) {
 			object = tv[i];
 			if(object[headers[j]] === undefined) {

@@ -1,7 +1,37 @@
 import { deepCopy, convertEmptyStringToNull } from '../../utils';
 import * as utils from './utils';
-
+import { createFuncObj } from './jsPsychInit';
 const DEFAULT_HEADER = 'H';
+
+export const ParameterMode = {
+	USE_FUNC: 'USE_FUNC',
+	USE_TV: "USE_TIMELINE_VARIABLE"
+}
+
+/*
+Every editor item that is from jsPsych plugin parameter is a composite object defined below
+*/
+export const createComposite = (value=null, func=createFuncObj(), mode=null) => ({
+	isComposite: true,
+	value: value,
+	func: func,
+	// ParameterMode
+	mode: mode, 
+	timelineVariable: null,
+})
+
+export const DEFAULT_TIMELINE_PARAM = {
+	timeline_variables: [{H0: null}],
+	randomize_order: true,
+	repetitions: null,
+	sampling: {type: null, size: null},
+	conditional_function: null,
+	loop_function: null,
+};
+
+export const DEFAULT_TRIAL_PARAM = {
+	type: null,
+};
 
 /*
 action = {
@@ -24,16 +54,38 @@ export function setName(state, action) {
 /*
 action = {
 	key: name of param,
-	value: new value
+	value: new value,
+	setFunc: boolean,
 }
 */
 export function setPluginParam(state, action) {
-	let { key, value } = action;
+	let { key, value, mode } = action;
 
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
-	node.parameters[key] = value;
+	node.parameters[key] = Object.assign({}, node.parameters[key]);
+	switch(mode) {
+		case ParameterMode.USE_FUNC:
+			node.parameters[key].func = createFuncObj(value);
+		case ParameterMode.USE_TV:
+			node.parameters[key].timelineVariable = value;
+		default:
+			node.parameters[key].value = value;
+	}
+
+	return new_state;
+}
+
+export function setPluginParamMode(state, action) {
+	let { key, mode } = action;
+
+	let new_state = Object.assign({}, state);
+	let node = deepCopy(new_state[new_state.previewId]);
+	new_state[node.id] = node;
+	node.parameters[key] = Object.assign({}, node.parameters[key], {
+		mode: (mode === node.parameters[key].mode) ? null : mode
+	});
 
 	return new_state;
 }
@@ -57,7 +109,7 @@ export function changePlugin(state, action) {
 	};
 
 	for (let i = 0; i < paramKeys.length; i++) {
-		paramsObject[paramKeys[i]] = convertEmptyStringToNull(params[paramKeys[i]].default);
+		paramsObject[paramKeys[i]] = createComposite(convertEmptyStringToNull(params[paramKeys[i]].default));
 	}
 
 	node = deepCopy(node);

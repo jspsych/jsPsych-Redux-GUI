@@ -18,52 +18,50 @@ jsPsych.plugins['survey-text'] = (function() {
     description: '',
     parameters: {
       questions: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Questions',
         array: true,
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'Prompts for the subject to respond.'
       },
       preamble: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Preamble',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'HTML formatted string to display at the top of the page above all the questions.'
       },
       rows: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Rows',
         array: true,
         default: 1,
-        no_function: false,
-        description: ''
+        description: 'The number of rows for the response text box.'
       },
       columns: {
-        type: [jsPsych.plugins.parameterType.INT],
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Columns',
         array: true,
         default: 40,
-        no_function: false,
-        description: ''
+        description: 'The number of columns for the response text box.'
       },
       values: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Values',
         array: true,
         default: '',
-        no_function: false,
-        description: ''
+        description: 'The strings will be used to populate the response fields with editable answers.'
       },
       button_label: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Button label',
         default: 'Next',
-        no_function: false,
-        description: ''
+        description: 'The text that appears on the button to finish the trial.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    trial.preamble = typeof trial.preamble == 'undefined' ? "" : trial.preamble;
-    trial.button_label = typeof trial.button_label === 'undefined' ? 'Next' : trial.button_label;
 
     if (typeof trial.rows == 'undefined') {
       trial.rows = [];
@@ -83,11 +81,6 @@ jsPsych.plugins['survey-text'] = (function() {
         trial.values.push("");
       }
     }
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial);
 
     // show preamble text
     var html = '<div id="jspsych-survey-text-preamble" class="jspsych-survey-text-preamble">'+trial.preamble+'</div>';

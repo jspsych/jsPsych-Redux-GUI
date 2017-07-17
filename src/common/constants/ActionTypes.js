@@ -18,6 +18,7 @@ export const SET_NAME = "SET_NAME";
 // main
 export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
 export const SET_PLUGIN_PARAMTER = "SET_PLUGIN_PARAMTER";
+export const SET_PLUGIN_PARAMTER_MODE = "SET_PLUGIN_PARAMTER_MODE";
 export const UPDATE_MEDIA = "UPDATE_MEDIA";
 
 // jsPsych init editor

@@ -87,8 +87,50 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 }
 
 const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
-	if (filenames.indexOf(filename) < 0) return;
+	if (!filename.trim()) return;
+	if (filenames.indexOf(filename) === -1) {
+		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
+		return;
+	}
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(filename, prefix)));
+}
+
+const fileArrayInput = (dispatch, ownProps, filelistStr, prefix, filenames) => {
+	filelistStr = filelistStr.trim();
+	if (!filelistStr) return;
+	let i = 0;
+	let fileList = [];
+	let ignoreSpace = false;
+	let part = "", c = "";
+	while (i < filelistStr.length) {
+		c = filelistStr[i++];
+		switch(c) {
+			case ',':
+				ignoreSpace = true;
+				if (part.length > 0) {
+					if (filenames.indexOf(part) === -1) {
+						notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
+						return;
+					}
+					fileList.push(part);
+					part = "";
+				}
+				break;
+			case ' ':
+				if (!ignoreSpace) part += c;
+				break;
+			default:
+				part += c;
+		}
+	}
+	if (part.length > 0) {
+		if (filenames.indexOf(part) === -1) {
+			notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
+			return;
+		}
+		fileList.push(part);
+	}
+	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(fileList, prefix)));
 }
 
 const checkBeforeOpen = (dispatch, handleOpen) => {
@@ -115,14 +157,22 @@ of trial.paramters
 */
 const mapStateToProps = (state, ownProps) => {
 	let node = state.experimentState[state.experimentState.previewId];
-	if (!node || isTimeline(node)) {
-		return {};
-	}
+
 	let selectedFilesString = "", item;
-	for (let key of Object.keys(node.parameters)) {
-		item = node.parameters[key];
-		if (isS3MediaType(item)) {
-			selectedFilesString = JSON.stringify(item.filename).replace(/^"(.+(?="$))"$/, '$1');
+	if (node && !isTimeline(node)) {
+		for (let key of Object.keys(node.parameters)) {
+			item = (node.parameters[key]) ? node.parameters[key].value : null;
+			if (isS3MediaType(item)) {
+				if (Array.isArray(item.filename)) {
+					let i = 0;
+					for (let name of item.filename) {
+						selectedFilesString += name + ((i++ < item.filename.length-1) ? ", " : "");
+					}
+				} else {
+					selectedFilesString = item.filename;
+				}
+				
+			}
 		}
 	}
 	let filenames = [];
@@ -130,6 +180,7 @@ const mapStateToProps = (state, ownProps) => {
 	if (media.Contents) {
 		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
 	} 
+	
  	return {
  		selectedFilesString: selectedFilesString,
  		s3files: media,
@@ -144,6 +195,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	insertFile: (filePaths, prefix, handleClose) => { insertFile(dispatch, ownProps, filePaths, prefix, handleClose); },
 	autoFileInput: (filename, prefix, filenames) => { autoFileInput(dispatch, ownProps, filename, prefix, filenames); },
+	fileArrayInput: (filelistStr, prefix, filenames) => { fileArrayInput(dispatch, ownProps, filelistStr, prefix, filenames); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);

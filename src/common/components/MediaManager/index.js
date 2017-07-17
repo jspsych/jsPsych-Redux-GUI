@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import AutoComplete from 'material-ui/AutoComplete';
+import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
+import MenuItem from 'material-ui/MenuItem';
 import LinearProgress from 'material-ui/LinearProgress';
 const mime = require('mime-types');
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 
 import {
 	grey800 as normalColor,
@@ -31,6 +33,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
+import CodeEditorTrigger from '../CodeEditorTrigger';
 
 var __DEBUG__ = false;
 
@@ -76,7 +79,36 @@ export default class MediaManager extends React.Component {
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
+			showFunc: false,
+			openEditor: false,
+			fileListStr: "",
+			fileStr: "",
+			useFileListStr: false,
 		};
+
+		this.setFileListStr = (str) => {
+			this.setState({
+				fileListStr: str
+			});
+		}
+
+		this.setFileStr = (str) => {
+			this.setState({
+				fileStr: str
+			});
+		}
+
+		this.turnOnFileListStr = () => {
+			this.setState({
+				useFileListStr: true
+			});
+		}
+
+		this.turnOffFileListStr = () => {
+			this.setState({
+				useFileListStr: false
+			});
+		}
 
 		this.handleEnter = () => {
 			this.setState({
@@ -94,8 +126,6 @@ export default class MediaManager extends React.Component {
 			let completed = this.state.completed;
 			if (completed[filename] === undefined) {
 				completed[filename] = 0;
-			} else if (percent === 100) {
-				delete completed[filename];
 			} else {
 				completed[filename] = percent;
 			}
@@ -149,12 +179,14 @@ export default class MediaManager extends React.Component {
 				this.setState(update);
 			},
 			this.progressHook);
+			this.resetSelect();
 		}
 
 		this.handleDelete = () => {
 			this.props.deleteFiles(
 				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
 			);
+			this.resetSelect();
 		}
 
 		this.insertFile = () => {
@@ -163,42 +195,131 @@ export default class MediaManager extends React.Component {
 				this.props.s3files.Prefix,
 				this.handleClose
 			);
+			this.resetSelect();
 		}
+
+		this.resetSelect = () => {
+			this.setState({
+				selected: (this.props.s3files.Contents) ? this.props.s3files.Contents.map((f) => (false)) : []
+			})
+		}
+	}
+
+	showFunc = () => {
+		this.setState({
+			showFunc: true
+		});
+	}
+
+	hideFunc = () => {
+		this.setState({
+			showFunc: false
+		});
+	}
+
+	showFuncEditor = () => {
+		this.setState({
+			openEditor: true
+		});
+	}
+
+	hideFuncEditor = () => {
+		this.setState({
+			openEditor: false
+		});
 	}
 
 	renderTrigger = () => {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
-				return (
-					<div style={{display:'flex'}}>
-						<div style={{paddingTop: 20, paddingRight: 15}} >
-							{this.props.parameterName+":"}
-						</div>
-						<AutoComplete
-							id="Selected-File-Input"
-							fullWidth={true}
-							searchText={this.props.selectedFilesString}
-							title={this.props.selectedFilesString}
-							dataSource={this.props.filenames}
-							filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
-							listStyle={{maxHeight: 200, overflowY: 'auto'}}
-							onUpdateInput={(t) => { this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames); }}
-						/>
-						<IconButton 
-							onTouchTap={this.handleOpen}
-							tooltip="Insert Medias"
-						>
-							<Add hoverColor={hoverColor} color={iconColor}/>
-						</IconButton>
-					</div>
-				)
 			case MediaManagerMode.multiSelect:
-				return (<IconButton 
-							onTouchTap={this.handleOpen}
-							tooltip="Insert Medias"
+				return (
+					<div style={{display:'flex', width: "100%"}}>
+						<p 
+							style={{paddingTop: 15, paddingRight: 10,}} 
+							className="Trial-Form-Label-Container" 
+							title={this.props.paramInfo.description}
 						>
-							<Add hoverColor={hoverColor} color={iconColor}/>
-						</IconButton>)
+							{this.props.paramInfo.pretty_name+":"}
+						</p>
+						<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
+							{(this.props.useFunc) ?
+							<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+							(this.props.mode === MediaManagerMode.multiSelect) ?
+							<TextField 
+								id={"Selected-File-Input-"+this.props.parameterName}
+								multiLine={true}
+								rowsMax={3}
+								rows={1}
+								fullWidth={true}
+								value={(this.state.fileListStr !== this.props.selectedFilesString &&
+										this.state.fileListStr)? this.state.fileListStr : this.props.selectedFilesString}
+								onChange={(e, v) => { 
+									this.setFileListStr(v); 
+								}}
+								onFocus={() => {
+									this.setFileListStr(this.props.selectedFilesString);
+								}}
+								onBlur={() => { 
+									this.props.fileArrayInput(this.state.fileListStr, 
+										this.props.s3files.Prefix, 
+										this.props.filenames);
+								}}
+								onKeyPress={(e) => {
+									if (e.which === 13) {
+										this.props.fileArrayInput(this.state.fileListStr, 
+											this.props.s3files.Prefix, 
+											this.props.filenames);
+									}
+								}}
+							/> :
+							<AutoComplete
+								id={"Selected-File-Input-"+this.props.parameterName}
+								fullWidth={true}
+								searchText={(this.state.fileStr && this.state.fileStr !== this.props.selectedFilesString) ?
+											 this.state.fileStr : this.props.selectedFilesString}
+								title={this.props.selectedFilesString}
+								dataSource={this.props.filenames}
+								filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
+								listStyle={{maxHeight: 200, overflowY: 'auto'}}
+								onUpdateInput={(t) => { 
+									this.setFileStr(t); 
+									if (t !== this.props.selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+										this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
+								onNewRequest={(s, i) => {
+									if (i !== -1 && s !== this.props.selectedFilesString) {
+										this.props.autoFileInput(s, this.props.s3files.Prefix, this.props.filenames);
+									} else if (this.state.fileStr !== this.props.selectedFilesString) {
+										this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
+							/>
+							}
+
+							{(this.state.showFunc || this.state.openEditor || this.props.useFunc) ?
+							<CodeEditorTrigger 
+								setParamMode={this.props.setParamMode}
+								openCallback={this.showFuncEditor}
+								closeCallback={this.hideFuncEditor}
+								useFunc={this.props.useFunc}
+								showEditMode={true}
+								initCode={this.props.initCode} 
+			                    submitCallback={this.props.submitCallback}
+			                    title={this.props.codeEditorTitle}
+					        /> :
+					        <IconButton 
+								onTouchTap={this.handleOpen}
+								tooltip="Insert Medias"
+								onMouseEnter={this.hideFunc} onMouseLeave={this.showFunc}
+							>
+								<Add hoverColor={hoverColor} color={iconColor}/>
+							</IconButton>
+					    	}
+						</div>
+					</div>
+				);
 			case MediaManagerMode.upload:
 			default:
 				return (

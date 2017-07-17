@@ -17,76 +17,67 @@ jsPsych.plugins['same-different-image'] = (function() {
     description: '',
     parameters: {
       stimuli: {
-        type: [jsPsych.plugins.parameterType.HTML_STRING],
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'Stimuli',
         default: undefined,
         array: true,
-        no_function: false,
-        description: ''
+        description: 'The HTML content to be displayed.'
       },
       answer: {
-        type: [jsPsych.plugins.parameterType.SELECT],
+        type: jsPsych.plugins.parameterType.SELECT,
+        pretty_name: 'Answer',
         options: ['same', 'different'],
         default: 75,
-        no_function: false,
-        description: ''
+        description: 'Either "same" or "different".'
       },
       same_key: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Same key',
         default: 'Q',
-        no_function: false,
         description: ''
       },
       different_key: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Different key',
         default: 'P',
-        no_function: false,
-        description: ''
+        description: 'The key that subjects should press to indicate that the two stimuli are the same.'
       },
-      timing_first_stim: {
-        type: [jsPsych.plugins.parameterType.INT],
+      first_stim_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'First stimulus duration',
         default: 1000,
-        no_function: false,
-        description: ''
+        description: 'How long to show the first stimulus for in milliseconds.'
       },
-      timing_gap: {
-        type: [jsPsych.plugins.parameterType.INT],
+      gap_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Gap duration',
         default: 500,
-        no_function: false,
-        description: ''
+        description: 'How long to show a blank screen in between the two stimuli.'
       },
-      timing_second_stim: {
-        type: [jsPsych.plugins.parameterType.INT],
+      second_stim_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'Second stimulus duration',
         default: 1000,
-        no_function: false,
-        description: ''
+        description: 'How long to show the second stimulus for in milliseconds.'
       },
       prompt: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Prompt',
         default: '',
-        no_function: false,
-        description: ''
+        description: 'Any content here will be displayed below the stimulus.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
 
-    // default parameters
-    trial.same_key = trial.same_key || 81; // default is 'q'
-    trial.different_key = trial.different_key || 80; // default is 'p'
-    trial.advance_key = trial.advance_key || jsPsych.ALL_KEYS
-    trial.timing_first_stim = trial.timing_first_stim || 1000; // if -1, the first stim is shown until any key is pressed
-    trial.timing_second_stim = trial.timing_second_stim || 1000; // if -1, then second stim is shown until response.
-    trial.timing_gap = trial.timing_gap || 500;
-    trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
-
     display_element.innerHTML = '<div class="jspsych-same-different-stimulus">'+trial.stimuli[0]+'</div>';
 
     var first_stim_info;
-    if (trial.timing_first_stim > 0) {
+    if (trial.first_stim_duration > 0) {
       jsPsych.pluginAPI.setTimeout(function() {
         showBlankScreen();
-      }, trial.timing_first_stim);
+      }, trial.first_stim_duration);
     } else {
       function afterKeyboardResponse(info) {
         first_stim_info = info;
@@ -106,7 +97,7 @@ jsPsych.plugins['same-different-image'] = (function() {
 
       jsPsych.pluginAPI.setTimeout(function() {
         showSecondStim();
-      }, trial.timing_gap);
+      }, trial.gap_duration);
     }
 
     function showSecondStim() {
@@ -114,10 +105,10 @@ jsPsych.plugins['same-different-image'] = (function() {
       display_element.innerHTML += '<div class="jspsych-same-different-stimulus">'+trial.stimuli[1]+'</div>';
 
 
-      if (trial.timing_second_stim > 0) {
+      if (trial.second_stim_duration > 0) {
         jsPsych.pluginAPI.setTimeout(function() {
           display_element.querySelector('.jspsych-same-different-stimulus').style.visibility = 'hidden';
-        }, trial.timing_second_stim);
+        }, trial.second_stim_duration);
       }
 
       //show prompt here

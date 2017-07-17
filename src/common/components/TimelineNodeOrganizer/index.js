@@ -28,7 +28,7 @@ import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTre
 export const TREE_MENU_INDENT = 20;
 
 const MIN_WIDTH = 20;
-const MAX_WIDTH = 55;
+const MAX_WIDTH = 45;
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
@@ -175,7 +175,8 @@ class TimelineNodeOrganizer extends React.Component {
   							}}
   						/>
   				</Draggable>
-  				{(this.props.open) ? null :
+  				{(this.props.open) ? 
+  					null :
   					<IconButton
   						className="TimelineNode-Organizer-Handle"
   						tooltip="Open Timeline/Trial Organizer"
@@ -194,7 +195,9 @@ class TimelineNodeOrganizer extends React.Component {
 	  					padding: '12px 0',
 	  					zIndex: 1,
   						}}
-  					><OpenDrawer /></IconButton>}
+  					>
+  						<OpenDrawer />
+  					</IconButton>}
   			</div>
   			)
 	}

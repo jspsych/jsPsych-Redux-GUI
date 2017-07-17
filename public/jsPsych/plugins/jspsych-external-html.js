@@ -15,48 +15,39 @@ jsPsych.plugins['external-html'] = (function() {
     description: '',
     parameters: {
       url: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'URL',
         default: undefined,
-        no_function: false,
-        description: ''
+        description: 'The url of the external html page'
       },
       cont_key: {
-        type: [jsPsych.plugins.parameterType.KEYCODE],
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        pretty_name: 'Continue key',
         default: null,
-        no_function: false,
-        description: ''
+        description: 'The key to continue to the next page.'
       },
       cont_btn: {
-        type: [jsPsych.plugins.parameterType.STRING],
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Continue button',
         default: null,
-        no_function: false,
-        description: ''
+        description: 'The button to continue to the next page.'
       },
       check_fn: {
-        type: [jsPsych.plugins.parameterType.FUNCTION],
-        default: 'function() { return true; }',
-        no_function: false,
+        type: jsPsych.plugins.parameterType.FUNCTION,
+        pretty_name: 'Check function',
+        default: function() { return true; },
         description: ''
       },
       force_refresh: {
-        type: [jsPsych.plugins.parameterType.BOOL],
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Force refresh',
         default: false,
-        no_function: false,
-        description: ''
+        description: 'Refresh page.'
       }
     }
   }
 
   plugin.trial = function(display_element, trial) {
-
-    // default parameters
-    trial.check_fn = trial.check_fn || function() { return true; }
-    trial.force_refresh = (typeof trial.force_refresh === 'undefined') ? false : trial.force_refresh
-
-    // if any trial variables are functions
-    // this evaluates the function and replaces
-    // it with the output of the function
-    trial = jsPsych.pluginAPI.evaluateFunctionParameters(trial, ["check_fn"]);
 
     var url = trial.url;
     if (trial.force_refresh) {
