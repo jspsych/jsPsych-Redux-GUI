@@ -51,6 +51,12 @@ export default class TrialFormItem extends React.Component {
 		keyListStr: "",
 	}
 
+	componentDidMount() {
+		this.setState({
+			keyListStr: this.props.parameters[this.props.param].value
+		});
+	}
+
 	setKeyListStr = (str) => {
 		this.setState({
 			keyListStr: str
