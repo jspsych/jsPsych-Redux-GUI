@@ -34,6 +34,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 import CodeEditorTrigger from '../CodeEditorTrigger';
+import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 
 var __DEBUG__ = false;
 
@@ -79,8 +80,9 @@ export default class MediaManager extends React.Component {
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
-			showFunc: false,
-			openEditor: false,
+			showTool: false,
+			openFunctionEditor: false,
+			openTimelineVariable: false,
 			fileListStr: "",
 			fileStr: "",
 			useFileListStr: false,
@@ -205,27 +207,39 @@ export default class MediaManager extends React.Component {
 		}
 	}
 
-	showFunc = () => {
+	showTool = () => {
 		this.setState({
-			showFunc: true
+			showTool: true
 		});
 	}
 
-	hideFunc = () => {
+	hideTool = () => {
 		this.setState({
-			showFunc: false
+			showTool: false
 		});
 	}
 
 	showFuncEditor = () => {
 		this.setState({
-			openEditor: true
+			openFuncEditor: true
 		});
 	}
 
 	hideFuncEditor = () => {
 		this.setState({
-			openEditor: false
+			openFuncEditor: false
+		});
+	}
+
+	showTVSelector = () => {
+		this.setState({
+			openTimelineVariable: true
+		});
+	}
+
+	hideTVSelector = () => {
+		this.setState({
+			openTimelineVariable: false
 		});
 	}
 
@@ -233,6 +247,13 @@ export default class MediaManager extends React.Component {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
 			case MediaManagerMode.multiSelect:
+				let alternativeNode = (<IconButton 
+								onTouchTap={this.handleOpen}
+								tooltip="Insert Medias"
+								onMouseEnter={this.hideFunc} onMouseLeave={this.showTool}
+							>
+								<Add hoverColor={hoverColor} color={iconColor}/>
+							</IconButton>);
 				return (
 					<div style={{display:'flex', width: "100%"}}>
 						<p 
@@ -242,9 +263,12 @@ export default class MediaManager extends React.Component {
 						>
 							{this.props.paramInfo.pretty_name+":"}
 						</p>
-						<div className="Trial-Form-Content-Container" onMouseEnter={this.showFunc} onMouseLeave={this.hideFunc}>
-							{(this.props.useFunc) ?
-							<MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />:
+						<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideFunc}>
+							{(this.props.useFunc || this.props.useTV) ?
+							<MenuItem 
+								 primaryText={(this.props.useTV) ? "[Timeline Variable]" : "[Function]"}
+								 style={{paddingTop: 2}} 
+								 disabled={true} />:
 							(this.props.mode === MediaManagerMode.multiSelect) ?
 							<TextField 
 								id={"Selected-File-Input-"+this.props.parameterName}
@@ -297,26 +321,30 @@ export default class MediaManager extends React.Component {
 								}}
 							/>
 							}
-
-							{(this.state.showFunc || this.state.openEditor || this.props.useFunc) ?
+							{(this.state.showTool || this.state.openFunctionEditor || this.props.useFunc) ?
 							<CodeEditorTrigger 
-								setParamMode={this.props.setParamMode}
-								openCallback={this.showFuncEditor}
+								setParamMode={this.props.setParamModeToFunc}
+								openCallback={this.showToolEditor}
 								closeCallback={this.hideFuncEditor}
 								useFunc={this.props.useFunc}
 								showEditMode={true}
 								initCode={this.props.initCode} 
-			                    submitCallback={this.props.submitCallback}
-			                    title={this.props.codeEditorTitle}
+			                    submitCallback={this.props.submitFuncCallback}
+			                    title={this.props.PropertyTitle}
 					        /> :
-					        <IconButton 
-								onTouchTap={this.handleOpen}
-								tooltip="Insert Medias"
-								onMouseEnter={this.hideFunc} onMouseLeave={this.showFunc}
-							>
-								<Add hoverColor={hoverColor} color={iconColor}/>
-							</IconButton>
+					        alternativeNode
 					    	}
+					    	{(this.state.showTool || this.state.openTimelineVariable || this.props.useTV) ?
+							<TimelineVariableSelector 
+								openCallback={this.showTVSelector}
+								closeCallback={this.hideTVSelector}
+								useTV={this.props.useTV}
+								title={this.props.PropertyTitle}
+								selectedTV={this.props.selectedTV}
+								submitCallback={this.props.submitTVCallback}
+								setParamMode={this.props.setParamModeToTV}
+							/> :
+							null}
 						</div>
 					</div>
 				);

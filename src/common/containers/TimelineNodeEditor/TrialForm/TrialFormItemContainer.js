@@ -25,9 +25,9 @@ const setText = (dispatch, key, value) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
-const setKey = (dispatch, key, keyListStr, useEnum=false) => {
-	if (useEnum) {
-		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? [keyListStr] : []));
+const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
+	if (useEnum || !isArray) {
+		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? keyListStr : null));
 	} else {
 		let val = [];
 		let hist = {};
@@ -95,7 +95,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
 	setFunc: (key, code) => { setFunc(dispatch, key, code); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
-	setKey: (key, keyListStr, useEnum) => { setKey(dispatch, key, keyListStr, useEnum); },
+	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); }
 })
 

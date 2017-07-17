@@ -189,6 +189,7 @@ export default class TrialFormItem extends React.Component {
 			        </IconButton>)
 			    }
 			    {this.appendFunctionEditor(param)}
+			    {this.appendTimelineVariable(param)}
 	        </div>
 	    </div>
 	)
@@ -204,6 +205,7 @@ export default class TrialFormItem extends React.Component {
                     }}
                     title={param+": "}
         		/>
+        		{this.appendTimelineVariable(param)}
 	        </div>
 	    </div>
 	)
@@ -221,6 +223,22 @@ export default class TrialFormItem extends React.Component {
 		}
 		let useFunc = this.props.parameters[param].mode === ParameterMode.USE_FUNC;
 		let isAllKey = value === jsPsych.ALL_KEYS;
+		let isArray = !!this.props.paramInfo.array;
+
+		let alternativeNode = (<IconButton 
+				onTouchTap={() => {
+					if (isAllKey) {
+						this.props.setKey(param, null, true);
+					} else {
+						this.props.setKey(param, jsPsych.ALL_KEYS, true);
+					}
+				}}
+				tooltip="All Keys"
+				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
+			>
+				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
+			</IconButton>);
+
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
 			{this.renderLabel()}
@@ -237,11 +255,12 @@ export default class TrialFormItem extends React.Component {
 			      value={(this.state.keyListStr !== value) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.setKeyListStr(v); }}
+			      maxLength={(isArray) ?  null : "1"}
 			      onFocus={() => {
 			      	this.setKeyListStr(convertNullToEmptyString(value));
 			      }}
 			      onBlur={() => {
-			      	this.props.setKey(param, this.state.keyListStr);
+			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
 			      }}
 			      onKeyPress={(e) => {
 			      	if (e.which === 13) {
@@ -250,21 +269,8 @@ export default class TrialFormItem extends React.Component {
 			      }}
 			    />)
 			}
-			{this.appendFunctionEditor(param,
-				(<IconButton 
-				onTouchTap={() => {
-					if (isAllKey) {
-						this.props.setKey(param, null, true);
-					} else {
-						this.props.setKey(param, jsPsych.ALL_KEYS, true);
-					}
-				}}
-				tooltip="All Keys"
-				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
-			>
-				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
-			</IconButton>)
-			)}
+			{this.appendFunctionEditor(param, alternativeNode)}
+			{this.appendTimelineVariable(param, alternativeNode)}
 		    </div>
 		  </div>
 	)}
@@ -307,15 +313,20 @@ export default class TrialFormItem extends React.Component {
 							paramInfo={paramInfo}
 							key={"Trial-form-"+param} 
 							mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-							setParamMode={() => { this.props.setParamMode(param); }}
+
+							PropertyTitle={this.props.paramInfo.pretty_name+": "}
 							openCallback={this.showFuncEditor}
 							closeCallback={this.hideFuncEditor}
-							useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
+
+							setParamModeToFunc={() => { this.props.setParamMode(param); }}
 							initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-		                    submitCallback={(newCode) => { 
-		                      this.props.setFunc(param, newCode);
-		                    }}
-		                    codeEditorTitle={param+": "}
+							useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
+		                    submitFuncCallback={(newCode) => { this.props.setFunc(param, newCode); }}
+
+		                    useTV={this.props.parameters[param].mode === ParameterMode.USE_TV}
+							selectedTV={this.props.parameters[param].timelineVariable}
+							submitTVCallback={(newTV) => { this.props.setTimelineVariable(param, newTV); }}
+							setParamModeToTV={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 						/>
 					);
 				case EnumPluginType.BOOL:
