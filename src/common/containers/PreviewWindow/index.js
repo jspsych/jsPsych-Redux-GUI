@@ -15,14 +15,15 @@ const playAll = (dispatch, load) => {
 
 const hotUpdate = (dispatch, load) => {
 	dispatch((dispatch, getState) => {
-		code = generateCode(getState().experimentState);
+		code = generateCode(getState().experimentState, false, false);
 		load(code);
 	})
 }
 
 const mapStateToProps = (state, ownProps) => {
+	let experimentState = state.experimentState;
 	return {
-		state: state.experimentState,
+		state: experimentState,
 	};
 }
 

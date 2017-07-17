@@ -1,5 +1,6 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
+import deepEqual from 'deep-equal';
 
 import IconButton from 'material-ui/IconButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
@@ -80,14 +81,10 @@ export default class PreviewWindow extends React.Component {
     load(Welcome);
   }
 
-  // shouldComponentUpdate(prevProps) {
-  //   let flag = prevProps.code !== this.props.code ||
-  //              prevProps.id !== this.props.id;
-  //   return flag;
-  // }
-
   componentDidUpdate(prevProps, prevState) {
-    this.props.hotUpdate(load);
+    if (!deepEqual(this.props.state, prevProps.state)) {
+      this.props.hotUpdate(load);
+    }
   }
 
   detectFullScreenChange = () => {
@@ -150,7 +147,7 @@ export default class PreviewWindow extends React.Component {
             style={{
               width: zoomWidth,
               height: zoomHeight,
-              overflowY: 'hidden',
+              overflowY: 'auto',
               transform: 'scale(' + zoomScale + ')',
             }}
             />
