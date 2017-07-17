@@ -63,7 +63,7 @@ export default class TimelineVariableSelector extends React.Component {
 	render() {
 		return (
 			<div>
-				<IconButton onTouchTap={this.handleOpen}>
+				<IconButton onTouchTap={this.handleOpen} tooltip="Insert timeline variable">
 					<AddTimelineVarIcon />
 				</IconButton>
 				<Dialog
