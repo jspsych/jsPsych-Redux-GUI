@@ -268,7 +268,7 @@ function generateTimeline(state, node, all=false, deploy=false) {
 }
 
 function processTimelineVariable(value) {
-  return `jsPsych.timelineVariable(${value})`;
+  return `jsPsych.timelineVariable("${value}")`;
 }
 
 /*
@@ -314,7 +314,7 @@ export function stringify(obj, filePath) {
           case ParameterMode.USE_FUNC:
             return stringify(obj.func, filePath);
           case ParameterMode.USE_TV:
-            return stringify(processTimelineVariable(obj.timelineVariable), filePath);
+            return processTimelineVariable(obj.timelineVariable);
           default:
             return stringify(obj.value, filePath);
         }

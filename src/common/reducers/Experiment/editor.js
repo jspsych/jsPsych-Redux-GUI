@@ -68,8 +68,10 @@ export function setPluginParam(state, action) {
 	switch(mode) {
 		case ParameterMode.USE_FUNC:
 			node.parameters[key].func = createFuncObj(value);
+			break;
 		case ParameterMode.USE_TV:
-			node.parameters[key].timelineVariable = value;
+			node.parameters[key].timelineVariable = (value === node.parameters[key].timelineVariable) ? null : value;
+			break;
 		default:
 			node.parameters[key].value = value;
 	}
@@ -188,8 +190,7 @@ export function addRowHelper(array) {
 
 export function addRow(state, action) {
 	let node = state[state.previewId];
-	console.log("in add row");
-	console.log(node);
+
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);

@@ -23,9 +23,9 @@ const mapStateToProps = (state, ownProps) => {
 		}
 		timeline = experimentState[timeline.parent];
 	}
-	console.log(timelineVariables)
+
 	return {
-		timelineVariables: timelineVariables
+		timelineVariables: timelineVariables,
 	};
 }
 
