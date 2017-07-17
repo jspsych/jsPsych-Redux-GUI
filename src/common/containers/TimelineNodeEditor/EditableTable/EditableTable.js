@@ -58,7 +58,7 @@ const mapStateToProps = (state, ownProps) => {
 		nullToString.push({});
 		for(let j=0; j<headers.length; j++) {
 			object = tv[i];
-			if(!object[headers[j]]) {
+			if(object[headers[j]] === null) {
 				newObj = nullToString[i];
 				newObj[headers[j]] = '';
 				nullToString[i] = newObj;

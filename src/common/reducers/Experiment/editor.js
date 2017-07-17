@@ -25,8 +25,8 @@ export const DEFAULT_TIMELINE_PARAM = {
 	randomize_order: true,
 	repetitions: null,
 	sampling: {type: null, size: null},
-	conditional_function: null,
-	loop_function: null,
+	conditional_function: createFuncObj('function () { return undefined; }'),
+	loop_function: createFuncObj('function () { return undefined; }'),
 };
 
 export const DEFAULT_TRIAL_PARAM = {
