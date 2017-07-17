@@ -157,7 +157,7 @@ export function changeCell(state, action) {
 
 export function addColumnHelper(array) {
 	for(let i=1; i<array.length; i++) {
-		array[i][array[0].length-1] = undefined;
+		array[i][array[0].length-1] = null;
 	}
 	return array;
 }
@@ -181,7 +181,7 @@ export function addColumn(state, action) {
 export function addRowHelper(array) {
 	array.push([]);
 	for(let i=0; i<array[0].length; i++) {
-		array[array.length-1][i] = undefined;
+		array[array.length-1][i] = null;
 	}
 	return array;
 }
