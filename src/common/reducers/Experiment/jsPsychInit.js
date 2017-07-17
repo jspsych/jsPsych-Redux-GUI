@@ -36,7 +36,7 @@ export const createFuncObj = (code=null, info=null) => ({
   info: info
 })
 
-export const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
+const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 
 export const jsPsych_Display_Element = "jsPsych-Window";
 

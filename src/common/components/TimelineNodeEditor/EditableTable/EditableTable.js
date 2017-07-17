@@ -228,7 +228,7 @@ class EditableTable extends React.Component {
 										data-row={0} 
 										data-column={index} 
 										id={index} 
-										value={title}
+										value={convertNullToEmptyString(title)}
 										key={"header-input-"+index}
 										onChange={(event) => this.props.handleHeaderChange(event.target.id, event.target.value)}
 										onKeyDown={(event) => this.bindKeyboard(event)}
