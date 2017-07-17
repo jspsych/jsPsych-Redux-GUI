@@ -13,6 +13,10 @@ const setFunc = (dispatch, key, code) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
 }
 
+const setTimelineVariable = (dispatch, key, tv) => {
+	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(tv), ParameterMode.USE_TV));
+}
+
 const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {
 	dispatch(trialFormActions.setPluginParamModeAction(key, mode));
 }
@@ -92,6 +96,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setFunc: (key, code) => { setFunc(dispatch, key, code); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum) => { setKey(dispatch, key, keyListStr, useEnum); },
+	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialFormItem);

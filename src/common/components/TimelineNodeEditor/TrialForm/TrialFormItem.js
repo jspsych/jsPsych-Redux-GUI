@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
+import { ListItem } from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
 import {
@@ -124,7 +125,13 @@ export default class TrialFormItem extends React.Component {
 		<TimelineVariableSelector 
 			openCallback={this.showTVSelector}
 			closeCallback={this.hideTVSelector}
+			useTV={this.props.parameters[param].mode === ParameterMode.USE_TV}
 			title={this.props.paramInfo.pretty_name+": "}
+			selectedTV={this.props.parameters[param].timelineVariable}
+			submitCallback={(newTV) => {
+				this.props.setTimelineVariable(param, newTV);
+			}}
+			setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 		/> :
 		null
 	)
@@ -134,16 +141,16 @@ export default class TrialFormItem extends React.Component {
 			case ParameterMode.USE_FUNC:
 				return <MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />;
 			case ParameterMode.USE_TV:
-				return <MenuItem 
-							primaryText="[Timeline Variable]" 
-							secondaryText={this.props.parameters[param].timelineVariable}
+				return <MenuItem
+							primaryText="[Timeline Variable]"
 							style={{paddingTop: 2}} 
 							disabled={true} />;
 			default:
 				return node;
 		}
 	}
-
+	// primaryText={`[${(this.props.parameters[param].timelineVariable ? this.props.parameters[param].timelineVariable : "Timeline Variable")}]`}
+	
 	renderTextField = (param, onChange=()=>{}, type="text") => {
 		return (
 		  <div style={{display: 'flex', width: "100%"}} >
@@ -213,7 +220,7 @@ export default class TrialFormItem extends React.Component {
 			{this.renderLabel()}
 		    <div 
 		    	className="Trial-Form-Content-Container" 
-		    	onMouseEnter={this.showTool} 
+		    	onMouseEnter={(isAllKey) ? ()=>{} : this.showTool} 
 		    	onMouseLeave={this.hideTool}
 		    >
 		    {this.renderFieldContent(param,

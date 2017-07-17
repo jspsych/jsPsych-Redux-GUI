@@ -68,8 +68,10 @@ export function setPluginParam(state, action) {
 	switch(mode) {
 		case ParameterMode.USE_FUNC:
 			node.parameters[key].func = createFuncObj(value);
+			break;
 		case ParameterMode.USE_TV:
-			node.parameters[key].timelineVariable = value;
+			node.parameters[key].timelineVariable = (value === node.parameters[key].timelineVariable) ? null : value;
+			break;
 		default:
 			node.parameters[key].value = value;
 	}
@@ -157,7 +159,7 @@ export function changeCell(state, action) {
 
 export function addColumnHelper(array) {
 	for(let i=1; i<array.length; i++) {
-		array[i][array[0].length-1] = undefined;
+		array[i][array[0].length-1] = null;
 	}
 	return array;
 }
@@ -181,15 +183,14 @@ export function addColumn(state, action) {
 export function addRowHelper(array) {
 	array.push([]);
 	for(let i=0; i<array[0].length; i++) {
-		array[array.length-1][i] = undefined;
+		array[array.length-1][i] = null;
 	}
 	return array;
 }
 
 export function addRow(state, action) {
 	let node = state[state.previewId];
-	console.log("in add row");
-	console.log(node);
+
 	let new_state = Object.assign({}, state);
 
 	node = deepCopy(node);
