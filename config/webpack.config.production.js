@@ -6,7 +6,6 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: [
     path.resolve(__dirname, '../src/client/index.js'),
-    path.resolve(__dirname, '../public/jsPsych/jspsych.js'),
   ],
   output: {
     path: path.resolve(__dirname, '../dist'),

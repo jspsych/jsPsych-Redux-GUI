@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { isTimeline } from '../../../reducers/Experiment/utils';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
 import * as trialFormActions from '../../../actions/trialFormActions';
 import { convertEmptyStringToNull } from '../../../utils';
