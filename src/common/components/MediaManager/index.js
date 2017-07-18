@@ -2,12 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
-import AutoComplete from 'material-ui/AutoComplete';
-import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
-import MenuItem from 'material-ui/MenuItem';
 import LinearProgress from 'material-ui/LinearProgress';
 const mime = require('mime-types');
 import { List, ListItem } from 'material-ui/List';
@@ -33,8 +30,7 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
-import CodeEditorTrigger from '../CodeEditorTrigger';
-import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
+
 
 var __DEBUG__ = false;
 
@@ -80,37 +76,8 @@ export default class MediaManager extends React.Component {
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
-			showTool: false,
-			openFunctionEditor: false,
-			openTimelineVariable: false,
-			fileListStr: "",
-			fileStr: "",
-			useFileListStr: false,
 		};
 
-		this.setFileListStr = (str) => {
-			this.setState({
-				fileListStr: str
-			});
-		}
-
-		this.setFileStr = (str) => {
-			this.setState({
-				fileStr: str
-			});
-		}
-
-		this.turnOnFileListStr = () => {
-			this.setState({
-				useFileListStr: true
-			});
-		}
-
-		this.turnOffFileListStr = () => {
-			this.setState({
-				useFileListStr: false
-			});
-		}
 
 		this.handleEnter = () => {
 			this.setState({
@@ -207,146 +174,17 @@ export default class MediaManager extends React.Component {
 		}
 	}
 
-	showTool = () => {
-		this.setState({
-			showTool: true
-		});
-	}
-
-	hideTool = () => {
-		this.setState({
-			showTool: false
-		});
-	}
-
-	showFuncEditor = () => {
-		this.setState({
-			openFuncEditor: true
-		});
-	}
-
-	hideFuncEditor = () => {
-		this.setState({
-			openFuncEditor: false
-		});
-	}
-
-	showTVSelector = () => {
-		this.setState({
-			openTimelineVariable: true
-		});
-	}
-
-	hideTVSelector = () => {
-		this.setState({
-			openTimelineVariable: false
-		});
-	}
-
 	renderTrigger = () => {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
 			case MediaManagerMode.multiSelect:
-				let alternativeNode = (<IconButton 
-								onTouchTap={this.handleOpen}
-								tooltip="Insert Medias"
-								onMouseEnter={this.hideFunc} onMouseLeave={this.showTool}
-							>
-								<Add hoverColor={hoverColor} color={iconColor}/>
-							</IconButton>);
 				return (
-					<div style={{display:'flex', width: "100%"}}>
-						<p 
-							style={{paddingTop: 15, paddingRight: 10,}} 
-							className="Trial-Form-Label-Container" 
-							title={this.props.paramInfo.description}
-						>
-							{this.props.paramInfo.pretty_name+":"}
-						</p>
-						<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideFunc}>
-							{(this.props.useFunc || this.props.useTV) ?
-							<MenuItem 
-								 primaryText={(this.props.useTV) ? "[Timeline Variable]" : "[Function]"}
-								 style={{paddingTop: 2}} 
-								 disabled={true} />:
-							(this.props.mode === MediaManagerMode.multiSelect) ?
-							<TextField 
-								id={"Selected-File-Input-"+this.props.parameterName}
-								multiLine={true}
-								rowsMax={3}
-								rows={1}
-								fullWidth={true}
-								value={(this.state.fileListStr !== this.props.selectedFilesString &&
-										this.state.fileListStr)? this.state.fileListStr : this.props.selectedFilesString}
-								onChange={(e, v) => { 
-									this.setFileListStr(v); 
-								}}
-								onFocus={() => {
-									this.setFileListStr(this.props.selectedFilesString);
-								}}
-								onBlur={() => { 
-									this.props.fileArrayInput(this.state.fileListStr, 
-										this.props.s3files.Prefix, 
-										this.props.filenames);
-								}}
-								onKeyPress={(e) => {
-									if (e.which === 13) {
-										this.props.fileArrayInput(this.state.fileListStr, 
-											this.props.s3files.Prefix, 
-											this.props.filenames);
-									}
-								}}
-							/> :
-							<AutoComplete
-								id={"Selected-File-Input-"+this.props.parameterName}
-								fullWidth={true}
-								searchText={(this.state.fileStr && this.state.fileStr !== this.props.selectedFilesString) ?
-											 this.state.fileStr : this.props.selectedFilesString}
-								title={this.props.selectedFilesString}
-								dataSource={this.props.filenames}
-								filter={(searchText, key) => (searchText === "" || key.startsWith(searchText) && key !== searchText)}
-								listStyle={{maxHeight: 200, overflowY: 'auto'}}
-								onUpdateInput={(t) => { 
-									this.setFileStr(t); 
-									if (t !== this.props.selectedFilesString && this.props.filenames.indexOf(t) > -1) {
-										this.props.autoFileInput(t, this.props.s3files.Prefix, this.props.filenames);
-									}
-								}}
-								onNewRequest={(s, i) => {
-									if (i !== -1 && s !== this.props.selectedFilesString) {
-										this.props.autoFileInput(s, this.props.s3files.Prefix, this.props.filenames);
-									} else if (this.state.fileStr !== this.props.selectedFilesString) {
-										this.props.autoFileInput(this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
-									}
-								}}
-							/>
-							}
-							{(this.state.showTool || this.state.openFunctionEditor || this.props.useFunc) ?
-							<CodeEditorTrigger 
-								setParamMode={this.props.setParamModeToFunc}
-								openCallback={this.showToolEditor}
-								closeCallback={this.hideFuncEditor}
-								useFunc={this.props.useFunc}
-								showEditMode={true}
-								initCode={this.props.initCode} 
-			                    submitCallback={this.props.submitFuncCallback}
-			                    title={this.props.PropertyTitle}
-					        /> :
-					        alternativeNode
-					    	}
-					    	{(this.state.showTool || this.state.openTimelineVariable || this.props.useTV) ?
-							<TimelineVariableSelector 
-								openCallback={this.showTVSelector}
-								closeCallback={this.hideTVSelector}
-								useTV={this.props.useTV}
-								title={this.props.PropertyTitle}
-								selectedTV={this.props.selectedTV}
-								submitCallback={this.props.submitTVCallback}
-								setParamMode={this.props.setParamModeToTV}
-							/> :
-							null}
-						</div>
-					</div>
+					<IconButton 
+						onTouchTap={this.handleOpen}
+						tooltip="Insert Medias"
+					>
+						<Add hoverColor={hoverColor} color={iconColor}/>
+					</IconButton>
 				);
 			case MediaManagerMode.upload:
 			default:

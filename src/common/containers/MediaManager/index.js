@@ -10,12 +10,31 @@ import {
 	listBucketContents as $listBucketContents
 } from '../../backend/s3';
 import { convertEmptyStringToNull } from '../../utils';
-import { MediaObject, isS3MediaType } from '../../backend/deploy';
+import { MediaObject } from '../../backend/deploy';
 import { pushExperimentData } from '../../backend/dynamoDB';
-import { isTimeline } from '../../reducers/Experiment/utils';
 
 const Upload_Limit_MB = 100; 
 const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
+
+const updateFileList = (dispatch, feedback = null) => {
+	dispatch((dispatch, getState) => {
+		if (!getState().experimentState.experimentId) return;
+		$listBucketContents(getState().experimentState.experimentId).then((data) => {
+			dispatch(trialFormActions.updateMediaAction(data));
+
+			pushExperimentData(getState().experimentState).then(() => {
+				if (feedback) {
+					notify.notifySuccessBySnackbar(dispatch, feedback);
+				}
+			}, (err) => {
+				notify.notifyErrorByDialog(dispatch, err.message);
+			})
+
+		}, (err) => {
+			notify.notifyErrorByDialog(dispatch, err.message);
+		});
+	})
+}
 
 const uploadFiles = (dispatch, files, setState, progressHook) => {
 	for (let f of files) {
@@ -47,26 +66,6 @@ const deleteFiles = (dispatch, filePaths) => {
 	});
 }
 
-const updateFileList = (dispatch, feedback = null) => {
-	dispatch((dispatch, getState) => {
-		if (!getState().experimentState.experimentId) return;
-		$listBucketContents(getState().experimentState.experimentId).then((data) => {
-			dispatch(trialFormActions.updateMediaAction(data));
-
-			pushExperimentData(getState().experimentState).then(() => {
-				if (feedback) {
-					notify.notifySuccessBySnackbar(dispatch, feedback);
-				}
-			}, (err) => {
-				notify.notifyErrorByDialog(dispatch, err.message);
-			})
-
-		}, (err) => {
-			notify.notifyErrorByDialog(dispatch, err.message);
-		});
-	})
-}
-
 const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 	if (filePaths.length === 0) {
 		return;
@@ -84,53 +83,6 @@ const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
 	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, filePaths));
 	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
 	handleClose();
-}
-
-const autoFileInput = (dispatch, ownProps, filename, prefix, filenames) => {
-	if (!filename.trim()) return;
-	if (filenames.indexOf(filename) === -1) {
-		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
-		return;
-	}
-	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(filename, prefix)));
-}
-
-const fileArrayInput = (dispatch, ownProps, filelistStr, prefix, filenames) => {
-	filelistStr = filelistStr.trim();
-	if (!filelistStr) return;
-	let i = 0;
-	let fileList = [];
-	let ignoreSpace = false;
-	let part = "", c = "";
-	while (i < filelistStr.length) {
-		c = filelistStr[i++];
-		switch(c) {
-			case ',':
-				ignoreSpace = true;
-				if (part.length > 0) {
-					if (filenames.indexOf(part) === -1) {
-						notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
-						return;
-					}
-					fileList.push(part);
-					part = "";
-				}
-				break;
-			case ' ':
-				if (!ignoreSpace) part += c;
-				break;
-			default:
-				part += c;
-		}
-	}
-	if (part.length > 0) {
-		if (filenames.indexOf(part) === -1) {
-			notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
-			return;
-		}
-		fileList.push(part);
-	}
-	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, MediaObject(fileList, prefix)));
 }
 
 const checkBeforeOpen = (dispatch, handleOpen) => {
@@ -156,25 +108,6 @@ Note that FOR NOW AWS S3 Media Type Object MUST be in the first level
 of trial.paramters
 */
 const mapStateToProps = (state, ownProps) => {
-	let node = state.experimentState[state.experimentState.previewId];
-
-	let selectedFilesString = "", item;
-	if (node && !isTimeline(node)) {
-		for (let key of Object.keys(node.parameters)) {
-			item = (node.parameters[key]) ? node.parameters[key].value : null;
-			if (isS3MediaType(item)) {
-				if (Array.isArray(item.filename)) {
-					let i = 0;
-					for (let name of item.filename) {
-						selectedFilesString += name + ((i++ < item.filename.length-1) ? ", " : "");
-					}
-				} else {
-					selectedFilesString = item.filename;
-				}
-				
-			}
-		}
-	}
 	let filenames = [];
 	let media = state.experimentState.media;
 	if (media.Contents) {
@@ -182,7 +115,6 @@ const mapStateToProps = (state, ownProps) => {
 	} 
 	
  	return {
- 		selectedFilesString: selectedFilesString,
  		s3files: media,
  		filenames: filenames,
  	};
@@ -194,8 +126,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	deleteFiles: (filePaths) => { deleteFiles(dispatch, filePaths); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	insertFile: (filePaths, prefix, handleClose) => { insertFile(dispatch, ownProps, filePaths, prefix, handleClose); },
-	autoFileInput: (filename, prefix, filenames) => { autoFileInput(dispatch, ownProps, filename, prefix, filenames); },
-	fileArrayInput: (filelistStr, prefix, filenames) => { fileArrayInput(dispatch, ownProps, filelistStr, prefix, filenames); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);

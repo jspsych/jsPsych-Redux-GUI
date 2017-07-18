@@ -1,10 +1,13 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
-import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
-import { ListItem } from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
+import AutoComplete from 'material-ui/AutoComplete';
 import SelectField from 'material-ui/SelectField';
+import NumberInput from 'material-ui-number-input';
+// import Divider from 'material-ui/Divider';
+// import { ListItem } from 'material-ui/List';
+
 import {
   green500 as checkColor,
   cyan500 as boxCheckColor,
@@ -49,11 +52,25 @@ export default class TrialFormItem extends React.Component {
 		// timeline variable selector dialog
 		openTimelineVariable: false,
 		keyListStr: "",
+		fileListStr: "",
+		fileStr: "",
 	}
 
 	componentDidMount() {
 		this.setState({
 			keyListStr: this.props.parameters[this.props.param].value
+		});
+	}
+
+	setFileListStr = (str) => {
+		this.setState({
+			fileListStr: str
+		});
+	}
+
+	setFileStr = (str) => {
+		this.setState({
+			fileStr: str
 		});
 	}
 
@@ -110,7 +127,10 @@ export default class TrialFormItem extends React.Component {
 	)
 
 	appendFunctionEditor = (param, alternate=null) => (
-		(this.state.showTool || this.state.openFuncEditor || this.props.parameters[param].mode === ParameterMode.USE_FUNC) ?
+		((this.state.showTool || 
+			this.state.openFuncEditor || 
+			this.props.parameters[param].mode === ParameterMode.USE_FUNC) &&
+			this.props.parameters[param].mode !== ParameterMode.USE_TV) ?
 			    <CodeEditorTrigger 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
@@ -127,7 +147,10 @@ export default class TrialFormItem extends React.Component {
 	)
 
 	appendTimelineVariable = (param, alternate=null) => (
-		(this.state.showTool || this.state.openTimelineVariable || this.props.parameters[param].mode === ParameterMode.USE_TV) ?
+		((this.state.showTool || 
+			this.state.openTimelineVariable || 
+			this.props.parameters[param].mode === ParameterMode.USE_TV) &&
+			this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ?
 		<TimelineVariableSelector 
 			openCallback={this.showTVSelector}
 			closeCallback={this.hideTVSelector}
@@ -157,18 +180,18 @@ export default class TrialFormItem extends React.Component {
 	}
 	// primaryText={`[${(this.props.parameters[param].timelineVariable ? this.props.parameters[param].timelineVariable : "Timeline Variable")}]`}
 	
-	renderTextField = (param, onChange=()=>{}, type="text") => {
+	renderTextField = (param) => {
 		return (
 		  <div style={{display: 'flex', width: "100%"}} >
 			{this.renderLabel()}
 		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
 		    {this.renderFieldContent(param,
 			    <TextField
-			      id={"text-field-"+type+"-"+param}
+			      id={"text-field-"+param}
 			      value={convertNullToEmptyString(this.props.parameters[param].value)}
-			      type={type}
+			      min={-1}
 			      fullWidth={true}
-			      onChange={onChange}
+			      onChange={(e, v) => { this.props.setText(param, v); }}
 			    />)
 			}
 			{this.appendFunctionEditor(param)}
@@ -176,6 +199,28 @@ export default class TrialFormItem extends React.Component {
 		    </div>
 		  </div>
 	  )}
+
+	renderNumberField = (param) => {
+		return (
+			<div style={{display: 'flex', width: "100%"}} >
+				{this.renderLabel()}
+			    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+				    {this.renderFieldContent(param,
+					    <NumberInput
+					      id={"number-field-"+param}
+					      value={convertNullToEmptyString(this.props.parameters[param].value)}
+					      fullWidth={true}
+					      onChange={(e, v) => {
+								this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
+							}}
+					    />)
+					}
+					{this.appendFunctionEditor(param)}
+					{this.appendTimelineVariable(param)}
+			    </div>
+		  </div>
+		)
+	}
 
 	renderToggle = (param) => (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
@@ -221,7 +266,6 @@ export default class TrialFormItem extends React.Component {
 			}
 			value = s;
 		}
-		let useFunc = this.props.parameters[param].mode === ParameterMode.USE_FUNC;
 		let isAllKey = value === jsPsych.ALL_KEYS;
 		let isArray = !!this.props.paramInfo.array;
 
@@ -251,7 +295,7 @@ export default class TrialFormItem extends React.Component {
 			    (isAllKey) ?
 			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
 			    <TextField
-			      id={"text-field-"+"-"+param}
+			      id={"text-field-"+param}
 			      value={(this.state.keyListStr !== value) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.setKeyListStr(v); }}
@@ -298,44 +342,98 @@ export default class TrialFormItem extends React.Component {
 		)
 	}
 
+	renderMediaSelector = (param, multiSelect) => {
+		return (
+			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+				{this.renderLabel()}
+	      		<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+	      			{this.renderFieldContent(param, 
+	      				(multiSelect) ?
+	      				<TextField 
+								id={"Selected-File-Input-"+param}
+								multiLine={true}
+								rowsMax={3}
+								rows={1}
+								fullWidth={true}
+								value={(this.state.fileListStr !== this.props.selectedFilesString &&
+										this.state.fileListStr)? this.state.fileListStr : this.props.selectedFilesString}
+								onChange={(e, v) => { 
+									this.setFileListStr(v); 
+								}}
+								onFocus={() => {
+									this.setFileListStr(this.props.selectedFilesString);
+								}}
+								onBlur={() => { 
+									this.props.fileArrayInput(
+										param,
+										this.state.fileListStr, 
+										this.props.s3files.Prefix, 
+										this.props.filenames);
+								}}
+								onKeyPress={(e) => {
+									if (e.which === 13) {
+										this.props.fileArrayInput(
+											param,
+											this.state.fileListStr, 
+											this.props.s3files.Prefix, 
+											this.props.filenames);
+									}
+								}}
+							/> :
+							<AutoComplete
+								id={"Selected-File-Input-"+param}
+								fullWidth={true}
+								searchText={(this.state.fileStr && this.state.fileStr !== this.props.selectedFilesString) ?
+											 this.state.fileStr : this.props.selectedFilesString}
+								title={this.props.selectedFilesString}
+								dataSource={this.props.filenames}
+								filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
+								listStyle={{maxHeight: 200, overflowY: 'auto'}}
+								onUpdateInput={(t) => { 
+									this.setFileStr(t); 
+									if (t !== this.props.selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+										this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
+								onNewRequest={(s, i) => {
+									if (i !== -1 && s !== this.props.selectedFilesString) {
+										this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
+									} else if (this.state.fileStr !== this.props.selectedFilesString) {
+										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
+							/>
+
+	      			)}
+	      			{(this.props.parameters[param].mode !== ParameterMode.USE_TV &&
+	      				this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ? 
+	      				<MediaManager 
+	      					parameterName={param} 
+	      					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+	      				/> :
+	      				null
+	      			}
+	      			{this.appendFunctionEditor(param)}
+					{this.appendTimelineVariable(param)}
+	      		</div>
+	    	</div>
+	    	)
+	}
+
 	renderItem = () => {
-		let { paramInfo, param, parameters } = this.props;
+		let { paramInfo, param } = this.props;
 		let paramType = paramInfo.type;
 		switch(paramType) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
 					// check if is array
-					let multiSelect = !!paramInfo.array;
-					return (
-						<MediaManager 
-							parameterName={param} 
-							paramInfo={paramInfo}
-							key={"Trial-form-"+param} 
-							mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-
-							PropertyTitle={this.props.paramInfo.pretty_name+": "}
-							openCallback={this.showFuncEditor}
-							closeCallback={this.hideFuncEditor}
-
-							setParamModeToFunc={() => { this.props.setParamMode(param); }}
-							initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
-							useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
-		                    submitFuncCallback={(newCode) => { this.props.setFunc(param, newCode); }}
-
-		                    useTV={this.props.parameters[param].mode === ParameterMode.USE_TV}
-							selectedTV={this.props.parameters[param].timelineVariable}
-							submitTVCallback={(newTV) => { this.props.setTimelineVariable(param, newTV); }}
-							setParamModeToTV={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
-						/>
-					);
+					return this.renderMediaSelector(param, !!paramInfo.array);
 				case EnumPluginType.BOOL:
 					return this.renderToggle(param);
 				case EnumPluginType.INT:
 				case EnumPluginType.FLOAT:
-					return this.renderTextField(param, (e, v) => {
-						this.props.setNumber(param, v, EnumPluginType.FLOAT===paramType);
-					}, "number");
+					return this.renderNumberField(param);
 				case EnumPluginType.FUNCTION:
 					return this.renderFunctionEditor(param);
 				// same different
@@ -346,7 +444,7 @@ export default class TrialFormItem extends React.Component {
 				case EnumPluginType.HTML_STRING:
 				case EnumPluginType.STRING:
 				default:
-					return this.renderTextField(param, (e, v) => { this.props.setText(param, v); });
+					return this.renderTextField(param);
 		}
 	}
 

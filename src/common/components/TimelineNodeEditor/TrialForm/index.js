@@ -1,20 +1,10 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
-import Divider from 'material-ui/Divider';
-import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
-import {
-  green500 as checkColor,
-  blue500 as titleIconColor
-} from 'material-ui/styles/colors';
-import InitSettingIcon from 'material-ui/svg-icons/action/build';
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
+
 import TrialFormItem from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
 
 const jsPsych = window.jsPsych;
-const EnumPluginType = jsPsych.plugins.parameterType;
 const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType'));
 
 

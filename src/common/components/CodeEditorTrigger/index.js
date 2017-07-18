@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import MenuItem from 'material-ui/MenuItem';
 import Subheader from 'material-ui/Subheader';
 
 import CodeMirror from 'react-codemirror';
@@ -69,7 +68,7 @@ export default class CodeEditor extends React.Component {
   }
 
   render() {
-  	const { buttonIcon, title, submitCallback, openCallback, closeCallback } = this.props;
+  	const { buttonIcon, title, submitCallback, closeCallback } = this.props;
   	const actions = [
       <FlatButton
         label="Finish"

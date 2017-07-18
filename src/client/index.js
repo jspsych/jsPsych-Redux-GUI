@@ -9,9 +9,8 @@ import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { signIn } from '../common/containers/Login';
-import { initState as experimentInitState } from '../common/reducers/Experiment';
 import { getUserInfoFromCognito, fetchCredential } from '../common/backend/cognito';
-import { fetchExperimentById } from '../common/backend/dynamoDB';
+
 var deepEqual = require('deep-equal');
 
 

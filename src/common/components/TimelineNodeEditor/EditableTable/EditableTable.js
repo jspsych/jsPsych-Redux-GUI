@@ -1,12 +1,10 @@
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import Popover from 'material-ui/Popover';
 import Toggle from 'material-ui/Toggle';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import TableContextMenu from './TableContextMenu';
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import { Card, CardHeader } from 'material-ui/Card';
 import { convertNullToEmptyString } from '../../../utils';
 
 import { labelStyle } from '../TrialForm/TrialFormItem';

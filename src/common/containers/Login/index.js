@@ -21,7 +21,6 @@ import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
 import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;
-import * as notificationActions from '../../actions/notificationActions' ;
 import * as Errors from '../../constants/Errors' ;
 import Login from '../../components/Login';
 import { notifyErrorByDialog, notifySuccessBySnackbar } from '../Notification';

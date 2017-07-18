@@ -2,7 +2,6 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import CircularProgress from 'material-ui/CircularProgress';
-import LinearProgress from 'material-ui/LinearProgress';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
@@ -15,7 +14,6 @@ import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
 import DIYDeploy from 'material-ui/svg-icons/action/work';
-import FileIcon from 'material-ui/svg-icons/editor/insert-drive-file';
 import {
   cyan500 as hoverColor,
   grey100 as dialogBodyColor
@@ -73,7 +71,7 @@ export default class Appbar extends React.Component {
     this.setState({
       loaded: loaded,
       total: total,
-      percent: (percent > 100) ? 100 : parseInt(percent)
+      percent: (percent > 100) ? 100 : parseInt(percent, 10)
     });
   }
 
