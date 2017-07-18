@@ -70,7 +70,7 @@ const mapStateToProps = (state, ownProps) => {
 		}
 	}
 
-	return{
+	return{	
 		timeline_variables: nullToString,
 		randomize_order: timeline.parameters.randomize_order,
 		samplingType: timeline.parameters.sample.type,

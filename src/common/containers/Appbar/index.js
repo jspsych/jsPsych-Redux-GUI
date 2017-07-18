@@ -2,7 +2,6 @@ import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import * as backendActions from '../../actions/backendActions';
-import * as notificationActions from '../../actions/notificationActions' ;
 import * as userActions from '../../actions/userActions' ;
 import * as trialFormActions from '../../actions/trialFormActions';
 import Appbar from '../../components/Appbar';

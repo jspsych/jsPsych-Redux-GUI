@@ -1,8 +1,7 @@
 import { connect } from 'react-redux';
 // import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import PreviewWindow from '../../components/PreviewWindow';
-
-import { generateCode, Undefined } from '../../backend/deploy';
+import { generateCode } from '../../backend/deploy';
 
 let code = "";
 

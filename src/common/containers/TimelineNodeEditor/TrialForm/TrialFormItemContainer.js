@@ -1,9 +1,11 @@
 import { connect } from 'react-redux';
-import { isTrial } from '../../../reducers/Experiment/utils';
+import { isTimeline } from '../../../reducers/Experiment/utils';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
 import * as trialFormActions from '../../../actions/trialFormActions';
 import { convertEmptyStringToNull } from '../../../utils';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
+import { MediaObject, isS3MediaType } from '../../../backend/deploy';
+import * as notify from '../../Notification';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
 	dispatch(trialFormActions.onPluginTypeChange(newPluginVal));
@@ -66,25 +68,88 @@ const setToggle = (dispatch, key) => {
 }
 
 const setNumber = (dispatch, key, value, isFloat) => {
-	if (isNaN(value)) {
+	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+}
+
+const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
+	if (!filename.trim()) return;
+	if (filenames.indexOf(filename) === -1) {
+		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
 		return;
 	}
-	if (isFloat) {
-		value = parseFloat(value);
-	} else {
-		value = parseInt(value);
+	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(filename, prefix)));
+}
+
+const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
+	filelistStr = filelistStr.trim();
+	if (!filelistStr) return;
+	let i = 0;
+	let fileList = [];
+	let ignoreSpace = false;
+	let part = "", c = "";
+	while (i < filelistStr.length) {
+		c = filelistStr[i++];
+		switch(c) {
+			case ',':
+				ignoreSpace = true;
+				if (part.length > 0) {
+					if (filenames.indexOf(part) === -1) {
+						notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
+						return;
+					}
+					fileList.push(part);
+					part = "";
+				}
+				break;
+			case ' ':
+				if (!ignoreSpace) part += c;
+				break;
+			default:
+				part += c;
+		}
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	if (part.length > 0) {
+		if (filenames.indexOf(part) === -1) {
+			notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
+			return;
+		}
+		fileList.push(part);
+	}
+	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(fileList, prefix)));
 }
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
-	if (!experimentState.previewId) return {
+	let node = experimentState[experimentState.previewId];
 
-	};
-	let trial = experimentState[experimentState.previewId];
+	let selectedFilesString = "", item;
+	if (node && !isTimeline(node)) {
+		for (let key of Object.keys(node.parameters)) {
+			item = (node.parameters[key]) ? node.parameters[key].value : null;
+			if (isS3MediaType(item)) {
+				if (Array.isArray(item.filename)) {
+					let i = 0;
+					for (let name of item.filename) {
+						selectedFilesString += name + ((i++ < item.filename.length-1) ? ", " : "");
+					}
+				} else {
+					selectedFilesString = item.filename;
+				}
+				
+			}
+		}
+	}
+	let filenames = [];
+	let media = state.experimentState.media;
+	if (media.Contents) {
+		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
+	}
+
 	return {
-		parameters: trial.parameters,
+		parameters: node.parameters,
+		selectedFilesString: selectedFilesString,
+		s3files: media,
+ 		filenames: filenames,
 	};
 }
 
@@ -96,7 +161,9 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setFunc: (key, code) => { setFunc(dispatch, key, code); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
-	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); }
+	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },
+	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
+	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialFormItem);

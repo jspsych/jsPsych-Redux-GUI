@@ -1,7 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
-import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
 import MenuItem from 'material-ui/MenuItem';

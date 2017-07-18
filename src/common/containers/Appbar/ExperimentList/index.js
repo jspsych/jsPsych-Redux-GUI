@@ -19,9 +19,27 @@ import {
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
-	notifyWarningBySnackbar
+	// notifyWarningBySnackbar
 } from '../../Notification';
 import { getUUID } from '../../../utils';
+
+const $pullExperiment = (dispatch, getState, selected) => {
+	// fetch experiment
+	return fetchExperimentById(selected).then((data) => {
+		if (!data) {
+			throw Errors.internetError;
+		}
+		// set lastModifiedExperiment id
+		dispatch(backendActions.pullExperimentAction(data));
+	}).then(() => {
+		// update user state on dynamoDB
+		pushUserData(getState().userState).then(() => {}, (err) => {
+			notifyErrorByDialog(dispatch, err.message);
+		});
+	}).catch((err) => {
+		notifyErrorByDialog(dispatch, err.message);
+	});
+}
 
 /*
 Fetch experiment data
@@ -70,24 +88,6 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 			},
 			"No (Continue without saving)"
 		);
-	});
-}
-
-const $pullExperiment = (dispatch, getState, selected) => {
-	// fetch experiment
-	return fetchExperimentById(selected).then((data) => {
-		if (!data) {
-			throw Errors.internetError;
-		}
-		// set lastModifiedExperiment id
-		dispatch(backendActions.pullExperimentAction(data));
-	}).then(() => {
-		// update user state on dynamoDB
-		pushUserData(getState().userState).then(() => {}, (err) => {
-			notifyErrorByDialog(dispatch, err.message);
-		});
-	}).catch((err) => {
-		notifyErrorByDialog(dispatch, err.message);
 	});
 }
 

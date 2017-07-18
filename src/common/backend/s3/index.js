@@ -17,7 +17,7 @@ function uploadFile(param, progressHook) {
   return connectS3().putObject({
     ...param
   }).on('httpUploadProgress', function(evt) {
-    progressHook(parseInt((evt.loaded * 100) / evt.total));
+    progressHook(parseInt((evt.loaded * 100) / evt.total, 10));
   }).promise();
 }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
-import IconButton from 'material-ui/IconButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 import SignInWindow from '../../containers/Login/SignInWindowContainer';

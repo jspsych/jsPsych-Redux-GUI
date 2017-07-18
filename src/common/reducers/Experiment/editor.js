@@ -262,7 +262,7 @@ export function changeSampling(state, action) {
 
 	node = deepCopy(node);
 
-	node.parameters.sampling['type'] = action.newVal;
+	node.parameters.sample['type'] = action.newVal;
 
 	new_state[state.previewId] = node;
 	return new_state;
@@ -274,7 +274,7 @@ export function changeSize(state, action) {
 
 	node = deepCopy(node);
 
-	node.parameters.sampling['size'] = action.newVal;
+	node.parameters.sample['size'] = action.newVal;
 
 	new_state[state.previewId] = node;
 	return new_state;
