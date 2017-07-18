@@ -32,6 +32,20 @@ export const labelStyle = {
 	color: 'black'
 }
 
+const processMediaPathTag = (s) => {
+	if (!s) return "";
+	if (Array.isArray(s)) {
+		let res = [];
+		for (let i = 0; i < s.length; i++) {
+			res.push(s[i].replace(/<\/?path>/g, ''));
+			if (i < s.length - 1) res.push(",");
+		}
+		return res.join('');
+	} else {
+		return s.replace(/<\/?path>/g, '');
+	}
+}
+
 /*
 props explanations:
 
@@ -57,11 +71,24 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	componentDidMount() {
-		this.setState({
-			keyListStr: this.props.parameters[this.props.param].value,
-			fileStr: this.props.selectedFilesString,
-			fileListStr: this.props.selectedFilesString,
-		});
+		switch (this.props.paramInfo.type) {
+			case EnumPluginType.KEYCODE:
+				this.setState({
+					keyListStr: this.props.parameters[this.props.param].value
+				});
+				break;
+			case EnumPluginType.AUDIO:
+			case EnumPluginType.IMAGE:
+			case EnumPluginType.VIDEO:
+				let selectedFilesString = processMediaPathTag(this.props.parameters[this.props.param].value);
+				this.setState({
+					fileStr: selectedFilesString,
+					fileListStr: selectedFilesString,
+				})
+				break;
+			default:
+				break;
+		}
 	}
 
 	setFileListStr = (str) => {
@@ -170,7 +197,7 @@ export default class TrialFormItem extends React.Component {
 	renderFieldContent = (param, node) => {
 		switch(this.props.parameters[param].mode) {
 			case ParameterMode.USE_FUNC:
-				return <MenuItem primaryText="[Function]" style={{paddingTop: 2}} disabled={true} />;
+				return <MenuItem primaryText="[Custom Code]" style={{paddingTop: 2}} disabled={true} />;
 			case ParameterMode.USE_TV:
 				return <MenuItem
 							primaryText="[Timeline Variable]"
@@ -210,7 +237,7 @@ export default class TrialFormItem extends React.Component {
 				    {this.renderFieldContent(param,
 					    <NumberInput
 					      id={"number-field-"+param}
-					      value={convertNullToEmptyString(this.props.parameters[param].value)}
+					      value={convertNullToEmptyString(this.props.parameters[param].value).toString()}
 					      fullWidth={true}
 					      onChange={(e, v) => {
 								this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
@@ -300,7 +327,7 @@ export default class TrialFormItem extends React.Component {
 			      id={"text-field-"+param}
 			      value={(this.state.keyListStr !== value) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
-			      onChange={(e, v) => { this.setKeyListStr(v); }}
+			      onChange={(e, v) => { this.setKeyListStr(v.toUpperCase()); }}
 			      maxLength={(isArray) ?  null : "1"}
 			      onFocus={() => {
 			      	this.setKeyListStr(convertNullToEmptyString(value));
@@ -345,6 +372,8 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderMediaSelector = (param, multiSelect) => {
+		let selectedFilesString = processMediaPathTag(this.props.parameters[this.props.param].value);
+
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 				{this.renderLabel()}
@@ -357,13 +386,12 @@ export default class TrialFormItem extends React.Component {
 								rowsMax={3}
 								rows={1}
 								fullWidth={true}
-								value={(this.state.fileListStr !== this.props.selectedFilesString &&
-										this.state.fileListStr)? this.state.fileListStr : this.props.selectedFilesString}
+								value={(this.state.fileListStr !== selectedFilesString)? this.state.fileListStr : selectedFilesString}
 								onChange={(e, v) => { 
 									this.setFileListStr(v); 
 								}}
 								onFocus={() => {
-									this.setFileListStr(this.props.selectedFilesString);
+									this.setFileListStr(selectedFilesString);
 								}}
 								onBlur={() => { 
 									this.props.fileArrayInput(
@@ -371,7 +399,7 @@ export default class TrialFormItem extends React.Component {
 										this.state.fileListStr, 
 										this.props.s3files.Prefix, 
 										this.props.filenames);
-									this.setFileListStr(this.props.selectedFilesString);
+									this.setFileListStr(selectedFilesString);
 								}}
 								onKeyPress={(e) => {
 									if (e.which === 13) {
@@ -380,32 +408,32 @@ export default class TrialFormItem extends React.Component {
 											this.state.fileListStr, 
 											this.props.s3files.Prefix, 
 											this.props.filenames);
-										this.setFileListStr(this.props.selectedFilesString);
+										this.setFileListStr(selectedFilesString);
 									}
 								}}
 							/> :
 							<AutoComplete
 								id={"Selected-File-Input-"+param}
 								fullWidth={true}
-								searchText={(this.state.fileStr && this.state.fileStr !== this.props.selectedFilesString) ?
-											 this.state.fileStr : this.props.selectedFilesString}
-								title={this.props.selectedFilesString}
+								searchText={(this.state.fileStr !== selectedFilesString) ?
+											 this.state.fileStr : selectedFilesString}
+								title={selectedFilesString}
 								dataSource={this.props.filenames}
 								filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
 								listStyle={{maxHeight: 200, overflowY: 'auto'}}
 								onUpdateInput={(t) => { 
 									this.setFileStr(t); 
-									if (t !== this.props.selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+									if (t !== selectedFilesString && this.props.filenames.indexOf(t) > -1) {
 										this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
 									}
 								}}
 								onNewRequest={(s, i) => {
-									if (i !== -1 && s !== this.props.selectedFilesString) {
+									if (i !== -1 && s !== selectedFilesString) {
 										this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
-									} else if (this.state.fileStr !== this.props.selectedFilesString) {
+									} else if (this.state.fileStr !== selectedFilesString) {
 										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
 									}
-									this.setFileStr(this.props.selectedFilesString);
+									this.setFileStr(selectedFilesString);
 								}}
 							/>
 

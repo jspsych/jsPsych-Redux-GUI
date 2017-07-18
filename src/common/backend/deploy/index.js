@@ -4,7 +4,7 @@ var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
 import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
-import { isTimeline } from '../../reducers/Experiment/utils';
+import { isTimeline, isTrial } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
 import { deepCopy } from '../../utils';
 
@@ -40,21 +40,8 @@ const undefinedObj = {
   ]
 }
 
-/*
-Specially defined for Media Manager to distinguish between media file and
-normal values
-*/
-export const MediaObject = (filename, prefix) => ({
-  // distinguish it self
-  type: AWS_S3_MEDIA_TYPE,
-  // can be array or string
-  filename: filename, 
-  // s3 prefix
-  prefix: prefix,
-})
 
-// check if an object is MediaObject
-export const isS3MediaType = (item) => (typeof item === 'object' && item && item.type === AWS_S3_MEDIA_TYPE);
+export const MediaPathTag = (filename) => (`<path>${filename}</path>`);
 
 // Code for generating welcome
 export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
@@ -93,7 +80,7 @@ export function diyDeploy(state, progressHook) {
     code: generateCode(experimentState, true, true),
   }
   // Extract used plugins and media
-  extractDeployInfomation(experimentState, experimentState.mainTimeline, deployInfo);
+  extractDeployInfomation(experimentState, deployInfo, experimentState.media.Prefix);
 
   /* ************ Step 2 ************ */
   let filePaths = Object.keys(deployInfo.media);
@@ -134,7 +121,7 @@ export function diyDeploy(state, progressHook) {
 }
 
 /*
-Extract used media, that is, populate deployInfo.plugin and deployInfo.media  O(n)
+Walk through experimentState to extract used media, that is, populate deployInfo.plugin and deployInfo.media  O(n)
 It populates deployInfo.media so that it is ready for using s3 getObject API.
 
 media = {
@@ -142,77 +129,43 @@ media = {
 }
 
 Param:
-state, experimentState
-childrenById, array of ids
+obj, starts with experimentState
 deployInfo, defined above in diyDeploy
+prefix, experimentState.media.Prefix
 */
-function extractDeployInfomation(state, childrenById, deployInfo) {
-  let node;
-  for (let id of childrenById) {
-    node = state[id];
-    let parameters = node.parameters;
-    // if it is timeline
-    if (isTimeline(node)) {
-      // check timeline variables
-      let timelineVariables = parameters.timeline_variables;
-      for (let v of timelineVariables) {
-        for (let key of Object.keys(v)) {
-          let tv = v[key];
-          // check for <path>filename</path>
-          let matches = (tv) ? tv.match(/<path>(.*?)<\/path>/g) : null;
-          // if there is match for <path>filename</path>
-          if (matches) {
-            // populate deployInfo.media
-            for (let m of matches) {
-              m = m.replace(/<\/?path>/g, '');
-              // state.media.Prefix + m is the s3 address
-              deployInfo.media[state.media.Prefix + m] = m;
-            }
+
+function extractDeployInfomation(obj, deployInfo, prefix) {
+  if (!obj) return;
+  switch (typeof obj) {
+    case 'object':
+      if (Array.isArray(obj)) {
+        for (let o of obj) extractDeployInfomation(o, deployInfo, prefix);
+      } else {
+        for (let key of Object.keys(obj)) {
+          // if it is a trial, find its plugin type
+          if (obj[key] && isTrial(obj[key])) {
+            // record used plugin
+            deployInfo.plugins[obj[key].parameters.type] = true;
           }
+          // recusive call
+          extractDeployInfomation(obj[key], deployInfo, prefix);
         }
       }
-      // need to check its children
-      extractDeployInfomation(state, node.childrenById, deployInfo);
-
-      // if it is trial
-    } else {
-      // record that this plugin is used
-      deployInfo.plugins[parameters.type] = true;
-
-      // search for used media
-      let item;
-      for (let key of Object.keys(parameters)) {
-        // since all trial item must be a composite object defined in reducers/editor.js
-        item = parameters[key].value;
-        // if its value is a MediaObject, extract filenames directly
-        if (isS3MediaType(item)) {
-          // if they are array
-          if (Array.isArray(item.filename)) {
-            for (let name of item.filename) {
-              deployInfo.media[item.prefix + name] = name;
-            }
-            // if it is string
-          } else {
-            deployInfo.media[item.prefix + item.filename] = item.filename;
-          }
-          // if its value is normal string, check for <path>filename</path>
-        } else {
-          let matches = (item && typeof item === 'string') ? item.match(/<path>(.*?)<\/path>/g) : null;
-          // if there is match for <path>filename</path>
-          if (matches) {
-            // populate deployInfo.media
-            for (let m of matches) {
-              m = m.replace(/<\/?path>/g, '');
-              // state.media.Prefix + m is the s3 address
-              deployInfo.media[state.media.Prefix + m] = m;
-            }
-          }
+      break;
+    case 'string':
+      let matches = obj.match(/<path>(.*?)<\/path>/g);
+      if (matches) {
+        // populate deployInfo.media
+        for (let m of matches) {
+          m = m.replace(/<\/?path>/g, '');
+          // state.media.Prefix + m is the s3 address
+          deployInfo.media[prefix + m] = m;
         }
       }
-    }
+      break;
+    default:
+      break;
   }
-
-  return deployInfo;
 }
 
 
@@ -274,58 +227,24 @@ export function generateCode(state, all=false, deploy=false) {
 }
 
 
-
 /*
-Resolve path for media that are inserted by selecting files in Media Manager,
-that is, convert MediaObject to either
-1. proper filepath + filename
-2. array of proper filepath + filenames
-
-In deploy mode, it will add DEPLOY_PATH to each file
-In preview mode, it will get signed url of file in S3
-
-Param:
-mediaObject = {
-  type: AWS_S3_MEDIA_TYPE,
-  filename: filename, // maybe array
-  prefix: prefix,
-}
-deploy, if is in deploy mode
-*/
-function resolveMediaObjectPath(mediaObject, deploy) {
-  // fetch prefix
-  let prefix = mediaObject.prefix;
-  // set the process function
-  let processFunc = getSignedUrl;
-
-  // if it is in deploy mode
-  if (deploy) {
-    prefix = DEPLOY_PATH;
-    processFunc = p => (p);
-  } 
-
-  if (typeof mediaObject.filename === 'string') {
-    return processFunc(prefix + mediaObject.filename);
-  } else if (Array.isArray(mediaObject.filename)) {
-    return mediaObject.filename.map((f) => (processFunc(prefix + f)));
-  }
-}
-
-/*
-Resolve path for media that are inserted by typing "<path>filename</path>" but not  
-using Media Manager
+Resolve path for media that are inserted by typing "<path>filename</path>"
 
 Param
 str, path string
 filePath, the path of file
 */
-function resolvePathString(str, filePath) {
+function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
+  let deploy = prefix === DEPLOY_PATH;
+  let processFunc = getSignedUrl;
+  if (deploy) {
+    processFunc = p => p;
+  }
   if (matches) {
     for (let m of matches) {
       str = str.replace(m, 
-        // call resolveMediaObjectPath in case we want to get signed url
-        resolveMediaObjectPath(MediaObject(m.replace(/<\/?path>/g, ''), filePath), filePath === DEPLOY_PATH)
+        processFunc(prefix + m.replace(/<\/?path>/g, ''))
       );
     }
   }
@@ -334,9 +253,6 @@ function resolvePathString(str, filePath) {
 
 
 /*
-Note that FOR NOW AWS S3 Media Type Object MUST be in the first level
-of trial.paramters
-
 Generate jspsych trial block.
 For each parameter in trial.parameters, it should be a composite object which
 is defined in reducers/editor
@@ -353,12 +269,7 @@ function generateTrialBlock(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = deepCopy(parameters[key]);
-    // Process item.value in case it is a MediaObject (set by using Media Manager)
-    if (isS3MediaType(item.value)) {
-      item.value = resolveMediaObjectPath(item.value, deploy);
-    }
-    res[key] = item;
+    res[key] = parameters[key];
   }
   return res;
 }
@@ -507,7 +418,7 @@ export function stringify(obj, filePath) {
       return res.join("");
     default:
       // resolve path for all normal values
-      return resolvePathString(JSON.stringify(obj), filePath);
+      return resolveMediaPath(JSON.stringify(obj), filePath);
   }
 }
 
@@ -531,5 +442,5 @@ function stringifyFunc(code, info = null, filePath) {
   //   console.log("Fail to parse inserted code !");
   // }
 
-  return resolvePathString(func, filePath);
+  return resolveMediaPath(func, filePath);
 }

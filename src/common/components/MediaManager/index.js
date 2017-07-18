@@ -269,7 +269,7 @@ export default class MediaManager extends React.Component {
 						leftIcon={fileIconFromTitle(key)}
 						/>
 					<div key={"uploading-progress-container"+key} 
-						 style={{width: "100%", marign: 'auto', paddingTop: '22'}}
+						 style={{width: "100%", marign: 'auto', paddingTop: 22}}
 					>
 					<LinearProgress 
 						mode="determinate" 

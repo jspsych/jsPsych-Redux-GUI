@@ -4,7 +4,7 @@ import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/Tria
 import * as trialFormActions from '../../../actions/trialFormActions';
 import { convertEmptyStringToNull } from '../../../utils';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
-import { MediaObject, isS3MediaType } from '../../../backend/deploy';
+import { MediaPathTag } from '../../../backend/deploy';
 import * as notify from '../../Notification';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
@@ -83,9 +83,9 @@ const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) 
 			notify.notifyWarningByDialog(dispatch, "You can insert only one file here !");
 			return;
 		}
-		filePaths = MediaObject(convertEmptyStringToNull(filePaths[0].replace(prefix, '')), prefix);
+		filePaths = MediaPathTag(filePaths[0].replace(prefix, ''));
 	} else {
-		filePaths = MediaObject(filePaths.map((f) => (f.replace(prefix, ''))), prefix);
+		filePaths = filePaths.map((f) => (MediaPathTag(f.replace(prefix, ''))));
 	}
 
 	dispatch(trialFormActions.setPluginParamAction(key, filePaths));
@@ -99,7 +99,7 @@ const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
 		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
 		return;
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(filename, prefix)));
+	dispatch(trialFormActions.setPluginParamAction(key, MediaPathTag(filename)));
 }
 
 const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
@@ -137,30 +137,13 @@ const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
 		}
 		fileList.push(part);
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(fileList, prefix)));
+	dispatch(trialFormActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
 }
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let node = experimentState[experimentState.previewId];
 
-	let selectedFilesString = "", item;
-	if (node && !isTimeline(node)) {
-		for (let key of Object.keys(node.parameters)) {
-			item = (node.parameters[key]) ? node.parameters[key].value : null;
-			if (isS3MediaType(item)) {
-				if (Array.isArray(item.filename)) {
-					let i = 0;
-					for (let name of item.filename) {
-						selectedFilesString += name + ((i++ < item.filename.length-1) ? ", " : "");
-					}
-				} else {
-					selectedFilesString = item.filename;
-				}
-				
-			}
-		}
-	}
 	let filenames = [];
 	let media = state.experimentState.media;
 	if (media.Contents) {
@@ -169,7 +152,6 @@ const mapStateToProps = (state, ownProps) => {
 
 	return {
 		parameters: node.parameters,
-		selectedFilesString: selectedFilesString,
 		s3files: media,
  		filenames: filenames,
 	};

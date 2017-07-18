@@ -107,7 +107,7 @@ export default class CodeEditor extends React.Component {
             {(this.props.showEditMode) ?
               <div style={{display: 'flex'}}>
               <p style={{paddingTop: 15, color: (this.props.useFunc) ? 'blue' : 'black'}}>
-                Use Function:
+                Use Custom Code:
               </p>
               <IconButton
                 onTouchTap={this.props.setParamMode}
