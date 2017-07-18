@@ -6,6 +6,7 @@ import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../re
 import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
+import { deepCopy } from '../../utils';
 
 const Deploy_Folder = 'assets';
 const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
@@ -352,7 +353,7 @@ function generateTrialBlock(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters, item;
   for (let key of Object.keys(parameters)) {
-    item = parameters[key];
+    item = deepCopy(parameters[key]);
     // Process item.value in case it is a MediaObject (set by using Media Manager)
     if (isS3MediaType(item.value)) {
       item.value = resolveMediaObjectPath(item.value, deploy);

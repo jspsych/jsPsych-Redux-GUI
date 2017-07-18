@@ -71,6 +71,28 @@ const setNumber = (dispatch, key, value, isFloat) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
+const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) => {
+	let filePaths = s3files.Contents.filter((item, i) => (selected[i])).map((item) => (item.Key));
+	let prefix = s3files.Prefix;
+
+	if (filePaths.length === 0) {
+		return;
+	}
+	if (!multiSelect) {
+		if (filePaths.length > 1) {
+			notify.notifyWarningByDialog(dispatch, "You can insert only one file here !");
+			return;
+		}
+		filePaths = MediaObject(convertEmptyStringToNull(filePaths[0].replace(prefix, '')), prefix);
+	} else {
+		filePaths = MediaObject(filePaths.map((f) => (f.replace(prefix, ''))), prefix);
+	}
+
+	dispatch(trialFormActions.setPluginParamAction(key, filePaths));
+	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
+	handleClose();
+}
+
 const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
 	if (!filename.trim()) return;
 	if (filenames.indexOf(filename) === -1) {
@@ -162,6 +184,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },
+	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
 	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
 	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
 })

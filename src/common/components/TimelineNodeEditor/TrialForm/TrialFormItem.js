@@ -58,7 +58,9 @@ export default class TrialFormItem extends React.Component {
 
 	componentDidMount() {
 		this.setState({
-			keyListStr: this.props.parameters[this.props.param].value
+			keyListStr: this.props.parameters[this.props.param].value,
+			fileStr: this.props.selectedFilesString,
+			fileListStr: this.props.selectedFilesString,
 		});
 	}
 
@@ -369,6 +371,7 @@ export default class TrialFormItem extends React.Component {
 										this.state.fileListStr, 
 										this.props.s3files.Prefix, 
 										this.props.filenames);
+									this.setFileListStr(this.props.selectedFilesString);
 								}}
 								onKeyPress={(e) => {
 									if (e.which === 13) {
@@ -377,6 +380,7 @@ export default class TrialFormItem extends React.Component {
 											this.state.fileListStr, 
 											this.props.s3files.Prefix, 
 											this.props.filenames);
+										this.setFileListStr(this.props.selectedFilesString);
 									}
 								}}
 							/> :
@@ -401,6 +405,7 @@ export default class TrialFormItem extends React.Component {
 									} else if (this.state.fileStr !== this.props.selectedFilesString) {
 										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
 									}
+									this.setFileStr(this.props.selectedFilesString);
 								}}
 							/>
 
@@ -410,6 +415,16 @@ export default class TrialFormItem extends React.Component {
 	      				<MediaManager 
 	      					parameterName={param} 
 	      					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+	      					insertCallback={(selected, handleClose) => {
+	      						this.props.insertFile(
+	      							param,
+									this.props.s3files,
+									multiSelect,
+									selected,
+									handleClose,
+								);
+
+	      					}}
 	      				/> :
 	      				null
 	      			}

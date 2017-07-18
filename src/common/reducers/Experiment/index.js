@@ -40,7 +40,7 @@ export const initState = {
 	// init properties
 	jsPsychInit: jsPsychInit.initState,
 
-	// media
+	// media, should be s3 object, get by API call: listObjectsV2
 	media: {},
 }
 

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import MediaManager, { MediaManagerMode } from '../../components/MediaManager';
+import MediaManager from '../../components/MediaManager';
 import * as userActions from '../../actions/userActions' ;
 import * as trialFormActions from '../../actions/trialFormActions';
 import { LoginModes } from '../../reducers/User';
@@ -9,8 +9,6 @@ import {
 	deleteFiles as $deleteFiles,
 	listBucketContents as $listBucketContents
 } from '../../backend/s3';
-import { convertEmptyStringToNull } from '../../utils';
-import { MediaObject } from '../../backend/deploy';
 import { pushExperimentData } from '../../backend/dynamoDB';
 
 const Upload_Limit_MB = 100; 
@@ -66,25 +64,6 @@ const deleteFiles = (dispatch, filePaths) => {
 	});
 }
 
-const insertFile = (dispatch, ownProps, filePaths, prefix, handleClose) => {
-	if (filePaths.length === 0) {
-		return;
-	}
-	if (ownProps.mode === MediaManagerMode.select) {
-		if (filePaths.length > 1) {
-			notify.notifyWarningByDialog(dispatch, "You can insert only one file here !");
-			return;
-		}
-		filePaths = MediaObject(convertEmptyStringToNull(filePaths[0].replace(prefix, '')), prefix);
-	} else {
-		filePaths = MediaObject(filePaths.map((f) => (f.replace(prefix, ''))), prefix);
-	}
-	
-	dispatch(trialFormActions.setPluginParamAction(ownProps.parameterName, filePaths));
-	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
-	handleClose();
-}
-
 const checkBeforeOpen = (dispatch, handleOpen) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
@@ -125,7 +104,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	updateFileList: () => { updateFileList(dispatch); },
 	deleteFiles: (filePaths) => { deleteFiles(dispatch, filePaths); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
-	insertFile: (filePaths, prefix, handleClose) => { insertFile(dispatch, ownProps, filePaths, prefix, handleClose); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);

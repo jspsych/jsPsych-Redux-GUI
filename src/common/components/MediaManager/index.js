@@ -159,11 +159,7 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.insertFile = () => {
-			this.props.insertFile(
-				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-				this.props.s3files.Prefix,
-				this.handleClose
-			);
+			this.props.insertCallback(this.state.selected, this.handleClose);
 			this.resetSelect();
 		}
 
