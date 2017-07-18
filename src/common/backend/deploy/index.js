@@ -238,6 +238,7 @@ function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
   let deploy = prefix === DEPLOY_PATH;
   let processFunc = getSignedUrl;
+  // in diy deploy mode, we don't get file from S3
   if (deploy) {
     processFunc = p => p;
   }
