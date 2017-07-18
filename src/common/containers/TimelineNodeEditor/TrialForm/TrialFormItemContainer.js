@@ -4,7 +4,7 @@ import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/Tria
 import * as trialFormActions from '../../../actions/trialFormActions';
 import { convertEmptyStringToNull } from '../../../utils';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
-import { MediaObject, isS3MediaType } from '../../../backend/deploy';
+import { MediaPathTag } from '../../../backend/deploy';
 import * as notify from '../../Notification';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
@@ -71,13 +71,35 @@ const setNumber = (dispatch, key, value, isFloat) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
+const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) => {
+	let filePaths = s3files.Contents.filter((item, i) => (selected[i])).map((item) => (item.Key));
+	let prefix = s3files.Prefix;
+
+	if (filePaths.length === 0) {
+		return;
+	}
+	if (!multiSelect) {
+		if (filePaths.length > 1) {
+			notify.notifyWarningByDialog(dispatch, "You can insert only one file here !");
+			return;
+		}
+		filePaths = MediaPathTag(filePaths[0].replace(prefix, ''));
+	} else {
+		filePaths = filePaths.map((f) => (MediaPathTag(f.replace(prefix, ''))));
+	}
+
+	dispatch(trialFormActions.setPluginParamAction(key, filePaths));
+	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
+	handleClose();
+}
+
 const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
 	if (!filename.trim()) return;
 	if (filenames.indexOf(filename) === -1) {
 		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
 		return;
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(filename, prefix)));
+	dispatch(trialFormActions.setPluginParamAction(key, MediaPathTag(filename)));
 }
 
 const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
@@ -115,30 +137,13 @@ const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
 		}
 		fileList.push(part);
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, MediaObject(fileList, prefix)));
+	dispatch(trialFormActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
 }
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let node = experimentState[experimentState.previewId];
 
-	let selectedFilesString = "", item;
-	if (node && !isTimeline(node)) {
-		for (let key of Object.keys(node.parameters)) {
-			item = (node.parameters[key]) ? node.parameters[key].value : null;
-			if (isS3MediaType(item)) {
-				if (Array.isArray(item.filename)) {
-					let i = 0;
-					for (let name of item.filename) {
-						selectedFilesString += name + ((i++ < item.filename.length-1) ? ", " : "");
-					}
-				} else {
-					selectedFilesString = item.filename;
-				}
-				
-			}
-		}
-	}
 	let filenames = [];
 	let media = state.experimentState.media;
 	if (media.Contents) {
@@ -147,7 +152,6 @@ const mapStateToProps = (state, ownProps) => {
 
 	return {
 		parameters: node.parameters,
-		selectedFilesString: selectedFilesString,
 		s3files: media,
  		filenames: filenames,
 	};
@@ -162,6 +166,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },
+	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
 	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
 	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
 })

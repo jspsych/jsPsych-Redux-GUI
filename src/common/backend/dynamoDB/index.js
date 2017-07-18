@@ -8,6 +8,27 @@ Possibly related files:
 reducers/backend.js
 containers/Login/*
 containers/Appbar/index.js
+
+
+UserState on dynamoDB will look like
+{
+	userId: userState.user.identityId,
+	username: userState.user.username,
+	fetch: {
+		lastModifiedExperimentId: userState.lastModifiedExperimentId,
+		experiments: userState.experiments,
+	}
+}
+
+ExperimentState on dynamoDB will look like
+{
+	experimentId: experimentState.experimentId,
+	fetch: experimentState,
+	accessInfo: {
+		private: experimentState.private
+	},
+	ownership: experimentState.owner,
+}
 */
 
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
@@ -191,7 +212,9 @@ export function pushState(state) {
 	return pushUserData(userState).then(() => { pushExperimentData(experimentState); });
 }
 
-/**/
+/*
+Delete exerimentState
+*/
 export function deleteExperiment(experimentId) {
 	let param = {
 		TableName: Experiment_Table_Name,
