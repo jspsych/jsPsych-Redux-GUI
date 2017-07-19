@@ -484,6 +484,7 @@ export default class TrialFormItem extends React.Component {
 					return this.renderSelect(param);
 				case EnumPluginType.KEYCODE:
 					return this.renderKeyboardInput(param);
+				case EnumPluginType.OBJECT:
 				case EnumPluginType.HTML_STRING:
 				case EnumPluginType.STRING:
 				default:

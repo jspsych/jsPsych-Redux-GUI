@@ -1,0 +1,1 @@
+@compressjs.sh jspsych.js plugins/*.js jspsych.min.js

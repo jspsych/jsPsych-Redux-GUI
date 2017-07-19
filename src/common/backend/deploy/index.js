@@ -4,11 +4,15 @@ var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
 import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
-import { isTimeline, isTrial } from '../../reducers/Experiment/utils';
-import { getSignedUrl, getFiles } from '../s3';
+import { isTimeline } from '../../reducers/Experiment/utils';
+import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
 
 const Deploy_Folder = 'assets';
+
+const jsPysch_Folder = 'jsPsych';
+
 const DEPLOY_PATH = 'assets/';
+
 const welcomeObj = {
   ...jsPsychInitState,
   timeline: [{
@@ -47,6 +51,7 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 // Code for generating undefined page
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
+
 /*
 DIY deploy built experiment for user
 It will:
@@ -66,8 +71,6 @@ export function diyDeploy(state, progressHook) {
   // Extract deploy information
   let deployInfo = {
     experimentName: experimentState.experimentName,
-    // search for used plugins
-    plugins: {},
     // search for used media
     /*
     media = {
@@ -97,6 +100,7 @@ export function diyDeploy(state, progressHook) {
   zip.file("index.html", generatePage(deployInfo));
   // create assets folder
   var assets = zip.folder(Deploy_Folder);
+  var jsPsych = zip.folder(jsPysch_Folder);
 
   // download media
   return getFiles(filePaths, (key, data) => {
@@ -104,14 +108,19 @@ export function diyDeploy(state, progressHook) {
   }, (loaded) => {
     progressHook(loaded, total);
   }).then(() => {
-    // append media in zip
+    // download jspysch library
+    getJsPsychLib((key, data) => {
+      jsPsych.file(key, data);
+    }).then(() => {
+      // append downloaded in zip
     zip.generateAsync({
         type: "blob"
       })
       .then(function(blob) {
         FileSaver.saveAs(blob, deployInfo.experimentName + ".zip");
       });
-      // functions as Finally 
+    })
+    // functions as Finally 
   }).then(() => {
     // clear progress
     progressHook(null, null, true);
@@ -139,15 +148,7 @@ function extractDeployInfomation(obj, deployInfo, prefix) {
       if (Array.isArray(obj)) {
         for (let o of obj) extractDeployInfomation(o, deployInfo, prefix);
       } else {
-        for (let key of Object.keys(obj)) {
-          // if it is a trial, find its plugin type
-          if (obj[key] && isTrial(obj[key])) {
-            // record used plugin
-            deployInfo.plugins[obj[key].parameters.type] = true;
-          }
-          // recusive call
-          extractDeployInfomation(obj[key], deployInfo, prefix);
-        }
+        for (let key of Object.keys(obj)) extractDeployInfomation(obj[key], deployInfo, prefix);
       }
       break;
     case 'string':
@@ -315,15 +316,6 @@ Generate index.html
 deployInfo is defined in function deploy
 */
 function generatePage(deployInfo) {
-  // Get all plugin <script> tags' strings
-  let plugins = Object.keys(deployInfo.plugins).map((name) =>
-    (`<script type="text/javascript" src="jsPsych/plugins/jspsych-${name}.js"></script>`)
-  )
-  let pluginsStr = "";
-  for (let p of plugins) {
-    pluginsStr += p;
-  }
-
   return `
   <!doctype html>
   <html lang="en">
@@ -331,9 +323,8 @@ function generatePage(deployInfo) {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>${deployInfo.experimentName}</title>
-      <script type="text/javascript" src="jsPsych/jspsych.js"></script>
-      ${pluginsStr}
-      <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+      <link href="./jsPsych/jspsych.css" rel="stylesheet" type="text/css"></link>
+      <script type="text/javascript" src="./jsPsych/jspsych.min.js"></script>
     </head>
     <body id="${jsPsych_Display_Element}" class="${jsPsych_Display_Element}">
     </body>

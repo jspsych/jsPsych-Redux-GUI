@@ -10,8 +10,8 @@ export default function(preloadedState) {
 	    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
 	    <link rel="stylesheet" href="./style.css">
-	    <script type="text/javascript" src="./jspsych.min.js"></script>
-	    <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+	    <script type="text/javascript" src="./jsPsych/jspsych.min.js"></script>
+    	<link href="./jsPsych/jspsych.css" rel="stylesheet" type="text/css"></link>
 	    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 	    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	    <script type="text/javascript" src="./polyfill.js"></script>

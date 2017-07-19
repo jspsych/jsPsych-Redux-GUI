@@ -156,7 +156,7 @@ export default class PreviewWindow extends React.Component {
                 <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
                   <ToolbarGroup style={{margin: '0 auto'}}>
                       <IconButton 
-                        tooltip="Play"
+                        tooltip="Play all"
                         onTouchTap={()=>{ this.props.playAll(load); }}
                         >
                         <Play hoverColor={hoverColor} />

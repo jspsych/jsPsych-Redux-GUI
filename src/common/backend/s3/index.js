@@ -1,17 +1,18 @@
 import AWS from '../aws';
 
 const Bucket_Name = "jspsych-builder";
+const Website_Bucket = "builder.jspsych.org";
 const Api_Version = "2006-03-01";
 const Delimiter = "/";
 
 /*
 Connect to S3
 */
-function connectS3() {
+function connectS3(bucket=Bucket_Name) {
   return new AWS.S3({
     apiVersion: Api_Version,
     params: {
-      Bucket: Bucket_Name
+      Bucket: bucket
     },
   });
 }
@@ -151,4 +152,18 @@ Copy S3 files
 */
 export function copyFiles(params) {
   return Promise.all(params.map((param) => (copyFile(param))));
+}
+
+
+export function getJsPsychLib(callback) {
+  let prefix = 'jsPsych/'
+  let libFiles = ['jspsych.css', 'jspsych.min.js'];
+
+  return Promise.all(libFiles.map((name) => {
+    return connectS3(Website_Bucket).getObject({
+      Key: prefix + name
+    }).promise().then((data) => {
+      callback(name, data.Body);
+    });
+  }));
 }
