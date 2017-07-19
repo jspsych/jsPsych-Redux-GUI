@@ -6,10 +6,8 @@ import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../re
 import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline, isTrial } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles } from '../s3';
-import { deepCopy } from '../../utils';
 
 const Deploy_Folder = 'assets';
-const AWS_S3_MEDIA_TYPE = "AWS-S3-MEDIA";
 const DEPLOY_PATH = 'assets/';
 const welcomeObj = {
   ...jsPsychInitState,
@@ -238,6 +236,7 @@ function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
   let deploy = prefix === DEPLOY_PATH;
   let processFunc = getSignedUrl;
+  // in diy deploy mode, we don't get file from S3
   if (deploy) {
     processFunc = p => p;
   }
@@ -267,7 +266,7 @@ export const createComposite = (value=null, func=createFuncObj(), mode=null) => 
 */
 function generateTrialBlock(state, trial, all=false, deploy=false) {
   let res = {};
-  let parameters = trial.parameters, item;
+  let parameters = trial.parameters;
   for (let key of Object.keys(parameters)) {
     res[key] = parameters[key];
   }

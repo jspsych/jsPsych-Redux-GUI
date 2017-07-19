@@ -55,6 +55,7 @@ class TrialForm extends React.Component {
 							fullWidth={true}
 							value={this.props.pluginType}
 							title={this.props.pluginType}
+							dropDownMenuProps={{maxHeight: 300, overflowY: 'auto'}}
 							onChange={(event, key) => this.props.onChange(PluginList[key])} 
 						>
 							{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
