@@ -279,7 +279,7 @@ export default class TrialFormItem extends React.Component {
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
                     }}
-                    title={param+": "}
+                    title={this.props.paramInfo.pretty_name+": "}
         		/>
         		{this.appendTimelineVariable(param)}
 	        </div>
@@ -474,12 +474,12 @@ export default class TrialFormItem extends React.Component {
 				{this.renderFieldContent(param, 
 					<ObjectEditor
 						targetObj={this.props.parameters[param].value}
-						title={param}
+						title={this.props.paramInfo.pretty_name+": "}
 						keyName={param}
+						submitCallback={(obj) => { this.props.setObject(param, obj); }}
 					/>
 				)}
 				{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
 			</div>
 			</div>
 		)

@@ -6,17 +6,19 @@ import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 import { List, ListItem } from 'material-ui/List';
-import {
-	cyan500 as checkColor,
-	blue500 as titleIconColor,
-	yellow500 as checkStarColor
-} from 'material-ui/styles/colors';
+
 import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
-import DialogIcon from 'material-ui/svg-icons/action/shopping-basket';
+// import DialogIcon from 'material-ui/svg-icons/action/shopping-basket';
 import UncheckStar from 'material-ui/svg-icons/toggle/star-border';
 import CheckStar from 'material-ui/svg-icons/toggle/star';
 import CheckNoIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
+import {
+	cyan500 as checkColor,
+	// blue500 as titleIconColor,
+	yellow500 as checkStarColor
+} from 'material-ui/styles/colors';
+
 
 import { renderDialogTitle } from '../../gadgets';
 
@@ -73,15 +75,8 @@ export default class TimelineVariableSelector extends React.Component {
 					titleStyle={{padding: 0}}
 					title={
 						renderDialogTitle(
-							<Subheader style={{fontSize: 18, maxHeight: 48}}>
-							<div style={{display: 'flex'}}>
-								<div style={{paddingTop: 4, paddingRight: 10}}>
-									<DialogIcon color={titleIconColor}/>
-								</div>
-								<div style={{fontSize: 20,}}>
-			      					{this.props.title}
-			      				</div>
-		      				</div>
+							<Subheader style={{fontSize: 20, maxHeight: 48}}>
+							{this.props.title}
 							</Subheader>, 
 							this.handleClose, 
 							null)
@@ -125,3 +120,12 @@ export default class TimelineVariableSelector extends React.Component {
 		)
 	}
 }
+
+// <div style={{display: 'flex'}}>
+// 								<div style={{paddingTop: 4, paddingRight: 10}}>
+// 									<DialogIcon color={titleIconColor}/>
+// 								</div>
+// 								<div style={{fontSize: 20,}}>
+// 			      					{this.props.title}
+// 			      				</div>
+// 		      				</div>

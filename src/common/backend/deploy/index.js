@@ -87,9 +87,11 @@ export function diyDeploy(state, progressHook) {
   let filePaths = Object.keys(deployInfo.media);
   let total = 0;
   // Get total size of files that need to be downloaded
-  for (let f of experimentState.media.Contents) {
-    if (filePaths.indexOf(f.Key) > -1) {
-      total += f.Size;
+  if (experimentState.media.Contents) {
+    for (let f of experimentState.media.Contents) {
+      if (filePaths.indexOf(f.Key) > -1) {
+        total += f.Size;
+      }
     }
   }
   // initialize progress

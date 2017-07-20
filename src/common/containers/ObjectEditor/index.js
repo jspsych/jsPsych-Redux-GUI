@@ -1,13 +1,7 @@
 import { connect } from 'react-redux';
 import ObjectEditor from '../../components/ObjectEditor';
+import { notifySuccessBySnackbar, notifyErrorBySnackbar } from '../Notification';
 
-const setObjectKey = (dispatch, oldKey, newKey, targetObj) => {
-
-}
-
-const setObjectValue = (dispatch) => {
-	
-}
 
 
 const mapStateToProps = (state, ownProps) => {
@@ -16,8 +10,8 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	setObjectKey: (oldKey, newKey, targetObj) => { setObjectKey(dispatch, oldKey, newKey, targetObj); },
-	setObjectValue: (key, newValue) => { }
+	notifySuccess: (m) => { notifySuccessBySnackbar(dispatch, m); },
+	notifyError: (m) => { notifyErrorBySnackbar(dispatch, m); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ObjectEditor);

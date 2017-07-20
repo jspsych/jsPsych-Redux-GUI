@@ -26,6 +26,10 @@ const setText = (dispatch, key, value) => {
 	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
+const setObject = (dispatch, key, obj) => {
+	dispatch(trialFormActions.setPluginParamAction(key, obj));
+}
+
 const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
 	if (useEnum || !isArray) {
 		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? keyListStr : null));
@@ -168,6 +172,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
 	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
 	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
+	setObject: (key, obj) => { setObject(dispatch, key, obj); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialFormItem);

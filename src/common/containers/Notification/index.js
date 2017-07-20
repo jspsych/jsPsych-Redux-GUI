@@ -24,6 +24,13 @@ export const notifyWarningBySnackbar = (dispatch, message) => {
 		message));
 }
 
+export const notifyErrorBySnackbar = (dispatch, message) => {
+	dispatch(notificationActions.notifyAction(
+		Notify_Method.snackbar,
+		Notify_Type.error,
+		message));
+}
+
 export const notifyWarningByDialog = (dispatch, message) => {
 	dispatch(notificationActions.notifyAction(
 				Notify_Method.dialog,

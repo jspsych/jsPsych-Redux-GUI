@@ -11,19 +11,39 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
-import Clear from 'material-ui/svg-icons/content/clear';
+import Clear from 'material-ui/svg-icons/content/delete-sweep';
+import CopyIcon from 'material-ui/svg-icons/content/content-copy';
+import PasteIcon from 'material-ui/svg-icons/content/content-paste';
 import {
   cyan500 as hoverColor,
-  grey50 as listBackgroundColor,
-  red500 as clearColor,
+  grey100 as toolbarColor,
+  pink500 as clearColor,
 } from 'material-ui/styles/colors';
 
 import { deepCopy } from '../../utils';
 import { renderDialogTitle } from '../gadgets';
+import copy from 'copy-to-clipboard';
+
+const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
 const ObjectKeyErrorCode = {
 	Good: 0,
 	ContainsDuplicate: 1,
+}
+
+const jsPysch_Builder_Object_Storage = "jsPsych_builder_object_clipboard";
+
+const copyToLocalStorage = (objStr) => {
+	window.localStorage.setItem(jsPysch_Builder_Object_Storage, objStr);
+}
+
+const pasteFromLocalStorage = () => {
+	return window.localStorage[jsPysch_Builder_Object_Storage];
+}
+
+const convertToNull = (s) => {
+	if (s === "" || s === undefined) return null;
+	return s;
 }
 
 const ObjectKeyErrorMessage = (code) => {
@@ -50,14 +70,23 @@ const convertReserved = (s) => {
 			return undefined;
 		default:
 			if (intRegex.test(s)) {
-				console.log(s);
 				return parseInt(s);
 			} else if (floatRegex.test(s)) {
-				console.log(s);
 				return parseFloat(s);
 			} else {
 				return s;
 			}
+	}
+}
+
+const ObjectValueTextColor = (value) => {
+	switch(typeof value) {
+		case 'string':
+			return 'green';
+		case 'number':
+			return 'black';
+		default:
+			return 'blue';
 	}
 }
 
@@ -99,6 +128,7 @@ class ObjectKey extends React.Component {
 								} 
 							}}
 							onChange={(e, v) => { this.props.setObjectKey(v); }}
+							style={{minWidth: 200, maxWidth: 200}}
 							/>:
 				<MenuItem onTouchTap={this.enterEditMode} primaryText={`"${oldKey}"`}/>
 			)
@@ -129,13 +159,23 @@ class ObjectValue extends React.Component {
 		});
 	}
 
+	processNot = (s) => {
+		if (s === null) return "null";
+		if (s === undefined) return "undefined";
+		return s;
+	}
+
 	render() {
 		let { keyName, value, index } = this.props;
+		let textFieldValue = this.processNot(value);
+		let displayValue = (typeof value === 'string') ?
+		 `"${value}"` : 
+		 (value !== null && value !== undefined) ? JSON.stringify(value) : textFieldValue;
 
 		return (
 			(this.state.edit) ? 
 				<TextField  id={`${keyName}-${value}-${index}`}
-							value={value}
+							value={textFieldValue}
 							onBlur={this.exitEditMode}
 							onKeyPress={(e) => {
 								if (e.which === 13) {
@@ -143,8 +183,14 @@ class ObjectValue extends React.Component {
 								} 
 							}}
 							onChange={(e, v) => { this.props.setObjectValue(v); }}
+							inputStyle={{color: ObjectValueTextColor(value)}}
+							style={{minWidth: 200, maxWidth: 200}}
 							/>:
-				<MenuItem onTouchTap={this.enterEditMode} primaryText={value} style={{minWidth: 200}}/>
+				<MenuItem 
+					onTouchTap={this.enterEditMode} 
+					primaryText={displayValue} 
+					style={{minWidth: 200, maxWidth: 200, color: ObjectValueTextColor(value), textAlign: 'center'}}
+				/>
 			)
 	}
 }
@@ -154,6 +200,7 @@ export default class ObjectEditor extends React.Component {
 		targetObj: {},
 		title: "",
 		keyName: "",
+		submitCallback: (p) => {}
 	}
 
 	state = {
@@ -164,9 +211,9 @@ export default class ObjectEditor extends React.Component {
 		valid: true,
 	}
 
-	componentDidMount() {
-		let objectKeys = Object.keys(this.props.targetObj);
-		let objectValues = objectKeys.map((key) => (this.props.targetObj[key]));
+	unzip(targetObj) {
+		let objectKeys = Object.keys(targetObj);
+		let objectValues = objectKeys.map((key) => (targetObj[key]));
 		this.setState({
 			objectKeys: objectKeys,
 			objectValues: objectValues,
@@ -175,6 +222,7 @@ export default class ObjectEditor extends React.Component {
 	}
 
 	handleOpen = () => {
+		this.unzip(this.props.targetObj);
 		this.setState({
 			open: true
 		});
@@ -182,7 +230,7 @@ export default class ObjectEditor extends React.Component {
 
 	handleClose = () => {
 		this.setState({
-			open: false
+			open: false,
 		});
 	}
 
@@ -231,7 +279,7 @@ export default class ObjectEditor extends React.Component {
 
 	setObjectValue = (value, i) => {
 		let newObjectValues = this.state.objectValues.slice();
-		newObjectValues[i] = value;
+		newObjectValues[i] = convertReserved(value);
 		this.setState({
 			objectValues: newObjectValues
 		})
@@ -281,6 +329,55 @@ export default class ObjectEditor extends React.Component {
 		});
 	}
 
+	/*
+	Will convert "" and undefined to null if we save it in redux store
+	(so that dynamoDB will not ignore it)
+	*/
+	generateObj = (convert2Null=false) => {
+		let { objectKeys, objectValues } = this.state;
+		let resObj = {};
+		for (let i = 0; i < objectKeys.length; i++) {
+			resObj[objectKeys[i]] = (convert2Null) ? convertToNull(objectValues[i]) : objectValues[i];
+		}
+		return resObj;
+	}
+
+	copyObj = () => {
+		if (this.state.valid) {
+			let objStr = JSON.stringify(this.generateObj());
+			copyToLocalStorage(objStr);
+			copy(objStr);
+			this.props.notifySuccess("Object copied !");
+		} else {
+			this.props.notifyError("Object is not valid !");
+		}
+			
+	}
+
+	paste = () => {
+		let content = pasteFromLocalStorage();
+		if (!content) {
+			this.props.notifyError("Content is empty !");
+		} else {
+			try {
+				this.unzip(JSON.parse(content));
+			} catch(e) {
+				this.props.notifyError(e.message);
+			}
+		}
+	}
+
+	onSubmit = () => {
+		let { objectKeys, objectValues, valid } = this.state;
+		if (!valid) {
+			this.props.notifyError("Object is not valid !");
+			return;
+		}
+		this.props.submitCallback(this.generateObj(true));
+		this.handleClose();
+	}
+
+
 	renderRow = (key, value, i) => {
 		return (
 			<div style={{display: 'flex', paddingTop: (i === 0) ? 0 : 5}} key={`object-container-${i}`}>
@@ -317,30 +414,71 @@ export default class ObjectEditor extends React.Component {
 
 	render() {
 		let { title, keyName } = this.props;
-		let { handleOpen, handleClose, renderRow, addKeyPair } = this;
+		let {
+			handleOpen,
+			handleClose,
+			renderRow,
+			addKeyPair,
+			onSubmit,
+			copyObj,
+			paste,
+		} = this;
 		let { objectValues, objectKeys, open } = this.state;
+		let actions = [
+			<FlatButton
+				secondary={true}
+				label="Cancel"
+				labelStyle={{textTransform: "none",}}
+				onTouchTap={handleClose}
+			/>,
+			<FlatButton 
+				primary={true}
+				label="Finish"
+				labelStyle={{textTransform: "none",}}
+				onTouchTap={onSubmit}
+			/>
+		]
 
 		return (
 			<div>
-				<MenuItem onTouchTap={this.handleOpen} primaryText="[Object]"/>
+				<MenuItem onTouchTap={this.handleOpen} primaryText="[Data Object]" style={{color: fixedTextColor}}/>
 				<Dialog
 					open={open}
 					titleStyle={{padding: 0}}
 					title={renderDialogTitle(
-						<Subheader style={{fontSize: 18}}>Object Editor</Subheader>,
+						<Subheader style={{fontSize: 20}}>{title}</Subheader>,
 						this.handleClose,
 						null
 						)}
+					autoScrollBodyContent={true}
 					modal={true}
-
+					actions={actions}
 				>
-				<p style={{padding: 0}}>{`${keyName} = {`}</p>
+				<div style={{display: 'flex', backgroundColor: toolbarColor}}>
+					<IconButton 
+						tooltip="Copy"
+						iconStyle={{width: 20, height: 20}}
+						style={{width: 35, height: 35, padding: 10}}
+						onTouchTap={copyObj}
+					>
+						<CopyIcon hoverColor={hoverColor} />
+					</IconButton>
+					<IconButton 
+						tooltip="Paste"
+						iconStyle={{width: 20, height: 20}}
+						style={{width: 35, height: 35, padding: 10}}
+						onTouchTap={paste}
+					>
+						<PasteIcon hoverColor={hoverColor} />
+					</IconButton>
+				</div>
+				<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = {`}</p>
 				<div>
-					<List style={{maxHeight: 300, minHeight: 200, overflow: 'auto', width: "80%", margin: 'auto'}}>
+					<List style={{maxHeight: 200, minHeight: 200, overflow: 'auto', width: "80%", margin: 'auto'}}>
 						{objectKeys.map((key, i) => (renderRow(key, objectValues[i], i)))}
 					</List>
 				</div>
-				<p>}</p>
+				<p style={{color: 'black'}}>}</p>
 				<div style={{paddingTop: 15}}>
 				<FloatingActionButton 
 					mini={true} 
