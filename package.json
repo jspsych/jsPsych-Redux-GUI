@@ -36,6 +36,7 @@
     "amazon-cognito-identity-js": "^1.19.0",
     "aws-sdk": "^2.77.0",
     "bluebird": "^3.5.0",
+    "copy-to-clipboard": "^3.0.6",
     "deep-equal": "^1.0.1",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",

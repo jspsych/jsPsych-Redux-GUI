@@ -1,4 +1,4 @@
-import { deepCopy, convertEmptyStringToNull } from '../../utils';
+import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import * as utils from './utils';
 import { createFuncObj } from './jsPsychInit';
 const DEFAULT_HEADER = 'H';
@@ -103,7 +103,7 @@ export function changePlugin(state, action) {
 	let new_state = Object.assign({}, state);
 
 
-	let params = window.jsPsych.plugins[action.newPluginVal].info.parameters;
+	let params = injectJsPsychUniversalPluginParameters(window.jsPsych.plugins[action.newPluginVal].info.parameters);
 	let paramKeys = Object.keys(params);
 
 	var paramsObject = {

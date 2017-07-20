@@ -9,7 +9,7 @@ module.exports = {
   ],
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: 'static/bundle.js',
+    filename: 'bundle.js',
     publicPath: '/static/'
   },
   plugins: [

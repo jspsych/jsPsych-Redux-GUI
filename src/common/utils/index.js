@@ -53,3 +53,8 @@ export function getUUID() {
 	let res = translator.new();
 	return res;
 }
+
+
+export function injectJsPsychUniversalPluginParameters(obj={}) {
+	return Object.assign(obj, window.jsPsych.plugins.universalPluginParameters);
+}

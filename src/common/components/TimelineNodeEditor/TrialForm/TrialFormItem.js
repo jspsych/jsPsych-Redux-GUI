@@ -8,20 +8,22 @@ import NumberInput from 'material-ui-number-input';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
-import {
-  green500 as checkColor,
-  cyan500 as boxCheckColor,
-} from 'material-ui/styles/colors';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
 import BocUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+import {
+  green500 as checkColor,
+  cyan500 as boxCheckColor,
+} from 'material-ui/styles/colors';
+
 import { convertNullToEmptyString } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditorTrigger from '../../CodeEditorTrigger';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
+import ObjectEditor from '../../../containers/ObjectEditor';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
@@ -277,7 +279,7 @@ export default class TrialFormItem extends React.Component {
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
                     }}
-                    title={param+": "}
+                    title={this.props.paramInfo.pretty_name+": "}
         		/>
         		{this.appendTimelineVariable(param)}
 	        </div>
@@ -366,6 +368,7 @@ export default class TrialFormItem extends React.Component {
 				    </SelectField>)
 				}
 				{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
 	        </div>
 	    </div>
 		)
@@ -463,6 +466,25 @@ export default class TrialFormItem extends React.Component {
 	    	)
 	}
 
+	renderObjectEditor = (param) => {
+		return (
+			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+			{this.renderLabel()}
+			<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+				{this.renderFieldContent(param, 
+					<ObjectEditor
+						targetObj={this.props.parameters[param].value}
+						title={this.props.paramInfo.pretty_name+": "}
+						keyName={param}
+						submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					/>
+				)}
+				{this.appendFunctionEditor(param)}
+			</div>
+			</div>
+		)
+	}
+
 	renderItem = () => {
 		let { paramInfo, param } = this.props;
 		let paramType = paramInfo.type;
@@ -484,6 +506,8 @@ export default class TrialFormItem extends React.Component {
 					return this.renderSelect(param);
 				case EnumPluginType.KEYCODE:
 					return this.renderKeyboardInput(param);
+				case EnumPluginType.OBJECT:
+					return this.renderObjectEditor(param);
 				case EnumPluginType.HTML_STRING:
 				case EnumPluginType.STRING:
 				default:

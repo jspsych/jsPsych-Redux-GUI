@@ -3,16 +3,17 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
 import TrialFormItem from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
+import { injectJsPsychUniversalPluginParameters } from '../../../utils';
 
 const jsPsych = window.jsPsych;
-const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType'));
+const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
 
 
 class TrialForm extends React.Component {
 	renderPluginParams = () => {
 		if (!this.props.pluginType) return null;
 		let pluginInfo = jsPsych.plugins[this.props.pluginType].info;
-		let parameters = pluginInfo.parameters;
+		let parameters = injectJsPsychUniversalPluginParameters(pluginInfo.parameters);
 		// params are the keys of plugin.info 
 		/* e.g.
 		param	--> 
@@ -55,7 +56,7 @@ class TrialForm extends React.Component {
 							fullWidth={true}
 							value={this.props.pluginType}
 							title={this.props.pluginType}
-							dropDownMenuProps={{maxHeight: 300, overflowY: 'auto'}}
+							dropDownMenuProps={{maxHeight: 300, overflow: 'auto'}}
 							onChange={(event, key) => this.props.onChange(PluginList[key])} 
 						>
 							{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
