@@ -157,7 +157,8 @@ export default class TrialFormItem extends React.Component {
 		</p>
 	)
 
-	appendFunctionEditor = (param, alternate=null) => (
+	appendFunctionEditor = (param, alternate=null) => {
+		return (
 		((this.state.showTool || 
 			this.state.openFuncEditor || 
 			this.props.parameters[param].mode === ParameterMode.USE_FUNC) &&
@@ -175,7 +176,7 @@ export default class TrialFormItem extends React.Component {
                     title={this.props.paramInfo.pretty_name+": "}
         		/>:
         		alternate
-	)
+	)}
 
 	appendTimelineVariable = (param, alternate=null) => (
 		((this.state.showTool || 

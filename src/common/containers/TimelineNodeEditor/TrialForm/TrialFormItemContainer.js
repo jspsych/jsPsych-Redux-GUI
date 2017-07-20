@@ -154,6 +154,7 @@ const mapStateToProps = (state, ownProps) => {
 	}
 
 	return {
+		id: node.id,
 		parameters: node.parameters,
 		s3files: media,
  		filenames: filenames,

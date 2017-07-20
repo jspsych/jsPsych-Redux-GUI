@@ -44,12 +44,14 @@ export default class CodeEditor extends React.Component {
 
   state = {
   	open: false,
-    code: this.props.initCode
-  };
+    code: ""
+  }
+
 
   handleOpen = () => {
   	this.setState({
   		open: true,
+      code: this.props.initCode
   	});
     this.props.openCallback();
   };
