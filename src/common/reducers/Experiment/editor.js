@@ -1,8 +1,10 @@
 import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
-import * as utils from './utils';
 import { createFuncObj } from './jsPsychInit';
-const DEFAULT_HEADER = 'H';
 
+
+/*
+Indicate which value (native value, function or timeline variable) should be used
+*/
 export const ParameterMode = {
 	USE_FUNC: 'USE_FUNC',
 	USE_TV: "USE_TIMELINE_VARIABLE"
@@ -11,17 +13,46 @@ export const ParameterMode = {
 /*
 Every editor item that is from jsPsych plugin parameter is a composite object defined below
 */
-export const createComposite = (value=null, func=createFuncObj(), mode=null) => ({
-	isComposite: true,
+export const createComplexDataObject = (value=null, func=createFuncObj(), mode=null) => ({
+	isComplexDataObject: true,
+
+	// native js value
 	value: value,
+
+	// function object 
+	// (used to denote that it is a function and func.code stores the stringified function)
 	func: func,
+
 	// ParameterMode
 	mode: mode, 
+
+	// timeline variable (name)
 	timelineVariable: null,
 })
 
+/*
+Default timeline node parameter
+
+According to jsPysch
+timeline_variables should have the following data structure:
+
+[
+	{		
+		// displayed as column header col=0     // displayed as (row=1, col=0)
+		"Timline Variable 1":                   "TV 1 value", 
+		// displayed as column header col=1     // displayed as (row=2, col=0)
+		"Timline Variable 2": "TV 2 value", 
+	},  // row 1
+	{
+		"Timline Variable 1 (displayed as column header col=0)": "TV 1 value (displayed as (row=2, col=0))", 
+		"Timline Variable 2 (displayed as column header col=1)": "TV 2 value (displayed as (row=2, col=1))", 
+	}, // row 2
+]
+
+
+*/
 export const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{H0: null}],
+	timeline_variables: [],
 	randomize_order: true,
 	repetitions: null,
 	sample: {type: null, size: null},
@@ -29,11 +60,17 @@ export const DEFAULT_TIMELINE_PARAM = {
 	loop_function: createFuncObj('function a(d) { return null; }'),
 };
 
+
+/*
+Default timeline node parameter
+*/
 export const DEFAULT_TRIAL_PARAM = {
 	type: null,
 };
 
 /*
+Set experiment name
+
 action = {
 	name: new experiment name
 }
@@ -52,6 +89,8 @@ export function setName(state, action) {
 }
 
 /*
+Set plugin parameter value, (A complexDataObject defined above)
+
 action = {
 	key: name of param,
 	value: new value,
@@ -61,15 +100,17 @@ action = {
 export function setPluginParam(state, action) {
 	let { key, value, mode } = action;
 
+	// update state
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
-	node.parameters[key] = Object.assign({}, node.parameters[key]);
+
 	switch(mode) {
 		case ParameterMode.USE_FUNC:
 			node.parameters[key].func = createFuncObj(value);
 			break;
 		case ParameterMode.USE_TV:
+			// toggle effect
 			node.parameters[key].timelineVariable = (value === node.parameters[key].timelineVariable) ? null : value;
 			break;
 		default:
@@ -80,18 +121,19 @@ export function setPluginParam(state, action) {
 }
 
 /*
-Use native js value or function or timelineVar (jsPsych)
+Set to use native js value or function or timelineVar (jsPsych)
 
 */
 export function setPluginParamMode(state, action) {
 	let { key, mode } = action;
 
+	// update state
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
-	node.parameters[key] = Object.assign({}, node.parameters[key], {
-		mode: (mode === node.parameters[key].mode) ? null : mode
-	});
+
+	// toggle effect
+	node.parameters[key].mode = (mode === node.parameters[key].mode) ? null : mode;
 
 	return new_state;
 }
@@ -121,7 +163,7 @@ export function changePlugin(state, action) {
 	};
 	for (let i = 0; i < paramKeys.length; i++) {
 		// every trial data is a composite object defined above
-		paramsObject[paramKeys[i]] = createComposite(convertEmptyStringToNull(params[paramKeys[i]].default));
+		paramsObject[paramKeys[i]] = createComplexDataObject(convertEmptyStringToNull(params[paramKeys[i]].default));
 	}
 
 	// update trial node
@@ -132,184 +174,97 @@ export function changePlugin(state, action) {
 	return new_state;
 }
 
-export function changeHeader(state, action) {
+/*
+Set sampling method
+action = {
+	// sampling method
+	newVal: string
+}
+*/
+export function setSamplingMethod(state, action) {
 	let node = state[state.previewId];
+	// update state
 	let new_state = Object.assign({}, state);
-
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
-
-	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	let headerArray = newArray[0];
-	headerArray[action.headerId] = action.newVal;
-	node.parameters.timeline_variables = utils.arrayOfObjects(newArray)
-
-	return new_state;
-}
-
-export function changeCell(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	let  cellString = action.cellId; //string with row and column index
- 	let  cellIndex = cellString.split(' ');
-	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	let cellRow = cellIndex[0];
-    let  cellColumn = cellIndex[1];
-
-    newArray[cellRow][cellColumn] = action.newVal;
-
-    node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-    return new_state;
-
-}
-
-export function addColumnHelper(array) {
-	for(let i=1; i<array.length; i++) {
-		array[i][array[0].length-1] = null;
-	}
-	return array;
-}
-
-var index = 1;
-export function addColumn(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-
-	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	newArray[0].push(DEFAULT_HEADER + '' + index++);
-	addColumnHelper(newArray);
-	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-
-	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function addRowHelper(array) {
-	array.push([]);
-	for(let i=0; i<array[0].length; i++) {
-		array[array.length-1][i] = null;
-	}
-	return array;
-}
-
-export function addRow(state, action) {
-	let node = state[state.previewId];
-
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-
-	let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-	addRowHelper(newArray);
-	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-
-	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteColumn(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-
-    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-
-    if(typeof newArray[0][1] !== 'undefined') {
-    	let transformColumns = utils.arrayOfColumns(newArray);
-    	transformColumns.splice(action.titleIndex,1);
-
-    	node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
-    	node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
-    }
-    new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteRow(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-
-    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-
-    if(typeof newArray[2] !== 'undefined') {
-     	newArray.splice(action.rowIndex, 1);
-    	node.parameters.timeline_variables = utils.arrayOfObjects(newArray);
-    }
- 	new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function deleteColumnHeader(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
-    let newArray = utils.arrayOfArrays(node.parameters.timeline_variables);
-
-   	if(typeof newArray[0][1] !== 'undefined') {
-    	let transformColumns = utils.arrayOfColumns(newArray);
-    	transformColumns.splice(action.titleIndex,1);
-
-    	node.parameters.timeline_variables = utils.backToArrayOfArrays(transformColumns);
-    	node.parameters.timeline_variables = utils.arrayOfObjects(node.parameters.timeline_variables);
-    }
-    new_state[state.previewId] = node;
-	return new_state;
-}
-
-export function changeSampling(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
-
-	node = deepCopy(node);
 
 	node.parameters.sample['type'] = action.newVal;
-
-	new_state[state.previewId] = node;
+	
 	return new_state;
 }
 
-export function changeSize(state, action) {
+/*
+Set sample size
+action = {
+	// sample size
+	newVal: number
+}
+*/
+export function setSampleSize(state, action) {
 	let node = state[state.previewId];
+	// update state
 	let new_state = Object.assign({}, state);
-
 	node = deepCopy(node);
+	new_state[state.previewId] = node;
 
 	node.parameters.sample['size'] = action.newVal;
 
-	new_state[state.previewId] = node;
 	return new_state;
 }
 
-export function changeRandomize(state, action) {
-	let node = state[state.previewId];
-	let new_state = Object.assign({}, state);
+/*
+Toggle if randomized timeline variable
+action = {
 
+}
+*/
+export function toggleRandomize(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
 	node = deepCopy(node);
+	new_state[state.previewId] = node;
 
 	node.parameters.randomize_order = action.newBool;
 
-	new_state[state.previewId] = node;
 	return new_state;
 }
 
-export function changeReps(state, action) {
+/*
+Set repetition times for trials under timeline,
+action = {
+	// wanted repetition number
+	newVal: number 
+}
+*/
+export function setRepetitions(state, action) {
 	let node = state[state.previewId];
+	// update state
 	let new_state = Object.assign({}, state);
-
 	node = deepCopy(node);
+	new_state[state.previewId] = node;
 
 	node.parameters.repetitions = action.newVal;
 
+	return new_state;
+}
+
+/*
+Set timeline variable,
+action = {
+	// should have been processed to be in jsPsych friendly form
+	// such form is stated above DEFAULT_TIMELINE_PARAM
+	timeline_variables: array
+}
+*/
+export function setTimelineVariable(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
 	new_state[state.previewId] = node;
+
+	node.timeline_variables = action.timeline_variables;
+
 	return new_state;
 }

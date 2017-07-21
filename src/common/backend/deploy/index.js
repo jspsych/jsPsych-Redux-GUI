@@ -3,7 +3,7 @@
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
-import { createComposite, ParameterMode } from '../../reducers/Experiment/editor';
+import { createComplexDataObject, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
 
@@ -17,12 +17,12 @@ const welcomeObj = {
   ...jsPsychInitState,
   timeline: [{
         type: 'html-keyboard-response',
-        stimulus: createComposite(''),
-        choices: createComposite(null),
-        prompt: createComposite('<p>Welcome to jsPysch Experiment Builder!</p>'),
-        stimulus_duration: createComposite(null),
-        trial_duration: createComposite(null),
-        response_ends_trial: createComposite(null),
+        stimulus: createComplexDataObject(''),
+        choices: createComplexDataObject(null),
+        prompt: createComplexDataObject('<p>Welcome to jsPysch Experiment Builder!</p>'),
+        stimulus_duration: createComplexDataObject(null),
+        trial_duration: createComplexDataObject(null),
+        response_ends_trial: createComplexDataObject(null),
       }
   ]
 }
@@ -32,12 +32,12 @@ const undefinedObj = {
   timeline: [
     {
       type: 'html-keyboard-response',
-        stimulus: createComposite(''),
-        choices: createComposite(null),
-        prompt: createComposite('<p>No trial is defined or selected!</p>'),
-        stimulus_duration: createComposite(null),
-        trial_duration: createComposite(null),
-        response_ends_trial: createComposite(null),
+        stimulus: createComplexDataObject(''),
+        choices: createComplexDataObject(null),
+        prompt: createComplexDataObject('<p>No trial is defined or selected!</p>'),
+        stimulus_duration: createComplexDataObject(null),
+        trial_duration: createComplexDataObject(null),
+        response_ends_trial: createComplexDataObject(null),
     }
   ]
 }
@@ -259,8 +259,8 @@ Generate jspsych trial block.
 For each parameter in trial.parameters, it should be a composite object which
 is defined in reducers/editor
 
-export const createComposite = (value=null, func=createFuncObj(), mode=null) => ({
-  isComposite: true,
+export const createComplexDataObject = (value=null, func=createFuncObj(), mode=null) => ({
+  isComplexDataObject: true,
   mode: mode, 
   value: value,
   func: func,
@@ -347,7 +347,7 @@ For functions, turn it to
 
 For all trial item, turn it to
 {
-  isComposite: true,
+  isComplexDataObject: true,
   value: value,
   mode: string,
   func: func obj
@@ -379,7 +379,7 @@ export function stringify(obj, filePath) {
       } else if (obj.isFunc) {
         return stringifyFunc(obj.code, obj.info, filePath);
         // if it is a trial item
-      } else if (obj.isComposite) {
+      } else if (obj.isComplexDataObject) {
         switch(obj.mode) {
           // if user wants to use function mode
           case ParameterMode.USE_FUNC:

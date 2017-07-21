@@ -1,38 +1,38 @@
 import { connect } from 'react-redux';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
-import * as trialFormActions from '../../../actions/trialFormActions';
+import * as editorActions from '../../../actions/editorActions';
 import { convertEmptyStringToNull } from '../../../utils';
 import { ParameterMode } from '../../../reducers/Experiment/editor';
 import { MediaPathTag } from '../../../backend/deploy';
 import * as notify from '../../Notification';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
-	dispatch(trialFormActions.onPluginTypeChange(newPluginVal));
+	dispatch(editorActions.onPluginTypeChange(newPluginVal));
 }
 
 const setFunc = (dispatch, key, code) => {
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
 }
 
 const setTimelineVariable = (dispatch, key, tv) => {
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(tv), ParameterMode.USE_TV));
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(tv), ParameterMode.USE_TV));
 }
 
 const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {
-	dispatch(trialFormActions.setPluginParamModeAction(key, mode));
+	dispatch(editorActions.setPluginParamModeAction(key, mode));
 }
 
 const setText = (dispatch, key, value) => {
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
 const setObject = (dispatch, key, obj) => {
-	dispatch(trialFormActions.setPluginParamAction(key, obj));
+	dispatch(editorActions.setPluginParamAction(key, obj));
 }
 
 const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
 	if (useEnum || !isArray) {
-		dispatch(trialFormActions.setPluginParamAction(key, (keyListStr) ? keyListStr : null));
+		dispatch(editorActions.setPluginParamAction(key, (keyListStr) ? keyListStr : null));
 	} else {
 		let val = [];
 		let hist = {};
@@ -58,7 +58,7 @@ const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
 					}
 			}
 		}
-		dispatch(trialFormActions.setPluginParamAction(key, val));
+		dispatch(editorActions.setPluginParamAction(key, val));
 	}
 }
 
@@ -66,12 +66,12 @@ const setToggle = (dispatch, key) => {
 	dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState;
 		let flag = experimentState[experimentState.previewId].parameters[key].value;
-		dispatch(trialFormActions.setPluginParamAction(key, !flag));
+		dispatch(editorActions.setPluginParamAction(key, !flag));
 	});
 }
 
 const setNumber = (dispatch, key, value, isFloat) => {
-	dispatch(trialFormActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
 const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) => {
@@ -91,7 +91,7 @@ const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) 
 		filePaths = filePaths.map((f) => (MediaPathTag(f.replace(prefix, ''))));
 	}
 
-	dispatch(trialFormActions.setPluginParamAction(key, filePaths));
+	dispatch(editorActions.setPluginParamAction(key, filePaths));
 	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
 	handleClose();
 }
@@ -102,7 +102,7 @@ const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
 		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
 		return;
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, MediaPathTag(filename)));
+	dispatch(editorActions.setPluginParamAction(key, MediaPathTag(filename)));
 }
 
 const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
@@ -140,7 +140,7 @@ const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
 		}
 		fileList.push(part);
 	}
-	dispatch(trialFormActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
+	dispatch(editorActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
 }
 
 const mapStateToProps = (state, ownProps) => {

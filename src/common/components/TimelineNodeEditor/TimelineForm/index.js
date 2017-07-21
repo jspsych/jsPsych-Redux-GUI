@@ -2,7 +2,7 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
-import EditableTable from '../../../containers/TimelineNodeEditor/EditableTable/EditableTable';
+
 import { labelStyle } from '../TrialForm/TrialFormItem';
 import { convertNullToEmptyString } from '../../../utils';
 
@@ -10,13 +10,13 @@ class TimelineForm extends React.Component {
 	render(){
 		return (
 			<div className="TimelineForm">
-				<EditableTable id={this.props.id} />
+
 				<div style={{display: 'flex', width: "100%"}} >
 					<p
 						className="Trial-Form-Label-Container"
 					    style={labelStyle}
 					>
-					    Sample method:
+					    Sampling method:
 					</p>
 					<div className="Trial-Form-Content-Container">
 						<SelectField 

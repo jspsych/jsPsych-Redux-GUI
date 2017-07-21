@@ -1,19 +1,18 @@
 import { connect } from 'react-redux';
-import { isTimeline } from '../../../reducers/Experiment/utils/index';
 import TimelineForm from '../../../components/TimelineNodeEditor/TimelineForm';
-import * as tableActions from '../../../actions/tableAction';
+import * as editorActions from '../../../actions/editorActions';
 
 
 const setRepetitions = (dispatch,newVal) => {
-	dispatch(tableActions.changeRepetitions(newVal));
+	dispatch(editorActions.setRepetitionsAction(newVal));
 }
 
 const setSampling = (dispatch, key, newVal) => {
-	dispatch(tableActions.changeSampling(key, newVal));
+	dispatch(editorActions.setSamplingMethodAction(key, newVal));
 }
 
 const setSampleSize = (dispatch, newVal) => {
-	dispatch(tableActions.changeSize(newVal));
+	dispatch(editorActions.setSampleSizeAction(newVal));
 }
 
 
@@ -21,16 +20,11 @@ const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 
 	let timeline = experimentState[experimentState.previewId];
-	if(!timeline) {
-		return {}
-	} else {
-		return {
-			id: timeline.id,
-			isTimeline: isTimeline(timeline),
-			repetitions: timeline.parameters.repetitions,
-			samplingType: timeline.parameters.sample.type,
-			samplingSize: timeline.parameters.sample.size
-		}
+	return {
+		id: timeline.id,
+		repetitions: timeline.parameters.repetitions,
+		samplingType: timeline.parameters.sample.type,
+		samplingSize: timeline.parameters.sample.size
 	}
 };
 

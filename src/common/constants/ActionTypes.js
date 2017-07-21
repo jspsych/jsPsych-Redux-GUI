@@ -15,34 +15,29 @@ export const DUPLICATE_TIMELINE = "DUPLICATE_TIMELINE";
 export const DUPLICATE_TRIAL = "DUPLICATE_TRIAL";
 export const SET_NAME = "SET_NAME";
 
-// main
-export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
-export const SET_PLUGIN_PARAMTER = "SET_PLUGIN_PARAMTER";
-export const SET_PLUGIN_PARAMTER_MODE = "SET_PLUGIN_PARAMTER_MODE";
-export const UPDATE_MEDIA = "UPDATE_MEDIA";
-
 // jsPsych init editor
 export const SET_JSPSYCH_INIT = "SET_JSPSYCH_INIT";
 
 // preview
 export const PLAY_ALL = "PLAY_ALL";
 
-//TrialForm Actions
+// main
+export const SET_EXPERIMENT_NAME = "SET_EXPERIMENT_NAME";
+
+// editor
+export const SET_PLUGIN_PARAMTER = "SET_PLUGIN_PARAMTER";
+export const SET_PLUGIN_PARAMTER_MODE = "SET_PLUGIN_PARAMTER_MODE";
+export const UPDATE_MEDIA = "UPDATE_MEDIA";
+
+// editor - TrialForm Actions
 export const CHANGE_PLUGIN_TYPE = "CHANGE_PLUGIN_TYPE";
 
-
-//EditableTable Actions
-export const CHANGE_HEADER = "CHANGE_HEADER";
-export const CHANGE_CELL = "CHANGE_CELL";
-export const ADD_COLUMN = "ADD_COLUMN";
-export const ADD_ROW = "ADD_ROW";
-export const CHANGE_SAMPLING = "CHANGE_SAMPLING";
-export const CHANGE_SIZE = "CHANGE_SIZE";
-export const CHANGE_RANDOMIZE = "CHANGE_RANDOMIZE";
-export const DELETE_COLUMN = "DELETE_COLUMN";
-export const DELETE_ROW = "DELETE_ROW";
-export const DELETE_COLUMN_HEADER = "DELETE_COLUMN_HEADER";
-export const CHANGE_REPS = "CHANGE_REPS";
+// editor - TimelineForm Actions
+export const SET_TIMELINE_VARIABLES = "SET_TIMELINE_VARIABLES";
+export const SET_SAMPLING_METHOD = "SET_SAMPLING_METHOD";
+export const SET_SAMPLE_SIZE = "SET_SAMPLE_SIZE";
+export const TOGGLE_RANDOMIZE = "TOGGLE_RANDOMIZE";
+export const SET_REPETITIONS = "SET_REPETITIONS";
 
 // User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";

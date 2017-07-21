@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import MediaManager from '../../components/MediaManager';
 import * as userActions from '../../actions/userActions' ;
-import * as trialFormActions from '../../actions/trialFormActions';
+import * as editorActions from '../../actions/editorActions';
 import { LoginModes } from '../../reducers/User';
 import * as notify from '../Notification';
 import {
@@ -18,7 +18,7 @@ const updateFileList = (dispatch, feedback = null) => {
 	dispatch((dispatch, getState) => {
 		if (!getState().experimentState.experimentId) return;
 		$listBucketContents(getState().experimentState.experimentId).then((data) => {
-			dispatch(trialFormActions.updateMediaAction(data));
+			dispatch(editorActions.updateMediaAction(data));
 
 			pushExperimentData(getState().experimentState).then(() => {
 				if (feedback) {

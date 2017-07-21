@@ -1,14 +1,11 @@
 import { connect } from 'react-redux';
 import TimelineVariableSelector from '../../../components/TimelineNodeEditor/TrialForm/TimelineVariableSelector';
-// import * as trialFormActions from '../../../actions/trialFormActions';
+// import * as editorActions from '../../../actions/editorActions';
 // import { convertEmptyStringToNull } from '../../../utils';
 
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
-	if (!experimentState.previewId) return {
-
-	};
 	let trial = experimentState[experimentState.previewId];
 	let hist = {}, timelineVariables = [];
 	let timeline = (trial.parent) ? experimentState[trial.parent] : null;
