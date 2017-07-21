@@ -79,6 +79,10 @@ export function setPluginParam(state, action) {
 	return new_state;
 }
 
+/*
+Use native js value or function or timelineVar (jsPsych)
+
+*/
 export function setPluginParamMode(state, action) {
 	let { key, mode } = action;
 
@@ -92,30 +96,36 @@ export function setPluginParamMode(state, action) {
 	return new_state;
 }
 
+/*
+Update s3 files
+*/
 export function updateMedia(state, action) {
 	return Object.assign({}, state, {
 		media: action.s3files
 	});
 }
 
+/*
+Change plugin type of trial --> update trial.parameters
+
+*/
 export function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
-
+	// add universal plugin parameters
 	let params = injectJsPsychUniversalPluginParameters(window.jsPsych.plugins[action.newPluginVal].info.parameters);
 	let paramKeys = Object.keys(params);
-
-	var paramsObject = {
+	let paramsObject = {
 		type: action.newPluginVal
 	};
-
 	for (let i = 0; i < paramKeys.length; i++) {
+		// every trial data is a composite object defined above
 		paramsObject[paramKeys[i]] = createComposite(convertEmptyStringToNull(params[paramKeys[i]].default));
 	}
 
+	// update trial node
 	node = deepCopy(node);
-
 	node.parameters = paramsObject;
 	new_state[state.previewId] = node;
 

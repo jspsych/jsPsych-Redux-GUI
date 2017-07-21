@@ -177,7 +177,7 @@ export default class MediaManager extends React.Component {
 				return (
 					<IconButton 
 						onTouchTap={this.handleOpen}
-						tooltip="Insert Medias"
+						tooltip="Insert Media"
 					>
 						<Add hoverColor={hoverColor} color={iconColor}/>
 					</IconButton>
@@ -186,7 +186,7 @@ export default class MediaManager extends React.Component {
 			default:
 				return (
 					<IconButton
-		              tooltip="Media Manager"
+		              tooltip="Upload Media"
 		              onTouchTap={this.handleOpen}
 		          	>
 		              <MediaManagerIcon

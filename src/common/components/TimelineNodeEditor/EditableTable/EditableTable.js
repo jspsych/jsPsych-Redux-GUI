@@ -286,47 +286,6 @@ class EditableTable extends React.Component {
 							</Card>
 						</div>
 
-						<div style={{paddingTop: 20}}>
-							<div style={{display: 'flex', width: "100%"}} >
-								<p
-									className="Trial-Form-Label-Container"
-								    style={labelStyle}
-								>
-								    Sampling:
-								</p>
-								<div className="Trial-Form-Content-Container">
-									<SelectField 
-										value={this.props.samplingType}
-										onChange={this.props.onChange} 
-									>
-										<MenuItem value="with-replacement"
-											primaryText="with-replacement" />
-										<MenuItem value="without-replacement"
-											primaryText="without-replacement" />
-										<MenuItem value="fixed-repititions"
-											primaryText="fixed-repititions" />
-										<MenuItem value="custom"
-											primaryText="custom" />
-									</SelectField>
-								</div>
-							</div>
-
-							<div style={{display: 'flex', width: "100%"}} >
-								<p
-									className="Trial-Form-Label-Container"
-								    style={labelStyle}
-								>
-								    Sampling size:
-								</p>
-								<div className="Trial-Form-Content-Container">
-									<TextField
-										id="Timeline_SampleSize_Input"
-										value={convertNullToEmptyString(this.props.samplingSize)}
-										fullWidth={true}
-										onChange={(event, newVal) => this.props.handleSampleSize(newVal)} />
-								</div>
-							</div>
-						</div>
 						<TableContextMenu
 							openContext={this.state.isOpenContext}
 							anchorEl={this.state.anchorElContext}

@@ -187,6 +187,7 @@ export default class TrialFormItem extends React.Component {
 				return <MenuItem
 							primaryText="[Timeline Variable]"
 							style={{paddingTop: 2}} 
+							title={this.props.parameters[param].timelineVariable}
 							disabled={true} />;
 			default:
 				return node;
@@ -276,7 +277,7 @@ export default class TrialFormItem extends React.Component {
 			for (let v of value) {
 				if (v === jsPsych.ALL_KEYS) s += v;
 				else if (v.length > 1) s += `{${v}}`;
-				else s += v;
+				else s += v.toUpperCase();
 			}
 			value = s;
 		}
@@ -312,7 +313,7 @@ export default class TrialFormItem extends React.Component {
 			      id={this.props.id+"-text-field-"+param}
 			      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
-			      onChange={(e, v) => { this.setKeyListStr(v.toUpperCase()); }}
+			      onChange={(e, v) => { this.setKeyListStr(v); }}
 			      maxLength={(isArray) ?  null : "1"}
 			      onFocus={() => {
 			      	this.setKeyListStr(convertNullToEmptyString(value));
