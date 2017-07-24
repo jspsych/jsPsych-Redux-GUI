@@ -52,7 +52,13 @@ timeline_variables should have the following data structure:
 
 */
 export const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [],
+	timeline_variables: [{
+		"H1": createComplexDataObject(1),
+		"H2": createComplexDataObject(2),
+	}, {
+		"H1": createComplexDataObject(3),
+		"H2": createComplexDataObject(4)
+	}],
 	randomize_order: true,
 	repetitions: null,
 	sample: {type: null, size: null},
@@ -250,21 +256,61 @@ export function setRepetitions(state, action) {
 }
 
 /*
-Set timeline variable,
+Set timeline variable by updating whole row (data handled by react-data-grid),
 action = {
-	// should have been processed to be in jsPsych friendly form
-	// such form is stated above DEFAULT_TIMELINE_PARAM
-	timeline_variables: array
+	fromRow: number,
+	toRow: number,
+	updated: new value
 }
 */
-export function setTimelineVariable(state, action) {
+export function updateTimelineVariableRow(state, action) {
+	let { fromRow, toRow, updated} = action;
 	let node = state[state.previewId];
+
 	// update state
 	let new_state = Object.assign({}, state);
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.timeline_variables = action.timeline_variables;
+	for (let i = fromRow; i <= toRow; i++) {
+		for (let key of Object.keys(updated)) {
+			node.parameters.timeline_variables[i][key] = (updated[key] === "") ? null : updated[key];
+		}
+	}
 
 	return new_state;
+}
+
+/*
+Set timeline variable cell code,
+action = {
+	row: number,
+	col: number,
+	toggleUseFunc: boolean, 
+	code: string
+}
+*/
+export function updateTimelineVariableCell(state, action) {
+	let { row, col, toggleUseFunc, code } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// find editting cell
+	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
+		let chosenCol = Object.keys(node.parameters.timeline_variables[0])[col];
+		let chosenCell = node.parameters.timeline_variables[row][chosenCol];
+
+		// only set mode
+		if (toggleUseFunc) {
+			chosenCell.mode = (chosenCell.mode === ParameterMode.USE_FUNC) ? null : ParameterMode.USE_FUNC;
+		} else {
+			chosenCell.func.code = code;
+		}
+	}
+
+	return new_state
 }

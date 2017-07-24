@@ -106,8 +106,10 @@ export default function experimentReducer(state=initState, action) {
 			return editor.updateMedia(state, action);
 
 			// Timeline form
-		case actionTypes.SET_TIMELINE_VARIABLES:
-			return editor.setTimelineVariable(state, action);
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_ROW:
+			return editor.updateTimelineVariableRow(state, action);
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL:
+			return editor.updateTimelineVariableCell(state, action);
 		case actionTypes.SET_SAMPLING_METHOD: 
 			return editor.setSamplingMethod(state, action);
 		case actionTypes.SET_SAMPLE_SIZE:

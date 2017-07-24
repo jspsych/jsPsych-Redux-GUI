@@ -5,12 +5,13 @@ import TextField from 'material-ui/TextField';
 
 import { labelStyle } from '../TrialForm/TrialFormItem';
 import { convertNullToEmptyString } from '../../../utils';
+import TimelineVariableTable from '../../../containers/TimelineNodeEditor/TimelineForm/TimelineVariableTableContainer';
 
 class TimelineForm extends React.Component {
 	render(){
 		return (
 			<div className="TimelineForm">
-
+				<TimelineVariableTable />
 				<div style={{display: 'flex', width: "100%"}} >
 					<p
 						className="Trial-Form-Label-Container"
