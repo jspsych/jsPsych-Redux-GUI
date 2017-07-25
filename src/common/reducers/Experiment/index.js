@@ -110,6 +110,16 @@ export default function experimentReducer(state=initState, action) {
 			return editor.updateTimelineVariableRow(state, action);
 		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL:
 			return editor.updateTimelineVariableCell(state, action);
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_HEADER:
+			return editor.updateTimelineVariableName(state, action);
+		case actionTypes.ADD_TIMELINE_VARIABLE_ROW:
+			return editor.addTimelineVariableRow(state, action);
+		case actionTypes.ADD_TIMELINE_VARIABLE_COLUMN:
+			return editor.addTimelineVariableColumn(state, action);
+		case actionTypes.DELETE_TIMELINE_VARIABLE_ROW:
+			return editor.deleteTimelineVariableRow(state, action);
+		case actionTypes.DELETE_TIMELINE_VARIABLE_COLUMN:
+			return editor.deleteTimelineVariableColumn(state, action);
 		case actionTypes.SET_SAMPLING_METHOD: 
 			return editor.setSamplingMethod(state, action);
 		case actionTypes.SET_SAMPLE_SIZE:

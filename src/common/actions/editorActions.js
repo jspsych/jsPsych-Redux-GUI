@@ -55,6 +55,41 @@ export function updateTimelineVariableCellAction(row, col, toggleUseFunc=false, 
 	}
 }
 
+export function updateTimelineVariableNameAction(oldName, newName) {
+	return {
+		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_HEADER,
+		oldName: oldName,
+		newName: newName
+	}
+}
+
+export function addTimelineVariableRowAction(index=-1) {
+	return {
+		type: actionTypes.ADD_TIMELINE_VARIABLE_ROW,
+		index: index
+	}
+}
+
+export function addTimelineVariableColumnAction() {
+	return {
+		type: actionTypes.ADD_TIMELINE_VARIABLE_COLUMN,
+	}
+}
+
+export function deleteTimelineVariableRowAction(index) {
+	return {
+		type: actionTypes.DELETE_TIMELINE_VARIABLE_ROW,
+		index: index
+	}
+}
+
+export function deleteTimelineVariableColumnAction(index) {
+	return {
+		type: actionTypes.DELETE_TIMELINE_VARIABLE_COLUMN,
+		index: index
+	}
+}
+
 export function setSamplingMethodAction(key, newVal) {
 	return {
 		type: actionTypes.SET_SAMPLING_METHOD,

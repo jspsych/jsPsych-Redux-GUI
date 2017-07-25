@@ -1,29 +1,37 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
 import ReactDataGrid from 'react-data-grid';
+
+import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
-// import { List } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import TextField from 'material-ui/TextField';
-// import FloatingActionButton from 'material-ui/FloatingActionButton';
 
-// import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
+import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
+import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import CodeButtonIcon from 'material-ui/svg-icons/action/code';
+import Add from 'material-ui/svg-icons/content/add-circle';
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import Launch from  'material-ui/svg-icons/action/launch';
+import TableIcon from 'material-ui/svg-icons/action/view-list';
 import {
   cyan500 as hoverColor,
   yellow500 as checkColor,
+  pink500 as deleteColor,
+  indigo500 as addColor,
+  green500 as checkRadioColor,
 } from 'material-ui/styles/colors';
 
 import { ParameterMode } from '../../../reducers/Experiment/editor';
-const { Menu: { ContextMenu, MenuItem: ContextmenuItem, SubMenu } } = require('react-data-grid-addons');
+const { Menu: { ContextMenu, MenuItem: ContextmenuItem } } = require('react-data-grid-addons');
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
 import { renderDialogTitle } from '../../gadgets';
+import { labelStyle } from '../TrialForm/TrialFormItem';
 
 
 class HeaderCell extends React.Component {
@@ -33,14 +41,72 @@ class HeaderCell extends React.Component {
 	}
 
 	state = {
-		edit: false
+		edit: false,
+		value: this.props.name
 	}
 
-	
+	startEdit = () => {
+		this.setState({
+			edit: true
+		})
+	}
+
+	closeEdit = () => {
+		this.setState({
+			edit: false
+		})
+		this.onCommit();
+	}
+
+	setValue = (e) => {
+		this.setState({
+			value: e.target.value
+		})
+	}
+
+	onCommit = () => {
+		if (this.state.value !== this.props.name) {
+			let newName = this.state.value;
+			let i = 0;
+			while (!this.isValid(newName)) {
+				if (newName.trim() === "") {
+					newName = `H${i++}`;
+				} else {
+					newName = `${this.state.value}${++i}`;
+				}
+			}
+			this.props.onCommit(newName);
+		}
+	}
+
+	isValid = (name) => {
+		return name.trim() !== "" && !this.props.hist[name];
+	}
 
 	render() {
-
+		return (
+			(this.state.edit) ?
+				<div
+					style={{width: "80%", textAlign: 'center'}}
+					onBlur={this.closeEdit} 
+				>
+					<TextField
+						id="Header TextField"
+						style={{width: "100%", outline: 'none', height: 36}}
+						value={this.state.value}
+						onChange={this.setValue}
+					/>
+				</div>:
+				<div 
+					onDoubleClick={this.startEdit}>
+					{this.props.name}
+				</div>
+		)
 	}
+}
+
+function headerRenderer(props) {
+	return <HeaderCell {...props} />
 }
 
 class MyContextMenu extends React.Component {
@@ -52,23 +118,71 @@ class MyContextMenu extends React.Component {
 		})
 	}
 
+	onRowDelete = () => {
+		this.props.onRowDelete(this.props.rowIdx);
+	}
+
+	onColDelete = () => {
+		this.props.onColDelete(this.props.idx);
+	}
+
+	insertRowAbove = () => {
+		this.props.addRow(this.props.rowIdx);
+	}
+
+	insertRowBelow = () => {
+		this.props.addRow(this.props.rowIdx + 1);
+	}
+
+	addColumn = () => {
+		this.props.addColumn(this.props.idx);
+	}
+
 	render() {
 	    return (
-	    	<ContextMenu >
+	    	<ContextMenu>
 	    		<ContextmenuItem onClick={this.setEdittingCell}>
-	    			<MenuItem primaryText="Insert code" rightIcon={<CodeButtonIcon hoverColor={hoverColor} />} />
+	    			<MenuItem primaryText="Insert code" rightIcon={<CodeButtonIcon color={hoverColor} />} />
 	    		</ContextmenuItem>
+	    		<Divider />
+    			<MenuItem 
+    				primaryText="Insert Row"
+    				focusState="focused"
+    				rightIcon={<Add color={addColor} />}
+    				menuItems={[
+    					<ContextmenuItem onClick={this.insertRowAbove}>
+			    			<MenuItem primaryText="Above" />
+						</ContextmenuItem>,
+    					<ContextmenuItem onClick={this.insertRowBelow}>
+			    			<MenuItem primaryText="Below" />
+						</ContextmenuItem>
+    					]}
+    			/>
+    			<ContextmenuItem onClick={this.addColumn}>
+    				<MenuItem primaryText="Insert Column" rightIcon={<Add color={addColor} />} />
+    			</ContextmenuItem>
+	    		<Divider />
+				<MenuItem 
+    				primaryText="Delete"
+    				focusState="focused"
+    				rightIcon={<ArrowDropRight color={deleteColor} />}
+    				menuItems={[
+    					<ContextmenuItem onClick={this.onRowDelete}>
+		    				<MenuItem primaryText="Row" />
+		    			</ContextmenuItem>,
+		    			<ContextmenuItem onClick={this.onColDelete}>
+							<MenuItem primaryText="Column" />
+						</ContextmenuItem>	
+    					]}
+    			/>	
 		   	</ContextMenu>
 	    );
 	  }
 }
 
 class CustomEditor extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-    	value: this.props.value,
-    }
+  state = {
+  	value: this.props.value
   }
 
   getValue = () => {
@@ -121,7 +235,7 @@ class CustomEditor extends React.Component {
 	          	<TextField 
 	          		title="[Custom Code]" 
 	          		fullWidth={true}
-	          		style={{paddingLeft: "10%", height: 34,}}
+	          		style={{paddingLeft: "10%", height: 40,}}
 	          		inputStyle={{color: 'rgba(0, 0, 0, 0.3)', textAlign: 'center', fontSize: 14}}
 	          		id="Timeline-Variable-Table-Editor"
 	          		value="[Custom Code]" 
@@ -133,7 +247,7 @@ class CustomEditor extends React.Component {
 	          	<TextField 
 	          		title={(value.value === null) ? "" : value.value}
 	          		fullWidth={true}
-	          		style={{paddingLeft: "10%", height: 34}}
+	          		style={{paddingLeft: "10%", height: 40}}
 	          		id="Timeline-Variable-Table-Editor"
 	          		value={(value.value === null) ? "" : value.value}
 	          		onChange={(e, v) => {
@@ -189,6 +303,7 @@ class CodeEditor extends React.Component {
 			setParamMode,
 			useFunc,
 			setCode,
+			title
 		} = this.props;
 
 		const actions = [
@@ -205,7 +320,7 @@ class CodeEditor extends React.Component {
               	titleStyle={{padding: 0}}
 	            title={renderDialogTitle(
                 <Subheader style={{fontSize: 18, maxHeight: 48}}>
-                Code Editor
+                {title}
                 </Subheader>, 
                 handleClose, 
                 null)}
@@ -234,6 +349,67 @@ class CodeEditor extends React.Component {
 	}
 }
 
+class TimelineVariableTableOpener extends React.Component {
+	state = {
+		open: false
+	}
+
+	handleOpen = () => {
+		this.setState({
+			open: true
+		})
+	}
+
+	handleClose = () => {
+		this.setState({
+			open: false
+		})
+	}
+
+	render() {
+		let { handleOpen, handleClose } = this;
+
+		const actions = [
+	      <FlatButton
+	        label="Close"
+	        labelStyle={{textTransform: 'none'}}
+	        primary={true}
+	        onTouchTap={handleClose}
+	      />,
+	    ];
+
+		return (
+			<div>
+				<IconButton
+					tooltip="Open table"
+					onTouchTap={handleOpen}
+				>
+				<Launch hoverColor={hoverColor} />
+				</IconButton>
+				<Dialog
+					open={this.state.open}
+		      		contentStyle={{minHeight: 500}}
+	              	titleStyle={{padding: 0}}
+		            title={renderDialogTitle(
+	                <Subheader style={{fontSize: 18, maxHeight: 48}}>
+		                <div style={{display: 'flex'}}>
+		                	<div style={{paddingTop: 5.5, paddingRight: 5}}><TableIcon color={addColor} /></div>
+		                	<p>Timline Variable Table</p>
+		                </div>
+	                </Subheader>, 
+	                handleClose, 
+	                null)}
+		            actions={actions}
+		            modal={true}
+		            onRequestClose={handleClose}
+		      	>
+		      	{this.props.spreadSheet}
+		      	</Dialog>
+	      	</div>
+		)
+	}
+}
+
 export function createDataGridRows(timelineVariable) {
 	return timelineVariable.map((row) => {
 		let strRow = {};
@@ -247,7 +423,8 @@ export function createDataGridRows(timelineVariable) {
 export default class TimelineVariableTable extends React.Component {
 	state = {
 		open: false,
-		edittingCell: null
+		edittingCell: null,
+		selectedCell: {row: 0, col: 0},
 	}
 
 	rowGetter = (i) => {
@@ -267,15 +444,27 @@ export default class TimelineVariableTable extends React.Component {
 		// same keys but possibly different values (see reducers/editor for detailed explanation)
 		let sampleRowObject = timeline_variables[0];
 		// generate table columns
-		for (let key of Object.keys(sampleRowObject)) {
+		let variables = Object.keys(sampleRowObject);
+		let hist = {};
+		variables.forEach((v) => { hist[v] = true });
+		for (let key of variables) {
 			columns.push({
 				key: key,
 				name: key,
 				resizable: true,
 				editable: true,
 				editor: CustomEditor,
-				formatter: GridCell
-			})
+				formatter: GridCell,
+				headerRenderer: () => { 
+					return headerRenderer({
+						name: key,
+						onCommit: (newName) => {
+							this.props.updateTimelineVariableName(key, newName);
+						},
+						hist: hist
+					}); 
+				} 
+			});
 		}
 
 		return columns;
@@ -285,14 +474,20 @@ export default class TimelineVariableTable extends React.Component {
 		this.setState({
 			edittingCell: data,
 			open: true,
-		})
+		});
+	}
+
+	setSelectedCell = (row, col) => {
+		this.setState({
+			selectedCell: {row: row, col: col}
+		});
 	}
 
 	handleCloseCodeEditor = () => {
 		this.setState({
 			open: false,
 			edittingCell: null
-		})
+		});
 	}
 
 	render() {
@@ -303,26 +498,52 @@ export default class TimelineVariableTable extends React.Component {
 	    	chosenCell = this.props.timeline_variables[row][chosenCol];
 		}
 
-		return (
-		  <div style={{maxHeight: 300, width: "100%"}}>
-		     <ReactDataGrid
+		let columns = this.createDataGridColumn();
+		let spreadSheet = (
+			<div>
+			<ReactDataGrid
 		        enableCellSelect={true}
 		        contextMenu={
 		        	<MyContextMenu 
-		        		onRowDelete={this.deleteRow} 
-		        		onRowInsertAbove={this.insertRowAbove} 
-		        		onRowInsertBelow={this.insertRowBelow}
+		        		onRowDelete={this.props.deleteRow} 
+		        		onColDelete={this.props.deleteColumn} 
+		        		addRow={this.props.addRow}
 		        		setEdittingCell={this.setEdittingCell} 
+		        		addColumn={this.props.addColumn}
 		        	/>
 		        }
-		        columns={this.createDataGridColumn()}
+		        columns={columns}
 		        rowGetter={this.rowGetter}
 		        rowsCount={this.props.rows.length}
 		        minHeight={250}
 		        minColumnWidth={120} 
+		        rowHeight={48}
+		        headerRowHeight={48}
+		        onCellSelected={(data) => {
+		        	this.setSelectedCell(data.rowIdx, data.idx);
+		        }}
+		        onGridKeyDown={(e) => {
+		        	let { row, col } = this.state.selectedCell;
+		        	switch(e.which) {
+		        		// right arrow
+		        		case 39:
+		        			if (++col === columns.length) {
+		        				this.props.addColumn();
+		        			}
+		        			break;
+		        		// down arrow
+		        		case 40:
+		        			if (++row === this.props.rows.length) {
+		        				this.props.addRow();
+		        			}
+		        			break;
+		        		default:
+		        			break;
+		        	}
+		        }}
 		        onGridRowsUpdated={this.handleGridRowsUpdated}
 		      />
-	      	  {(this.state.edittingCell !== null) ?
+		      {(this.state.edittingCell !== null) ?
 	      	  	<CodeEditor
 	      	  		open={this.state.open}
 	      	  		code={chosenCell.func.code}
@@ -332,6 +553,7 @@ export default class TimelineVariableTable extends React.Component {
 	      	  			let { row, col } = this.state.edittingCell;
 	      	  			this.props.setParamMode(row, col);
 	      	  		}}
+	      	  		title={`${columns[this.state.edittingCell.col].name}, row ${this.state.edittingCell.row}`}
 	      	  		setCode={(code) => {
 	      	  			let { row, col } = this.state.edittingCell;
 	      	  			this.props.setCode(row, col, code);
@@ -339,106 +561,40 @@ export default class TimelineVariableTable extends React.Component {
 	      	  	/> :
 	      	  	null
 	      	  }
+	      	  </div>
+		)
+
+		return (
+		  <div>
+		  	   <div style={{display: 'flex', width: "100%", position: 'relative', paddingBottom: 10}} >
+					<p
+					    style={labelStyle}
+					>
+					    Timeline variables:
+					</p>
+					<div style={{right: 0, position: 'absolute'}}>
+		  	  	 		<TimelineVariableTableOpener spreadSheet={spreadSheet} />
+		  	  	 	</div>
+		  	  	 </div>
+			  <div style={{maxHeight: 300, width: "100%"}}>
+			      {spreadSheet}
+		      </div>
+		      <div style={{display: 'flex', width: "100%", paddingTop: 10}} >
+					<p
+						className="Trial-Form-Label-Container"
+					    style={labelStyle}
+					>
+					    Randomize order:
+					</p>
+					<div className="Trial-Form-Content-Container">
+					<IconButton 
+				         onTouchTap={() => { this.props.toggleRandomize(); }} 
+				    >
+				       {(this.props.randomize) ? <CheckIcon color={checkRadioColor} /> : <UnCheckIcon />}/>
+				    </IconButton>
+				    </div>
+			</div>
 	      </div>
 		 )
 	}
 }
-
-// class CustomEditor extends React.Component {
-//   constructor(props){
-//     super(props);
-//     this.state = {
-//     	value: this.props.value,
-//     }
-//   }
-
-//   getValue = () => {
-//     return {
-//       [this.props.column.key]: this.state.value
-//     };
-//   }
-
-//   getInputNode = () => {
-//     return this.refs.CustomEditorWrapper;
-//   }
-
-//   getStyle = () => {
-//     return {
-//       width: '100%'
-//     };
-//   }
-
-//   inheritContainerStyles() {
-//     return true;
-//   }
-
-//   handleOpen = () => {
-//   	this.setState({
-//   		open: true
-//   	})
-//   }
-
-//   handleClose = () => {
-//   	this.setState({
-//   		open: false
-//   	})
-//   }
-
-//   setValue = (v) => {
-//   	this.setState({
-//   		value: Object.assign({}, this.state.value, {
-//   			value: v
-//   		})
-//   	});
-//   }
-
-//   setParamMode = () => {
-//   	this.setState({
-//   		value: Object.assign({}, this.state.value, {
-//   			mode: this.state.value.mode === ParameterMode.USE_FUNC ? null : ParameterMode.USE_FUNC
-//   		})
-//   	});
-//   }
-
-//   render() {
-//   	let { value } = this.state;
-//   	let Toggle = (
-//   		<IconButton
-//           	tooltip="Use custom code"
-//           	onTouchTap={this.setParamMode}
-//           >
-//           	{(this.state.value.mode === ParameterMode.USE_FUNC) ? <Check color={checkColor} /> : <Uncheck />}
-//           </IconButton>
-//   	)
-
-//     return (
-//       <div>
-//         <div ref="CustomEditorWrapper" style={{display: 'flex'}}>
-//           {(value.mode === ParameterMode.USE_FUNC) ?
-//           	<ListItem 
-//           		primaryText="[Custom Code]" 
-//           		disabled={true} 
-//           		rightIconButton={Toggle}
-//           		style={{color: 'rgba(0, 0, 0, 0.3)'}}
-//           		/> :
-//           	<div style={{width: "80%"}}>
-// 	          	<TextField 
-// 	          		fullWidth={true}
-// 	          		style={{paddingLeft: "10%"}}
-// 	          		id="Timeline-Variable-Table-Editor"
-// 	          		value={(value.value === null) ? "" : value.value}
-// 	          		onChange={(e, v) => {
-// 	          			this.setValue(v);
-// 	          		}}
-// 	          	/>
-//           	</div>
-//           }
-//           {(value.mode === ParameterMode.USE_FUNC) ?
-//           	null :
-//           	Toggle
-//           }
-//           </div>
-//       </div>
-//     )
-//   }
-// }

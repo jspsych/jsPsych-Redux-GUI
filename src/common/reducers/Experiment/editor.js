@@ -1,7 +1,6 @@
 import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import { createFuncObj } from './jsPsychInit';
 
-
 /*
 Indicate which value (native value, function or timeline variable) should be used
 */
@@ -52,13 +51,7 @@ timeline_variables should have the following data structure:
 
 */
 export const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{
-		"H1": createComplexDataObject(1),
-		"H2": createComplexDataObject(2),
-	}, {
-		"H1": createComplexDataObject(3),
-		"H2": createComplexDataObject(4)
-	}],
+	timeline_variables: [{"H0": createComplexDataObject(null)}],
 	randomize_order: true,
 	repetitions: null,
 	sample: {type: null, size: null},
@@ -231,7 +224,7 @@ export function toggleRandomize(state, action) {
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters.randomize_order = action.newBool;
+	node.parameters.randomize_order = !node.parameters.randomize_order;
 
 	return new_state;
 }
@@ -313,4 +306,173 @@ export function updateTimelineVariableCell(state, action) {
 	}
 
 	return new_state
+}
+
+/*
+Set timeline variable column name,
+action = {
+	oldName: string,
+	newName: string,
+}
+
+Prerequsite:
+The newName shall not equal to any other column name.
+This should be checked before calling this function.
+*/
+export function updateTimelineVariableName(state, action) {
+	let { oldName, newName } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// change column name
+	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
+		let timeline_variables = node.parameters.timeline_variables;
+		let variables = Object.keys(node.parameters.timeline_variables[0]);
+		let new_timeline_variables = [];
+		for (let i = 0; i < timeline_variables.length; i++) {
+			let row = timeline_variables[i];
+			let newRow = {};
+			for (let v of variables) {
+				if (v === oldName) {
+					newRow[newName] = row[v];
+				} else {
+					newRow[v] = row[v];
+				}
+			}
+			new_timeline_variables.push(newRow);
+		}
+
+		node.parameters.timeline_variables = new_timeline_variables;
+	}
+
+	return new_state;
+}
+
+
+/*
+Add timeline variable row,
+action = {
+	// insert new row at which position
+	index: number, 
+}
+*/
+export function addTimelineVariableRow(state, action) {
+	let { index } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// add row
+	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
+		let timeline_variables = node.parameters.timeline_variables;
+		let variables = Object.keys(node.parameters.timeline_variables[0]);
+		let row = {};
+		for (let v of variables) {
+			row[v] = createComplexDataObject(null);
+		}
+		timeline_variables.push(row);
+		if (index > -1) {
+			timeline_variables.move(timeline_variables.length-1, index);
+		}
+	}
+
+	return new_state;
+}
+
+
+/*
+Add timeline variable col,
+action = {
+}
+*/
+export function addTimelineVariableColumn(state, action) {
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// add column
+	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
+		let timeline_variables = node.parameters.timeline_variables;
+		let variables = Object.keys(node.parameters.timeline_variables[0]);
+		let i = 0, name = `H${i}`;
+		while (variables.indexOf(name) !== -1) name = `H${++i}`;
+		for (let row of timeline_variables) row[name] = createComplexDataObject(null);
+	}
+	
+	return new_state;
+}
+
+/*
+Delete timeline variable row,
+action = {
+	// delete which row
+	index: number,
+}
+*/
+export function deleteTimelineVariableRow(state, action) {
+	let { index } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// delete row
+	// always preserve one row
+	if (node.parameters.timeline_variables.length === 1) { 
+		let row = node.parameters.timeline_variables[0];
+		for (let v of Object.keys(row)) {
+			row[v] = createComplexDataObject(null);
+		}
+	} else {
+		node.parameters.timeline_variables.splice(index, 1);
+	}
+	
+
+	return new_state;
+}
+
+/*
+Delete timeline variable col,
+action = {
+	// delete which col
+	index: number,
+}
+*/
+export function deleteTimelineVariableColumn(state, action) {
+	let { index } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	// delete column
+	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
+		let timeline_variables = node.parameters.timeline_variables;
+		let variables = Object.keys(node.parameters.timeline_variables[0]);
+		let target = variables[index];
+		for (let row of timeline_variables) {
+			delete row[target];
+		}
+		// always preserve one column
+		let row = timeline_variables[0];
+		if (Object.keys(row).length === 0 && row.constructor === Object) {
+			row["H0"] = createComplexDataObject(null);
+		}
+	}
+
+	return new_state;
 }
