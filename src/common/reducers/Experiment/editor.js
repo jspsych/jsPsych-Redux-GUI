@@ -51,7 +51,7 @@ timeline_variables should have the following data structure:
 
 */
 export const DEFAULT_TIMELINE_PARAM = {
-	timeline_variables: [{"H0": createComplexDataObject(null)}],
+	timeline_variables: [{"V0": createComplexDataObject(null)}],
 	randomize_order: true,
 	repetitions: null,
 	sample: {type: null, size: null},
@@ -404,8 +404,8 @@ export function addTimelineVariableColumn(state, action) {
 	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
 		let timeline_variables = node.parameters.timeline_variables;
 		let variables = Object.keys(node.parameters.timeline_variables[0]);
-		let i = 0, name = `H${i}`;
-		while (variables.indexOf(name) !== -1) name = `H${++i}`;
+		let i = 0, name = `V${i}`;
+		while (variables.indexOf(name) !== -1) name = `V${++i}`;
 		for (let row of timeline_variables) row[name] = createComplexDataObject(null);
 	}
 	
@@ -470,7 +470,8 @@ export function deleteTimelineVariableColumn(state, action) {
 		// always preserve one column
 		let row = timeline_variables[0];
 		if (Object.keys(row).length === 0 && row.constructor === Object) {
-			row["H0"] = createComplexDataObject(null);
+			row["V0"] = createComplexDataObject(null);
+			node.parameters.timeline_variables = [row];
 		}
 	}
 
