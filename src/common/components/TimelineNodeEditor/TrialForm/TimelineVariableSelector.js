@@ -16,7 +16,8 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 import {
 	cyan500 as checkColor,
 	// blue500 as titleIconColor,
-	yellow500 as checkStarColor
+	yellow500 as checkStarColor,
+	cyan500 as hoverColor
 } from 'material-ui/styles/colors';
 
 
@@ -28,11 +29,13 @@ export default class TimelineVariableSelector extends React.Component {
 		openCallback: PropTypes.func,
 		closeCallback: PropTypes.func,
 		setParamMode: PropTypes.func,
-		title: PropTypes.string
+		title: PropTypes.string,
+		useTV: PropTypes.bool,
+		selectedTV: PropTypes.string,
 	};
 
 	static defaultProps = {
-		title: "Code Editor",
+		title: "Timeline Variables",
 		openCallback: function() {
 			return;
 		},
@@ -42,6 +45,9 @@ export default class TimelineVariableSelector extends React.Component {
 		submitCallback: function(newCode) {
 			return;
 		},
+		setParamMode: function() {
+			return;
+		}
 	}
 
 	state = {
@@ -66,7 +72,7 @@ export default class TimelineVariableSelector extends React.Component {
 		return (
 			<div>
 				<IconButton onTouchTap={this.handleOpen} tooltip="Insert timeline variable">
-					<AddTimelineVarIcon />
+					<AddTimelineVarIcon hoverColor={hoverColor}/>
 				</IconButton>
 				<Dialog
 					open={this.state.open}
