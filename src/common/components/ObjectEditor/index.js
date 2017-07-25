@@ -23,6 +23,10 @@ import {
 
 import { renderDialogTitle } from '../gadgets';
 import copy from 'copy-to-clipboard';
+import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
+import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
+import { stringify } from '../../backend/deploy';
+import { deepCopy } from '../../utils';
 
 const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
@@ -166,13 +170,21 @@ class ObjectValue extends React.Component {
 	}
 
 	render() {
-		let { keyName, value, index } = this.props;
+		let { keyName, complexDataObject, index } = this.props;
+
+		let value = complexDataObject.value;
 		let textFieldValue = this.processNot(value);
 		let displayValue = (typeof value === 'string') ?
 		 `"${value}"` : 
 		 (value !== null && value !== undefined) ? JSON.stringify(value) : textFieldValue;
 
 		return (
+			(complexDataObject.mode === ParameterMode.USE_TV) ? 
+			<MenuItem 
+				style={{minWidth: 200, maxWidth: 200, textAlign: 'center'}}
+				primaryText="[Timeline Variable]" 
+				disabled={true} 
+				/> :
 			(this.state.edit) ? 
 				<TextField  id={`${keyName}-${value}-${index}`}
 							value={textFieldValue}
@@ -279,7 +291,23 @@ export default class ObjectEditor extends React.Component {
 
 	setObjectValue = (value, i) => {
 		let newObjectValues = this.state.objectValues.slice();
-		newObjectValues[i] = convertReserved(value);
+		newObjectValues[i].value = convertReserved(value);
+		this.setState({
+			objectValues: newObjectValues
+		})
+	}
+
+	setObjectValueMode = (i) => {
+		let newObjectValues = this.state.objectValues.slice();
+		newObjectValues[i].mode = newObjectValues[i].mode === ParameterMode.USE_TV ? null : ParameterMode.USE_TV;
+		this.setState({
+			objectValues: newObjectValues
+		})
+	}
+
+	setObjectTimelineVariable = (v, i) => {
+		let newObjectValues = this.state.objectValues.slice();
+		newObjectValues[i].timelineVariable = v;
 		this.setState({
 			objectValues: newObjectValues
 		})
@@ -320,7 +348,8 @@ export default class ObjectEditor extends React.Component {
 		let newObjectValues = this.state.objectValues.slice();
 		let newObjectKeyErrors = this.state.objectKeyErrors.slice();
 		newObjectKeys.push(key);
-		newObjectValues.push("");
+		// init
+		newObjectValues.push(createComplexDataObject(""));
 		newObjectKeyErrors.push(ObjectKeyErrorCode.Good);
 		this.setState({
 			objectKeys: newObjectKeys,
@@ -337,16 +366,18 @@ export default class ObjectEditor extends React.Component {
 		let { objectKeys, objectValues } = this.state;
 		let resObj = {};
 		for (let i = 0; i < objectKeys.length; i++) {
-			resObj[objectKeys[i]] = (convert2Null) ? convertToNull(objectValues[i]) : objectValues[i];
+			resObj[objectKeys[i]] = deepCopy(objectValues[i]);
+			resObj[objectKeys[i]].value = (convert2Null) ? convertToNull(resObj[objectKeys[i]].value) : resObj[objectKeys[i]].value;
 		}
 		return resObj;
 	}
 
 	copyObj = () => {
 		if (this.state.valid) {
-			let objStr = JSON.stringify(this.generateObj());
+			let obj = this.generateObj();
+			let objStr = JSON.stringify(obj);
 			copyToLocalStorage(objStr);
-			copy(objStr);
+			copy(stringify(obj));
 			this.props.notifySuccess("Object copied !");
 		} else {
 			this.props.notifyError("Object is not valid !");
@@ -391,7 +422,7 @@ export default class ObjectEditor extends React.Component {
 				/>
 				<MenuItem key={`object-sep-${i}`} primaryText=":" disabled={true} />
 				<ObjectValue
-					value={value}
+					complexDataObject={value}
 					keyName={key}
 					index={i}
 					key={`object-value-${i}`}
@@ -399,6 +430,15 @@ export default class ObjectEditor extends React.Component {
 						this.setObjectValue(newValue, i);
 					}}
 				/>
+				<div style={{right: 0}} key={`object-timeline-variable-container-${i}`}>
+					<TimelineVariableSelector 
+						key={`object-timeline-variable-${i}`}
+						setParamMode={() => { this.setObjectValueMode(i); }}
+						submitCallback={(v) => { this.setObjectTimelineVariable(v, i); }}
+						useTV={this.state.objectValues[i].mode === ParameterMode.USE_TV}
+						selectedTV={this.state.objectValues[i].timelineVariable}
+					/>
+				</div>
 				<div style={{right: 0}} key={`object-delete-container-${i}`}>
 					<IconButton
 						tooltip="delete key"

@@ -257,7 +257,7 @@ export default class TrialFormItem extends React.Component {
 	renderFunctionEditor = (param) => (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel()}
-	      	<div className="Trial-Form-Content-Container">
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
 			    <CodeEditorTrigger 
 					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
                     submitCallback={(newCode) => { 
