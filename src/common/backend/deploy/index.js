@@ -357,7 +357,7 @@ For all trial item, turn it to
 */
 export function stringify(obj, filePath) {
   if (!obj) return JSON.stringify(obj);
-
+  
   let type = typeof obj;
   switch (type) {
     // if target is object

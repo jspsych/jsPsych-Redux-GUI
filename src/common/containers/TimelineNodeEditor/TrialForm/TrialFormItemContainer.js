@@ -10,8 +10,11 @@ const onChangePluginType = (dispatch, newPluginVal) => {
 	dispatch(editorActions.onPluginTypeChange(newPluginVal));
 }
 
-const setFunc = (dispatch, key, code) => {
+const setFunc = (dispatch, key, code, funcOnly=false) => {
 	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
+	if (funcOnly) {
+		dispatch(editorActions.setPluginParamModeAction(key, ParameterMode.USE_FUNC, false));
+	}
 }
 
 const setTimelineVariable = (dispatch, key, tv) => {
@@ -166,7 +169,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setText: (key, newVal) => { setText(dispatch, key, newVal); },
 	setToggle: (key) => { setToggle(dispatch, key); },
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
-	setFunc: (key, code) => { setFunc(dispatch, key, code); },
+	setFunc: (key, code, funcOnly) => { setFunc(dispatch, key, code, funcOnly); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },

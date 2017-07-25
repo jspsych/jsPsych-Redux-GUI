@@ -182,7 +182,7 @@ class ObjectValue extends React.Component {
 			(complexDataObject.mode === ParameterMode.USE_TV) ? 
 			<MenuItem 
 				style={{minWidth: 200, maxWidth: 200, textAlign: 'center'}}
-				primaryText="[Timeline Variable]" 
+				primaryText={`[TV: ${complexDataObject.timelineVariable}]`}
 				disabled={true} 
 				/> :
 			(this.state.edit) ? 

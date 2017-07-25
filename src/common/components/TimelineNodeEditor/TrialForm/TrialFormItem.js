@@ -258,14 +258,34 @@ export default class TrialFormItem extends React.Component {
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel()}
 	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+	      		{this.renderFieldContent(param, 
+	      			<MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />
+	      		)}
 			    <CodeEditorTrigger 
 					initCode={convertNullToEmptyString(this.props.parameters[param].func.code)} 
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
                     }}
+                    useFunc={this.props.parameters[param].mode === ParameterMode.USE_FUNC}
+					showEditMode={true}
+                    setParamMode={() => { this.props.setParamMode(param); }}
                     title={this.props.paramInfo.pretty_name+": "}
         		/>
-        		{this.appendTimelineVariable(param)}
+        		{((this.state.showTool || 
+				this.state.openTimelineVariable || 
+				this.props.parameters[param].mode === ParameterMode.USE_TV)) ?
+        		<TimelineVariableSelector 
+					openCallback={this.showTVSelector}
+					closeCallback={this.hideTVSelector}
+					useTV={this.props.parameters[param].mode === ParameterMode.USE_TV}
+					title={this.props.paramInfo.pretty_name+": "}
+					selectedTV={this.props.parameters[param].timelineVariable}
+					submitCallback={(newTV) => {
+						this.props.setTimelineVariable(param, newTV);
+					}}
+					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+				/> :
+				null}
 	        </div>
 	    </div>
 	)
