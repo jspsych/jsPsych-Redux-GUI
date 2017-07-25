@@ -8,9 +8,6 @@ import TextField from 'material-ui/TextField';
 
 import Draggable from 'react-draggable';
 
-import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
-import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
-
 import CloseDrawer from 'material-ui/svg-icons/navigation/close';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
@@ -19,6 +16,9 @@ import {
 	grey300 as CloseBackHighlightColor,
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
+
+import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
+import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 import { convertPercent } from '../App';
 
 export const MIN_WIDTH = 25;

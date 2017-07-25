@@ -1,16 +1,13 @@
 import { connect } from 'react-redux';
 import TrialForm from '../../../components/TimelineNodeEditor/TrialForm';
-import * as trialFormActions from '../../../actions/trialFormActions';
+import * as editorActions from '../../../actions/editorActions';
 
 const onChangePluginType = (dispatch, newPluginVal) => {
-	dispatch(trialFormActions.onPluginTypeChange(newPluginVal));
+	dispatch(editorActions.onPluginTypeChange(newPluginVal));
 }
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
-	if (!experimentState.previewId) return {
-
-	};
 	let trial = experimentState[experimentState.previewId];
 	return {
 		pluginType: trial.parameters.type,

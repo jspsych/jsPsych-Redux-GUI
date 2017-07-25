@@ -87,13 +87,17 @@ export default function experimentReducer(state=initState, action) {
 		case actionTypes.SET_JSPSYCH_INIT:
 			return jsPsychInit.setJspyschInit(state, action);
 
-		// name
+		// Main
 		case actionTypes.SET_EXPERIMENT_NAME:
 			return setExperimentName(state, action);
 
 		// editor starts
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
+
+			// Trial form
+		case actionTypes.CHANGE_PLUGIN_TYPE:
+			return editor.changePlugin(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER:
 			return editor.setPluginParam(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER_MODE:
@@ -101,31 +105,29 @@ export default function experimentReducer(state=initState, action) {
 		case actionTypes.UPDATE_MEDIA:
 			return editor.updateMedia(state, action);
 
-
-		case actionTypes.CHANGE_PLUGIN_TYPE:
-			return editor.changePlugin(state, action);
-		case actionTypes.CHANGE_HEADER:
-			return editor.changeHeader(state, action);
-		case actionTypes.CHANGE_CELL:
-			return editor.changeCell(state, action);
-		case actionTypes.ADD_COLUMN:
-			return editor.addColumn(state, action);
-		case actionTypes.ADD_ROW:
-			return editor.addRow(state, action);
-		case actionTypes.CHANGE_SAMPLING: 
-			return editor.changeSampling(state, action);
-		case actionTypes.CHANGE_SIZE:
-		 	return editor.changeSize(state, action);
-		 case actionTypes.CHANGE_RANDOMIZE: 
-		 	return editor.changeRandomize(state, action); 
-		 case actionTypes.DELETE_COLUMN:
-		 	return editor.deleteColumn(state, action);
-		 case actionTypes.DELETE_ROW:
-		 	return editor.deleteRow(state, action);
-		 case actionTypes.DELETE_COLUMN_HEADER:
-		 	return editor.deleteColumnHeader(state, action);
-		 case actionTypes.CHANGE_REPS: 
-		 	return editor.changeReps(state, action);
+			// Timeline form
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_ROW:
+			return editor.updateTimelineVariableRow(state, action);
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL:
+			return editor.updateTimelineVariableCell(state, action);
+		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_HEADER:
+			return editor.updateTimelineVariableName(state, action);
+		case actionTypes.ADD_TIMELINE_VARIABLE_ROW:
+			return editor.addTimelineVariableRow(state, action);
+		case actionTypes.ADD_TIMELINE_VARIABLE_COLUMN:
+			return editor.addTimelineVariableColumn(state, action);
+		case actionTypes.DELETE_TIMELINE_VARIABLE_ROW:
+			return editor.deleteTimelineVariableRow(state, action);
+		case actionTypes.DELETE_TIMELINE_VARIABLE_COLUMN:
+			return editor.deleteTimelineVariableColumn(state, action);
+		case actionTypes.SET_SAMPLING_METHOD: 
+			return editor.setSamplingMethod(state, action);
+		case actionTypes.SET_SAMPLE_SIZE:
+		 	return editor.setSampleSize(state, action);
+		 case actionTypes.TOGGLE_RANDOMIZE: 
+		 	return editor.toggleRandomize(state, action); 
+		 case actionTypes.SET_REPETITIONS: 
+		 	return editor.setRepetitions(state, action);
 		default:
 			return state;
 	}

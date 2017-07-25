@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -10,7 +10,7 @@ import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
+// import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import Clear from 'material-ui/svg-icons/content/delete-sweep';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
@@ -18,9 +18,9 @@ import {
   cyan500 as hoverColor,
   grey100 as toolbarColor,
   pink500 as clearColor,
+  // grey50 as listBackgroundColor
 } from 'material-ui/styles/colors';
 
-import { deepCopy } from '../../utils';
 import { renderDialogTitle } from '../gadgets';
 import copy from 'copy-to-clipboard';
 
@@ -70,7 +70,7 @@ const convertReserved = (s) => {
 			return undefined;
 		default:
 			if (intRegex.test(s)) {
-				return parseInt(s);
+				return parseInt(s, 10);
 			} else if (floatRegex.test(s)) {
 				return parseFloat(s);
 			} else {
@@ -368,7 +368,7 @@ export default class ObjectEditor extends React.Component {
 	}
 
 	onSubmit = () => {
-		let { objectKeys, objectValues, valid } = this.state;
+		let { valid } = this.state;
 		if (!valid) {
 			this.props.notifyError("Object is not valid !");
 			return;
@@ -415,7 +415,6 @@ export default class ObjectEditor extends React.Component {
 	render() {
 		let { title, keyName } = this.props;
 		let {
-			handleOpen,
 			handleClose,
 			renderRow,
 			addKeyPair,
@@ -474,7 +473,12 @@ export default class ObjectEditor extends React.Component {
 				</div>
 				<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = {`}</p>
 				<div>
-					<List style={{maxHeight: 200, minHeight: 200, overflow: 'auto', width: "80%", margin: 'auto'}}>
+					<List style={{
+							maxHeight: 200, 
+							minHeight: 200, 
+							overflow: 'auto', 
+							width: "80%", 
+							margin: 'auto'}}>
 						{objectKeys.map((key, i) => (renderRow(key, objectValues[i], i)))}
 					</List>
 				</div>

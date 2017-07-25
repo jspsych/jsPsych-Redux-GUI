@@ -3,7 +3,7 @@ import deepEqual from 'deep-equal';
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import * as backendActions from '../../actions/backendActions';
 import * as userActions from '../../actions/userActions' ;
-import * as trialFormActions from '../../actions/trialFormActions';
+import * as editorActions from '../../actions/editorActions';
 import Appbar from '../../components/Appbar';
 import { LoginModes } from '../../reducers/User';
 import {
@@ -115,7 +115,7 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 		// s3 duplicate
 		copyFiles(params).then(() => {
 			listBucketContents(experimentState.experimentId).then((data) => {
-				dispatch(trialFormActions.updateMediaAction(data));
+				dispatch(editorActions.updateMediaAction(data));
 				pushState(getState()).then(() => {
 					notifySuccessBySnackbar(dispatch, "Saved !");
 				}, (err) => {

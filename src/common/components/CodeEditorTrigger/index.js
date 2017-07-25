@@ -44,22 +44,24 @@ export default class CodeEditor extends React.Component {
 
   state = {
   	open: false,
-    code: this.props.initCode
-  };
+    code: ""
+  }
+
 
   handleOpen = () => {
   	this.setState({
   		open: true,
+      code: this.props.initCode
   	});
     this.props.openCallback();
-  };
+  }
 
   handleClose = () => {
   	this.setState({
   		open: false,
   	});
     this.props.closeCallback();
-  };
+  }
 
   onUpdate = (newCode) => {
     this.setState({
@@ -119,12 +121,3 @@ export default class CodeEditor extends React.Component {
   	)
   }
 }
-
-// <div style={{display: 'flex'}}>
-//                 <div style={{paddingTop: 4, paddingRight: 10}}>
-//                   <DialogIcon color={titleIconColor}/>
-//                 </div>
-//                 <div style={{fontSize: 20,}}>
-//                       {title}
-//                     </div>
-//                   </div>

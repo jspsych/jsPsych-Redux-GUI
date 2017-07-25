@@ -68,30 +68,12 @@ export default class TrialFormItem extends React.Component {
 		// timeline variable selector dialog
 		openTimelineVariable: false,
 		keyListStr: "",
+		useKeyListStr: false,
+		useFileStr: false,
 		fileListStr: "",
 		fileStr: "",
 	}
 
-	componentDidMount() {
-		switch (this.props.paramInfo.type) {
-			case EnumPluginType.KEYCODE:
-				this.setState({
-					keyListStr: this.props.parameters[this.props.param].value
-				});
-				break;
-			case EnumPluginType.AUDIO:
-			case EnumPluginType.IMAGE:
-			case EnumPluginType.VIDEO:
-				let selectedFilesString = processMediaPathTag(this.props.parameters[this.props.param].value);
-				this.setState({
-					fileStr: selectedFilesString,
-					fileListStr: selectedFilesString,
-				})
-				break;
-			default:
-				break;
-		}
-	}
 
 	setFileListStr = (str) => {
 		this.setState({
@@ -157,7 +139,8 @@ export default class TrialFormItem extends React.Component {
 		</p>
 	)
 
-	appendFunctionEditor = (param, alternate=null) => (
+	appendFunctionEditor = (param, alternate=null) => {
+		return (
 		((this.state.showTool || 
 			this.state.openFuncEditor || 
 			this.props.parameters[param].mode === ParameterMode.USE_FUNC) &&
@@ -175,7 +158,7 @@ export default class TrialFormItem extends React.Component {
                     title={this.props.paramInfo.pretty_name+": "}
         		/>:
         		alternate
-	)
+	)}
 
 	appendTimelineVariable = (param, alternate=null) => (
 		((this.state.showTool || 
@@ -204,6 +187,7 @@ export default class TrialFormItem extends React.Component {
 				return <MenuItem
 							primaryText="[Timeline Variable]"
 							style={{paddingTop: 2}} 
+							title={this.props.parameters[param].timelineVariable}
 							disabled={true} />;
 			default:
 				return node;
@@ -293,7 +277,7 @@ export default class TrialFormItem extends React.Component {
 			for (let v of value) {
 				if (v === jsPsych.ALL_KEYS) s += v;
 				else if (v.length > 1) s += `{${v}}`;
-				else s += v;
+				else s += v.toUpperCase();
 			}
 			value = s;
 		}
@@ -326,16 +310,22 @@ export default class TrialFormItem extends React.Component {
 			    (isAllKey) ?
 			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
 			    <TextField
-			      id={"text-field-"+param}
-			      value={(this.state.keyListStr !== value) ? this.state.keyListStr : convertNullToEmptyString(value)}
+			      id={this.props.id+"-text-field-"+param}
+			      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
 			      fullWidth={true}
-			      onChange={(e, v) => { this.setKeyListStr(v.toUpperCase()); }}
+			      onChange={(e, v) => { this.setKeyListStr(v); }}
 			      maxLength={(isArray) ?  null : "1"}
 			      onFocus={() => {
 			      	this.setKeyListStr(convertNullToEmptyString(value));
+			      	this.setState({
+			      		useKeyListStr: true
+			      	});
 			      }}
 			      onBlur={() => {
 			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
+			      	this.setState({
+			      		useKeyListStr: false
+			      	})
 			      }}
 			      onKeyPress={(e) => {
 			      	if (e.which === 13) {
@@ -389,12 +379,15 @@ export default class TrialFormItem extends React.Component {
 								rowsMax={3}
 								rows={1}
 								fullWidth={true}
-								value={(this.state.fileListStr !== selectedFilesString)? this.state.fileListStr : selectedFilesString}
+								value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
 								onChange={(e, v) => { 
 									this.setFileListStr(v); 
 								}}
 								onFocus={() => {
 									this.setFileListStr(selectedFilesString);
+									this.setState({
+										useFileStr: true
+									});
 								}}
 								onBlur={() => { 
 									this.props.fileArrayInput(
@@ -403,23 +396,20 @@ export default class TrialFormItem extends React.Component {
 										this.props.s3files.Prefix, 
 										this.props.filenames);
 									this.setFileListStr(selectedFilesString);
+									this.setState({
+										useFileStr: false
+									});
 								}}
 								onKeyPress={(e) => {
 									if (e.which === 13) {
-										this.props.fileArrayInput(
-											param,
-											this.state.fileListStr, 
-											this.props.s3files.Prefix, 
-											this.props.filenames);
-										this.setFileListStr(selectedFilesString);
+										document.activeElement.blur();
 									}
 								}}
 							/> :
 							<AutoComplete
 								id={"Selected-File-Input-"+param}
 								fullWidth={true}
-								searchText={(this.state.fileStr !== selectedFilesString) ?
-											 this.state.fileStr : selectedFilesString}
+								searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
 								title={selectedFilesString}
 								dataSource={this.props.filenames}
 								filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
@@ -430,6 +420,11 @@ export default class TrialFormItem extends React.Component {
 										this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
 									}
 								}}
+								onFocus={() => {
+									this.setState({
+										useFileStr: true
+									});
+								}}
 								onNewRequest={(s, i) => {
 									if (i !== -1 && s !== selectedFilesString) {
 										this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
@@ -437,6 +432,9 @@ export default class TrialFormItem extends React.Component {
 										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
 									}
 									this.setFileStr(selectedFilesString);
+									this.setState({
+										useFileStr: false
+									});
 								}}
 							/>
 
