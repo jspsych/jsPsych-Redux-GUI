@@ -140,7 +140,7 @@ class MyContextMenu extends React.Component {
 
 	render() {
 	    return (
-	    	<ContextMenu>
+	    	<ContextMenu >
 	    		<ContextmenuItem onClick={this.setEdittingCell}>
 	    			<MenuItem primaryText="Insert code" rightIcon={<CodeButtonIcon color={hoverColor} />} />
 	    		</ContextmenuItem>
@@ -148,6 +148,7 @@ class MyContextMenu extends React.Component {
     			<MenuItem 
     				primaryText="Insert Row"
     				focusState="focused"
+    				style={{zIndex: 2000}}
     				rightIcon={<Add color={addColor} />}
     				menuItems={[
     					<ContextmenuItem onClick={this.insertRowAbove}>
@@ -390,6 +391,7 @@ class TimelineVariableTableOpener extends React.Component {
 					open={this.state.open}
 		      		contentStyle={{minHeight: 500}}
 	              	titleStyle={{padding: 0}}
+	              	style={{zIndex: 1000}}
 		            title={renderDialogTitle(
 	                <Subheader style={{fontSize: 18, maxHeight: 48}}>
 		                <div style={{display: 'flex'}}>
@@ -403,7 +405,7 @@ class TimelineVariableTableOpener extends React.Component {
 		            modal={true}
 		            onRequestClose={handleClose}
 		      	>
-		      	{this.props.spreadSheet}
+		      		{this.props.spreadSheet}
 		      	</Dialog>
 	      	</div>
 		)
@@ -501,66 +503,66 @@ export default class TimelineVariableTable extends React.Component {
 		let columns = this.createDataGridColumn();
 		let spreadSheet = (
 			<div>
-			<ReactDataGrid
-		        enableCellSelect={true}
-		        contextMenu={
-		        	<MyContextMenu 
-		        		onRowDelete={this.props.deleteRow} 
-		        		onColDelete={this.props.deleteColumn} 
-		        		addRow={this.props.addRow}
-		        		setEdittingCell={this.setEdittingCell} 
-		        		addColumn={this.props.addColumn}
-		        	/>
-		        }
-		        columns={columns}
-		        rowGetter={this.rowGetter}
-		        rowsCount={this.props.rows.length}
-		        minHeight={250}
-		        minColumnWidth={120} 
-		        rowHeight={48}
-		        headerRowHeight={48}
-		        onCellSelected={(data) => {
-		        	this.setSelectedCell(data.rowIdx, data.idx);
-		        }}
-		        onGridKeyDown={(e) => {
-		        	let { row, col } = this.state.selectedCell;
-		        	switch(e.which) {
-		        		// right arrow
-		        		case 39:
-		        			if (++col === columns.length) {
-		        				this.props.addColumn();
-		        			}
-		        			break;
-		        		// down arrow
-		        		case 40:
-		        			if (++row === this.props.rows.length) {
-		        				this.props.addRow();
-		        			}
-		        			break;
-		        		default:
-		        			break;
-		        	}
-		        }}
-		        onGridRowsUpdated={this.handleGridRowsUpdated}
-		      />
-		      {(this.state.edittingCell !== null) ?
-	      	  	<CodeEditor
-	      	  		open={this.state.open}
-	      	  		code={chosenCell.func.code}
-	      	  		useFunc={chosenCell.mode === ParameterMode.USE_FUNC}
-	      	  		handleClose={this.handleCloseCodeEditor}
-	      	  		setParamMode={() => {
-	      	  			let { row, col } = this.state.edittingCell;
-	      	  			this.props.setParamMode(row, col);
-	      	  		}}
-	      	  		title={`${columns[this.state.edittingCell.col].name}, row ${this.state.edittingCell.row}`}
-	      	  		setCode={(code) => {
-	      	  			let { row, col } = this.state.edittingCell;
-	      	  			this.props.setCode(row, col, code);
-	      	  		}}
-	      	  	/> :
-	      	  	null
-	      	  }
+				<ReactDataGrid
+			        enableCellSelect={true}
+			        contextMenu={
+			        	<MyContextMenu 
+			        		onRowDelete={this.props.deleteRow} 
+			        		onColDelete={this.props.deleteColumn} 
+			        		addRow={this.props.addRow}
+			        		setEdittingCell={this.setEdittingCell} 
+			        		addColumn={this.props.addColumn}
+			        	/>
+			        }
+			        columns={columns}
+			        rowGetter={this.rowGetter}
+			        rowsCount={this.props.rows.length}
+			        minHeight={250}
+			        minColumnWidth={120} 
+			        rowHeight={48}
+			        headerRowHeight={48}
+			        onCellSelected={(data) => {
+			        	this.setSelectedCell(data.rowIdx, data.idx);
+			        }}
+			        onGridKeyDown={(e) => {
+			        	let { row, col } = this.state.selectedCell;
+			        	switch(e.which) {
+			        		// right arrow
+			        		case 39:
+			        			if (++col === columns.length) {
+			        				this.props.addColumn();
+			        			}
+			        			break;
+			        		// down arrow
+			        		case 40:
+			        			if (++row === this.props.rows.length) {
+			        				this.props.addRow();
+			        			}
+			        			break;
+			        		default:
+			        			break;
+			        	}
+			        }}
+			        onGridRowsUpdated={this.handleGridRowsUpdated}
+			      />
+			      {(this.state.edittingCell !== null) ?
+		      	  	<CodeEditor
+		      	  		open={this.state.open}
+		      	  		code={chosenCell.func.code}
+		      	  		useFunc={chosenCell.mode === ParameterMode.USE_FUNC}
+		      	  		handleClose={this.handleCloseCodeEditor}
+		      	  		setParamMode={() => {
+		      	  			let { row, col } = this.state.edittingCell;
+		      	  			this.props.setParamMode(row, col);
+		      	  		}}
+		      	  		title={`${columns[this.state.edittingCell.col].name}, row ${this.state.edittingCell.row}`}
+		      	  		setCode={(code) => {
+		      	  			let { row, col } = this.state.edittingCell;
+		      	  			this.props.setCode(row, col, code);
+		      	  		}}
+		      	  	/> :
+		      	  	null
+		      	  }
 	      	  </div>
 		)
 
