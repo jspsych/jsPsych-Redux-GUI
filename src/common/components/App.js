@@ -190,18 +190,26 @@ class App extends React.Component {
 					scale = 1;
 			}
 
-			let desired = this.state.zoomWidthByUser;
-			let newZoomWidth = Math.round(desired * scale);
+			let desiredW = this.state.zoomWidthByUser;
+			let desiredH = this.state.zoomHeightByUser;
+			let newZoomWidth = Math.round(desiredW * scale);
+			let newZoomHeight = Math.round(desiredH * scale);
 
 			while (newZoomWidth > this.state.maxZoomWidth) {
-				desired -= 1;
-				newZoomWidth = Math.round(desired * scale);
+				desiredW -= 1;
+				newZoomWidth = Math.round(desiredW * scale);
+			}
+			while (newZoomHeight > this.state.maxZoomHeight) {
+				desiredH -= 1;
+				newZoomHeight = Math.round(desiredH * scale);
 			}
 
 			this.setState({
 				zoomScale: scale,
-				zoomWidth: newZoomWidth,
-				zoomWidthByUser: desired
+				zoomWidth: (scale < 1) ? this.state.zoomWidth : newZoomWidth,
+				zoomWidthByUser: (scale < 1) ? Math.round(this.state.zoomWidthByUser / (scale/this.state.zoomScale)) : desiredW,
+				zoomHeight: (scale < 1) ? this.state.zoomHeight : newZoomHeight,
+				zoomHeightByUser: (scale < 1) ? Math.round(this.state.zoomHeightByUser / (scale/this.state.zoomScale)) :desiredH,
 			});
 		}
 
@@ -221,7 +229,7 @@ class App extends React.Component {
 				let newZoomWidth = desired * scale;
 				while (newZoomWidth > this.state.maxZoomWidth) {
 					scale -= 0.01;
-					newZoomWidth = desired * scale
+					newZoomWidth = desired * scale;
 				}
 				newZoomWidth = Math.round(newZoomWidth);
 				this.setState({
@@ -242,11 +250,16 @@ class App extends React.Component {
 
 		this.setZoomHeight = (e) => {
 			if (e.which === 13) {
-				let newZoomHeight = limitToMax(this.state.zoomHeightByUser, this.state.maxZoomHeight);
+				let scale = this.state.zoomScale;
+				let desired = this.state.zoomHeightByUser;
+				let newZoomHeight = desired * scale;
+				while (newZoomHeight > this.state.maxZoomHeight) {
+					scale -= 0.01;
+					newZoomHeight = desired * scale;
+				}
 				this.setState({
 					zoomHeight: newZoomHeight,
-					zoomHeightByUser: newZoomHeight,
-					// zoomScale: scale
+					zoomScale: scale
 				})
 			}
 		}

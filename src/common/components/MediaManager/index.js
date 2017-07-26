@@ -15,7 +15,8 @@ import {
 	cyan500 as checkColor,
 	blue800 as titleIconColor,
 	indigo500 as hoverColor,
-	cyan500 as iconColor
+	cyan500 as iconColor,
+	grey400
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
 import Media from 'material-ui/svg-icons/action/shopping-cart';
@@ -290,7 +291,7 @@ export default class MediaManager extends React.Component {
 	        <div className="mediaManager">
 	          {this.renderTrigger()}
 	          <Dialog
-	            contentStyle={{minHeight: 500}}
+	            bodyStyle={{minHeight: 400, maxHeight: 400}}
 	            titleStyle={{padding: 5}}
 	            title={renderDialogTitle(
 							<Subheader style={{maxHeight: 48}}>
@@ -322,13 +323,28 @@ export default class MediaManager extends React.Component {
 					onDrop={this.onDrop.bind(this)}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
-					style={{width:"100%", minHeight: '200px', position: 'relative'}}
+					style={{width:"100%", minHeight: 400, position: 'relative', height: "100%"}}
 					>
 					<List>
 					{mediaList}
 					{uploadList}
 					</List>
-					{this.state.dropzoneActive && <div style={overlayStyle}>Drop files...</div>}
+					{((!mediaList && !uploadList) || 
+					 (mediaList && uploadList && mediaList.length + uploadList.length === 0)) &&
+					 !this.state.dropzoneActive ?
+						<div style={{width: "100%", height: "100%", textAlign: 'center', position: 'relative'}}>
+							<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+								Drag and drop files here to upload!
+							</p>
+						</div> :
+						null
+					}
+					{this.state.dropzoneActive && 
+					<div style={overlayStyle}>
+						<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+								Drop files...
+						</p>
+					</div>}
 				</Dropzone>
 	          </Dialog>
 	          <Notification />

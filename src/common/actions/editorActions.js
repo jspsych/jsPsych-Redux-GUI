@@ -21,15 +21,16 @@ export function setPluginParamAction(key, value, mode="") {
 		type: actionTypes.SET_PLUGIN_PARAMTER,
 		key: key,
 		value: value,
-		mode: mode
+		mode: mode,
 	};
 }
 
-export function setPluginParamModeAction(key, mode) {
+export function setPluginParamModeAction(key, mode, toggle=true) {
 	return {
 		type: actionTypes.SET_PLUGIN_PARAMTER_MODE,
 		key: key,
-		mode: mode
+		mode: mode,
+		toggle: toggle
 	};
 }
 /* ********************** Trial form ********************** */

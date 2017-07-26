@@ -124,7 +124,7 @@ Set to use native js value or function or timelineVar (jsPsych)
 
 */
 export function setPluginParamMode(state, action) {
-	let { key, mode } = action;
+	let { key, mode, toggle } = action;
 
 	// update state
 	let new_state = Object.assign({}, state);
@@ -132,7 +132,13 @@ export function setPluginParamMode(state, action) {
 	new_state[node.id] = node;
 
 	// toggle effect
-	node.parameters[key].mode = (mode === node.parameters[key].mode) ? null : mode;
+	if (toggle) {
+		console.log(mode)
+		node.parameters[key].mode = (mode === node.parameters[key].mode) ? null : mode;
+	} else {
+		node.parameters[key].mode = mode;
+	}
+	
 
 	return new_state;
 }

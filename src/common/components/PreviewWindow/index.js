@@ -7,7 +7,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import Refresh from 'material-ui/svg-icons/navigation/refresh';
-import Skip from 'material-ui/svg-icons/av/skip-next';
+// import Skip from 'material-ui/svg-icons/av/skip-next';
 import FullScreen from 'material-ui/svg-icons/navigation/fullscreen';
 import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 
@@ -57,6 +57,7 @@ const reload = () => {
 export default class PreviewWindow extends React.Component {
   state = {
     fullScreen: false,
+    showToolBar: false
   }
 
   componentWillMount() {
@@ -93,7 +94,7 @@ export default class PreviewWindow extends React.Component {
 
   toggleFullScreen = () => {
     if (!getFullScreenState()) {
-      let ele = document.querySelector('#main-body');
+      let ele = document.querySelector(`#${"jsPsych-Layer"}`);
       if (ele.requestFullscreen) {
         ele.requestFullscreen();
       } else if (document.documentElement.msRequestFullscreen) {
@@ -117,6 +118,47 @@ export default class PreviewWindow extends React.Component {
   }
 
 	render() {
+    let tooltipPosition = (this.state.fullScreen) ? 'top-center' : 'bottom-center';
+    let previewToolBar = (
+      <div 
+        style={{paddingTop: 5}}>
+                <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
+                  <ToolbarGroup style={{margin: '0 auto'}}>
+                      <IconButton 
+                        tooltip="Play all"
+                        tooltipPosition={tooltipPosition}
+                        onTouchTap={()=>{ this.props.playAll(load); }}
+                        >
+                        <Play hoverColor={hoverColor} />
+                      </IconButton>
+                      <IconButton 
+                        tooltip="Reload"
+                        tooltipPosition={tooltipPosition}
+                        onTouchTap={reload}
+                        >
+                        <Refresh hoverColor={hoverColor} />
+                      </IconButton>
+
+                      <IconButton 
+                        tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
+                        onTouchTap={this.toggleFullScreen}
+                        tooltipPosition={tooltipPosition}
+                        >
+                        {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
+                      </IconButton>
+                  </ToolbarGroup>
+                </Toolbar>
+          </div>
+    )
+
+                      //     <IconButton 
+                      //   tooltip="Skip"
+                      //   tooltipPosition={tooltipPosition}
+                      //   onTouchTap={() => {}}
+                      //   >
+                      //   <Skip hoverColor={hoverColor} />
+                      // </IconButton>
+                      
     const {
       zoomScale,
       zoomWidth,
@@ -132,56 +174,45 @@ export default class PreviewWindow extends React.Component {
             id="Preview_Window_Container"
             className="Preview_Window_Container"
         >
-          <Paper style={{
-                  width:  zoomWidth,
-                  height: zoomHeight,
+          <Paper  id="jsPsych-Layer"
+                  style={{
+                  width:  (!this.state.fullScreen) ? zoomWidth : "100%",
+                  height: (!this.state.fullScreen) ? zoomHeight : "100%", 
                   margin: 'auto',
                   overflow: 'hidden',
                   }}
                   zDepth={1}
                   onClick={()=>{document.getElementById(jsPsych_Display_Element).focus();}}
           >
-          <div 
-            className={jsPsych_Display_Element}
+          <div
             id={jsPsych_Display_Element}
             style={{
-              width: zoomWidth,
-              height: zoomHeight,
+              width: "100%", 
+              height: "100%",
               overflowY: 'auto',
               transform: 'scale(' + zoomScale + ')',
             }}
             />
+            {(this.state.fullScreen) ?
+              <div 
+                onMouseEnter={() => { this.setState({showToolBar: true}); }}
+                onMouseLeave={() => { this.setState({showToolBar: false}); }}
+                style={{
+                  position: 'fixed', 
+                  bottom: 0, 
+                  margin: 'auto', 
+                  width: "100%",
+                }}
+              >
+                {(this.state.showToolBar) ? 
+                  previewToolBar : 
+                  <div style={{width: "100%", height: 30}}/>
+                }
+              </div> :
+                null
+              }
           </Paper>
-          <div style={{paddingTop: 5}}>
-                <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
-                  <ToolbarGroup style={{margin: '0 auto'}}>
-                      <IconButton 
-                        tooltip="Play all"
-                        onTouchTap={()=>{ this.props.playAll(load); }}
-                        >
-                        <Play hoverColor={hoverColor} />
-                      </IconButton>
-                      <IconButton 
-                        tooltip="Reload"
-                        onTouchTap={reload}
-                        >
-                        <Refresh hoverColor={hoverColor} />
-                      </IconButton>
-                      <IconButton 
-                        tooltip="Skip"
-                        onTouchTap={() => {}}
-                        >
-                        <Skip hoverColor={hoverColor} />
-                      </IconButton>
-                      <IconButton 
-                        tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
-                        onTouchTap={this.toggleFullScreen}
-                        >
-                        {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
-                      </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
-          </div>
+          {previewToolBar}
         </div>
   		);
 	}
