@@ -42,6 +42,17 @@ function registerNewExperiment(state, forceNewId=false) {
 			description: experimentState.experimentDetails.description
 		});
 	}
+	
+	// check for accidental add
+	// e.g.  logged out due to timeout
+	//       user changed something
+	//       when log in, signUpPush will be called
+	for (let experiment of userState.experiments) {
+		if (experimentState.experimentId === experiment.id) {
+			return;
+		}
+	}
+
 	// set last edit
 	// populate repository
 	userState.lastModifiedExperimentId = experimentState.experimentId;
@@ -150,7 +161,7 @@ function clickSavePush(state, action) {
 				item.details = new_state.experimentState.experimentDetails
 			}
 		}
-		// if new
+	// if new
 	} else {
 		registerNewExperiment(new_state);
 	}

@@ -198,7 +198,10 @@ export function generateCode(state, all=false, deploy=false) {
         // generate trial block
       } else {
         if (node.parameters.type) {
-          blocks.push(generateTrialBlock(state, node, all, deploy));
+          let trialBlock = generateTrialBlock(state, node, all, deploy);
+          if (trialBlock) {
+            blocks.push(trialBlock);
+          }
         }
       }
     }
@@ -259,6 +262,9 @@ Generate jspsych trial block.
 For each parameter in trial.parameters, it should be a composite object which
 is defined in reducers/editor
 
+***Note that if a parameter value is undefined, then we return false to let caller 
+function knows that this trial should not be rendered;
+
 export const createComplexDataObject = (value=null, func=createFuncObj(), mode=null) => ({
   isComplexDataObject: true,
   mode: mode, 
@@ -271,6 +277,8 @@ function generateTrialBlock(state, trial, all=false, deploy=false) {
   let res = {};
   let parameters = trial.parameters;
   for (let key of Object.keys(parameters)) {
+    // don't render
+    if (parameters[key] === undefined) return false;
     res[key] = parameters[key];
   }
   return res;
@@ -302,7 +310,10 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
       } else {
         if (desc.parameters.type) {
           // generate trial block
-          timeline.push(generateTrialBlock(state, desc, all, deploy));
+          let trialBlock = generateTrialBlock(state, desc, all, deploy);
+          if (trialBlock) {
+            timeline.push(trialBlock);
+          }
         }
       }
     }
