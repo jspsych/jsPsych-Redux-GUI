@@ -382,7 +382,7 @@ class TimelineVariableTableOpener extends React.Component {
 		return (
 			<div>
 				<IconButton
-					tooltip="Open table"
+					tooltip="Open in seperate window"
 					onTouchTap={handleOpen}
 				>
 				<Launch hoverColor={hoverColor} />

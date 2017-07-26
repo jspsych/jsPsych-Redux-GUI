@@ -7,7 +7,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 
 import Play from 'material-ui/svg-icons/av/play-arrow';
 import Refresh from 'material-ui/svg-icons/navigation/refresh';
-import Skip from 'material-ui/svg-icons/av/skip-next';
+// import Skip from 'material-ui/svg-icons/av/skip-next';
 import FullScreen from 'material-ui/svg-icons/navigation/fullscreen';
 import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 
@@ -138,13 +138,7 @@ export default class PreviewWindow extends React.Component {
                         >
                         <Refresh hoverColor={hoverColor} />
                       </IconButton>
-                      <IconButton 
-                        tooltip="Skip"
-                        tooltipPosition={tooltipPosition}
-                        onTouchTap={() => {}}
-                        >
-                        <Skip hoverColor={hoverColor} />
-                      </IconButton>
+
                       <IconButton 
                         tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
                         onTouchTap={this.toggleFullScreen}
@@ -156,6 +150,15 @@ export default class PreviewWindow extends React.Component {
                 </Toolbar>
           </div>
     )
+
+                      //     <IconButton 
+                      //   tooltip="Skip"
+                      //   tooltipPosition={tooltipPosition}
+                      //   onTouchTap={() => {}}
+                      //   >
+                      //   <Skip hoverColor={hoverColor} />
+                      // </IconButton>
+                      
     const {
       zoomScale,
       zoomWidth,
