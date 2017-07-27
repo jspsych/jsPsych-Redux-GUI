@@ -16,6 +16,7 @@ import {
 	blue800 as titleIconColor,
 	indigo500 as hoverColor,
 	cyan500 as iconColor,
+	grey800 as previewIconColor,
 	grey400
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
@@ -31,22 +32,22 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
-
+import { getSignedUrl } from '../../backend/s3';
 
 var __DEBUG__ = false;
 
-export function fileIconFromTitle(title) {
+export function fileIconFromTitle(title, color=null) {
 	const type = mime.lookup(title);
 	if(type === false){
-		return <FileIcon />
+		return <FileIcon color={color} />
 	} else if(type.indexOf('image') > -1){
-		return <ImageIcon />
+		return <ImageIcon color={color} />
 	} else if(type.indexOf('pdf') > -1){
-		return <PDFIcon />
+		return <PDFIcon color={color} />
 	} else if(type.indexOf('video') > -1){
-		return <MovieIcon />
+		return <MovieIcon color={color} />
 	} else if(type.indexOf('audio') > -1){
-		return <AudioIcon />
+		return <AudioIcon color={color} />
 	}
 	return <FileIcon />
 }
@@ -77,6 +78,7 @@ export default class MediaManager extends React.Component {
 			dropzoneActive: false,
 			selected: [],
 			completed: {},
+			previewFileUrl: null,
 		};
 
 
@@ -171,6 +173,26 @@ export default class MediaManager extends React.Component {
 		}
 	}
 
+	openPreviewWindow = (s3filePath) => {
+		let url = null;
+		try {
+			url = getSignedUrl(s3filePath);
+		} catch(e) {
+			console.log(e);
+		}
+		this.setState({
+			previewFileUrl: url,
+			previewFileTitle: s3filePath.replace(this.props.s3files.Prefix, ''),
+		})
+	}
+
+	closePreviewWindow = () => {
+		this.setState({
+			previewFileUrl: null,
+			previewFileTitle: null,
+		})
+	}
+
 	renderTrigger = () => {
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
@@ -231,6 +253,31 @@ export default class MediaManager extends React.Component {
 			}
 	}
 
+	renderPreviewTag = () => {
+		if (!this.state.previewFileTitle) return <div />;
+
+		let type = mime.lookup(this.state.previewFileTitle);
+
+		if(type.indexOf('image') > -1){
+			return <embed type={type} src={this.state.previewFileUrl} />
+		} else if(type.indexOf('video') > -1){
+			return <video controls width="100%" height={400}>
+						<source src={this.state.previewFileUrl} type={type} />
+					</video>
+		} else if(type.indexOf('audio') > -1){
+			return <audio controls>
+						<source src={this.state.previewFileUrl} type={type} />
+					</audio>
+		} else {
+			return (
+				<div style={{fontSize: 18, paddingTop: "20%"}}>
+					<p>{`Sorry, but file "${this.state.previewFileTitle}" is not supported for preview.`}</p>
+					<p>You may download it for further operations.</p>
+				</div>
+			)
+		}
+	}
+
 	render() {
 		const overlayStyle = {
 			position: 'absolute',
@@ -250,6 +297,7 @@ export default class MediaManager extends React.Component {
 					key={f.ETag}
 					primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
 					leftIcon={fileIconFromTitle(f.Key)}
+					onTouchTap={() => { this.openPreviewWindow(f.Key); }}
 					rightIconButton={
 						<IconButton
 							onTouchTap={() => {this.handleSelect(i)}}
@@ -296,17 +344,17 @@ export default class MediaManager extends React.Component {
 	            title={renderDialogTitle(
 							<Subheader style={{maxHeight: 48}}>
 			      				<div style={{display: 'flex'}}>
-								<div style={{paddingTop: 8, paddingRight: 10}}>
-									{(this.props.mode === MediaManagerMode.upload) ?
-										<MediaManagerIcon color={titleIconColor} />:
-										<Media color={titleIconColor}/>
-									}
-								</div>
-								<div style={{fontSize: 20,}}>
-			      					{(this.props.mode === MediaManagerMode.upload) ?
-			      					"Media Manager" :
-			      					"Pick your resources"}
-			      				</div>
+									<div style={{paddingTop: 8, paddingRight: 10}}>
+										{(this.props.mode === MediaManagerMode.upload) ?
+											<MediaManagerIcon color={titleIconColor} />:
+											<Media color={titleIconColor}/>
+										}
+									</div>
+									<div style={{fontSize: 20,}}>
+				      					{(this.props.mode === MediaManagerMode.upload) ?
+				      					"Media Manager" :
+				      					"Pick your resources"}
+				      				</div>
 			      				</div>
 		      				</Subheader>,
 							this.handleClose,
@@ -347,8 +395,46 @@ export default class MediaManager extends React.Component {
 					</div>}
 				</Dropzone>
 	          </Dialog>
+
 	          <Notification />
+
+	          <Dialog
+	          	open={this.state.previewFileUrl !== null}
+	          	titleStyle={{padding: 0}}
+	          	title={renderDialogTitle(
+	          		<Subheader style={{maxHeight: 48}}>
+	          			<div style={{display: 'flex'}}>
+							<div style={{paddingTop: 8, paddingRight: 10}}>
+								{fileIconFromTitle(this.state.previewFileTitle, previewIconColor)}
+							</div>
+							<div style={{fontSize: 20,}}>
+	          					{this.state.previewFileTitle}
+				      		</div>
+			      		</div>
+	          		</Subheader>,
+	          		this.closePreviewWindow,
+	          		null
+	          	)}
+	          	contentStyle={{width: "100%", height: "100%"}}
+	          	onRequestClose={this.closePreviewWindow}
+	          	bodyStyle={{minHeight: 400, maxHeight: 400}}
+	          	autoScrollBodyContent={true}
+	          	actions={[
+	          		<FlatButton 
+	          			label="Download"
+	          			primary={true}
+	          			labelStyle={{textTransform: 'none'}}
+	          			keyboardFocused={true}
+	          			href={this.state.previewFileUrl}
+	          		/>
+	          	]}
+	          	>
+	          	<div style={{textAlign: 'center'}}> 
+	          		{this.renderPreviewTag()}
+	          	</div>
+	          	</Dialog>
 	        </div>
 	    )
 	  }
 }
+
