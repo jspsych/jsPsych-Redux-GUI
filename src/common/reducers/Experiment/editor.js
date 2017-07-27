@@ -133,7 +133,6 @@ export function setPluginParamMode(state, action) {
 
 	// toggle effect
 	if (toggle) {
-		console.log(mode)
 		node.parameters[key].mode = (mode === node.parameters[key].mode) ? null : mode;
 	} else {
 		node.parameters[key].mode = mode;
