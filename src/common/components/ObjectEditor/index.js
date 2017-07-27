@@ -18,6 +18,7 @@ import {
   cyan500 as hoverColor,
   grey100 as toolbarColor,
   pink500 as clearColor,
+  blue500 as fixedTextColor,
   // grey50 as listBackgroundColor
 } from 'material-ui/styles/colors';
 
@@ -28,7 +29,7 @@ import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialF
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
 
-const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
+// const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
 const ObjectKeyErrorCode = {
 	Good: 0,
@@ -480,7 +481,12 @@ export default class ObjectEditor extends React.Component {
 
 		return (
 			<div>
-				<MenuItem onTouchTap={this.handleOpen} primaryText="[Data Object]" style={{color: fixedTextColor}}/>
+				<MenuItem 
+					onTouchTap={this.handleOpen} 
+					primaryText="[Data Object]" 
+					style={{color: fixedTextColor}}
+					title="Click to edit"
+				/>
 				<Dialog
 					open={open}
 					titleStyle={{padding: 0}}
