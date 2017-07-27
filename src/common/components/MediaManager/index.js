@@ -261,7 +261,7 @@ export default class MediaManager extends React.Component {
 		if(type.indexOf('image') > -1){
 			return <embed type={type} src={this.state.previewFileUrl} />
 		} else if(type.indexOf('video') > -1){
-			return <video controls width="100%" height={400}>
+			return <video controls width="100%" height={350} style={{paddingTop: 20}}>
 						<source src={this.state.previewFileUrl} type={type} />
 					</video>
 		} else if(type.indexOf('audio') > -1){
