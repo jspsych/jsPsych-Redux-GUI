@@ -29,11 +29,18 @@ class TrialForm extends React.Component {
 		props explanations:
 
 		param: Field name of a plugin's parameter
+		For example, "stimulus" would be the param 
+
 		paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
+		For example,  {
+				type: [jsPsych.plugins.parameterType.AUDIO],
+				default: undefined, 
+				no_function: false,
+				description: ''
+			} would be the paramInfo
 
 		*/
-		return Object.keys(parameters).map((param, i) => {
-				
+		return Object.keys(parameters).map((param, i) => {	
 			return (
 				<TrialFormItem 
 					param={param} 
