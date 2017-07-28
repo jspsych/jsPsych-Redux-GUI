@@ -87,33 +87,62 @@ export function setName(state, action) {
 	return new_state;
 }
 
+export function locateNestedParameterValue(parameters, path) {
+	let parameterValue = parameters;
+
+	if (typeof path === 'object') {
+		// find the complex type jsPsych plugin parameter
+		parameterValue = parameterValue[path.key];
+		path = path.next;
+		while (path) {
+			parameterValue = parameterValue.value[path.position][path.key];
+			path = path.next;
+		}
+	} else {
+		parameterValue = parameterValue[path];
+	}
+
+	return parameterValue;
+}
+
+
 /*
 Set plugin parameter value, (A complexDataObject defined above)
 
 action = {
-	key: name of param,
+	// can be object (linkedlist structure) 
+	// to denote path to value in complex type jsPsych plugin parameter
+	{
+		next: object,
+		position: number, // index
+		key: string,
+	}
+	key: name of param, 
 	value: new value,
 	setFunc: boolean,
 }
 */
 export function setPluginParam(state, action) {
-	let { key, value, mode } = action;
+	let { key: path, value, mode } = action;
 
 	// update state
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 
+	// handle Complex type jsPsych plugin parameter
+	let parameter = locateNestedParameterValue(node.parameters, path);
+
 	switch(mode) {
 		case ParameterMode.USE_FUNC:
-			node.parameters[key].func = createFuncObj(value);
+			parameter.func = createFuncObj(value);
 			break;
 		case ParameterMode.USE_TV:
 			// toggle effect
-			node.parameters[key].timelineVariable = (value === node.parameters[key].timelineVariable) ? null : value;
+			parameter.timelineVariable = (value === parameter.timelineVariable) ? null : value;
 			break;
 		default:
-			node.parameters[key].value = value;
+			parameter.value = value;
 	}
 
 	return new_state;
@@ -124,18 +153,20 @@ Set to use native js value or function or timelineVar (jsPsych)
 
 */
 export function setPluginParamMode(state, action) {
-	let { key, mode, toggle } = action;
+	let { key: path, mode, toggle } = action;
 
 	// update state
 	let new_state = Object.assign({}, state);
 	let node = deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 
+	let parameter = locateNestedParameterValue(node.parameters, path);
+
 	// toggle effect
 	if (toggle) {
-		node.parameters[key].mode = (mode === node.parameters[key].mode) ? null : mode;
+		parameter.mode = (mode === parameter.mode) ? null : mode;
 	} else {
-		node.parameters[key].mode = mode;
+		parameter.mode = mode;
 	}
 	
 
@@ -166,8 +197,13 @@ export function changePlugin(state, action) {
 		type: action.newPluginVal
 	};
 	for (let i = 0; i < paramKeys.length; i++) {
+		let paramInfo = params[paramKeys[i]];
+		let defaultValue = convertEmptyStringToNull(paramInfo.default);
+		if (paramInfo.array && !Array.isArray(defaultValue)) {
+			defaultValue = [];
+		}
 		// every trial data is a composite object defined above
-		paramsObject[paramKeys[i]] = createComplexDataObject(convertEmptyStringToNull(params[paramKeys[i]].default));
+		paramsObject[paramKeys[i]] = createComplexDataObject(defaultValue);
 	}
 
 	// update trial node

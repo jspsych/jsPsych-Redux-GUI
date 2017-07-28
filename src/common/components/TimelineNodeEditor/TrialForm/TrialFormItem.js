@@ -5,6 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import SelectField from 'material-ui/SelectField';
 import NumberInput from 'material-ui-number-input';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
@@ -12,18 +13,26 @@ import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
 import BocUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
+import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import {
   green500 as checkColor,
   cyan500 as boxCheckColor,
+  grey300 as evenSubItemBackgroundColor,
+  grey100 as oddSubItemBackgroundColor,
+  cyan500 as hoverColor,
 } from 'material-ui/styles/colors';
 
-import { convertNullToEmptyString } from '../../../utils';
+import { convertNullToEmptyString, deepCopy } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditorTrigger from '../../CodeEditorTrigger';
-import { ParameterMode } from '../../../reducers/Experiment/editor';
+import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import ObjectEditor from '../../../containers/ObjectEditor';
+import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
@@ -46,6 +55,30 @@ const processMediaPathTag = (s) => {
 	} else {
 		return s.replace(/<\/?path>/g, '');
 	}
+}
+
+function PathNode(key, position=-1, next=null) {
+	return {
+		key: key,
+		position: position,
+		next: next
+	};
+}
+
+const locateNestedParameterInfo = (paramInfo, path) => {
+	let parameterInfo = paramInfo;
+
+	if (typeof path === 'object') {
+		while (path) {
+			if (path.next) {
+				parameterInfo = parameterInfo.nested;
+				parameterInfo = parameterInfo[path.next.key];
+			}
+			path = path.next;
+		}
+	}
+
+	return parameterInfo
 }
 
 /*
@@ -72,8 +105,14 @@ export default class TrialFormItem extends React.Component {
 		useFileStr: false,
 		fileListStr: "",
 		fileStr: "",
+		subFormCollapse: false,
 	}
 
+	toggleSubFormCollapse = () => {
+		this.setState({
+			subFormCollapse: !this.state.subFormCollapse
+		})
+	}
 
 	setFileListStr = (str) => {
 		this.setState({
@@ -129,380 +168,212 @@ export default class TrialFormItem extends React.Component {
 		});
 	}
 
-	renderLabel = ({
-			description,
-			prettyName
-		}) => {
+	renderLabel = (param) => {
 
-		description = description || this.props.paramInfo.description;
-		prettyName = prettyName || this.props.paramInfo.pretty_name;
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 		<p
 			className="Trial-Form-Label-Container"
 		    style={labelStyle}
-		    title={description}
+		    title={parameterInfo.description}
 		>
-		    {`${prettyName}: `}
+		    {`${parameterInfo.pretty_name}: `}
 		</p>
-	)}
+		)
+	}
 
-	appendFunctionEditor = ({
-			param,
-			alternate = null,
-			code,
-			parameterMode,
-			setParamModeCallback,
-			submitCallback,
-			prettyName
-		}) => {
+	appendFunctionEditor = (param, alternate=null) => {
 
-		param = param || this.props.param;
-		code = code || this.props.parameters[param].func.code;
-		parameterMode = parameterMode || this.props.parameters[param].mode;
-		setParamModeCallback = setParamModeCallback || (() => { this.props.setParamMode(param); });
-		submitCallback = submitCallback || ((newCode) => { this.props.setFunc(param, newCode); });
-		prettyName = prettyName || this.props.paramInfo.pretty_name;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 		((this.state.showTool || 
 			this.state.openFuncEditor || 
-			parameterMode === ParameterMode.USE_FUNC) &&
-			parameterMode !== ParameterMode.USE_TV) ?
+			parameterValue.mode === ParameterMode.USE_FUNC) &&
+			parameterValue.mode !== ParameterMode.USE_TV) ?
 			    <CodeEditorTrigger 
-			    	setParamMode={setParamModeCallback}
-					useFunc={parameterMode === ParameterMode.USE_FUNC}
+			    	setParamMode={() => { this.props.setParamMode(param); }}
+					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
-					initCode={convertNullToEmptyString(code)} 
+					initCode={convertNullToEmptyString(parameterValue.func.code)} 
 					openCallback={this.showFuncEditor}
 					closeCallback={this.hideFuncEditor}
-                    submitCallback={submitCallback}
-                    title={`${prettyName}: `}
+                    submitCallback={(newCode) => { 
+                      this.props.setFunc(param, newCode);
+                    }}
+                    title={`${parameterInfo.pretty_name}: `}
         		/>:
         		alternate
 	)}
 
-	appendTimelineVariable = ({
-			param,
-			prettyName,
-			alternate = null,
-			selectedTV,
-			parameterMode,
-			setParamModeCallback,
-			submitCallback,
-		}) => {
+	appendTimelineVariable = (param, alternate=null) => {
 
-		param = param || this.props.param;
-		prettyName = prettyName || this.props.paramInfo.pretty_name;
-		selectedTV = selectedTV || this.props.parameters[param].timelineVariable;
-		parameterMode = parameterMode || this.props.parameters[param].mode;
-		setParamModeCallback = setParamModeCallback || (() => { this.props.setParamMode(param, ParameterMode.USE_TV); });
-		submitCallback = submitCallback || ((newTV) => { this.props.setTimelineVariable(param, newTV); });
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		return	(
-			((this.state.showTool || 
-				this.state.openTimelineVariable || 
-				parameterMode === ParameterMode.USE_TV) &&
-				parameterMode !== ParameterMode.USE_FUNC) ?
-			<TimelineVariableSelector 
-				openCallback={this.showTVSelector}
-				closeCallback={this.hideTVSelector}
-				useTV={parameterMode === ParameterMode.USE_TV}
-				title={`${prettyName}: `}
-				selectedTV={selectedTV}
-				submitCallback={submitCallback}
-				setParamMode={setParamModeCallback}
-			/> :
-			null
+		return (
+		((this.state.showTool || 
+			this.state.openTimelineVariable || 
+			parameterValue.mode === ParameterMode.USE_TV) &&
+			parameterValue.mode !== ParameterMode.USE_FUNC) ?
+		<TimelineVariableSelector 
+			openCallback={this.showTVSelector}
+			closeCallback={this.hideTVSelector}
+			useTV={parameterValue.mode === ParameterMode.USE_TV}
+			title={`${parameterInfo.pretty_name}: `}
+			selectedTV={parameterValue.timelineVariable}
+			submitCallback={(newTV) => {
+				this.props.setTimelineVariable(param, newTV);
+			}}
+			setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+		/> :
+		null
 		)
 	}
 
-	renderFieldContent = ({
-			param,
-			node = null,
-			parameterMode,
-			timelineVariableValue
-		}) => {
+	renderFieldContent = (param, node) => {
 
-		param = param || this.props.param;
-		parameterMode = parameterMode || this.props.parameters[param].mode;
-		timelineVariableValue = timelineVariableValue || this.props.parameters[param].timelineVariable;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		switch(parameterMode) {
+		switch(parameterValue.mode) {
 			case ParameterMode.USE_FUNC:
 				return <MenuItem primaryText="[Custom Code]" style={{paddingTop: 2}} disabled={true} />;
 			case ParameterMode.USE_TV:
 				return <MenuItem
-							primaryText={`[TV: ${timelineVariableValue}]`}
+							primaryText="[Timeline Variable]"
 							style={{paddingTop: 2}} 
-							title="[Timeline Variable]"
+							title={parameterValue.timelineVariable}
 							disabled={true} />;
 			default:
 				return node;
 		}
 	}
+	// primaryText={`[${(this.props.parameters[param].timelineVariable ? this.props.parameters[param].timelineVariable : "Timeline Variable")}]`}
 	
-	renderTextField = ({
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
+	renderTextField = (param) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || ((e, v) => { this.props.setText(this.props.param, v); });
-
-		let value = compositeValue.value;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 		  <div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel({description, prettyName})}
+			{this.renderLabel(param)}
 		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-		    {this.renderFieldContent({param: param,
-			    node: <TextField
-				      	id={`text-field-${param}`}
-				      	value={convertNullToEmptyString(value)}
-				      	min={-1}
-				      	fullWidth={true}
-				      	onChange={onChange}
-				    />,
-				parameterMode: compositeValue.mode,
-				timelineVariableValue: compositeValue.timelineVariable
-				})
+		    {this.renderFieldContent(param,
+			    <TextField
+			      id={"text-field-"+param}
+			      value={convertNullToEmptyString(parameterValue.value)}
+			      min={-1}
+			      fullWidth={true}
+			      onChange={(e, v) => { this.props.setText(param, v); }}
+			    />)
 			}
-			{
-				this.appendFunctionEditor({
-					param,
-					prettyName,
-					code: compositeValue.func.code,
-					parameterMode: compositeValue.mode,
-					setParamModeCallback: setParamModeFuncCallback,
-					submitCallback: submitFuncCallback,
-				})
-			}
-			{
-				this.appendTimelineVariable({
-					param,
-					prettyName,
-					selectedTV: compositeValue.timelineVariable,
-					parameterMode: compositeValue.mode,
-					setParamModeCallback: setParamModeTimelineVariableCallback,
-					submitCallback: submitTimelineVariableCallback
-				})
-			}
+			{this.appendFunctionEditor(param)}
+			{this.appendTimelineVariable(param)}
 		    </div>
 		  </div>
 	  )}
 
-	renderNumberField = ({
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
+	renderNumberField = (param) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || ((e, v) => { 
-			this.props.setNumber(this.props.param, v, EnumPluginType.FLOAT===this.props.paramInfo.type); 
-		});
-
-		let value = compositeValue.value;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
-				{this.renderLabel({description, prettyName})}
+				{this.renderLabel(param)}
 			    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-				    {this.renderFieldContent({
-				    	param: param,
-					    node: <NumberInput
-					      id={`number-field-${param}`}
-					      value={convertNullToEmptyString(value).toString()}
+				    {this.renderFieldContent(param,
+					    <NumberInput
+					      id={"number-field-"+param}
+					      value={convertNullToEmptyString(parameterValue.value).toString()}
 					      fullWidth={true}
-					      onChange={onChange}
-					    />,
-						parameterMode: compositeValue.mode,
-						timelineVariableValue: compositeValue.timelineVariable
-						})
+					      onChange={(e, v) => {
+								this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
+							}}
+					    />)
 					}
-					{
-						this.appendFunctionEditor({
-							param,
-							prettyName,
-							code: compositeValue.func.code,
-							parameterMode: compositeValue.mode,
-							setParamModeCallback: setParamModeFuncCallback,
-							submitCallback: submitFuncCallback,
-						})
-					}
-					{
-						this.appendTimelineVariable({
-							param,
-							prettyName,
-							selectedTV: compositeValue.timelineVariable,
-							parameterMode: compositeValue.mode,
-							setParamModeCallback: setParamModeTimelineVariableCallback,
-							submitCallback: submitTimelineVariableCallback
-						})
-					}
+					{this.appendFunctionEditor(param)}
+					{this.appendTimelineVariable(param)}
 			    </div>
 		  </div>
 		)
 	}
 
-	renderToggle = ({
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || (() => { this.props.setToggle(this.props.param); });
+	renderToggle = (param) => {
 
-		let value = compositeValue.value;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		return	(
-			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-		      	{this.renderLabel({description, prettyName})}
-		      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-		      		{this.renderFieldContent({param,
-				        node:<IconButton 
-					          onTouchTap={onChange} 
-					          >
-					        {(value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-					        </IconButton>,
-							parameterMode: compositeValue.mode,
-							timelineVariableValue: compositeValue.timelineVariable
-							})
-				    }
-				    {
-						this.appendFunctionEditor({
-							param,
-							prettyName,
-							code: compositeValue.func.code,
-							parameterMode: compositeValue.mode,
-							setParamModeCallback: setParamModeFuncCallback,
-							submitCallback: submitFuncCallback,
-						})
-					}
-					{
-						this.appendTimelineVariable({
-							param,
-							prettyName,
-							selectedTV: compositeValue.timelineVariable,
-							parameterMode: compositeValue.mode,
-							setParamModeCallback: setParamModeTimelineVariableCallback,
-							submitCallback: submitTimelineVariableCallback
-						})
-					}
-		        </div>
-		    </div>
+		return (
+		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+	      	{this.renderLabel(param)}
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+	      		{this.renderFieldContent(param,
+			        <IconButton 
+			          onTouchTap={() => { this.props.setToggle(param); }} 
+			          >
+			        {(parameterValue.value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
+			        </IconButton>)
+			    }
+			    {this.appendFunctionEditor(param)}
+			    {this.appendTimelineVariable(param)}
+	        </div>
+	    </div>
 		)
 	}
 
-	renderFunctionEditor = ({
-			param,
-			paramInfo,
-			compositeValue,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		setParamModeFuncCallback = setParamModeFuncCallback || (() => { this.props.setParamMode(param); });
-		setParamModeTimelineVariableCallback = setParamModeTimelineVariableCallback || (() => { this.props.setParamMode(param, ParameterMode.USE_TV); });
-		submitFuncCallback = submitFuncCallback || ((newCode) => { this.props.setFunc(param, newCode); });
-		submitTimelineVariableCallback = submitTimelineVariableCallback || ((newTV) => { this.props.setTimelineVariable(param, newTV); });
+	renderFunctionEditor = (param) => {
 
-		let code = compositeValue.func.code;
-		let mode = compositeValue.mode;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		return (<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-		      	{this.renderLabel({description, prettyName})}
-		      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-		      		{this.renderFieldContent({param, 
-		      			node: <MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />,
-							parameterMode: compositeValue.mode,
-							timelineVariableValue: compositeValue.timelineVariable
-							})}
-				    <CodeEditorTrigger 
-						initCode={convertNullToEmptyString(code)} 
-	                    submitCallback={submitFuncCallback}
-	                    useFunc={mode === ParameterMode.USE_FUNC}
-						showEditMode={true}
-	                    setParamMode={setParamModeFuncCallback}
-	                    title={`${prettyName}: `}
-	        		/>
-	        		{((this.state.showTool || 
-					this.state.openTimelineVariable || 
-					mode === ParameterMode.USE_TV)) ?
-	        		<TimelineVariableSelector 
-						openCallback={this.showTVSelector}
-						closeCallback={this.hideTVSelector}
-						useTV={mode === ParameterMode.USE_TV}
-						title={`${prettyName}: `}
-						selectedTV={compositeValue.timelineVariable}
-						submitCallback={submitTimelineVariableCallback}
-						setParamMode={setParamModeTimelineVariableCallback}
-					/> :
-					null}
-		        </div>
-		    </div>
+		return (
+		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+	      	{this.renderLabel(param)}
+	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+	      		{this.renderFieldContent(param, 
+	      			<MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />
+	      		)}
+			    <CodeEditorTrigger 
+					initCode={convertNullToEmptyString(parameterValue.func.code)} 
+                    submitCallback={(newCode) => { 
+                      this.props.setFunc(param, newCode);
+                    }}
+                    useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
+					showEditMode={true}
+                    setParamMode={() => { this.props.setParamMode(param); }}
+                    title={`${parameterInfo.pretty_name}: `}
+        		/>
+        		{((this.state.showTool || 
+				this.state.openTimelineVariable || 
+				parameterValue.mode === ParameterMode.USE_TV)) ?
+        		<TimelineVariableSelector 
+					openCallback={this.showTVSelector}
+					closeCallback={this.hideTVSelector}
+					useTV={parameterValue.mode === ParameterMode.USE_TV}
+					title={`${parameterInfo.pretty_name}: `}
+					selectedTV={parameterValue.timelineVariable}
+					submitCallback={(newTV) => {
+						this.props.setTimelineVariable(param, newTV);
+					}}
+					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+				/> :
+				null}
+	        </div>
+	    </div>
 		)
 	}
 
-	renderKeyboardInput = ({
-			param = this.props.param,
-			paramInfo = this.props.paramInfo,
-			compositeValue = this.props.parameters[this.props.param],
-			onChange,
-			onClickToggle,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
+	renderKeyboardInput = (param) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || ((str, flag, isArray) => { this.props.setKey(this.props.param, str, flag, isArray); });
-		onClickToggle = onClickToggle || ((isAllKey) => {
-				if (isAllKey) {
-					this.props.setKey(this.props.param, null, true);
-				} else {
-					this.props.setKey(this.props.param, jsPsych.ALL_KEYS, true);
-				}
-			}
-		);
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let { description, pretty_name: prettyName } = paramInfo;
-
-		let value = compositeValue.value;
+		let value = parameterValue.value;
 		if (Array.isArray(value)) {
 			let s = "";
 			for (let v of value) {
@@ -512,12 +383,17 @@ export default class TrialFormItem extends React.Component {
 			}
 			value = s;
 		}
-		
 		let isAllKey = value === jsPsych.ALL_KEYS;
-		let isArray = !!paramInfo.array;
+		let isArray = !!this.props.paramInfo.array;
 
-		let alternate = (<IconButton 
-				onTouchTap={() => { onClickToggle(param, isAllKey); }}
+		let alternativeNode = (<IconButton 
+				onTouchTap={() => {
+					if (isAllKey) {
+						this.props.setKey(param, null, true);
+					} else {
+						this.props.setKey(param, jsPsych.ALL_KEYS, true);
+					}
+				}}
 				tooltip="All Keys"
 				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
@@ -526,353 +402,327 @@ export default class TrialFormItem extends React.Component {
 
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel({description, prettyName})}
+			{this.renderLabel(param)}
 		    <div 
 		    	className="Trial-Form-Content-Container" 
 		    	onMouseEnter={(isAllKey) ? ()=>{} : this.showTool} 
 		    	onMouseLeave={this.hideTool}
 		    >
-		    {this.renderFieldContent({param,
-			    node: (isAllKey) ?
-				    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
-				    <TextField
-				      id={`${this.props.id}-text-field-${param}`}
-				      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
-				      fullWidth={true}
-				      onChange={(e, v) => { this.setKeyListStr(v); }}
-				      maxLength={(isArray) ?  null : "1"}
-				      onFocus={() => {
-				      	this.setKeyListStr(convertNullToEmptyString(value));
-				      	this.setState({
-				      		useKeyListStr: true
-				      	});
-				      }}
-				      onBlur={() => {
-				      	onChange(this.state.keyListStr, false, isArray);
-				      	this.setState({
-				      		useKeyListStr: false
-				      	})
-				      }}
-				      onKeyPress={(e) => {
-				      	if (e.which === 13) {
-				      		document.activeElement.blur();
-				      	}
-				      }}
-				    />,
-						parameterMode: compositeValue.mode,
-						timelineVariableValue: compositeValue.timelineVariable
-						})
+		    {this.renderFieldContent(param,
+			    (isAllKey) ?
+			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
+			    <TextField
+			      id={this.props.id+"-text-field-"+param}
+			      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
+			      fullWidth={true}
+			      onChange={(e, v) => { this.setKeyListStr(v); }}
+			      maxLength={(isArray) ?  null : "1"}
+			      onFocus={() => {
+			      	this.setKeyListStr(convertNullToEmptyString(value));
+			      	this.setState({
+			      		useKeyListStr: true
+			      	});
+			      }}
+			      onBlur={() => {
+			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
+			      	this.setState({
+			      		useKeyListStr: false
+			      	})
+			      }}
+			      onKeyPress={(e) => {
+			      	if (e.which === 13) {
+			      		document.activeElement.blur();
+			      	}
+			      }}
+			    />)
 			}
-			{
-				this.appendFunctionEditor({
-					param,
-					alternate,
-					prettyName,
-					code: compositeValue.func.code,
-					parameterMode: compositeValue.mode,
-					setParamModeCallback: setParamModeFuncCallback,
-					submitCallback: submitFuncCallback,
-				})
-			}
-			{
-				this.appendTimelineVariable({
-					param,
-					alternate,
-					prettyName,
-					selectedTV: compositeValue.timelineVariable,
-					parameterMode: compositeValue.mode,
-					setParamModeCallback: setParamModeTimelineVariableCallback,
-					submitCallback: submitTimelineVariableCallback
-				})
-			}
+			{this.appendFunctionEditor(param, alternativeNode)}
+			{this.appendTimelineVariable(param, alternativeNode)}
 		    </div>
 		  </div>
 	)}
 
-	renderSelect = ({
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
+	renderSelect = (param) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || ((event, index, value) => { this.props.setText(this.props.param, value); });
-
-		let value = compositeValue.value;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      	{this.renderLabel({description, prettyName})}
-	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-	      		{this.renderFieldContent({param,
-					node: <SelectField
-					    	value={convertNullToEmptyString(value)}
-					    	onChange={onChange}
-					     >
-					     {paramInfo.options.map((op, i) => (
-					     	<MenuItem value={op} primaryText={op} key={`${op}-${i}`}/>
-					     ))}
-					     </SelectField>,
-							parameterMode: compositeValue.mode,
-							timelineVariableValue: compositeValue.timelineVariable
-							})
-				}
-				{
-					this.appendFunctionEditor({
-						param,
-						prettyName,
-						code: compositeValue.func.code,
-						parameterMode: compositeValue.mode,
-						setParamModeCallback: setParamModeFuncCallback,
-						submitCallback: submitFuncCallback,
-					})
-				}
-				{
-					this.appendTimelineVariable({
-						param,
-						prettyName,
-						selectedTV: compositeValue.timelineVariable,
-						parameterMode: compositeValue.mode,
-						setParamModeCallback: setParamModeTimelineVariableCallback,
-						submitCallback: submitTimelineVariableCallback
-					})
-				}
-	        </div>
-	    </div>
+	      		{this.renderLabel(param)}
+		      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+		      		{this.renderFieldContent(param,
+					    <SelectField
+					    	value={convertNullToEmptyString(parameterValue.value)}
+					    	onChange={(event, index, value) => {
+					    		this.props.setText(param, value);
+					    	}}
+					    >
+					    {this.props.paramInfo.options.map((op, i) => (
+					    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
+					    ))}
+					    </SelectField>)
+					}
+					{this.appendFunctionEditor(param)}
+					{this.appendTimelineVariable(param)}
+		        </div>
+	   		</div>
 		)
 	}
 
-	renderMediaSelector = ({
-			multiSelect = false,
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			onUpdateInput,
-			mediaInsertCallback,
-			setParamModeFuncCallback = null,
-			setParamModeTimelineVariableCallback = null,
-			submitFuncCallback = null,
-			submitTimelineVariableCallback = null,
-		}) => {
+	renderMediaSelector = (param, multiSelect) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || (() => { 
-				this.props.fileArrayInput(
-					this.props.param,
-					this.state.fileListStr, 
-					this.props.s3files.Prefix, 
-					this.props.filenames
-			);
-		});
-		onUpdateInput = onUpdateInput || ((t) => { 
-			this.props.autoFileInput(this.props.param, t, this.props.s3files.Prefix, this.props.filenames); 
-		});
-		mediaInsertCallback = mediaInsertCallback || ((selected, handleClose) => {
-			this.props.insertFile(
-				this.props.param,
-				this.props.s3files,
-				multiSelect,
-				selected,
-				handleClose,
-			);
-		});
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let { description, pretty_name: prettyName } = paramInfo;
-		let selectedFilesString = processMediaPathTag(compositeValue.value);
-		let mode = compositeValue.mode;
+		let selectedFilesString = processMediaPathTag(parameterValue.value);
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-				{this.renderLabel({description, prettyName})}
+				{this.renderLabel(param)}
 	      		<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-	      			{this.renderFieldContent({
-	      				param, 
-	      				node:
+	      			{this.renderFieldContent(param, 
 	      				(multiSelect) ?
-		      				<TextField 
-									id={"Selected-File-Input-"+param}
-									multiLine={true}
-									rowsMax={3}
-									rows={1}
-									fullWidth={true}
-									value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
-									onChange={(e, v) => { 
-										this.setFileListStr(v); 
-									}}
-									onFocus={() => {
-										this.setFileListStr(selectedFilesString);
-										this.setState({
-											useFileStr: true
-										});
-									}}
-									onBlur={() => { 
-										onChange();
-										this.setFileListStr(selectedFilesString);
-										this.setState({
-											useFileStr: false
-										});
-									}}
-									onKeyPress={(e) => {
-										if (e.which === 13) {
-											document.activeElement.blur();
-										}
-									}}
-								/> :
-								<AutoComplete
-									id={"Selected-File-Input-"+param}
-									fullWidth={true}
-									searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
-									title={selectedFilesString}
-									dataSource={this.props.filenames}
-									filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
-									listStyle={{maxHeight: 200, overflowY: 'auto'}}
-									onUpdateInput={(t) => { 
-										this.setFileStr(t); 
-										if (t !== selectedFilesString && this.props.filenames.indexOf(t) > -1) {
-											onUpdateInput(t);
-										}
-									}}
-									onFocus={() => {
-										this.setState({
-											useFileStr: true
-										});
-									}}
-									onNewRequest={(s, i) => {
-										if (i !== -1 && s !== selectedFilesString) {
-											onUpdateInput(s);
-										} else if (this.state.fileStr !== selectedFilesString) {
-											onUpdateInput(this.state.fileStr);
-										}
-										this.setFileStr(selectedFilesString);
-										this.setState({
-											useFileStr: false
-										});
-									}}
-								/>
-		      			,
-						parameterMode: compositeValue.mode,
-						timelineVariableValue: compositeValue.timelineVariable
-						})
-	      			}
-	      			{(mode !== ParameterMode.USE_TV &&
-	      				mode !== ParameterMode.USE_FUNC) ? 
+	      				<TextField 
+								id={"Selected-File-Input-"+param}
+								multiLine={true}
+								rowsMax={3}
+								rows={1}
+								fullWidth={true}
+								value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
+								onChange={(e, v) => { 
+									this.setFileListStr(v); 
+								}}
+								onFocus={() => {
+									this.setFileListStr(selectedFilesString);
+									this.setState({
+										useFileStr: true
+									});
+								}}
+								onBlur={() => { 
+									this.props.fileArrayInput(
+										param,
+										this.state.fileListStr, 
+										this.props.s3files.Prefix, 
+										this.props.filenames);
+									this.setFileListStr(selectedFilesString);
+									this.setState({
+										useFileStr: false
+									});
+								}}
+								onKeyPress={(e) => {
+									if (e.which === 13) {
+										document.activeElement.blur();
+									}
+								}}
+							/> :
+							<AutoComplete
+								id={"Selected-File-Input-"+param}
+								fullWidth={true}
+								searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
+								title={selectedFilesString}
+								dataSource={this.props.filenames}
+								filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
+								listStyle={{maxHeight: 200, overflowY: 'auto'}}
+								onUpdateInput={(t) => { 
+									this.setFileStr(t); 
+									if (t !== selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+										this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
+									}
+								}}
+								onFocus={() => {
+									this.setState({
+										useFileStr: true
+									});
+								}}
+								onNewRequest={(s, i) => {
+									if (i !== -1 && s !== selectedFilesString) {
+										this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
+									} else if (this.state.fileStr !== selectedFilesString) {
+										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+									}
+									this.setFileStr(selectedFilesString);
+									this.setState({
+										useFileStr: false
+									});
+								}}
+							/>
+
+	      			)}
+	      			{(this.props.parameters[param].mode !== ParameterMode.USE_TV &&
+	      				this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ? 
 	      				<MediaManager 
 	      					parameterName={param} 
 	      					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-	      					insertCallback={mediaInsertCallback}
+	      					insertCallback={(selected, handleClose) => {
+	      						this.props.insertFile(
+	      							param,
+									this.props.s3files,
+									multiSelect,
+									selected,
+									handleClose,
+								);
+
+	      					}}
 	      				/> :
 	      				null
 	      			}
-	      			{
-					this.appendFunctionEditor({
-						param,
-						prettyName,
-						code: compositeValue.func.code,
-						parameterMode: compositeValue.mode,
-						setParamModeCallback: setParamModeFuncCallback,
-						submitCallback: submitFuncCallback,
-					})
-					}
-					{
-						this.appendTimelineVariable({
-							param,
-							prettyName,
-							selectedTV: compositeValue.timelineVariable,
-							parameterMode: compositeValue.mode,
-							setParamModeCallback: setParamModeTimelineVariableCallback,
-							submitCallback: submitTimelineVariableCallback
-						})
-					}
+	      			{this.appendFunctionEditor(param)}
+					{this.appendTimelineVariable(param)}
 	      		</div>
 	    	</div>
 	    	)
 	}
 
-	renderObjectEditor = ({
-			param,
-			paramInfo,
-			compositeValue,
-			onChange,
-			setParamModeFuncCallback = null,
-			submitFuncCallback = null,
-		}) => {
+	renderObjectEditor = (param) => {
 
-		param = param || this.props.param;
-		paramInfo = paramInfo || this.props.paramInfo;
-		compositeValue = compositeValue || this.props.parameters[this.props.param];
-		onChange = onChange || ((obj) => { this.props.setObject(this.props.param, obj); });
-
-		let value = compositeValue.value;
-		let { description, pretty_name: prettyName } = paramInfo;
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-			{this.renderLabel({description, prettyName})}
+			{this.renderLabel(param)}
 			<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-				{this.renderFieldContent({param, 
-					node: <ObjectEditor
-						targetObj={value}
-						title={`${prettyName}: `}
+				{this.renderFieldContent(param, 
+					<ObjectEditor
+						targetObj={parameterValue.value}
+						title={`${parameterInfo.pretty_name}: `}
 						keyName={param}
-						submitCallback={onChange}
-					/>,
-						parameterMode: compositeValue.mode,
-						timelineVariableValue: compositeValue.timelineVariable
-						})}
-				{
-					this.appendFunctionEditor({
-						param,
-						prettyName,
-						code: compositeValue.func.code,
-						parameterMode: compositeValue.mode,
-						setParamModeCallback: setParamModeFuncCallback,
-						submitCallback: submitFuncCallback,
-					})
-				}
+						submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					/>
+				)}
+				{this.appendFunctionEditor(param)}
 			</div>
 			</div>
 		)
 	}
 
-	renderItem = () => {
-		let { paramInfo, param } = this.props;
-		let paramType = paramInfo.type;
+	renderComplex = (param) => {
+
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+
+		return (
+			<div style={{width: "100%"}}>
+				<div style={{display: 'flex', width: "100%", position: 'relative'}}>
+		      		{this.renderLabel(param)}
+			      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
+			      		{this.renderFieldContent(param, 
+			      			<IconButton
+			      				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
+			      				onTouchTap={this.toggleSubFormCollapse}
+			      			>
+			      			{(this.state.subFormCollapse) ? 
+			      				<CollapseIcon hoverColor={hoverColor} /> :
+			      				<ExpandIcon hoverColor={hoverColor} />
+			      			}
+			      			</IconButton>
+			      			)}
+						{this.appendFunctionEditor(param)}
+						{this.appendTimelineVariable(param)}
+			        </div>
+			    </div>
+			    {(parameterValue.mode === ParameterMode.USE_FUNC ||
+			    	parameterValue.mode === ParameterMode.USE_TV ||
+			    	this.state.subFormCollapse) ?
+			    null :
+			    <div style={{paddingLeft: "35%"}}>
+			    	{
+			    		parameterValue.value.map((p, i) => {
+			    			let items = Object.keys(parameterInfo.nested).map((key, j) => {
+			    				let newParam = deepCopy(param);
+				    			if (typeof newParam !== 'object') {
+				    				newParam = new PathNode(newParam);
+				    			}
+				    			let cur = newParam;
+				    			while (cur.next) cur = cur.next;
+				    			cur.next = new PathNode(key, i);
+				    			return <TrialFormItemContainer 
+				    						key={`${this.props.param}-${key}-${j}`}
+				    						param={newParam}
+				    						paramInfo={this.props.paramInfo}
+				    					/>
+			    			});
+
+			    			let iconStyle = {
+			    				width: 16,
+			    				height: 16
+			    			}
+
+			    			let iconButtonStyle = {
+			    				...iconStyle,
+			    				padding: 0
+			    			}
+
+			   				return (
+			   					<div 
+			   						key={`complex-jsPysch-trial-item-container-${i}`} 
+			   						style={{
+			   							backgroundColor: (i%2 === 1) ? evenSubItemBackgroundColor : oddSubItemBackgroundColor,
+			   						}}
+			   						>
+			   						<div 
+			   							style={{ float: 'right', padding: 0, paddingRight: 5, paddingTop: 5}}
+			   							key={`complex-jsPysch-trial-item-delete-conainer-${i}`} 
+			   						>
+				   						<IconButton  
+				   							key={`complex-jsPysch-trial-item-delete-${i}`} 
+				   							iconStyle={iconStyle}
+				   							style={iconButtonStyle}
+				   							onTouchTap={() => {this.props.depopulateComplex(param, i)}}
+				   						>
+				   							<DeleteSubItemIcon />
+				   						</IconButton>
+			   						</div>
+			   						{items}
+			   					</div>
+			   				)
+
+			    		})
+			    	}
+			    	<div style={{paddingTop: 5, float: 'right'}}>
+				    	<FloatingActionButton 
+				    		mini={true} 
+				    		onTouchTap={() => {this.props.populateComplex(param, parameterInfo.nested)}}
+				    	>
+				    		<ContentAdd />
+				    	</FloatingActionButton>
+			    	</div>
+			    </div>
+				}
+	   		</div>
+		)
+	}
+
+	renderItem = (param=this.props.param) => {
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let paramType = parameterInfo.type;
 		switch(paramType) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
 					// check if is array
-					return this.renderMediaSelector({multiSelect: !!paramInfo.array});
+					return this.renderMediaSelector(param, !!parameterInfo.array);
 				case EnumPluginType.BOOL:
-					return this.renderToggle({});
+					return this.renderToggle(param);
 				case EnumPluginType.INT:
 				case EnumPluginType.FLOAT:
-					return this.renderNumberField({});
+					return this.renderNumberField(param);
 				case EnumPluginType.FUNCTION:
-					return this.renderFunctionEditor({});
+					return this.renderFunctionEditor(param);
 				// same different
 				case EnumPluginType.SELECT:
-					return this.renderSelect({});
+					return this.renderSelect(param);
 				case EnumPluginType.KEYCODE:
-					return this.renderKeyboardInput({});
+					return this.renderKeyboardInput(param);
 				case EnumPluginType.OBJECT:
-					return this.renderObjectEditor({});
+					return this.renderObjectEditor(param);
 				case EnumPluginType.COMPLEX:
+					return this.renderComplex(param);
 				case EnumPluginType.HTML_STRING:
 				case EnumPluginType.STRING:
 				default:
-					return this.renderTextField({});
+					return this.renderTextField(param);
 		}
 	}
 

@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
 import * as editorActions from '../../../actions/editorActions';
 import { convertEmptyStringToNull } from '../../../utils';
-import { ParameterMode } from '../../../reducers/Experiment/editor';
+import { ParameterMode, locateNestedParameterValue, createComplexDataObject } from '../../../reducers/Experiment/editor';
 import { MediaPathTag } from '../../../backend/deploy';
 import * as notify from '../../Notification';
 
@@ -146,6 +146,38 @@ const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
 	dispatch(editorActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
 }
 
+const populateComplex = (dispatch, key, paramInfo) => {
+	let paramPairs = Object.keys(paramInfo).map(k => ({key: k, value: paramInfo[k]}));
+
+	dispatch((dispatch, getState) => {
+		let experimentState = getState().experimentState;
+		let node = experimentState[experimentState.previewId];
+		let parameterValue = locateNestedParameterValue(node.parameters, key);
+		let updatedParameterValue = parameterValue.value.slice();
+		let update = {};
+		for (let entry of paramPairs) {
+			let defaultValue = entry.value.default;
+			if (entry.value.array && !entry.value.default) {
+				defaultValue = [];
+			}
+			update[entry.key] = createComplexDataObject(defaultValue);
+		}
+		updatedParameterValue.push(update);
+		dispatch(editorActions.setPluginParamAction(key, updatedParameterValue));
+	}) 
+}
+
+const depopulateComplex = (dispatch, key, index) => {
+	dispatch((dispatch, getState) => {
+		let experimentState = getState().experimentState;
+		let node = experimentState[experimentState.previewId];
+		let parameterValue = locateNestedParameterValue(node.parameters, key);
+		let updatedParameterValue = parameterValue.value.slice();
+		updatedParameterValue.splice(index, 1);
+		dispatch(editorActions.setPluginParamAction(key, updatedParameterValue));
+	}) 
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let node = experimentState[experimentState.previewId];
@@ -176,7 +208,9 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
 	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
 	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
-	setObject: (key, obj) => { setObject(dispatch, key, obj); }
+	setObject: (key, obj) => { setObject(dispatch, key, obj); },
+	populateComplex: (key, paramInfo) => { populateComplex(dispatch, key, paramInfo); },
+	depopulateComplex: (key, index) => { depopulateComplex(dispatch, key, index); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrialFormItem);
