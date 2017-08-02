@@ -35,49 +35,8 @@
     overflow-y: auto;
 }
 
-
-/*
-.react-context-menu.react-context-menu--visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.react-context-menu-item {
-    padding: 3px 20px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #373a3c;
-    text-align: inherit;
+.truncate-long-string {
     white-space: nowrap;
-    background: 0 0;
-    border: 0;
-    cursor: pointer;
-    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
-.react-context-menu-item.react-context-menu-item--active,
-.react-context-menu-item.react-context-menu-item--selected {
-    color: #fff;
-    background-color: #20a0ff;
-    border-color: #20a0ff;
-    text-decoration: none;
-}
-
-.react-context-menu-item.react-context-menu-item--disabled,
-.react-context-menu-item.react-context-menu-item--disabled:hover {
-    color: #878a8c;
-    background-color: transparent;
-    border-color: rgba(0,0,0,.15);
-}
-
-.react-context-menu-item--divider {
-    margin-bottom: 3px;
-    padding: 2px 0;
-    border-bottom: 1px solid rgba(0,0,0,.15);
-    cursor: inherit;
-}
-.react-context-menu-item--divider:hover {
-    background-color: transparent;
-    border-color: rgba(0,0,0,.15);
-}
-*/

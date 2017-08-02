@@ -84,7 +84,7 @@ const convertReserved = (s) => {
 	}
 }
 
-const ObjectValueTextColor = (value) => {
+const ValueTextColor = (value) => {
 	switch(typeof value) {
 		case 'string':
 			return 'green';
@@ -183,7 +183,14 @@ class ObjectValue extends React.Component {
 			(complexDataObject.mode === ParameterMode.USE_TV) ? 
 			<MenuItem 
 				style={{minWidth: 200, maxWidth: 200, textAlign: 'center'}}
-				primaryText={`[TV: ${complexDataObject.timelineVariable}]`}
+				primaryText={
+					<p 
+						className='truncate-long-string' 
+						title={`Timeline variable: ${complexDataObject.timelineVariable}`}
+					>
+						{`[Timeline variable]`}
+					</p>
+				}
 				disabled={true} 
 				/> :
 			(this.state.edit) ? 
@@ -196,13 +203,20 @@ class ObjectValue extends React.Component {
 								} 
 							}}
 							onChange={(e, v) => { this.props.setObjectValue(v); }}
-							inputStyle={{color: ObjectValueTextColor(value)}}
+							inputStyle={{color: ValueTextColor(value)}}
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
 				<MenuItem 
 					onTouchTap={this.enterEditMode} 
-					primaryText={displayValue} 
-					style={{minWidth: 200, maxWidth: 200, color: ObjectValueTextColor(value), textAlign: 'center'}}
+					primaryText={
+						<p 
+							className='truncate-long-string'
+							title={displayValue}
+						>
+						{displayValue}
+						</p>
+					}
+					style={{minWidth: 200, maxWidth: 200, color: ValueTextColor(value), textAlign: 'center'}}
 				/>
 			)
 	}

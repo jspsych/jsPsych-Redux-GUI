@@ -337,12 +337,12 @@ class App extends React.Component {
 		} = this;
 
 		return (
-			<div className="App" style={{overflow: 'hidden', height: "100%"}}>
+			<div className="App" style={{height: "100%"}}>
 				<div className="appbar-container" style={{height: "20%"}}>
 					<Appbar />
 				</div>
 
-	  			<div className="main-container" style={{width: '100%', display: 'flex', height: "80%"}}>
+	  			<div className="main-container" style={{overflow: 'hidden', width: '100%', display: 'flex', height: "80%"}}>
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
 	  					width={timelineOrganizerDrawerWidth}

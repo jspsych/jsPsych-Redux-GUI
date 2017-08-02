@@ -34,6 +34,7 @@ export default class CodeEditor extends React.Component {
 
   static defaultProps = { 
   	initCode: "",
+    tooltip: "Insert code",
   	buttonIcon: (<ButtonIcon color={normalColor} hoverColor={hoverColor} />),
     title: "Code Editor",
     openCallback: function() { return; },
@@ -82,7 +83,7 @@ export default class CodeEditor extends React.Component {
 
   	return (
   		<div>
-	  		<IconButton onTouchTap={this.handleOpen} tooltip="Insert code">
+	  		<IconButton onTouchTap={this.handleOpen} tooltip={this.props.tooltip}>
 	  		 {buttonIcon}
 	  		</IconButton>
 	  		<Dialog
