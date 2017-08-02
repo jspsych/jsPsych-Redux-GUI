@@ -199,9 +199,23 @@ export function changePlugin(state, action) {
 	for (let i = 0; i < paramKeys.length; i++) {
 		let paramInfo = params[paramKeys[i]];
 		let defaultValue = convertEmptyStringToNull(paramInfo.default);
-		if (paramInfo.array && !Array.isArray(defaultValue)) {
-			defaultValue = [];
+
+		// ***** Current converting is all shallow *****
+		if (paramInfo.array) {
+			if (!Array.isArray(defaultValue)) {
+				defaultValue = [];
+			} else {
+				defaultValue = defaultValue.map((v) => (createComplexDataObject(v)));
+			}
+		} else if (typeof defaultValue === 'object') {
+			let res = {};
+			for (let key of Object.keys(defaultValue)) {
+				res[key] = createComplexDataObject(defaultValue[key]);
+			}
+			defaultValue = res;
 		}
+		// ***** Current converting is all shallow *****
+		
 		// every trial data is a composite object defined above
 		paramsObject[paramKeys[i]] = createComplexDataObject(defaultValue);
 	}
@@ -285,6 +299,30 @@ export function setRepetitions(state, action) {
 	new_state[state.previewId] = node;
 
 	node.parameters.repetitions = action.newVal;
+
+	return new_state;
+}
+
+export function setLoopFunction(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.loop_function.code = action.newVal;
+
+	return new_state;
+}
+
+export function setConditionFunction(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.conditional_function.code = action.newVal;
 
 	return new_state;
 }

@@ -128,6 +128,10 @@ export default function experimentReducer(state=initState, action) {
 		 	return editor.toggleRandomize(state, action); 
 		 case actionTypes.SET_REPETITIONS: 
 		 	return editor.setRepetitions(state, action);
+		 case actionTypes.SET_LOOP_FUNCTION:
+		 	return editor.setLoopFunction(state, action);
+		 case actionTypes.SET_CONDITION_FUNCTION:
+		 	return editor.setConditionFunction(state, action);
 		default:
 			return state;
 	}

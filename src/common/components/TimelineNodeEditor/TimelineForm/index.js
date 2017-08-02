@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 import { labelStyle } from '../TrialForm/TrialFormItem';
 import { convertNullToEmptyString } from '../../../utils';
 import TimelineVariableTable from '../../../containers/TimelineNodeEditor/TimelineForm/TimelineVariableTableContainer';
+import CodeEditor from '../../CodeEditor';
 
 class TimelineForm extends React.Component {
 	render(){
@@ -64,6 +65,36 @@ class TimelineForm extends React.Component {
 							fullWidth={true}
 							value={(this.props.repetitions) ? this.props.repetitions : ""}
 							onChange={this.props.setRepetitions} />
+					</div>
+				</div>
+				<div style={{display: 'flex', width: "100%"}} >
+					<p
+						className="Trial-Form-Label-Container"
+					    style={labelStyle}
+					>
+					    Loop function:
+					</p>
+					<div className="Trial-Form-Content-Container">
+						<CodeEditor
+							initCode={this.props.loopFunction.code}
+							title="Loop function"
+							submitCallback={this.props.setLoopFunction}
+						/>
+					</div>
+				</div>
+				<div style={{display: 'flex', width: "100%"}} >
+					<p
+						className="Trial-Form-Label-Container"
+					    style={labelStyle}
+					>
+					    Conditional function:
+					</p>
+					<div className="Trial-Form-Content-Container">
+						<CodeEditor
+							initCode={this.props.conditionalFunction.code}
+							title="Condition function"
+							submitCallback={this.props.setConditionFunction}
+						/>
 					</div>
 				</div>
 			</div>

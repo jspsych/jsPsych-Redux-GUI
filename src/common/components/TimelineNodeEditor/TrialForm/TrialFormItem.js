@@ -28,10 +28,11 @@ import {
 import { convertNullToEmptyString, deepCopy } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
-import CodeEditorTrigger from '../../CodeEditorTrigger';
+import CodeEditor from '../../CodeEditor';
 import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import ObjectEditor from '../../../containers/ObjectEditor';
+import ArrayEditor from '../../../containers/ArrayEditor';
 import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
 
 const jsPsych = window.jsPsych;
@@ -193,7 +194,7 @@ export default class TrialFormItem extends React.Component {
 			this.state.openFuncEditor || 
 			parameterValue.mode === ParameterMode.USE_FUNC) &&
 			parameterValue.mode !== ParameterMode.USE_TV) ?
-			    <CodeEditorTrigger 
+			    <CodeEditor 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
@@ -233,10 +234,20 @@ export default class TrialFormItem extends React.Component {
 		)
 	}
 
-	renderFieldContent = (param, node) => {
+	renderFieldContent = (param, node, autoConvertToArrayComponent=true) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		if (parameterInfo.array && autoConvertToArrayComponent) {
+			node = (
+				<ArrayEditor
+					targetArray={parameterValue.value}
+					title={`${parameterInfo.pretty_name}: `}
+					keyName={param}
+					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+				/>
+			)
+		}
 
 		switch(parameterValue.mode) {
 			case ParameterMode.USE_FUNC:
@@ -258,19 +269,21 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		return (
-		  <div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel(param)}
-		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-		    {this.renderFieldContent(param,
-			    <TextField
+		let node = (
+			<TextField
 			      id={"text-field-"+param}
 			      value={convertNullToEmptyString(parameterValue.value)}
 			      min={-1}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.props.setText(param, v); }}
-			    />)
-			}
+			    />
+		);
+
+		return (
+		  <div style={{display: 'flex', width: "100%"}} >
+			{this.renderLabel(param)}
+		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
+		    {this.renderFieldContent(param, node)}
 			{this.appendFunctionEditor(param)}
 			{this.appendTimelineVariable(param)}
 		    </div>
@@ -281,21 +294,22 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (
+			<NumberInput
+			      id={"number-field-"+param}
+			      value={convertNullToEmptyString(parameterValue.value).toString()}
+			      fullWidth={true}
+			      onChange={(e, v) => {
+						this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
+					}}
+			    />
+		)
 
 		return (
 			<div style={{display: 'flex', width: "100%"}} >
 				{this.renderLabel(param)}
 			    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-				    {this.renderFieldContent(param,
-					    <NumberInput
-					      id={"number-field-"+param}
-					      value={convertNullToEmptyString(parameterValue.value).toString()}
-					      fullWidth={true}
-					      onChange={(e, v) => {
-								this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
-							}}
-					    />)
-					}
+				    {this.renderFieldContent(param, node)}
 					{this.appendFunctionEditor(param)}
 					{this.appendTimelineVariable(param)}
 			    </div>
@@ -307,18 +321,19 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (
+			<IconButton 
+	          onTouchTap={() => { this.props.setToggle(param); }} 
+	          >
+	        {(parameterValue.value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
+	        </IconButton>
+		)
 
 		return (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel(param)}
 	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-	      		{this.renderFieldContent(param,
-			        <IconButton 
-			          onTouchTap={() => { this.props.setToggle(param); }} 
-			          >
-			        {(parameterValue.value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-			        </IconButton>)
-			    }
+	      		{this.renderFieldContent(param, node)}
 			    {this.appendFunctionEditor(param)}
 			    {this.appendTimelineVariable(param)}
 	        </div>
@@ -330,15 +345,14 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (<MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />);
 
 		return (
 		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      	{this.renderLabel(param)}
 	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-	      		{this.renderFieldContent(param, 
-	      			<MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />
-	      		)}
-			    <CodeEditorTrigger 
+	      		{this.renderFieldContent(param, node, false)}
+			    <CodeEditor 
 					initCode={convertNullToEmptyString(parameterValue.func.code)} 
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
@@ -371,7 +385,7 @@ export default class TrialFormItem extends React.Component {
 	renderKeyboardInput = (param) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let value = parameterValue.value;
 		if (Array.isArray(value)) {
@@ -384,7 +398,7 @@ export default class TrialFormItem extends React.Component {
 			value = s;
 		}
 		let isAllKey = value === jsPsych.ALL_KEYS;
-		let isArray = !!this.props.paramInfo.array;
+		let isArray = !!parameterInfo.array;
 
 		let alternativeNode = (<IconButton 
 				onTouchTap={() => {
@@ -400,16 +414,8 @@ export default class TrialFormItem extends React.Component {
 				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
 			</IconButton>);
 
-		return (
-			<div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel(param)}
-		    <div 
-		    	className="Trial-Form-Content-Container" 
-		    	onMouseEnter={(isAllKey) ? ()=>{} : this.showTool} 
-		    	onMouseLeave={this.hideTool}
-		    >
-		    {this.renderFieldContent(param,
-			    (isAllKey) ?
+		let node = (
+			(isAllKey) ?
 			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
 			    <TextField
 			      id={this.props.id+"-text-field-"+param}
@@ -434,8 +440,18 @@ export default class TrialFormItem extends React.Component {
 			      		document.activeElement.blur();
 			      	}
 			      }}
-			    />)
-			}
+			    />
+		)
+
+		return (
+			<div style={{display: 'flex', width: "100%"}} >
+			{this.renderLabel(param)}
+		    <div 
+		    	className="Trial-Form-Content-Container" 
+		    	onMouseEnter={(isAllKey) ? ()=>{} : this.showTool} 
+		    	onMouseLeave={this.hideTool}
+		    >
+		    {this.renderFieldContent(param, node, false)}
 			{this.appendFunctionEditor(param, alternativeNode)}
 			{this.appendTimelineVariable(param, alternativeNode)}
 		    </div>
@@ -446,23 +462,24 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (
+			<SelectField
+		    	value={convertNullToEmptyString(parameterValue.value)}
+		    	onChange={(event, index, value) => {
+		    		this.props.setText(param, value);
+		    	}}
+		    >
+		    {this.props.paramInfo.options.map((op, i) => (
+		    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
+		    ))}
+		    </SelectField>
+		)
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 	      		{this.renderLabel(param)}
 		      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-		      		{this.renderFieldContent(param,
-					    <SelectField
-					    	value={convertNullToEmptyString(parameterValue.value)}
-					    	onChange={(event, index, value) => {
-					    		this.props.setText(param, value);
-					    	}}
-					    >
-					    {this.props.paramInfo.options.map((op, i) => (
-					    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
-					    ))}
-					    </SelectField>)
-					}
+		      		{this.renderFieldContent(param, node)}
 					{this.appendFunctionEditor(param)}
 					{this.appendTimelineVariable(param)}
 		        </div>
@@ -476,79 +493,79 @@ export default class TrialFormItem extends React.Component {
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let selectedFilesString = processMediaPathTag(parameterValue.value);
+		let node = (
+			(multiSelect) ?
+				<TextField 
+					id={"Selected-File-Input-"+param}
+					multiLine={true}
+					rowsMax={3}
+					rows={1}
+					fullWidth={true}
+					value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
+					onChange={(e, v) => { 
+						this.setFileListStr(v); 
+					}}
+					onFocus={() => {
+						this.setFileListStr(selectedFilesString);
+						this.setState({
+							useFileStr: true
+						});
+					}}
+					onBlur={() => { 
+						this.props.fileArrayInput(
+							param,
+							this.state.fileListStr, 
+							this.props.s3files.Prefix, 
+							this.props.filenames);
+						this.setFileListStr(selectedFilesString);
+						this.setState({
+							useFileStr: false
+						});
+					}}
+					onKeyPress={(e) => {
+						if (e.which === 13) {
+							document.activeElement.blur();
+						}
+					}}
+				/> :
+				<AutoComplete
+					id={"Selected-File-Input-"+param}
+					fullWidth={true}
+					searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
+					title={selectedFilesString}
+					dataSource={this.props.filenames}
+					filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
+					listStyle={{maxHeight: 200, overflowY: 'auto'}}
+					onUpdateInput={(t) => { 
+						this.setFileStr(t); 
+						if (t !== selectedFilesString && this.props.filenames.indexOf(t) > -1) {
+							this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
+						}
+					}}
+					onFocus={() => {
+						this.setState({
+							useFileStr: true
+						});
+					}}
+					onNewRequest={(s, i) => {
+						if (i !== -1 && s !== selectedFilesString) {
+							this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
+						} else if (this.state.fileStr !== selectedFilesString) {
+							this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
+						}
+						this.setFileStr(selectedFilesString);
+						this.setState({
+							useFileStr: false
+						});
+					}}
+				/>
+		);
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 				{this.renderLabel(param)}
 	      		<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-	      			{this.renderFieldContent(param, 
-	      				(multiSelect) ?
-	      				<TextField 
-								id={"Selected-File-Input-"+param}
-								multiLine={true}
-								rowsMax={3}
-								rows={1}
-								fullWidth={true}
-								value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
-								onChange={(e, v) => { 
-									this.setFileListStr(v); 
-								}}
-								onFocus={() => {
-									this.setFileListStr(selectedFilesString);
-									this.setState({
-										useFileStr: true
-									});
-								}}
-								onBlur={() => { 
-									this.props.fileArrayInput(
-										param,
-										this.state.fileListStr, 
-										this.props.s3files.Prefix, 
-										this.props.filenames);
-									this.setFileListStr(selectedFilesString);
-									this.setState({
-										useFileStr: false
-									});
-								}}
-								onKeyPress={(e) => {
-									if (e.which === 13) {
-										document.activeElement.blur();
-									}
-								}}
-							/> :
-							<AutoComplete
-								id={"Selected-File-Input-"+param}
-								fullWidth={true}
-								searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
-								title={selectedFilesString}
-								dataSource={this.props.filenames}
-								filter={(searchText, key) => (searchText === "" || (key.startsWith(searchText) && key !== searchText))}
-								listStyle={{maxHeight: 200, overflowY: 'auto'}}
-								onUpdateInput={(t) => { 
-									this.setFileStr(t); 
-									if (t !== selectedFilesString && this.props.filenames.indexOf(t) > -1) {
-										this.props.autoFileInput(param, t, this.props.s3files.Prefix, this.props.filenames);
-									}
-								}}
-								onFocus={() => {
-									this.setState({
-										useFileStr: true
-									});
-								}}
-								onNewRequest={(s, i) => {
-									if (i !== -1 && s !== selectedFilesString) {
-										this.props.autoFileInput(param, s, this.props.s3files.Prefix, this.props.filenames);
-									} else if (this.state.fileStr !== selectedFilesString) {
-										this.props.autoFileInput(param, this.state.fileStr, this.props.s3files.Prefix, this.props.filenames);
-									}
-									this.setFileStr(selectedFilesString);
-									this.setState({
-										useFileStr: false
-									});
-								}}
-							/>
-
-	      			)}
+	      			{this.renderFieldContent(param, node, false)}
 	      			{(this.props.parameters[param].mode !== ParameterMode.USE_TV &&
 	      				this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ? 
 	      				<MediaManager 
@@ -578,19 +595,20 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (
+			<ObjectEditor
+				targetObj={parameterValue.value}
+				title={`${parameterInfo.pretty_name}: `}
+				keyName={param}
+				submitCallback={(obj) => { this.props.setObject(param, obj); }}
+			/>
+		);
 
 		return (
 			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 			{this.renderLabel(param)}
 			<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-				{this.renderFieldContent(param, 
-					<ObjectEditor
-						targetObj={parameterValue.value}
-						title={`${parameterInfo.pretty_name}: `}
-						keyName={param}
-						submitCallback={(obj) => { this.props.setObject(param, obj); }}
-					/>
-				)}
+				{this.renderFieldContent(param, node, false)}
 				{this.appendFunctionEditor(param)}
 			</div>
 			</div>
@@ -601,23 +619,24 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let node = (
+			<IconButton
+  				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
+  				onTouchTap={this.toggleSubFormCollapse}
+  			>
+  			{(this.state.subFormCollapse) ? 
+  				<CollapseIcon hoverColor={hoverColor} /> :
+  				<ExpandIcon hoverColor={hoverColor} />
+  			}
+  			</IconButton>
+		)
 
 		return (
 			<div style={{width: "100%"}}>
 				<div style={{display: 'flex', width: "100%", position: 'relative'}}>
 		      		{this.renderLabel(param)}
 			      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-			      		{this.renderFieldContent(param, 
-			      			<IconButton
-			      				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
-			      				onTouchTap={this.toggleSubFormCollapse}
-			      			>
-			      			{(this.state.subFormCollapse) ? 
-			      				<CollapseIcon hoverColor={hoverColor} /> :
-			      				<ExpandIcon hoverColor={hoverColor} />
-			      			}
-			      			</IconButton>
-			      			)}
+			      		{this.renderFieldContent(param, node, false)}
 						{this.appendFunctionEditor(param)}
 						{this.appendTimelineVariable(param)}
 			        </div>
