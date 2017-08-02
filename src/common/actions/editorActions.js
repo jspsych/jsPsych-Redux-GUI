@@ -120,4 +120,19 @@ export function setRepetitionsAction(newVal) {
 		newVal: newVal
 	};
 }
+
+export function setLoopFunctionAction(newVal) {
+	return {
+		type: actionTypes.SET_LOOP_FUNCTION,
+		newVal: newVal
+	};
+}
+
+export function setConditionFunctionAction(newVal) {
+	return {
+		type: actionTypes.SET_CONDITION_FUNCTION,
+		newVal: newVal
+	};
+}
+
 /* ********************** Timeline form ********************** */

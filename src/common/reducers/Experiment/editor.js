@@ -303,6 +303,30 @@ export function setRepetitions(state, action) {
 	return new_state;
 }
 
+export function setLoopFunction(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.loop_function.code = action.newVal;
+
+	return new_state;
+}
+
+export function setConditionFunction(state, action) {
+	let node = state[state.previewId];
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.conditional_function.code = action.newVal;
+
+	return new_state;
+}
+
 /*
 Set timeline variable by updating whole row (data handled by react-data-grid),
 action = {

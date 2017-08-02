@@ -25,10 +25,9 @@ import {
 import { renderDialogTitle } from '../gadgets';
 import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
-import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
-import CodeEditorTrigger from '../CodeEditorTrigger';
+import CodeEditor from '../CodeEditor';
 
 
 const jsPysch_Builder_Array_Storage = "jsPsych_builder_array_clipboard";
@@ -291,23 +290,14 @@ export default class ArrayEditor extends React.Component {
 					}}
 				/>
 				<div style={{right: 0}} key={`array-code-container-${i}`}>
-					<CodeEditorTrigger
-						initCode={value.value}
+					<CodeEditor
+						initCode={JSON.stringify(value.value)}
 						submitCallback={(v) => {
 							this.setArrayItem(v, i);
 						}}
 						key={`array-code-${i}`}
 						tooltip="Edit value"
 						buttonIcon={<StringEditorIcon hoverColor={hoverColor} />}
-					/>
-				</div>
-				<div style={{right: 0}} key={`array-timeline-variable-container-${i}`}>
-					<TimelineVariableSelector 
-						key={`array-timeline-variable-${i}`}
-						setParamMode={() => { this.setArrayItemMode(i); }}
-						submitCallback={(v) => { this.setArrayTimelineVariable(v, i); }}
-						useTV={this.state.arrayItems[i].mode === ParameterMode.USE_TV}
-						selectedTV={this.state.arrayItems[i].timelineVariable}
 					/>
 				</div>
 				<div style={{right: 0}} key={`array-delete-container-${i}`}>

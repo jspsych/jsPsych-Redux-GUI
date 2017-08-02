@@ -15,7 +15,7 @@ import InitSettingIcon from 'material-ui/svg-icons/action/build';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
-import CodeEditorTrigger from '../../CodeEditorTrigger';
+import CodeEditor from '../../CodeEditor';
 import { renderDialogTitle } from '../../gadgets';
 import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
@@ -69,7 +69,7 @@ export default class jsPsychInitEditor extends React.Component {
     <div style={{display: 'flex', width: 370, position: 'relative'}}>
       <div style={{padding: 15, color: 'black'}}>{key}</div>
       <div style={{position: 'absolute', right: 0}}>
-        <CodeEditorTrigger initCode={this.props[key].code} 
+        <CodeEditor initCode={this.props[key].code} 
                     submitCallback={(newCode) => { 
                       this.props.setJsPsychInit(null, newCode, key);
                     }}

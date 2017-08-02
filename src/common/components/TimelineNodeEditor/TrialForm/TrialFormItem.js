@@ -28,7 +28,7 @@ import {
 import { convertNullToEmptyString, deepCopy } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
-import CodeEditorTrigger from '../../CodeEditorTrigger';
+import CodeEditor from '../../CodeEditor';
 import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import ObjectEditor from '../../../containers/ObjectEditor';
@@ -194,7 +194,7 @@ export default class TrialFormItem extends React.Component {
 			this.state.openFuncEditor || 
 			parameterValue.mode === ParameterMode.USE_FUNC) &&
 			parameterValue.mode !== ParameterMode.USE_TV) ?
-			    <CodeEditorTrigger 
+			    <CodeEditor 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
@@ -352,7 +352,7 @@ export default class TrialFormItem extends React.Component {
 	      	{this.renderLabel(param)}
 	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
 	      		{this.renderFieldContent(param, node, false)}
-			    <CodeEditorTrigger 
+			    <CodeEditor 
 					initCode={convertNullToEmptyString(parameterValue.func.code)} 
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
