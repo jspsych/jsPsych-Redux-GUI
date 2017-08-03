@@ -9,7 +9,7 @@ import {
 	pushUserData,
 	deleteExperiment as $deleteExperiment,
 	pushExperimentData,
-	pushState
+	// pushState
 } from '../../../backend/dynamoDB';
 import {
 	deleteFiles,
