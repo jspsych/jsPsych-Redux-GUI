@@ -29,7 +29,7 @@ const changeExperimentName = (dispatch, text) => {
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
-const $save = (dispatch, getState) => {
+export const $save = (dispatch, getState) => {
 	// process state
 	dispatch(backendActions.clickSavePushAction());
 	return pushState(getState()).then(

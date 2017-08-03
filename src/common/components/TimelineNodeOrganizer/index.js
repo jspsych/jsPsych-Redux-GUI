@@ -81,7 +81,7 @@ class TimelineNodeOrganizer extends React.Component {
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%",
 						left: '0px',
 						overflow: 'hidden',
-						// height: '86.5vh',
+						height: '100%',
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),
@@ -110,8 +110,10 @@ class TimelineNodeOrganizer extends React.Component {
 							overflowY: "auto",
 							maxWidth: "100%",
 							paddingLeft: 0,
+							height: "100%"
 						}}>
-						<List style={{maxHeight: "68vh",
+						<List style={{
+									maxHeight: "68vh",
 									minHeight: "68vh",
   								}}>
 							<SortableTreeMenu
@@ -124,7 +126,7 @@ class TimelineNodeOrganizer extends React.Component {
 						<div style={{
 							float: 'right',
 							paddingRight: 20,
-							paddingTop: 10,
+							paddingTop: 5,
 						}}>
 						<SpeedDial
 							style={{zIndex: 15}}

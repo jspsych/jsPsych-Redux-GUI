@@ -169,7 +169,7 @@ export default class PreviewWindow extends React.Component {
               paddingTop: 5, 
               margin: 'auto', 
               width: "90%",
-              height: "80%"
+              height: "100%"
             }}
             id="Preview_Window_Container"
             className="Preview_Window_Container"

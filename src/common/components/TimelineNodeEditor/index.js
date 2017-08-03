@@ -73,7 +73,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? convertPercent(this.props.width) : '0%',
 						right: '0px',
-						height: '86.5vh',
+						height: '100%',
 						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),
@@ -107,7 +107,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 					}}>
 					{(this.props.open) ?
 					<div className="TimelineNode-Editor-Content">
-						<div style={{display: 'flex'}}>
+						<div style={{display: 'flex', height: '100%',}}>
 							<IconButton
 							disableTouchRipple={true}
 	  						hoveredStyle={{backgroundColor: CloseBackHighlightColor}}

@@ -338,11 +338,19 @@ class App extends React.Component {
 
 		return (
 			<div className="App" style={{height: "100%"}}>
-				<div className="appbar-container" style={{height: "20%"}}>
+				<div className="appbar-container" style={{height: "14%"}}>
 					<Appbar />
 				</div>
 
-	  			<div className="main-container" style={{overflow: 'hidden', width: '100%', display: 'flex', height: "80%"}}>
+	  			<div 
+	  				className="main-container" 
+	  				style={{
+	  					overflow: 'hidden', 
+	  					width: '100%', 
+	  					display: 'flex', 
+	  					height: "86%",
+	  				}}
+	  				>
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
 	  					width={timelineOrganizerDrawerWidth}
@@ -362,7 +370,7 @@ class App extends React.Component {
 								timelineEditorDrawerWidth),
 	  					 	margin: '0 auto',
 						 	backgroundColor: (getFullScreenState()) ? 'black' : 'rgb(232, 232, 232)',
-						 	display: 'flex-col'
+						 	height: "100%"
 	  					}}
 	  				>
 	  				<ZoomBar

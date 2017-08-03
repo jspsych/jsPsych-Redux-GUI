@@ -1,3 +1,13 @@
+html, body {
+   height: 100%;
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+}
+
+
 .Responsive-input::-webkit-outer-spin-button,
 .Responsive-input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
