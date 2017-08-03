@@ -18,7 +18,7 @@ import {
   cyan500 as hoverColor,
   grey100 as toolbarColor,
   pink500 as clearColor,
-  blue500 as fixedTextColor,
+  orange500 as fixedTextColor,
   // grey50 as listBackgroundColor
 } from 'material-ui/styles/colors';
 
@@ -291,7 +291,7 @@ export default class ArrayEditor extends React.Component {
 				/>
 				<div style={{right: 0}} key={`array-code-container-${i}`}>
 					<CodeEditor
-						initCode={JSON.stringify(value.value)}
+						initCode={(typeof value.value === 'string') ? value.value : JSON.stringify(value.value)}
 						submitCallback={(v) => {
 							this.setArrayItem(v, i);
 						}}
