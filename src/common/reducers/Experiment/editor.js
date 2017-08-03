@@ -207,7 +207,7 @@ export function changePlugin(state, action) {
 			} else {
 				defaultValue = defaultValue.map((v) => (createComplexDataObject(v)));
 			}
-		} else if (typeof defaultValue === 'object') {
+		} else if (typeof defaultValue === 'object' && defaultValue) {
 			let res = {};
 			for (let key of Object.keys(defaultValue)) {
 				res[key] = createComplexDataObject(defaultValue[key]);
