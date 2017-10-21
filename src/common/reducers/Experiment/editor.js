@@ -61,17 +61,18 @@ export const DEFAULT_TIMELINE_PARAM = {
 
 
 /*
-Default timeline node parameter
+Default trial node parameter
 */
 export const DEFAULT_TRIAL_PARAM = {
 	type: null,
+	//rest is according to corresponding parameters in jsPsych plugin
 };
 
 /*
-Set experiment name
+Set node name
 
 action = {
-	name: new experiment name
+	name: new node name
 }
 */
 export function setName(state, action) {
@@ -184,6 +185,9 @@ export function updateMedia(state, action) {
 
 /*
 Change plugin type of trial --> update trial.parameters
+action = {
+	newPluginVal: new plugin name (from jsPsych)
+}
 
 */
 export function changePlugin(state, action) {

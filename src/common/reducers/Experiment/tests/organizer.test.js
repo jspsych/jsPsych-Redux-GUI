@@ -1,10 +1,42 @@
-import { experimentReducer as reducer, initState } from '../';
+/*
+This file launches tests on organizer.js.
+
+Tested reducer functions are:
+// Add actions
+addTrial
+addTimeline
+insertNodeAfterTrial
+
+// Move actions
+moveInto
+moveTo
+
+// Duplicate actions
+duplicateTrial
+duplicateTimeline
+
+// Delete actions
+deleteTrial
+deleteTimeline
+
+// Toggle actions
+setToggleCollectively
+setCollapsed
+onToggle
+
+// Select as preview action
+onPreview
+*/
+
+import { initState } from '../';
+import reducer from '../';
 import { 	
 	enterTest,
 	createTimeline, 
 	createTrial,
 } from '../organizer';
 import * as Actions from '../../../actions/organizerActions';
+import { deepCopy } from '../../../utils';
 import { standardizeTimelineId, standardizeTrialId, TIMELINE_TYPE, TRIAL_TYPE } from '../utils'; 
 
 enterTest();
@@ -16,11 +48,11 @@ if (!Array.prototype.move) {
 }
 
 /*********** Add Actions **************/
-let expected_add_timeline_to_main = Object.assign({}, initState);
+let expected_add_timeline_to_main = deepCopy(initState);
 expected_add_timeline_to_main.mainTimeline = [standardizeTimelineId(0)];
 expected_add_timeline_to_main[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 
-let expected_add_timeline_to_another = Object.assign({}, initState);
+let expected_add_timeline_to_another = deepCopy(initState);
 expected_add_timeline_to_another.mainTimeline = [standardizeTimelineId(0)];
 expected_add_timeline_to_another[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 expected_add_timeline_to_another[standardizeTimelineId(0)].collapsed = false ;									  
@@ -29,11 +61,11 @@ expected_add_timeline_to_another[standardizeTimelineId(0)].childrenById = [stand
 expected_add_timeline_to_another[standardizeTimelineId(1)] = createTimeline(standardizeTimelineId(1));
 expected_add_timeline_to_another[standardizeTimelineId(1)].parent = standardizeTimelineId(0);
 
-let expected_add_trial_to_main = Object.assign({}, initState);
+let expected_add_trial_to_main = deepCopy(initState);
 expected_add_trial_to_main.mainTimeline = [standardizeTrialId(0)];
 expected_add_trial_to_main[standardizeTrialId(0)] = createTrial(standardizeTrialId(0));
 
-let expected_add_trial_to_timeline = Object.assign({}, initState);
+let expected_add_trial_to_timeline = deepCopy(initState);
 expected_add_trial_to_timeline.mainTimeline = [standardizeTimelineId(0)];
 expected_add_trial_to_timeline[standardizeTimelineId(0)] = createTimeline(standardizeTimelineId(0));
 expected_add_trial_to_timeline[standardizeTimelineId(0)].collapsed = false;
@@ -101,7 +133,7 @@ timeline 0
 		timeline 3
 timeline 1
 */
-let base_move = Object.assign({}, initState);
+let base_move = deepCopy(initState);
 base_move = reducer(base_move, Actions.addTimelineAction(null));
 base_move = reducer(base_move, Actions.addTimelineAction(null));
 base_move = reducer(base_move, Actions.addTrialAction(standardizeTimelineId(0)));
@@ -116,11 +148,16 @@ timeline 0
 		timeline 3
 timeline 1
 */
-let expected_move1 = Object.assign({}, initState);
+let expected_move1 = deepCopy(initState);
+// trial 0
 expected_move1 = reducer(expected_move1, Actions.addTrialAction(null));
+// timeline 0
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(null));
+// timeline 1
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(null));
+// timeline 2
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(0)));
+// timeline 3
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(2)));
 
 // node displacement, timeline 2 is moved before trial 0
@@ -131,11 +168,16 @@ timeline 0
 	trial 0
 timeline 1
 */
-let expected_move2 = Object.assign({}, initState);
+let expected_move2 = deepCopy(initState);
+// timeline 0
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(null));
+// timeline 1
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(null));
+// timeline 2
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(standardizeTimelineId(0)));
+// timeline 3
 expected_move2 = reducer(expected_move2, Actions.addTimelineAction(standardizeTimelineId(2)));
+// trial 0
 expected_move2 = reducer(expected_move2, Actions.addTrialAction(standardizeTimelineId(0)));
 
 // node move into, timeline 1 moves into timeline 0
@@ -146,290 +188,322 @@ timeline 0
 		timeline 3
 	timeline 1
 */
-let expected_move3 = Object.assign({}, initState);
-expected_move3 = reducer(expected_move3, Actions.addTimelineAction(null));
-expected_move3 = reducer(expected_move3, Actions.addTrialAction(standardizeTimelineId(0)));
-expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(0)));
-expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId()));
-expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(0)));
-
-// // node move out, timeline 2 moves out of timeline 0
-// /*
+let expected_move3 = deepCopy(initState);
 // timeline 0
-// 	trial 0
-// timeline 2
-// 	timeline 3
+expected_move3 = reducer(expected_move3, Actions.addTimelineAction(null));
+// trial 0
+expected_move3 = reducer(expected_move3, Actions.addTrialAction(standardizeTimelineId(0)));
 // timeline 1
-// */
-// let expected_move4 = Object.assign({}, initState);
-// expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
-// expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
-// expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTimelineId(2)));
-// expected_move4 = reducer(expected_move4, Actions.addTrialAction(standardizeTimelineId(0)));
-// expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
+expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(0)));
+// timeline 2
+expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(0)));
+// timeline 3
+expected_move3 = reducer(expected_move3, Actions.addTimelineAction(standardizeTimelineId(2)));
+// swtich positions of timeline 1 and timeline 2
+expected_move3[standardizeTimelineId(0)].childrenById = expected_move3[standardizeTimelineId(0)].childrenById.move(1, 2);
 
-// describe('Timeline Node Reducers for Moving actions', () => {
-// 	it('should handle node jump', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// 		s1 = reducer(s1, Actions.moveToAction(standardizeTrialId(0), standardizeTimelineId(0)));
-// 		expect(s1).toEqual(expected_move1);
-// 	})
+// node move out, timeline 2 moves out of timeline 0
+/*
+timeline 0
+	trial 0
+timeline 2
+	timeline 3
+timeline 1
+*/
+let expected_move4 = deepCopy(initState);
+// timeline 0
+expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
+// timeline 1
+expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
+// timeline 2
+expected_move4 = reducer(expected_move4, Actions.addTimelineAction(null));
+// timeline 3
+expected_move4 = reducer(expected_move4, Actions.addTimelineAction(standardizeTimelineId(2)));
+// trial 0
+expected_move4 = reducer(expected_move4, Actions.addTrialAction(standardizeTimelineId(0)));
+// swtich positions of timeline 1 and timeline 2
+expected_move4.mainTimeline = expected_move4.mainTimeline.move(1, 2);
 
-// 	it('should handle node displacement', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// 		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(2), standardizeTrialId(0)));
-// 		expect(s1).toEqual(expected_move2);
-// 	})
 
-// 	it('should handle node moving into', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// 		s1 = reducer(s1, Actions.moveIntoAction(standardizeTimelineId(1)));
-// 		expect(s1).toEqual(expected_move3);
-// 	})
+describe('Timeline Node Reducers for Moving actions', () => {
+	it('should handle node jump', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
+		s1 = reducer(s1, Actions.moveToAction(standardizeTrialId(0), standardizeTimelineId(0)));
+		expect(s1).toEqual(expected_move1);
+	})
 
-// 	it('should handle node moving out', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// 		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(2), standardizeTimelineId(0), true));
-// 		expect(s1).toEqual(expected_move4);
-// 	})
+	it('should handle node displacement', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
+		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(2), standardizeTrialId(0)));
+		expect(s1).toEqual(expected_move2);
+	})
 
-// 	it('should handle error case: ancestor node wants to move into descendant node', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// 		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(0), standardizeTimelineId(2), true));
-// 		expect(s1).toEqual(base_move);
-// 	})
-// })
+	it('should handle node moving into', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
+		s1 = reducer(s1, Actions.moveIntoAction(standardizeTimelineId(1)));
+		expect(s1).toEqual(expected_move3);
+	})
+
+	it('should handle node moving out', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
+		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(2), standardizeTimelineId(0), true));
+		expect(s1).toEqual(expected_move4);
+	})
+
+	it('should handle error case: ancestor node wants to move into descendant node', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(2)));
+		s1 = reducer(s1, Actions.moveToAction(standardizeTimelineId(0), standardizeTimelineId(2), true));
+		expect(s1).toEqual(base_move);
+	})
+})
 /*********** Move actions **************/
 
 // /*********** Duplicate actions **************/
 
-// /*
-// timeline 0
-// 	timeline 1
-// 		trial 0
-// */
-// let base_dup1 = Object.assign({}, initState);
-// base_dup1 = reducer(base_dup1, Actions.addTimelineAction(null));
-// base_dup1 = reducer(base_dup1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// base_dup1 = reducer(base_dup1, Actions.addTrialAction(standardizeTimelineId(1)));
+/*
+timeline 0
+	timeline 1
+		trial 0
+*/
+let base_dup1 = deepCopy(initState);
+base_dup1 = reducer(base_dup1, Actions.addTimelineAction(null));
+base_dup1 = reducer(base_dup1, Actions.addTimelineAction(standardizeTimelineId(0)));
+base_dup1 = reducer(base_dup1, Actions.addTrialAction(standardizeTimelineId(1)));
 
-// // duplicate nested timeline
-// /*
-// timeline 0
-// 	timeline 1
-// 		trial 0
-// timeline 2
-// 	timeline 3
-// 		trial 1
-// */
-// let expect_dup1 = Object.assign({}, initState);
-// expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(null));
-// expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_dup1 = reducer(expect_dup1, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(null));
-// expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(2)));
-// expect_dup1 = reducer(expect_dup1, Actions.addTrialAction(standardizeTimelineId(3)));
+// duplicate nested timeline
+/*
+timeline 0
+	timeline 1
+		trial 0
+timeline 2
+	timeline 3
+		trial 1
+*/
+let expect_dup1 = deepCopy(initState);
+expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(null));
+expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_dup1 = reducer(expect_dup1, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(null));
+expect_dup1 = reducer(expect_dup1, Actions.addTimelineAction(standardizeTimelineId(2)));
+expect_dup1 = reducer(expect_dup1, Actions.addTrialAction(standardizeTimelineId(3)));
 
-// // duplicate single trial
-// /*
-// timeline 0
-// 	timeline 1
-// 		trial 0
-// 		trial 1
-// */
-// let expect_dup2 = Object.assign({}, initState);
-// expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(null));
-// expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTimelineId(1)));
+// duplicate single trial
+/*
+timeline 0
+	timeline 1
+		trial 0
+		trial 1
+*/
+let expect_dup2 = deepCopy(initState);
+expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(null));
+expect_dup2 = reducer(expect_dup2, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_dup2 = reducer(expect_dup2, Actions.addTrialAction(standardizeTimelineId(1)));
 
-// let expect_dup3 = Object.assign({}, initState);
-// expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(null));
-// expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(null));
+let expect_dup3 = deepCopy(initState);
+expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(null));
+expect_dup3 = reducer(expect_dup3, Actions.addTimelineAction(null));
 
-// describe('Timeline Node Reducers for Duplicating actions', () => {
-// 	it('should handle duplicating nested timeline', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		let timelineId = 0;
-// 		let trialId = 0;
-// 		let getTimelineId = () => {
-// 			return standardizeTimelineId(timelineId++);
-// 		}
+describe('Timeline Node Reducers for Duplicating actions', () => {
+	it('should handle duplicating nested timeline', () => {
+		let s1 = deepCopy(initState);
+		let timelineId = 0;
+		let trialId = 0;
+		let getTimelineId = () => {
+			return standardizeTimelineId(timelineId++);
+		}
 
-// 		let getTrialId = () => {
-// 			return standardizeTrialId(trialId++);
-// 		}
+		let getTrialId = () => {
+			return standardizeTrialId(trialId++);
+		}
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.duplicateTimelineAction(standardizeTimelineId(0)));
-// 		expect(s1).toEqual(expect_dup1);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.duplicateTimelineAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expect_dup1);
+	})
 
-// 	it('should handle duplicating single trial', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.duplicateTrialAction(standardizeTrialId(0)));
-// 		expect(s1).toEqual(expect_dup2);
-// 	})
+	it('should handle duplicating single trial', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.duplicateTrialAction(standardizeTrialId(0)));
+		expect(s1).toEqual(expect_dup2);
+	})
 
-// 	it('should handle duplicating single timeline', () => {
-// 		let s1 = Object.assign({}, initState);
-// 		let timelineId = 0;
-// 		let trialId = 0;
-// 		let getTimelineId = () => {
-// 			return standardizeTimelineId(timelineId++);
-// 		}
+	it('should handle duplicating single timeline', () => {
+		let s1 = deepCopy(initState);
+		let timelineId = 0;
+		let trialId = 0;
+		let getTimelineId = () => {
+			return standardizeTimelineId(timelineId++);
+		}
 
-// 		let getTrialId = () => {
-// 			return standardizeTrialId(trialId++);
-// 		}
+		let getTrialId = () => {
+			return standardizeTrialId(trialId++);
+		}
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.duplicateTimelineAction(standardizeTimelineId(0)));
-// 		expect(s1).toEqual(expect_dup3);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.duplicateTimelineAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expect_dup3);
+	})
 
-// })
+})
 
-// /*********** Toggle actions **************/
+/*********** Toggle actions **************/
 
-// // toggle off single trial 1
-// /*
-// timeline 0 true
-// 	timeline 1 true
-// 		trial 0 true
-// trial 1 false
-// */
-// let expect_toggle1 = Object.assign({}, initState);
-// expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(null));
-// expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(null));
-// expect_toggle1[standardizeTrialId(1)].enabled = false;
+// toggle off single trial 1
+/*
+timeline 0 true
+	timeline 1 true
+		trial 0 true
+trial 1 false
+*/
+let expect_toggle1 = deepCopy(initState);
+expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(null));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_toggle1 = reducer(expect_toggle1, Actions.addTrialAction(null));
+expect_toggle1[standardizeTrialId(1)].enabled = false;
 
-// // toggle off top most timeline
-// /*
-// timeline 0 false
-// 	timeline 1 false
-// 		trial 0 false
-// trial 1 true
-// */
-// let expect_toggle2 = Object.assign({}, initState);
-// expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(null));
-// expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(null));
-// expect_toggle2[standardizeTimelineId(0)].enabled = false;
-// expect_toggle2[standardizeTimelineId(1)].enabled = false;
-// expect_toggle2[standardizeTrialId(0)].enabled = false;
+// toggle off top most timeline
+/*
+timeline 0 false
+	timeline 1 false
+		trial 0 false
+trial 1 true
+*/
+let expect_toggle2 = deepCopy(initState);
+expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(null));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_toggle2 = reducer(expect_toggle2, Actions.addTrialAction(null));
+expect_toggle2[standardizeTimelineId(0)].enabled = false;
+expect_toggle2[standardizeTimelineId(1)].enabled = false;
+expect_toggle2[standardizeTrialId(0)].enabled = false;
 
 
-// // deselect option
-// /*
-// timeline 0 false
-// 	timeline 1 false
-// 		trial 0 false
-// trial 1 false
-// */
-// let expect_toggle3 = Object.assign({}, initState);
-// expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(null));
-// expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(null));
-// expect_toggle3[standardizeTimelineId(0)].enabled = false;
-// expect_toggle3[standardizeTimelineId(1)].enabled = false;
-// expect_toggle3[standardizeTrialId(0)].enabled = false;
-// expect_toggle3[standardizeTrialId(1)].enabled = false;
+// deselect option
+/*
+timeline 0 false
+	timeline 1 false
+		trial 0 false
+trial 1 false
+*/
+let expect_toggle3 = deepCopy(initState);
+expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(null));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_toggle3 = reducer(expect_toggle3, Actions.addTrialAction(null));
+expect_toggle3[standardizeTimelineId(0)].enabled = false;
+expect_toggle3[standardizeTimelineId(1)].enabled = false;
+expect_toggle3[standardizeTrialId(0)].enabled = false;
+expect_toggle3[standardizeTrialId(1)].enabled = false;
 
-// // toggle only timeline 1 on
-// /*
-// timeline 0 true
-// 	timeline 1 true
-// 		trial 0 true
-// trial 1 false
-// */
-// let expect_toggle4 = Object.assign({}, initState);
-// expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(null));
-// expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(0)));
-// expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(standardizeTimelineId(1)));
-// expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(null));
-// expect_toggle4[standardizeTimelineId(0)].enabled = true;
-// expect_toggle4[standardizeTimelineId(1)].enabled = true;
-// expect_toggle4[standardizeTrialId(0)].enabled = true;
-// expect_toggle4[standardizeTrialId(1)].enabled = false;
+// toggle only timeline 1 on
+/*
+timeline 0 true
+	timeline 1 true
+		trial 0 true
+trial 1 false
+*/
+let expect_toggle4 = deepCopy(initState);
+expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(null));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTimelineAction(standardizeTimelineId(0)));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(standardizeTimelineId(1)));
+expect_toggle4 = reducer(expect_toggle4, Actions.addTrialAction(null));
+expect_toggle4[standardizeTimelineId(0)].enabled = true;
+expect_toggle4[standardizeTimelineId(1)].enabled = true;
+expect_toggle4[standardizeTrialId(0)].enabled = true;
+expect_toggle4[standardizeTrialId(1)].enabled = false;
 
-// describe('Timeline Node Reducers for Toggle actions', () => {
-// 	it('should handle toggling off single trial', () => {
-// 		let s1 = Object.assign({}, initState);
+describe('Timeline Node Reducers for Toggle actions', () => {
+	it('should handle toggling off single trial', () => {
+		let s1 = deepCopy(initState);
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.addTrialAction(null));
-// 		s1 = reducer(s1, Actions.onToggleAction(standardizeTrialId(1)));
-// 		expect(s1).toEqual(expect_toggle1);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(null));
+		s1 = reducer(s1, Actions.onToggleAction(standardizeTrialId(1)));
+		expect(s1).toEqual(expect_toggle1);
+	})
 
-// 	it('should handle toggle of nested timeline', () => {
-// 		let s1 = Object.assign({}, initState);
+	it('should handle toggle of nested timeline', () => {
+		let s1 = deepCopy(initState);
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.addTrialAction(null));
-// 		s1 = reducer(s1, Actions.onToggleAction(standardizeTimelineId(0)));
-// 		expect(s1).toEqual(expect_toggle2);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(null));
+		s1 = reducer(s1, Actions.onToggleAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expect_toggle2);
+	})
 
-// 	it('should handle deselect option', () => {
-// 		let s1 = Object.assign({}, initState);
+	it('should handle deselect option', () => {
+		let s1 = deepCopy(initState);
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.addTrialAction(null));
-// 		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false));
-// 		expect(s1).toEqual(expect_toggle3);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(null));
+		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false));
+		expect(s1).toEqual(expect_toggle3);
+	})
 
-// 	it('should handle selecting only one', () => {
-// 		let s1 = Object.assign({}, initState);
+	it('should handle selecting only one', () => {
+		let s1 = deepCopy(initState);
 
-// 		s1 = reducer(s1, Actions.addTimelineAction(null));
-// 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
-// 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
-// 		s1 = reducer(s1, Actions.addTrialAction(null));
-// 		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false, standardizeTimelineId(1)));
-// 		expect(s1).toEqual(expect_toggle4);
-// 	})
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
+		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
+		s1 = reducer(s1, Actions.addTrialAction(null));
+		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false, standardizeTimelineId(1)));
+		expect(s1).toEqual(expect_toggle4);
+	})
 
-// })
+})
+
+/*********** Toggle actions **************/
+
+/*********** On Preview actions **************/
+
+let expected_preview = deepCopy(initState);
+expected_preview = reducer(expected_preview, Actions.addTimelineAction(null));
+expected_preview.previewId = standardizeTimelineId(0);
+
+describe('Timeline Node Reducers for onPreview actions', () => {
+	it('should handle preview selection', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.onPreviewAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expected_preview);
+	});
+});

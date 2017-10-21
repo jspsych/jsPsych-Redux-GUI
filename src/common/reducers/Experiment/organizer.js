@@ -25,6 +25,26 @@ A trial state = {
 	parameters: object,
 }
 
+
+Main Reducer Function List:
+addTrial
+addTimeline
+insertNodeAfterTrial
+
+moveInto
+moveTo
+
+duplicateTrial
+duplicateTimeline
+
+deleteTrial
+deleteTimeline
+
+setToggleCollectively
+setCollapsed
+onToggle
+
+onPreview
 */
 
 

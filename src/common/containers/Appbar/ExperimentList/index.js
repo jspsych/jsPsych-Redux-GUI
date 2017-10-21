@@ -3,12 +3,13 @@ import deepEqual from 'deep-equal';
 import * as backendActions from '../../../actions/backendActions';
 import ExperimentList from '../../../components/Appbar/ExperimentList';
 import * as Errors from '../../../constants/Errors' ;
+import { $save } from '../index';
 import {
 	fetchExperimentById,
 	pushUserData,
 	deleteExperiment as $deleteExperiment,
 	pushExperimentData,
-	pushState
+	// pushState
 } from '../../../backend/dynamoDB';
 import {
 	deleteFiles,
@@ -70,7 +71,7 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 			() => {
 				onStart();
 				// save current first
-				pushState(getState()).then(() => {
+				$save(dispatch, getState).then(() => {
 					// do the pull
 					$pullExperiment(dispatch, getState, selected);
 				}, (err) => {
