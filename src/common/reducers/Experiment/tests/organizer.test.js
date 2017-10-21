@@ -1,3 +1,33 @@
+/*
+This file launches tests on organizer.js.
+
+Tested reducer functions are:
+// Add actions
+addTrial
+addTimeline
+insertNodeAfterTrial
+
+// Move actions
+moveInto
+moveTo
+
+// Duplicate actions
+duplicateTrial
+duplicateTimeline
+
+// Delete actions
+deleteTrial
+deleteTimeline
+
+// Toggle actions
+setToggleCollectively
+setCollapsed
+onToggle
+
+// Select as preview action
+onPreview
+*/
+
 import { initState } from '../';
 import reducer from '../';
 import { 	
@@ -119,10 +149,15 @@ timeline 0
 timeline 1
 */
 let expected_move1 = deepCopy(initState);
+// trial 0
 expected_move1 = reducer(expected_move1, Actions.addTrialAction(null));
+// timeline 0
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(null));
+// timeline 1
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(null));
+// timeline 2
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(0)));
+// timeline 3
 expected_move1 = reducer(expected_move1, Actions.addTimelineAction(standardizeTimelineId(2)));
 
 // node displacement, timeline 2 is moved before trial 0
@@ -455,3 +490,20 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 	})
 
 })
+
+/*********** Toggle actions **************/
+
+/*********** On Preview actions **************/
+
+let expected_preview = deepCopy(initState);
+expected_preview = reducer(expected_preview, Actions.addTimelineAction(null));
+expected_preview.previewId = standardizeTimelineId(0);
+
+describe('Timeline Node Reducers for onPreview actions', () => {
+	it('should handle preview selection', () => {
+		let s1 = deepCopy(initState);
+		s1 = reducer(s1, Actions.addTimelineAction(null));
+		s1 = reducer(s1, Actions.onPreviewAction(standardizeTimelineId(0)));
+		expect(s1).toEqual(expected_preview);
+	});
+});
