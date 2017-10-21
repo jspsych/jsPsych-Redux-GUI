@@ -95,7 +95,7 @@ export default function experimentReducer(state=initState, action) {
 		case actionTypes.SET_NAME:
 			return editor.setName(state, action);
 
-			// Trial form
+		// Trial form
 		case actionTypes.CHANGE_PLUGIN_TYPE:
 			return editor.changePlugin(state, action);
 		case actionTypes.SET_PLUGIN_PARAMTER:
@@ -105,7 +105,7 @@ export default function experimentReducer(state=initState, action) {
 		case actionTypes.UPDATE_MEDIA:
 			return editor.updateMedia(state, action);
 
-			// Timeline form
+		// Timeline form
 		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_ROW:
 			return editor.updateTimelineVariableRow(state, action);
 		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL:
