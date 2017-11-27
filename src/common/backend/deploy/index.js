@@ -82,7 +82,6 @@ export function diyDeploy(state, progressHook) {
   }
   // Extract used plugins and media
   extractDeployInfomation(experimentState, deployInfo, experimentState.media.Prefix);
-
   /* ************ Step 2 ************ */
   let filePaths = Object.keys(deployInfo.media);
   let total = 0;
@@ -155,6 +154,10 @@ function extractDeployInfomation(obj, deployInfo, prefix) {
       break;
     case 'string':
       let matches = obj.match(/<path>(.*?)<\/path>/g);
+      /*
+      NEED TO CHECK IF THE FILE IS ACTULLAY IN S3!!
+
+      */
       if (matches) {
         // populate deployInfo.media
         for (let m of matches) {
