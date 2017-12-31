@@ -173,7 +173,9 @@ function clickSavePush(state, action) {
 /*
 Update last editting experiment
 Update local experiment state
-
+action = {
+	data: { Item: { fetch : object } } // dynamoDB object
+}
 */
 function pullExperiment(state, action) {
 	let experimentState = action.data.Item.fetch;

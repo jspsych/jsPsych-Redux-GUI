@@ -282,7 +282,7 @@ class GridCell extends React.Component {
 
 class CodeEditor extends React.Component {
 	state = {
-		code: "",
+		code: this.props.code,
 	}
 
 	componentDidMount() {

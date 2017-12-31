@@ -39,7 +39,7 @@ timeline_variables should have the following data structure:
 	{		
 		// displayed as column header col=0     // displayed as (row=1, col=0)
 		"Timline Variable 1":                   "TV 1 value", 
-		// displayed as column header col=1     // displayed as (row=2, col=0)
+		// displayed as column header col=1     // displayed as (row=1, col=1)
 		"Timline Variable 2": "TV 2 value", 
 	},  // row 1
 	{
@@ -88,6 +88,14 @@ export function setName(state, action) {
 	return new_state;
 }
 
+/*
+path = string or 
+	{
+		next: object,
+		position: number, // index
+		key: string,
+	}
+*/
 export function locateNestedParameterValue(parameters, path) {
 	let parameterValue = parameters;
 
@@ -118,7 +126,8 @@ action = {
 		position: number, // index
 		key: string,
 	}
-	key: name of param, 
+
+	key: name of param, // or is the object defined above
 	value: new value,
 	setFunc: boolean,
 }
@@ -340,7 +349,7 @@ action = {
 }
 */
 export function updateTimelineVariableRow(state, action) {
-	let { fromRow, toRow, updated} = action;
+	let { fromRow, toRow, updated } = action;
 	let node = state[state.previewId];
 
 	// update state
