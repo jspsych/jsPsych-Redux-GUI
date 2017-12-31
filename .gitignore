@@ -28,7 +28,6 @@ build/Release
 
 # Dependency directories
 build
-dist
 node_modules
 jspm_packages
 
@@ -39,3 +38,4 @@ jspm_packages
 .node_repl_history
 
 *.duplicate.*
+

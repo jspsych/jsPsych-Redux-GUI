@@ -1,6 +1,4 @@
 import React from 'react';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 
 import TrialFormItem from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
 import { injectJsPsychUniversalPluginParameters } from '../../../utils';
@@ -53,23 +51,6 @@ class TrialForm extends React.Component {
 	render() {
 		return (
 			<div className="trialForm">
-				<div style={{display: 'flex', width: "100%"}}>
-					<p className="Trial-Form-Label-Container" 
-						style={{paddingTop: 15, paddingRight: 10}}>
-						{"Plugin:"}
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<SelectField
-							fullWidth={true}
-							value={this.props.pluginType}
-							title={this.props.pluginType}
-							maxHeight={300}
-							onChange={(event, key) => this.props.onChange(PluginList[key])} 
-						>
-							{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
-						</SelectField>
-					</div>
-				</div>
 				{this.renderPluginParams()}
 			</div>
 		)

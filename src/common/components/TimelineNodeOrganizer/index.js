@@ -13,7 +13,7 @@ import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
 import Delete from 'material-ui/svg-icons/action/delete';
 import Duplicate from 'material-ui/svg-icons/content/content-copy';
 
-import CloseDrawer from 'material-ui/svg-icons/navigation/close';
+import CloseDrawerHandle from 'material-ui/svg-icons/navigation/chevron-left';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 import {
 	grey300 as popDrawerColor,
@@ -28,7 +28,7 @@ import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTre
 export const TREE_MENU_INDENT = 20;
 
 const MIN_WIDTH = 20;
-const MAX_WIDTH = 45;
+const MAX_WIDTH = 40;
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
@@ -95,17 +95,6 @@ class TimelineNodeOrganizer extends React.Component {
 					}}>
 					{(this.props.open) ?
 					<div className="TimelineNode-Organizer-Content">
-						<div style={{display: 'flex'}}>
-							<Subheader>Timeline/Trial Organizer</Subheader>
-								<IconButton
-		  							hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
-									disableTouchRipple={true}
-									onTouchTap={this.props.closeCallback}
-									>
-									<CloseDrawer hoverColor={CloseDrawerHoverColor}/>
-								</IconButton>
-						</div>
-						<Divider />
 						<div className="TimelineNode-Sheet" style={{
 							overflowY: "auto",
 							maxWidth: "100%",
@@ -122,7 +111,7 @@ class TimelineNodeOrganizer extends React.Component {
 							/>
 						</List>
 						</div>
-						<Divider />
+						{/* <Divider /> */}
 						<div style={{
 							float: 'right',
 							paddingRight: 20,
@@ -175,7 +164,37 @@ class TimelineNodeOrganizer extends React.Component {
 							   cursor: 'col-resize',
 							   left: convertPercent(this.props.width-0.3),
   							}}
-  						/>
+  						>
+  						<div className="TimelineNode-Organizer-Close-Handle-Container"
+  							 style={{
+  							 		top: "50%",
+  							 		position: "fixed"
+	  							}}
+  						>
+	  						<IconButton
+	  							className="TimelineNode-Organizer-Close-Handle"
+	  							tooltip="Close"
+	  							tooltipPosition="bottom-right"
+	  							hoveredStyle={{
+	  								left: -23,
+		  							width: 26.5,
+	  								backgroundColor: CloseBackHighlightColor
+	  							}}
+	  							style={{
+		  							left: -18,
+		  							width: 25,
+				  					zIndex: 1
+	  							}}
+	  							iconStyle={{
+				  					margin:"0px 0px 0px -8px"
+	  							}}
+	  							disableTouchRipple={true}
+								onTouchTap={this.props.closeCallback}
+	  							>
+	  							<CloseDrawerHandle />
+	  						</IconButton>
+	  					</div>
+  						</div>
   				</Draggable>
   				{(this.props.open) ? 
   					null :

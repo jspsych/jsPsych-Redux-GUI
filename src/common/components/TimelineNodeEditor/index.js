@@ -3,12 +3,14 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 
 import Draggable from 'react-draggable';
 
-import CloseDrawer from 'material-ui/svg-icons/navigation/close';
+import CloseDrawerHandle from 'material-ui/svg-icons/navigation/chevron-right';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
 	grey300 as popDrawerColor,
@@ -22,7 +24,10 @@ import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 import { convertPercent } from '../App';
 
 export const MIN_WIDTH = 25;
-const MAX_WIDTH = 45;
+const MAX_WIDTH = 50;
+
+const jsPsych = window.jsPsych;
+const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
 
 const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
 
@@ -96,7 +101,37 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 								   cursor: 'col-resize',
 								   display: 'inline-block',
 	  							}}
-	  						/>
+	  				>
+		  				<div className="TimelineNode-Editor-Close-Handle-Container"
+	  							 style={{
+	  							 		top: "50%",
+	  							 		position: "fixed"
+		  							}}
+	  						>
+		  						<IconButton
+		  							className="TimelineNode-Editor-Close-Handle"
+		  							tooltip="Close"
+		  							tooltipPosition="bottom-left"
+		  							hoveredStyle={{
+		  								left: 1,
+			  							width: 26.5,
+		  								backgroundColor: CloseBackHighlightColor
+		  							}}
+		  							style={{
+			  							left: -9,
+			  							width: 25,
+					  					zIndex: 1
+		  							}}
+		  							iconStyle={{
+					  					margin:"0px 0px 0px -8px"
+		  							}}
+		  							disableTouchRipple={true}
+									onTouchTap={this.props.closeTimelineEditorCallback}
+		  							>
+		  							<CloseDrawerHandle />
+		  						</IconButton>
+		  					</div>
+		  			</div>
 	  			</Draggable>
 
 				<div className="TimelineNode-Editor-Container"
@@ -107,13 +142,39 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 					}}>
 					{(this.props.open) ?
 					<div className="TimelineNode-Editor-Content">
-						<div style={{display: 'flex', height: '100%',}}>
-							<IconButton
-							disableTouchRipple={true}
-	  						hoveredStyle={{backgroundColor: CloseBackHighlightColor}}
-							onTouchTap={this.props.closeTimelineEditorCallback}
-							>{(this.props.open) ? <CloseDrawer hoverColor={CloseDrawerHoverColor}/> : null}</IconButton>
-							<Subheader>Timeline/Trial Editor</Subheader>
+						<div style={{display: 'flex', height: '100%', width: '95%'}}>
+							<Subheader >
+							{(this.props.previewId) ?
+								<div>
+									<TextField
+											floatingLabelText={this.props.label}
+											id="Node-Name-Textfield"
+			                				value={this.props.nodeName}
+			                				fullWidth={true}
+											onChange={this.props.changeNodeName} />
+									{(!this.props.isTimeline) ?
+									<div style={{display: 'flex', width: "100%"}}>
+										<p style={{display: 'inline-block', paddingRight: 15}}>
+												{"Plugin:"}
+											</p>
+										<div style={{display: 'inline-block', width: "100%"}}>
+											<SelectField
+												fullWidth={true}
+												value={this.props.pluginType}
+												title={this.props.pluginType}
+												maxHeight={300}
+												onChange={(event, key) => this.props.changePlugin(PluginList[key])} 
+											>
+											{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
+											</SelectField>
+										</div>
+									</div>:
+									null
+									}
+								</div>
+								: null
+							}
+							</Subheader>
 						</div>
 						<Divider />
 						{(this.props.previewId) ?
@@ -127,12 +188,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 								zDepth={0}
 							>
 								<List style={{padding: 5, paddingTop: 0, width: '95%'}}>
-									<TextField
-											floatingLabelText={this.props.label}
-											id="Node-Name-Textfield"
-			                				value={this.props.nodeName}
-			                				fullWidth={true}
-											onChange={this.props.changeNodeName} />
 									{this.props.isTimeline ?
 										<TimelineForm id={this.props.previewId} /> :
 										<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
@@ -143,7 +198,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						null}
 					</div> : 
 					null}
-					<Divider />
+					{/* <Divider /> */}
 				</div>
   				{(this.props.open) ? null :
   					<IconButton

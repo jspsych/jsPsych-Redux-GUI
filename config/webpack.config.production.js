@@ -1,18 +1,24 @@
 var path = require('path');
 var webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-source-map',
   entry: [
     path.resolve(__dirname, '../src/client/index.js'),
   ],
+  alias: {
+   'react': 'preact-compat',
+   'react-dom': 'preact-compat'
+  },
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../public/static'),
     filename: 'bundle.js',
     publicPath: '/static/'
   },
   plugins: [
+    new BundleAnalyzerPlugin(),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       mangle: true,
@@ -28,7 +34,8 @@ module.exports = {
       },
       exclude: [/\.min\.js$/gi] // skip pre-minified libs
     }),
-    new webpack.optimize.AggressiveMergingPlugin()
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ],
   module: {
     loaders: [{
