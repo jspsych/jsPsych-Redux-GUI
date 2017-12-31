@@ -80,6 +80,7 @@
     "start": "react-scripts start",
     "build": "webpack -p --config config/webpack.config.production.js",
     "eject": "react-scripts eject",
+    "deploy": "deploy.cmd",
     "test": "jest",
     "test:watch": "npm test -- --watch"
   }
