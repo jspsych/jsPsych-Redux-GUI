@@ -23,6 +23,8 @@ import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 import { convertPercent } from '../App';
 
+import './TimelineNodeEditor.css';
+
 export const MIN_WIDTH = 25;
 const MAX_WIDTH = 50;
 
@@ -77,9 +79,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 		return (
 			<div className="TimelineNode-Editor"
 					style={{width: (this.props.open) ? convertPercent(this.props.width) : '0%',
-						right: '0px',
-						height: '100%',
-						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),
 						transition: enableAnimation(this.state.dragging),
@@ -93,37 +92,23 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 				        onDrag={this.onDrag}
 				        onStop={this.onDragEnd}
 				        >
-	  				<div 	className="TimelineNode-Editor-Dragger"
-	  						style={{
-	  							   position: 'fixed',
-								   height:'100%',
-								   width: '10px',
-								   cursor: 'col-resize',
-								   display: 'inline-block',
-	  							}}
-	  				>
-		  				<div className="TimelineNode-Editor-Close-Handle-Container"
-	  							 style={{
-	  							 		top: "50%",
-	  							 		position: "fixed"
-		  							}}
-	  						>
+	  				<div className="TimelineNode-Editor-Dragger">
+		  				<div className="TimelineNode-Editor-Close-Handle-Container">
 		  						<IconButton
 		  							className="TimelineNode-Editor-Close-Handle"
 		  							tooltip="Close"
 		  							tooltipPosition="bottom-left"
 		  							hoveredStyle={{
-		  								left: 1,
+					  					left: 0,
 			  							width: 26.5,
 		  								backgroundColor: CloseBackHighlightColor
 		  							}}
 		  							style={{
-			  							left: -9,
 			  							width: 25,
-					  					zIndex: 1
+			  							left: -5,
 		  							}}
 		  							iconStyle={{
-					  					margin:"0px 0px 0px -8px"
+		  								margin: '0px 0px 0px -12px'
 		  							}}
 		  							disableTouchRipple={true}
 									onTouchTap={this.props.closeTimelineEditorCallback}
@@ -134,15 +119,10 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 		  			</div>
 	  			</Draggable>
 
-				<div className="TimelineNode-Editor-Container"
-					style={{
-						height: '100%',
-						width: '100%',
-						borderLeft: (this.props.open) ? '1px solid #aaa' : '1px solid #aaa'
-					}}>
+				<div className="TimelineNode-Editor-Container">
 					{(this.props.open) ?
 					<div className="TimelineNode-Editor-Content">
-						<div style={{display: 'flex', height: '100%', width: '95%'}}>
+						<div className="TimelineNode-Editor-Header">
 							<Subheader >
 							{(this.props.previewId) ?
 								<div>
@@ -178,16 +158,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						</div>
 						<Divider />
 						{(this.props.previewId) ?
-							<Paper style={{
-								padding: 5, 
-								overflowY: 'auto', 
-								overflowX: 'scroll',
-								maxHeight: 455, 
-								minHeight: 455,
-								paddingTop: 0
-							}} 
-								zDepth={0}
-							>
+							<div className="TimelineNode-Editor-Sheet">
 								<List style={{padding: 5, paddingTop: 0, width: '95%'}}>
 									{this.props.isTimeline ?
 										<TimelineForm id={this.props.previewId} /> :
@@ -195,11 +166,10 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 									}
 
 								</List> 
-							</Paper> :
+							</div> :
 						null}
 					</div> : 
 					null}
-					{/* <Divider /> */}
 				</div>
   				{(this.props.open) ? null :
   					<IconButton

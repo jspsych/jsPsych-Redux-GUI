@@ -25,6 +25,8 @@ import {
 import { convertPercent } from '../App';
 import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
+import './TimelineNodeOrganizer.css';
+
 export const TREE_MENU_INDENT = 20;
 
 const MIN_WIDTH = 20;
@@ -79,69 +81,47 @@ class TimelineNodeOrganizer extends React.Component {
 		return (
 			<div className="TimelineNode-Organizer"
 				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%",
-						left: '0px',
-						overflow: 'hidden',
-						height: '100%',
-						display: 'flex',
 						'WebkitTransition': enableAnimation(this.state.dragging),
 						'MozTransition': enableAnimation(this.state.dragging),
 						transition: enableAnimation(this.state.dragging),
 				}}>
-				<div className="TimelineNode-Organizer-Container"
-					style={{
-						height: '100%',
-						width: '100%',
-						borderRight: '1px solid #aaa',
-						position: 'relative'
-					}}>
+				<div className="TimelineNode-Organizer-Container" >
 					{(this.props.open) ?
-					<div className="TimelineNode-Organizer-Content" style={{height: '100%'}}>
-						<div className="TimelineNode-Sheet" style={{
-							overflowY: "auto",
-							maxWidth: "100%",
-							paddingLeft: 0,
-							maxHeight: "100%",
-							position: 'relative',
-						}}>
-						<List style={{maxHeight: '95%'}}>
+					<div className="TimelineNode-Organizer-Content">
+						<div className="TimelineNode-Sheet">
 							<SortableTreeMenu
 								openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 								closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 							/>
-						</List>
 						</div>
-						<div style={{
-							width: '100%',
-							position: 'absolute',
-							bottom: 8
-						}}>
-						{/* <Divider /> */}
-						<SpeedDial
-						  style={{zIndex: 15, float: 'right', paddingRight: 20, paddingTop: 3}}
-					      fabContentOpen={<ContentAdd />}
-					      fabContentClose={<NavigationClose />}
-					    >
-					      <SpeedDialItem
-					        label="New Timeline"
-					        fabContent={<NewTimelineIcon />}
-					        onTouchTap={this.props.insertTimeline}
-					      />
-					      <SpeedDialItem
-					        label="New Trial"
-					        fabContent={<NewTrialIcon/>}
-					        onTouchTap={this.props.insertTrial}
-					      />
-					      <SpeedDialItem
-					        label="Delete"
-					        fabContent={<Delete/>}
-					        onTouchTap={this.props.deleteSelected}
-					      />
-					      <SpeedDialItem
-					        label="Duplicate"
-					        fabContent={<Duplicate/>}
-					        onTouchTap={this.props.duplicateNode}
-					      />
-					    </SpeedDial>
+						<div className="TimelineNode-Button-Container">
+							<div className="TimelineNode-Button">
+								<SpeedDial
+							      fabContentOpen={<ContentAdd />}
+							      fabContentClose={<NavigationClose />}
+							    >
+							      <SpeedDialItem
+							        label="New Timeline"
+							        fabContent={<NewTimelineIcon />}
+							        onTouchTap={this.props.insertTimeline}
+							      />
+							      <SpeedDialItem
+							        label="New Trial"
+							        fabContent={<NewTrialIcon/>}
+							        onTouchTap={this.props.insertTrial}
+							      />
+							      <SpeedDialItem
+							        label="Delete"
+							        fabContent={<Delete/>}
+							        onTouchTap={this.props.deleteSelected}
+							      />
+							      <SpeedDialItem
+							        label="Duplicate"
+							        fabContent={<Duplicate/>}
+							        onTouchTap={this.props.duplicateNode}
+							      />
+							    </SpeedDial>
+							</div>
 					    </div>
 					</div>: null}
 				</div>
@@ -155,45 +135,32 @@ class TimelineNodeOrganizer extends React.Component {
 			        onDrag={this.onDrag}
 			        onStop={this.onDragEnd}
 			        >
-  				<div 	className="TimelineNode-Organizer-Dragger"
-  						style={{
-  							   position: 'fixed',
-							   height:'100%',
-							   width: '10px',
-							   cursor: 'col-resize',
-							   left: convertPercent(this.props.width-0.3),
-  							}}
-  						>
-  						<div className="TimelineNode-Organizer-Close-Handle-Container"
-  							 style={{
-  							 		top: "50%",
-  							 		position: "fixed"
-	  							}}
-  						>
-	  						<IconButton
-	  							className="TimelineNode-Organizer-Close-Handle"
-	  							tooltip="Close"
-	  							tooltipPosition="bottom-right"
-	  							hoveredStyle={{
-	  								left: -23,
-		  							width: 26.5,
-	  								backgroundColor: CloseBackHighlightColor
-	  							}}
-	  							style={{
-		  							left: -18,
-		  							width: 25,
-				  					zIndex: 1
-	  							}}
-	  							iconStyle={{
-				  					margin:"0px 0px 0px -8px"
-	  							}}
-	  							disableTouchRipple={true}
-								onTouchTap={this.props.closeCallback}
-	  							>
-	  							<CloseDrawerHandle />
-	  						</IconButton>
-	  					</div>
-  						</div>
+	  				<div className="TimelineNode-Organizer-Dragger"
+	  					style={{left: convertPercent(this.props.width-0.3),}}>
+	  						<div className="TimelineNode-Organizer-Close-Handle-Container">
+		  						<IconButton
+		  							className="TimelineNode-Organizer-Close-Handle"
+		  							tooltip="Close"
+		  							tooltipPosition="bottom-right"
+		  							hoveredStyle={{
+		  								left: -28,
+			  							width: 26.5,
+		  								backgroundColor: CloseBackHighlightColor
+		  							}}
+		  							style={{
+			  							left: -22,
+			  							width: 25,
+		  							}}
+		  							iconStyle={{
+					  					margin:"0px 0px 0px -8px"
+		  							}}
+		  							disableTouchRipple={true}
+									onTouchTap={this.props.closeCallback}
+		  							>
+		  							<CloseDrawerHandle />
+		  						</IconButton>
+		  					</div>
+  					</div>
   				</Draggable>
   				{(this.props.open) ? 
   					null :
@@ -207,13 +174,13 @@ class TimelineNodeOrganizer extends React.Component {
   						onTouchTap={this.props.openCallback}
   						tooltipPosition="bottom-right"
   						style={{
-	  					position: 'fixed',
-	  					left: -8,
-	  					top: '50%',
-	  					width: 25,
-	  					backgroundColor: popDrawerColor,
-	  					padding: '12px 0',
-	  					zIndex: 1,
+		  					position: 'fixed',
+		  					left: -8,
+		  					top: '50%',
+		  					width: '25px',
+		  					backgroundColor: popDrawerColor,
+		  					padding: '12px 0',
+		  					zIndex: 1,
   						}}
   					>
   						<OpenDrawer />

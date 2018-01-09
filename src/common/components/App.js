@@ -353,8 +353,7 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
-	  				<div
-	  					className="main-body"
+	  				<div className="main-body"
 	  					id="main-body"
 	  					style={{
 							width: mainBodyWidth(timelineOrganizerDrawerToggle,

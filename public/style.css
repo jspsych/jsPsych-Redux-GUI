@@ -51,18 +51,3 @@ html, body {
     text-overflow: ellipsis;
 }
 
-.TimelineNode-Organizer-Close-Handle-Container{
-    display: none;
-}
-
-.TimelineNode-Organizer-Dragger:hover .TimelineNode-Organizer-Close-Handle-Container{
-    display: inline-block;
-}
-
-.TimelineNode-Editor-Close-Handle-Container {
-    display: none;
-}
-
-.TimelineNode-Editor-Dragger:hover .TimelineNode-Editor-Close-Handle-Container{
-    display: inline-block;
-}

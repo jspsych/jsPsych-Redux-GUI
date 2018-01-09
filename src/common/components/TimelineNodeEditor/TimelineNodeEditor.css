@@ -1,0 +1,49 @@
+.TimelineNode-Editor {
+	height: 100%;
+	display: flex;
+	overflow: hidden;
+	flex-direction: row;
+}
+
+.TimelineNode-Editor-Container {
+	height: 100%;
+	width: 100%;
+	position: relative;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.TimelineNode-Editor-Content {
+	height: 100%;
+	width: 100%;
+}
+
+.TimelineNode-Editor-Header {
+	display: flex;
+	width: 95%;
+}
+
+.TimelineNode-Editor-Sheet {
+	overflow-y: auto;
+	overflow-x: scroll;
+	height: 100%;
+}
+
+.TimelineNode-Editor-Dragger {
+	height: 100%;
+	width: 8px;
+	flex-basis: 8px;
+	cursor: col-resize;
+	border-left: 1px solid #aaa;
+}
+
+.TimelineNode-Editor-Close-Handle-Container {
+	display: none;
+    top: 50%;
+    position: fixed;
+}
+
+.TimelineNode-Editor-Dragger:hover .TimelineNode-Editor-Close-Handle-Container{
+    display: inline-block;
+}
