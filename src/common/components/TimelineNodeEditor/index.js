@@ -181,6 +181,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 							<Paper style={{
 								padding: 5, 
 								overflowY: 'auto', 
+								overflowX: 'scroll',
 								maxHeight: 455, 
 								minHeight: 455,
 								paddingTop: 0

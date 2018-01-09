@@ -47,9 +47,14 @@ const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
 					spec = true;
 					break;
 				case '}':
-					if (part.trim().length > 0) val.push(part);
+					if (part.trim().length > 0 && !hist[part]) {
+						val.push(part);
+						hist[part] = true;
+					}
 					part = "";
 					spec = false;
+					break;
+				case ' ':
 					break;
 				default:
 					if (spec) part += c;

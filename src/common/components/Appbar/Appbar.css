@@ -1,0 +1,36 @@
+.Appbar {
+	width: 100%;
+	height: 100%;
+	margin: 0 auto;
+	padding-bottom: 0;
+	border-bottom: 1px solid #aaa;
+	display: flex;
+}
+
+.App-Logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    max-width: 10%;
+	width: 10%;
+	flex-basis: auto;
+	height: 100%;
+}
+
+.App-Logo img {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.Appbar-main {
+	flex-grow: 1;
+	flex-direction: column;
+	height: 100%;
+}
+
+.Appbar-info {
+	flex-basis: 48px;
+	background-color: white;
+}

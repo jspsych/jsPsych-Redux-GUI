@@ -91,34 +91,33 @@ class TimelineNodeOrganizer extends React.Component {
 					style={{
 						height: '100%',
 						width: '100%',
-						borderRight: '1px solid #aaa'
+						borderRight: '1px solid #aaa',
+						position: 'relative'
 					}}>
 					{(this.props.open) ?
-					<div className="TimelineNode-Organizer-Content">
+					<div className="TimelineNode-Organizer-Content" style={{height: '100%'}}>
 						<div className="TimelineNode-Sheet" style={{
 							overflowY: "auto",
 							maxWidth: "100%",
 							paddingLeft: 0,
-							height: "100%"
+							maxHeight: "100%",
+							position: 'relative',
 						}}>
-						<List style={{
-									maxHeight: "68vh",
-									minHeight: "68vh",
-  								}}>
+						<List style={{maxHeight: '95%'}}>
 							<SortableTreeMenu
 								openTimelineEditorCallback={this.props.openTimelineEditorCallback}
 								closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
 							/>
 						</List>
 						</div>
-						{/* <Divider /> */}
 						<div style={{
-							float: 'right',
-							paddingRight: 20,
-							paddingTop: 5,
+							width: '100%',
+							position: 'absolute',
+							bottom: 8
 						}}>
+						{/* <Divider /> */}
 						<SpeedDial
-							style={{zIndex: 15}}
+						  style={{zIndex: 15, float: 'right', paddingRight: 20, paddingTop: 3}}
 					      fabContentOpen={<ContentAdd />}
 					      fabContentClose={<NavigationClose />}
 					    >

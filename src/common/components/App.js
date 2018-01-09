@@ -10,6 +10,8 @@ import { getFullScreenState } from './PreviewWindow';
 import Notification from '../containers/Notification';
 import { MIN_WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
 
+import './App.css';
+
 const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
 
 export const convertPercent = (number) => (number + '%');
@@ -337,20 +339,11 @@ class App extends React.Component {
 		} = this;
 
 		return (
-			<div className="App" style={{height: "100%"}}>
-				<div className="appbar-container" style={{height: "14%"}}>
+			<div className="App">
+				<div className="Appbar-Container">
 					<Appbar />
 				</div>
-
-	  			<div 
-	  				className="main-container" 
-	  				style={{
-	  					overflow: 'hidden', 
-	  					width: '100%', 
-	  					display: 'flex', 
-	  					height: "86%",
-	  				}}
-	  				>
+	  			<div className="App-Main-Container">
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
 	  					width={timelineOrganizerDrawerWidth}

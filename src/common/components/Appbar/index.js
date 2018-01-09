@@ -26,6 +26,8 @@ import MediaManager from '../../containers/MediaManager';
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
 
+import './Appbar.css';
+
 const Actions = {
   save: "SAVE",
   saveAs: "SAVEAS"
@@ -131,41 +133,21 @@ export default class Appbar extends React.Component {
     let isBundling = this.state.total !== 0;
 
 		return (
-      		<div className="Appbar"
-      				style={{
-      					width: "100%",
-      					margin: '0 auto',
-      					display: 'flex',
-      					height: "100%",
-      					paddingBottom: 0,
-								borderBottom: '1px solid #aaa'
-      				}}
-      				draggable={false}
-      				>
-  						<div style={{
-                minWidth:"6vw",
-                width: "7%",
-              }}>
-    						<GridTile style={{ height: 88 }}>
-    							<img draggable={false} src='./jsPsych/jspsych-logo-readme.jpg' role="presentation"/>
-    						</GridTile>
-  						</div>
-        			<div className="Appbar-main" style={{
-                display: 'inline-block', width:"93%"
-              }}>
-        			<div style={{
-                    backgroundColor: 'white',
-                    marginLeft: 5
-                  }}>
-								<UserMenu />
-								<TextField
-  								id="Experiment-Name-Textfield"
-                  value={this.props.experimentName}
-                  errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
-  								onChange={this.props.changeExperimentName}
-                  />
-							</div>
-  							<Toolbar style={{height: 40, backgroundColor: 'white'}}>
+      		<div className="Appbar" draggable={false} >
+  						<div className="App-Logo" >
+                <img src='./jsPsych/jspsych-logo-readme.jpg' />
+              </div>
+        			<div className="Appbar-main">
+          			<div className="Appbar-info">
+  								<UserMenu />
+  								<TextField
+    								id="Experiment-Name-Textfield"
+                    value={this.props.experimentName}
+                    errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
+    								onChange={this.props.changeExperimentName}
+                    />
+  							</div>
+  							<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
                   <ToolbarGroup firstChild={true}>
                     <InitEditor />
                     <ToolbarSeparator />

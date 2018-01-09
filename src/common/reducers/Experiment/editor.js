@@ -1,6 +1,9 @@
 import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import { createFuncObj } from './jsPsychInit';
 
+const jsPsych = window.jsPsych;
+const EnumPluginType = jsPsych.plugins.parameterType;
+
 /*
 Indicate which value (native value, function or timeline variable) should be used
 */
@@ -98,12 +101,12 @@ path = string or
 */
 export function locateNestedParameterValue(parameters, path) {
 	let parameterValue = parameters;
-
 	if (typeof path === 'object') {
 		// find the complex type jsPsych plugin parameter
 		parameterValue = parameterValue[path.key];
 		path = path.next;
 		while (path) {
+			let tmp = parameterValue.value[path.position];
 			parameterValue = parameterValue.value[path.position][path.key];
 			path = path.next;
 		}
@@ -192,8 +195,14 @@ export function updateMedia(state, action) {
 	});
 }
 
+
 /*
-Change plugin type of trial --> update trial.parameters
+Latter adding check input before this phase
+
+*/
+
+/*
+Change plugin type of trial --> update trial.parameters, if same plugin don't update
 action = {
 	newPluginVal: new plugin name (from jsPsych)
 }
@@ -203,23 +212,42 @@ export function changePlugin(state, action) {
 	let node = state[state.previewId];
 	let new_state = Object.assign({}, state);
 
+	// if same plugin don't update	
+	if (node.parameters.type === action.newPluginVal) return new_state;
+
 	// add universal plugin parameters
-	let params = injectJsPsychUniversalPluginParameters(window.jsPsych.plugins[action.newPluginVal].info.parameters);
+	let params = injectJsPsychUniversalPluginParameters(jsPsych.plugins[action.newPluginVal].info.parameters);
+	// names of parameters
 	let paramKeys = Object.keys(params);
+	// new npde.parameters object
 	let paramsObject = {
 		type: action.newPluginVal
 	};
+	// convert to required data structure
 	for (let i = 0; i < paramKeys.length; i++) {
-		let paramInfo = params[paramKeys[i]];
-		let defaultValue = convertEmptyStringToNull(paramInfo.default);
+		// parameter name
+		let paramName = paramKeys[i];
+		// parameter info
+		let paramInfo = params[paramName];
+
+		// Converting default value to target data structure procedure:
+		// 1. Check if it has nested structure, if it has then defaultValue = []
+		// 2. See if its default value is array or object (currently only do shallow converting)
+		// 3. Fully convert ==> node.parameters[parameter name] = ComplexObject()
+
+		// default value
+		let defaultValue;
+		// Check if it has nested structure, if it has then defaultValue = []
+		if (paramInfo.type === EnumPluginType.COMPLEX) {
+			defaultValue = [];
+		} else {
+			defaultValue = convertEmptyStringToNull(paramInfo.default);
+		}
 
 		// ***** Current converting is all shallow *****
-		if (paramInfo.array) {
-			if (!Array.isArray(defaultValue)) {
-				defaultValue = [];
-			} else {
-				defaultValue = defaultValue.map((v) => (createComplexDataObject(v)));
-			}
+		// See if its default value is array or object (currently only do shallow converting)
+		if (Array.isArray(defaultValue)) {
+			defaultValue = defaultValue.map((v) => (createComplexDataObject(v)));
 		} else if (typeof defaultValue === 'object' && defaultValue) {
 			let res = {};
 			for (let key of Object.keys(defaultValue)) {
@@ -229,8 +257,8 @@ export function changePlugin(state, action) {
 		}
 		// ***** Current converting is all shallow *****
 		
-		// every trial data is a composite object defined above
-		paramsObject[paramKeys[i]] = createComplexDataObject(defaultValue);
+		// fully convert ==> node.parameters[parameter name] = ComplexObject()
+		paramsObject[paramName] = createComplexDataObject(defaultValue);
 	}
 
 	// update trial node

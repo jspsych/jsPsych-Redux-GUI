@@ -281,6 +281,7 @@ function generateTrialBlock(state, trial, all=false, deploy=false) {
   let parameters = trial.parameters;
   for (let key of Object.keys(parameters)) {
     // don't render
+    // if (parameter_default_value is undefined)
     if (parameters[key] === undefined) return false;
     res[key] = parameters[key];
   }
