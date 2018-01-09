@@ -12,9 +12,9 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    max-width: 10%;
-	width: 10%;
-	flex-basis: auto;
+    max-width: 140px;
+	width: 140px;
+	flex-basis: 140px;
 	height: 100%;
 }
 
