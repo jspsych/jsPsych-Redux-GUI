@@ -12,7 +12,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
-import BocUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+import BoxUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
@@ -172,7 +172,6 @@ export default class TrialFormItem extends React.Component {
 	renderLabel = (param) => {
 
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
 		return (
 		<p
 			className="Trial-Form-Label-Container"
@@ -265,7 +264,6 @@ export default class TrialFormItem extends React.Component {
 	// primaryText={`[${(this.props.parameters[param].timelineVariable ? this.props.parameters[param].timelineVariable : "Timeline Variable")}]`}
 	
 	renderTextField = (param) => {
-
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
@@ -382,12 +380,22 @@ export default class TrialFormItem extends React.Component {
 		)
 	}
 
+
+	/*
+	Render Procedure:
+	1. Extract data and information
+	2. Parse keys
+	3. Set flags
+	*/
 	renderKeyboardInput = (param) => {
 
+		// 1. Extract data and information
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let value = parameterValue.value;
+
+		// 2. Parse keys
 		if (Array.isArray(value)) {
 			let s = "";
 			for (let v of value) {
@@ -397,7 +405,11 @@ export default class TrialFormItem extends React.Component {
 			}
 			value = s;
 		}
+
+		// 3. Set flags
+		// Is its value an Enum?
 		let isAllKey = value === jsPsych.ALL_KEYS;
+		// Can its value potentially be an array? That is, can there be multiple keys
 		let isArray = !!parameterInfo.array;
 
 		let alternativeNode = (<IconButton 
@@ -411,7 +423,7 @@ export default class TrialFormItem extends React.Component {
 				tooltip="All Keys"
 				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
-				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BocUncheckIcon />}
+				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BoxUncheckIcon />}
 			</IconButton>);
 
 		let node = (
@@ -617,6 +629,11 @@ export default class TrialFormItem extends React.Component {
 
 	renderComplex = (param) => {
 
+		/*
+		parameterValue = {
+			value: [], // must be array
+		}
+		*/
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 		let node = (

@@ -457,6 +457,7 @@ export default class TimelineVariableTable extends React.Component {
 				editable: true,
 				editor: CustomEditor,
 				formatter: GridCell,
+				width: 120,
 				headerRenderer: () => { 
 					return headerRenderer({
 						name: key,
@@ -577,11 +578,14 @@ export default class TimelineVariableTable extends React.Component {
 					<div style={{right: 0, position: 'absolute'}}>
 		  	  	 		<TimelineVariableTableOpener spreadSheet={spreadSheet} />
 		  	  	 	</div>
-		  	  	 </div>
+		  	  </div>
+		  	  {/*
+
 			  <div style={{maxHeight: 300, width: "100%"}}>
 			      {spreadSheet}
 		      </div>
-		      <div style={{display: 'flex', width: "100%", paddingTop: 10}} >
+		      */}
+		      <div style={{display: 'flex', width: "100%"}} >
 					<p
 						className="Trial-Form-Label-Container"
 					    style={labelStyle}
@@ -600,3 +604,6 @@ export default class TimelineVariableTable extends React.Component {
 		 )
 	}
 }
+
+
+			

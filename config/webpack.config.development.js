@@ -3,7 +3,7 @@ var webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  devtool: 'eval-source-map',
+  devtool: 'eval',
   entry: [
     'webpack-hot-middleware/client',
     path.resolve(__dirname, '../src/client/index.js')
