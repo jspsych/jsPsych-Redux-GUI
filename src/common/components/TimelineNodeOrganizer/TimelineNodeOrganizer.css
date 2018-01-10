@@ -43,7 +43,7 @@
 	cursor: col-resize;
 	border-left: 1px solid #aaa;
 	background-color: rgb(232, 232, 232);
-	position: absolute;
+	/*position: absolute;*/
 }
 
 .TimelineNode-Organizer-Close-Handle-Container {
