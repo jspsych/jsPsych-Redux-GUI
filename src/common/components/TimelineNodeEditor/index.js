@@ -83,41 +83,45 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						'MozTransition': enableAnimation(this.state.dragging),
 						transition: enableAnimation(this.state.dragging),
 						}}>
-				<Draggable
-				        axis="x"
-				        handle=".TimelineNode-Editor-Dragger"
-				        zIndex={10}
-				        position={{x: this.props.width}}
-				        onStart={this.onDragStart}
-				        onDrag={this.onDrag}
-				        onStop={this.onDragEnd}
-				        >
-	  				<div className="TimelineNode-Editor-Dragger">
-		  				<div className="TimelineNode-Editor-Close-Handle-Container">
-		  						<IconButton
-		  							className="TimelineNode-Editor-Close-Handle"
-		  							tooltip="Close"
-		  							tooltipPosition="bottom-left"
-		  							hoveredStyle={{
-					  					left: 0,
-			  							width: 26.5,
-		  								backgroundColor: CloseBackHighlightColor
-		  							}}
-		  							style={{
-			  							width: 25,
-			  							left: -5,
-		  							}}
-		  							iconStyle={{
-		  								margin: '0px 0px 0px -12px'
-		  							}}
-		  							disableTouchRipple={true}
-									onTouchTap={this.props.closeTimelineEditorCallback}
-		  							>
-		  							<CloseDrawerHandle />
-		  						</IconButton>
-		  					</div>
-		  			</div>
-	  			</Draggable>
+				{this.props.open ?
+					<Draggable
+					        axis="x"
+					        handle=".TimelineNode-Editor-Dragger"
+					        zIndex={10}
+					        position={{x: this.props.width}}
+					        onStart={this.onDragStart}
+					        onDrag={this.onDrag}
+					        onStop={this.onDragEnd}
+					        >
+		  				<div className="TimelineNode-Editor-Dragger">
+			  				<div className="TimelineNode-Editor-Close-Handle-Container">
+			  						<IconButton
+			  							className="TimelineNode-Editor-Close-Handle"
+			  							tooltip="Close"
+			  							tooltipPosition="bottom-left"
+			  							hoveredStyle={{
+						  					left: 0,
+				  							width: 26.5,
+			  								backgroundColor: CloseBackHighlightColor
+			  							}}
+			  							style={{
+				  							width: 25,
+				  							left: -5,
+			  							}}
+			  							iconStyle={{
+			  								margin: '0px 0px 0px -12px'
+			  							}}
+			  							disableTouchRipple={true}
+										onTouchTap={this.props.closeTimelineEditorCallback}
+			  							>
+			  							<CloseDrawerHandle />
+			  						</IconButton>
+			  					</div>
+			  			</div>
+		  			</Draggable> :
+		  			null
+				}
+				
 
 				<div className="TimelineNode-Editor-Container">
 					{(this.props.open) ?

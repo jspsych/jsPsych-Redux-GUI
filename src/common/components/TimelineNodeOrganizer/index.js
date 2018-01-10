@@ -129,42 +129,46 @@ class TimelineNodeOrganizer extends React.Component {
 					</div>: null}
 				</div>
 
-				<Draggable
-			        axis="x"
-			        handle=".TimelineNode-Organizer-Dragger"
-			        zIndex={10}
-			        position={{x: this.props.width}}
-			        onStart={this.onDragStart}
-			        onDrag={this.onDrag}
-			        onStop={this.onDragEnd}
-			        >
-	  				<div className="TimelineNode-Organizer-Dragger"
-	  					style={{left: convertPercent(this.props.width-0.3),}}>
-	  						<div className="TimelineNode-Organizer-Close-Handle-Container">
-		  						<IconButton
-		  							className="TimelineNode-Organizer-Close-Handle"
-		  							tooltip="Close"
-		  							tooltipPosition="bottom-right"
-		  							hoveredStyle={{
-		  								left: -28,
-			  							width: 26.5,
-		  								backgroundColor: CloseBackHighlightColor
-		  							}}
-		  							style={{
-			  							left: -22,
-			  							width: 25,
-		  							}}
-		  							iconStyle={{
-					  					margin:"0px 0px 0px -8px"
-		  							}}
-		  							disableTouchRipple={true}
-									onTouchTap={this.props.closeCallback}
-		  							>
-		  							<CloseDrawerHandle />
-		  						</IconButton>
-		  					</div>
-  					</div>
-  				</Draggable>
+				{this.props.open ? 
+					<Draggable
+				        axis="x"
+				        handle=".TimelineNode-Organizer-Dragger"
+				        zIndex={10}
+				        position={{x: this.props.width}}
+				        onStart={this.onDragStart}
+				        onDrag={this.onDrag}
+				        onStop={this.onDragEnd}
+				        >
+		  				<div className="TimelineNode-Organizer-Dragger"
+		  					style={{left: convertPercent(this.props.width-0.3),}}>
+		  						<div className="TimelineNode-Organizer-Close-Handle-Container">
+			  						<IconButton
+			  							className="TimelineNode-Organizer-Close-Handle"
+			  							tooltip="Close"
+			  							tooltipPosition="bottom-right"
+			  							hoveredStyle={{
+			  								left: -28,
+				  							width: 26.5,
+			  								backgroundColor: CloseBackHighlightColor
+			  							}}
+			  							style={{
+				  							left: -22,
+				  							width: 25,
+			  							}}
+			  							iconStyle={{
+						  					margin:"0px 0px 0px -8px"
+			  							}}
+			  							disableTouchRipple={true}
+										onTouchTap={this.props.closeCallback}
+			  							>
+			  							<CloseDrawerHandle />
+			  						</IconButton>
+			  					</div>
+	  					</div>
+	  				</Draggable> :
+	  				null
+				}
+				
   				{(this.props.open) ? 
   					null :
   					<IconButton
