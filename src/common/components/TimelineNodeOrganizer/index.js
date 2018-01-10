@@ -95,8 +95,12 @@ class TimelineNodeOrganizer extends React.Component {
 							/>
 						</div>
 						<div className="TimelineNode-Button-Container">
-							<div className="TimelineNode-Button">
 								<SpeedDial
+								  style={{
+								  	zIndex: 15,
+									float: 'right',
+									paddingRight: '10px'
+								  }}
 							      fabContentOpen={<ContentAdd />}
 							      fabContentClose={<NavigationClose />}
 							    >
@@ -121,7 +125,6 @@ class TimelineNodeOrganizer extends React.Component {
 							        onTouchTap={this.props.duplicateNode}
 							      />
 							    </SpeedDial>
-							</div>
 					    </div>
 					</div>: null}
 				</div>
