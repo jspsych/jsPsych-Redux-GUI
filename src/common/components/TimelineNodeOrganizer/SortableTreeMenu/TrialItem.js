@@ -4,8 +4,6 @@ import IconButton from 'material-ui/IconButton';
 import { ListItem } from 'material-ui/List';
  
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 import {
 	grey400 as normalColor,
@@ -105,18 +103,6 @@ class TrialItem extends React.Component {
 									this.props.onClick(setKeyboardFocusId);
 								}
 							}}
-							rightIconButton={
-								<IconButton 
-									onContextMenu={this.openToggleContextMenu}
-									disableTouchRipple={true}
-									onTouchTap={(e) => {
-												if (e.nativeEvent.which === 1) {
-													this.props.onToggle();
-													}
-												}} 
-									>
-								{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-								</IconButton>}
 						/>
 					</div>
 						<NestedContextMenus
@@ -130,9 +116,8 @@ class TrialItem extends React.Component {
 
 								openToggleMenu={this.state.toggleContextMenuOpen}
 								onRequestCloseToggleMenu={this.closeToggleContextMenu}
-								toggleAll={this.props.toggleAll}
-								untoggleAll={this.props.untoggleAll}
-								toggleThisOnly={this.props.toggleThisOnly}
+								onToggle={this.props.onToggle}
+								isEnabled={this.props.isEnabled}
 							/>
 					</div>
 				</div>

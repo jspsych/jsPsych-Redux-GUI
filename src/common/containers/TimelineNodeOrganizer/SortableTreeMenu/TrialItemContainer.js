@@ -1,12 +1,7 @@
 import { connect } from 'react-redux';
 import * as organizerActions from '../../../actions/organizerActions';
 import TrialItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TrialItem';
-import {
-	toggleAll,
-	untoggleAll,
-	toggleThisOnly,
-	listenKey
-} from './TimelineItemContainer';
+import { listenKey } from './TimelineItemContainer';
 
 const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 	// console.log(e.nativeEvent.which)
@@ -67,9 +62,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteTrial: () => { deleteTrial(dispatch, ownProps)},
 	duplicateTrial: () => { duplicateTrial(dispatch, ownProps) },
-	toggleAll: () => { toggleAll(dispatch) },
-	untoggleAll: () => { untoggleAll(dispatch) },
-	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
 	listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
 })
 

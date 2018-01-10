@@ -12,6 +12,8 @@ import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import SelectAllIcon from 'material-ui/svg-icons/content/select-all';
 import DeselectAllIcon from 'material-ui/svg-icons/content/block';
 import SelectThisOnlyIcon from 'material-ui/svg-icons/device/gps-fixed';
+import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
+import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 import {
 	pink500 as contextMenuIconColor,
@@ -57,32 +59,16 @@ export default class NestedContextMenus extends React.Component {
 							leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
 							onTouchTap={()=>{ this.props.duplicateNode(); this.props.onRequestCloseItemMenu()}}
 						/>
+						<Divider />
+						<MenuItem primaryText={this.props.isEnabled ? "Enabled" : "Disabled"}
+							leftIcon={
+								this.props.isEnabled ?
+								<CheckIcon color={contextMenuStyle.iconColor} />:
+								<UnCheckIcon color={contextMenuStyle.iconColor} />
+							}
+							onTouchTap={()=>{ this.props.onToggle(); this.props.onRequestCloseItemMenu()}}
+						/>
 					</Menu>
-					</Popover>
-
-					<Popover
-					  open={this.props.openToggleMenu}
-					  anchorEl={this.props.anchorEl}
-			          anchorOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-			          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
-			          onRequestClose={this.props.onRequestCloseToggleMenu}
-			          >
-			          <Menu>
-			          	<MenuItem primaryText="Toggle All" 
-							leftIcon={<SelectAllIcon color={contextMenuStyle.iconColor} />}
-							onTouchTap={()=>{ this.props.toggleAll(); this.props.onRequestCloseToggleMenu()}}
-						/>
-						<Divider />
-						<MenuItem primaryText="Untoggle All" 
-							leftIcon={<DeselectAllIcon color={contextMenuStyle.iconColor} />}
-							onTouchTap={()=>{ this.props.untoggleAll(); this.props.onRequestCloseToggleMenu()}}
-						/>
-						<Divider />
-						<MenuItem primaryText="Toggle This Only" 
-							leftIcon={<SelectThisOnlyIcon color={contextMenuStyle.iconColor} />}
-							onTouchTap={()=>{ this.props.toggleThisOnly(); this.props.onRequestCloseToggleMenu()}}
-						/>
-						</Menu>
 					</Popover>
 				</div>
 		)
