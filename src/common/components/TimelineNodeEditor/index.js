@@ -93,7 +93,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 					        onDrag={this.onDrag}
 					        onStop={this.onDragEnd}
 					        >
-		  				<div className="TimelineNode-Editor-Dragger">
+		  				<div className="TimelineNode-Editor-Dragger" style={{width: '8px', minWidth: '8px'}}>
 			  				<div className="TimelineNode-Editor-Close-Handle-Container">
 			  						<IconButton
 			  							className="TimelineNode-Editor-Close-Handle"
@@ -126,7 +126,13 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 				<div className="TimelineNode-Editor-Container">
 					{(this.props.open) ?
 					<div className="TimelineNode-Editor-Content">
-						<div className="TimelineNode-Editor-Header">
+						<div className="TimelineNode-Editor-Header" 
+							 style={{
+							 	flexBasis: 'auto',
+							 	height: (this.props.isTimeline) ? '60px' : '120px',
+							 	minHeight: (this.props.isTimeline) ? '60px' : '120px',
+							 }}
+							 >
 							<Subheader >
 							{(this.props.previewId) ?
 								<div>

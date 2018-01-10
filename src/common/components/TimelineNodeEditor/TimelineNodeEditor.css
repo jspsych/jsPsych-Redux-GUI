@@ -17,6 +17,8 @@
 .TimelineNode-Editor-Content {
 	height: 100%;
 	width: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 .TimelineNode-Editor-Header {
@@ -27,12 +29,13 @@
 .TimelineNode-Editor-Sheet {
 	overflow-y: auto;
 	overflow-x: scroll;
-	height: 100%;
+	flex-grow: 1;
 }
 
 .TimelineNode-Editor-Dragger {
 	height: 100%;
 	width: 8px;
+	min-width: 8px;
 	flex-basis: 8px;
 	cursor: col-resize;
 	border-left: 1px solid #aaa;

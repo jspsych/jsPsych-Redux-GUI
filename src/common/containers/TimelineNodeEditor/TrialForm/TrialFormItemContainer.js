@@ -78,9 +78,7 @@ const setToggle = (dispatch, key) => {
 	});
 }
 
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
+function isNumeric(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 const setNumber = (dispatch, key, value, isFloat) => {
 	if (value === '') value = -1;
 	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));

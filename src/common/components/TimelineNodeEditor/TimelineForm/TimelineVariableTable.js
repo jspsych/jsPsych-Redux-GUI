@@ -569,16 +569,6 @@ export default class TimelineVariableTable extends React.Component {
 
 		return (
 		  <div>
-		  	   <div style={{display: 'flex', width: "100%", position: 'relative', paddingBottom: 10}} >
-					<p
-					    style={labelStyle}
-					>
-					    Timeline variables:
-					</p>
-					<div style={{right: 0, position: 'absolute'}}>
-		  	  	 		<TimelineVariableTableOpener spreadSheet={spreadSheet} />
-		  	  	 	</div>
-		  	  </div>
 		  	  {/*
 
 			  <div style={{maxHeight: 300, width: "100%"}}>
@@ -586,6 +576,17 @@ export default class TimelineVariableTable extends React.Component {
 		      </div>
 		      */}
 		      <div style={{display: 'flex', width: "100%"}} >
+		      	<p  className="Trial-Form-Label-Container"
+				    style={labelStyle}
+				>
+				    Timeline variables:
+				</p>
+				<div className="Trial-Form-Content-Container">
+	  	  	 		<TimelineVariableTableOpener spreadSheet={spreadSheet} />
+	  	  	 	</div>
+		  	  </div>
+		      <div style={{display: 'flex', width: "100%"}} >
+		      		
 					<p
 						className="Trial-Form-Label-Container"
 					    style={labelStyle}

@@ -6,6 +6,9 @@ import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../re
 import { createComplexDataObject, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
+import { injectJsPsychUniversalPluginParameters } from '../../utils';
+
+const jsPsych = window.jsPsych;
 
 const Deploy_Folder = 'assets';
 
@@ -42,6 +45,27 @@ const undefinedObj = {
   ]
 }
 
+const errorMessageObj = (error) => {
+  let message = '';
+  for (let e of error) {
+    message += `Parameter "${e}" must have a valid value.<br>`;
+  }
+  return {
+    ...jsPsychInitState,
+    timeline: [
+      {
+        type: 'html-keyboard-response',
+          stimulus: createComplexDataObject(''),
+          choices: createComplexDataObject(null),
+          prompt: createComplexDataObject(`<p style="color:red">${message}</p>`),
+          stimulus_duration: createComplexDataObject(null),
+          trial_duration: createComplexDataObject(null),
+          response_ends_trial: createComplexDataObject(null),
+      }
+    ]
+  }
+}
+
 
 export const MediaPathTag = (filename) => (`<path>${filename}</path>`);
 
@@ -51,6 +75,7 @@ export const Welcome = 'jsPsych.init(' + stringify(welcomeObj) + ');';
 // Code for generating undefined page
 export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
+const ErrorMessage = (error) => ('jsPsych.init(' + stringify(errorMessageObj(error)) + ');');
 
 /*
 DIY deploy built experiment for user
@@ -181,12 +206,14 @@ deploy - indicates if in deploy mode (include all nodes)
 export function generateCode(state, all=false, deploy=false) {
   // if all experiments are requested, then source is obviously mainTimeline
   // otherwise, only generate code for the currently previewed node
-  let timeline = (all) ? state.mainTimeline : [state.previewId];
+  let timelineNodes = (all) ? state.mainTimeline : [state.previewId];
   let blocks = [];
   let node;
+
   // bool that descides if this node should be include
   let include;
-  for (let id of timeline) {
+
+  for (let id of timelineNodes) {
     if (!id) continue;
     node = state[id];
     // if play all experiments, let node.enable decide if this node is included
@@ -201,7 +228,15 @@ export function generateCode(state, all=false, deploy=false) {
         // generate trial block
       } else {
         if (node.parameters.type) {
-          let trialBlock = generateTrialBlock(state, node, all, deploy);
+          let parameterInfo = injectJsPsychUniversalPluginParameters(jsPsych.plugins[node.parameters.type].info.parameters);
+          let error = [];
+          let trialBlock = generateTrialBlock(state, node, all, deploy, parameterInfo, error);
+
+          // when in preview mode, render error message if there is
+          if (!deploy && error.length > 0) {
+            return ErrorMessage(error);
+          }
+
           if (trialBlock) {
             blocks.push(trialBlock);
           }
@@ -276,13 +311,34 @@ export const createComplexDataObject = (value=null, func=createFuncObj(), mode=n
   timelineVariable: null,
 })
 */
-function generateTrialBlock(state, trial, all=false, deploy=false) {
+function generateTrialBlock(state, trial, all=false, deploy=false, parameterInfo, error) {
   let res = {};
   let parameters = trial.parameters;
+
   for (let key of Object.keys(parameters)) {
-    // don't render
-    // if (parameter_default_value is undefined)
-    if (parameters[key] === undefined) return false;
+    // don't render if (parameter_default_value is undefined and its actual value is null/undefined)
+    // if (parameterInfo[key].hasOwnProperty('default') && parameterInfo[key].default === undefined) {
+    //   console.log(parameters[key])
+    // }
+    if (parameterInfo[key] && parameterInfo[key].default === undefined) {
+      let mode = parameters[key].mode;
+      let value = null;
+      switch(mode) {
+        case ParameterMode.USE_FUNC:
+          value = parameters[key].func.code;
+          break;
+        case ParameterMode.USE_TV:
+          value = parameters[key].timelineVariable;
+          break;
+        default:
+          value = parameters[key].value;
+          break;
+      }
+      if (value === null || value === undefined) {
+        error.push(key);
+      }
+    }
+
     res[key] = parameters[key];
   }
   return res;
