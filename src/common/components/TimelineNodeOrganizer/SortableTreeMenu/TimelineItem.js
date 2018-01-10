@@ -4,8 +4,6 @@ import { ListItem } from 'material-ui/List';
 
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 import {
 	cyan400 as highlightColor,
@@ -194,19 +192,7 @@ class TimelineItem extends React.Component {
 												this.props.onClick(setKeyboardFocusId);
 											}
 										}}
-										rightIconButton={
-											<IconButton 
-												onContextMenu={this.openToggleContextMenu}
-												disableTouchRipple={true}
-												onTouchTap={(e) => {
-															if (e.nativeEvent.which === 1) {
-																this.props.onToggle();
-																}
-															}} 
-											>
-											{(this.props.isEnabled) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-											</IconButton>
-										}/>
+								/>
 							</div>
 							<NestedContextMenus
 								openItemMenu={this.state.contextMenuOpen}
@@ -217,11 +203,10 @@ class TimelineItem extends React.Component {
 								deleteNode={this.props.deleteTimeline}
 								duplicateNode={this.props.duplicateTimeline} 
 
+								isEnabled={this.props.isEnabled}
 								openToggleMenu={this.state.toggleContextMenuOpen}
 								onRequestCloseToggleMenu={this.closeToggleContextMenu}
-								toggleAll={this.props.toggleAll}
-								untoggleAll={this.props.untoggleAll}
-								toggleThisOnly={this.props.toggleThisOnly}
+								onToggle={this.props.onToggle}
 							/>
 					</div>	
 					<div style={{paddingLeft: INDENT}}>

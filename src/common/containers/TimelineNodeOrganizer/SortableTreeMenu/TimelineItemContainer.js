@@ -22,18 +22,6 @@ const onToggle = (dispatch, ownProps) => {
 	dispatch(organizerActions.onToggleAction(ownProps.id));
 }
 
-export const toggleAll = (dispatch) => {
-	dispatch(organizerActions.setToggleCollectivelyAction(true));
-}
-
-export const untoggleAll = (dispatch) => {
-	dispatch(organizerActions.setToggleCollectivelyAction(false));
-}
-
-export const toggleThisOnly = (dispatch, ownProps) => {
-	dispatch(organizerActions.setToggleCollectivelyAction(false, ownProps.id));
-}
-
 const toggleCollapsed = (dispatch, ownProps) => {
 	dispatch(organizerActions.setCollapsed(ownProps.id));
 }
@@ -91,9 +79,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	insertTrial: () => { insertTrial(dispatch, ownProps)},
 	deleteTimeline: () => { deleteTimeline(dispatch, ownProps)},
 	duplicateTimeline: () => { duplicateTimeline(dispatch, ownProps) },
-	toggleAll: () => { toggleAll(dispatch) },
-	untoggleAll: () => { untoggleAll(dispatch) },
-	toggleThisOnly: () => { toggleThisOnly(dispatch, ownProps) },
 	listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
 })
 

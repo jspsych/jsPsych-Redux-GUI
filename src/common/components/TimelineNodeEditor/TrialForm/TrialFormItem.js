@@ -4,7 +4,6 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import SelectField from 'material-ui/SelectField';
-import NumberInput from 'material-ui-number-input';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
@@ -172,6 +171,11 @@ export default class TrialFormItem extends React.Component {
 	renderLabel = (param) => {
 
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		// let isRequired = false;
+		// if (parameterInfo.hasOwnProperty('default')) {
+		// 	isRequired = parameterInfo.defaultValue === undefined;
+		// 	// + (isRequired ? '*' : '')
+		// }
 		return (
 		<p
 			className="Trial-Form-Label-Container"
@@ -292,8 +296,10 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+
 		let node = (
-			<NumberInput
+			<TextField
+			      type="number"
 			      id={"number-field-"+param}
 			      value={convertNullToEmptyString(parameterValue.value).toString()}
 			      fullWidth={true}
