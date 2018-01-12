@@ -57,7 +57,7 @@
     "react": "^15.5.4",
     "react-codemirror": "^1.0.0",
     "react-contextmenu": "^2.6.5",
-    "react-data-grid": "^2.0.53",
+    "react-data-grid": "^2.0.80",
     "react-data-grid-addons": "^2.0.54",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
