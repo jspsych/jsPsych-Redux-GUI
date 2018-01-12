@@ -60,7 +60,7 @@ export default class NestedContextMenus extends React.Component {
 							onTouchTap={()=>{ this.props.duplicateNode(); this.props.onRequestCloseItemMenu()}}
 						/>
 						<Divider />
-						<MenuItem primaryText={this.props.isEnabled ? "Enabled" : "Disabled"}
+						<MenuItem primaryText={this.props.isEnabled ? "Disable" : "Enable"}
 							leftIcon={
 								this.props.isEnabled ?
 								<CheckIcon color={contextMenuStyle.iconColor} />:

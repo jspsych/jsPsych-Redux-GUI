@@ -10,7 +10,8 @@ import {
 	green500 as checkColor,
 	indigo500 as iconHighlightColor,
 	grey300 as hoverColor,
-	grey900 as normalColor,
+	grey600 as normalColor,
+	grey400 as disabledColor
 } from 'material-ui/styles/colors';
 
 import { DropTarget, DragSource } from 'react-dnd';
@@ -161,7 +162,10 @@ class TimelineItem extends React.Component {
 			connectDragPreview,
 			connectDragSource,
 			isOverCurrent,
+			isEnabled
 		} = this.props;
+
+		let iconColor = isEnabled ? normalColor : disabledColor;
 
 		return connectDragPreview(connectDropTarget(
 				<div>
@@ -169,21 +173,25 @@ class TimelineItem extends React.Component {
 									display: 'flex',
 									backgroundColor: colorSelector(isOverCurrent, this.props.isSelected),
 								}}>
-							{connectDragSource(<div>
-								<IconButton className="Timeline-Collapse-Icon"
-										hoveredStyle={{backgroundColor: hoverColor}}
-										onTouchTap={this.props.toggleCollapsed} 
-										disableTouchRipple={true} 
-								>
-								{(this.props.collapsed || this.props.hasNoChildren) ? 
-									<CollapsedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} /> : 
-									<ExpandedIcon color={(this.props.isSelected) ? iconHighlightColor : normalColor} />
-								}
-							</IconButton>
-							</div>)}
+							{
+							connectDragSource(
+								<div>
+									<IconButton className="Timeline-Collapse-Icon"
+											hoveredStyle={{backgroundColor: hoverColor}}
+											onTouchTap={this.props.toggleCollapsed} 
+											disableTouchRipple={true} 
+									>
+									{(this.props.collapsed || this.props.hasNoChildren) ? 
+										<CollapsedIcon color={(this.props.isSelected) ? iconHighlightColor : iconColor} /> : 
+										<ExpandedIcon color={(this.props.isSelected) ? iconHighlightColor : iconColor} />
+									}
+									</IconButton>
+								</div>
+							)}
 							<div style={{width: "100%"}}>
 								<ListItem 
 										ref={this.props.id}
+										style={{color: this.props.isEnabled ? 'black' : 'grey'}}
 										primaryText={this.props.name}
 										onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
 										onContextMenu={this.openContextMenu}

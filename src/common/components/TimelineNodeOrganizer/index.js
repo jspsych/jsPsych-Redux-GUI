@@ -140,7 +140,7 @@ class TimelineNodeOrganizer extends React.Component {
 				        onStop={this.onDragEnd}
 				        >
 		  				<div className="TimelineNode-Organizer-Dragger"
-		  					style={{left: convertPercent(this.props.width-0.3),}}>
+		  					style={{width: '8px', minWidth: '8px'}}>
 		  						<div className="TimelineNode-Organizer-Close-Handle-Container">
 			  						<IconButton
 			  							className="TimelineNode-Organizer-Close-Handle"
