@@ -2,4 +2,4 @@
 @echo.
 @echo.
 @echo Build "../public/jsPsych/jspsych.min.js"
-@pause
+@pause>nul
