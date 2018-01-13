@@ -422,12 +422,12 @@ class TimelineVariableTableOpener extends React.Component {
 		let { handleOpen, handleClose } = this;
 
 		const actions = [
-	      <FlatButton
-	        label="Close"
-	        labelStyle={{textTransform: 'none'}}
-	        primary={true}
-	        onTouchTap={handleClose}
-	      />,
+	      // <FlatButton
+	      //   label="Close"
+	      //   labelStyle={{textTransform: 'none'}}
+	      //   primary={true}
+	      //   onTouchTap={handleClose}
+	      // />,
 	    ];
 
 	    const toolbar = (
@@ -482,10 +482,20 @@ class TimelineVariableTableOpener extends React.Component {
 		      		contentStyle={{minHeight: 700}}
 	              	titleStyle={{padding: 0}}
 	              	style={{zIndex: 1000}}
-		            title={renderDialogTitle(<Subheader>{toolbar}</Subheader>,  handleClose,  null)}
+		            title={renderDialogTitle(
+			            	<Subheader style={{maxHeight: 58}}>{toolbar}</Subheader>,  
+			            	handleClose,  
+			            	null, 
+			            	{borderTop: `10px solid ${addColor}`}
+		            	)}
 		            actions={actions}
 		            modal={true}
 		            onRequestClose={handleClose}
+		            bodyStyle={{
+					  	paddingTop: '25px', 
+					  	paddingBottom: '50px', 
+					  	borderTop: '1px solid #aaa'
+					  }}
 		      	>
 
 		      		{this.props.spreadSheet}
@@ -612,7 +622,7 @@ export default class TimelineVariableTable extends React.Component {
 			        columns={columns}
 			        rowGetter={this.rowGetter}
 			        rowsCount={this.props.rows.length}
-			        minHeight={250}
+			        minHeight={350}
 			        minColumnWidth={120} 
 			        rowHeight={48}
 			        headerRowHeight={48}

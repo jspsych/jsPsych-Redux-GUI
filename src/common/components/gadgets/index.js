@@ -13,10 +13,10 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-export const renderDialogTitle = (messageNode=null, handleClose=()=>{}, titleColor=dialogTitleColor) => (
-	<div style={{display: 'flex', backgroundColor: titleColor}}>
+export const renderDialogTitle = (messageNode=null, handleClose=()=>{}, titleColor=dialogTitleColor, style={}) => (
+	<div style={{display: 'flex', backgroundColor: titleColor, ...style}}>
 			{messageNode}
-			<IconButton 
+		<IconButton 
 				hoveredStyle={{
 					backgroundColor: CloseBackHighlightColor,
 				}}

@@ -50,3 +50,22 @@
 .TimelineNode-Editor-Dragger:hover .TimelineNode-Editor-Close-Handle-Container{
     display: inline-block;
 }
+
+.Trial-Form-Item-Container {
+	width: 95%;
+	display: flex;
+	align-items: baseline;
+	margin: 0 auto;
+}
+
+.Trial-Form-Item-Field-Container {
+	flex-grow: 1;
+	align-items: baseline;
+}
+
+.Trial-Form-Item-Tool-Container {
+	float: right;
+	flex-basis: 96px;
+	align-items: baseline;
+	display: flex;
+}

@@ -22,6 +22,8 @@ import {
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
   cyan500 as hoverColor,
+  cyan500 as trueColor,
+  pink500 as falseColor
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy } from '../../../utils';
@@ -81,6 +83,41 @@ const locateNestedParameterInfo = (paramInfo, path) => {
 	return parameterInfo
 }
 
+const SelectLableColor = (flag) => (flag ? trueColor : falseColor);
+
+const isParameterRequired = (parameterInfo) => {
+	let isRequired = false;
+	if (parameterInfo.hasOwnProperty('default')) {
+		isRequired = parameterInfo.defaultValue === undefined;
+	}
+	return isRequired;
+}
+
+const generateFieldProps = (parameterValue, parameterInfo) => {
+	let isRequired = isParameterRequired(parameterInfo);
+	let val = convertNullToEmptyString(parameterValue.value);
+	let disabled = true;
+	let error = isRequired && (val === '' || val === {} || val === null || val === undefined || val === []);  
+
+	switch (parameterValue.mode) {
+		case ParameterMode.USE_FUNC:
+			val = '[Custom Code]';
+			break;
+		case ParameterMode.USE_TV:
+			val = '[Timeline Variable]';
+			break;
+		default:
+			disabled = false;
+	}
+
+	return {
+		value: val,
+		disabled: disabled,
+		floatingLabelText: parameterInfo.pretty_name,
+		errorText: error ? 'This parameter is required.' : '',
+	}
+}
+
 /*
 props explanations:
 
@@ -95,7 +132,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	state = {
-		showTool: false,
+		showTool: true,
 		// function editor dialog
 		openFuncEditor: false, 
 		// timeline variable selector dialog
@@ -140,7 +177,8 @@ export default class TrialFormItem extends React.Component {
 
 	hideTool = () => {
 		this.setState({
-			showTool: false
+			// showTool: false
+			showTool: true
 		});
 	}
 
@@ -193,11 +231,7 @@ export default class TrialFormItem extends React.Component {
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		return (
-		((this.state.showTool || 
-			this.state.openFuncEditor || 
-			parameterValue.mode === ParameterMode.USE_FUNC) &&
-			parameterValue.mode !== ParameterMode.USE_TV) ?
-			    <CodeEditor 
+				<CodeEditor 
 			    	setParamMode={() => { this.props.setParamMode(param); }}
 					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
@@ -208,9 +242,9 @@ export default class TrialFormItem extends React.Component {
                       this.props.setFunc(param, newCode);
                     }}
                     title={`${parameterInfo.pretty_name}: `}
-        		/>:
-        		alternate
-	)}
+        		/>
+		)
+	}
 
 	appendTimelineVariable = (param, alternate=null) => {
 
@@ -265,85 +299,88 @@ export default class TrialFormItem extends React.Component {
 				return node;
 		}
 	}
-	// primaryText={`[${(this.props.parameters[param].timelineVariable ? this.props.parameters[param].timelineVariable : "Timeline Variable")}]`}
 	
 	renderTextField = (param) => {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let node = (
 			<TextField
 			      id={"text-field-"+param}
-			      value={convertNullToEmptyString(parameterValue.value)}
 			      min={-1}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.props.setText(param, v); }}
+			      {...generateFieldProps(parameterValue, parameterInfo)}
 			    />
 		);
 
 		return (
-		  <div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel(param)}
-		    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-		    {this.renderFieldContent(param, node)}
-			{this.appendFunctionEditor(param)}
-			{this.appendTimelineVariable(param)}
-		    </div>
+		  <div className="Trial-Form-Item-Container">
+		    	{node}
+				{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
 		  </div>
 	  )}
 
 	renderNumberField = (param) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+
+		let props = generateFieldProps(parameterValue, parameterInfo);
+		props.type = props.disabled ? 'text' : 'number';
 
 		let node = (
 			<TextField
 			      type="number"
 			      id={"number-field-"+param}
-			      value={convertNullToEmptyString(parameterValue.value).toString()}
 			      fullWidth={true}
 			      onChange={(e, v) => {
 						this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
 					}}
+				  {...props}
 			    />
 		)
 
 		return (
-			<div style={{display: 'flex', width: "100%"}} >
-				{this.renderLabel(param)}
-			    <div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-				    {this.renderFieldContent(param, node)}
-					{this.appendFunctionEditor(param)}
-					{this.appendTimelineVariable(param)}
-			    </div>
-		  </div>
-		)
-	}
+			<div className="Trial-Form-Item-Container">
+		    	{node}
+				{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
+		  	</div>
+		)}
 
 	renderToggle = (param) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+
+		let items = [
+			<MenuItem key={`toggle-field-${param}-1`} value={true}  primaryText="True"/>,
+			<MenuItem key={`toggle-field-${param}-2`} value={false}  primaryText="False"/>
+		];
+
+		let props = generateFieldProps(parameterValue, parameterInfo);
+
 		let node = (
-			<IconButton 
-	          onTouchTap={() => { this.props.setToggle(param); }} 
-	          >
-	        {(parameterValue.value) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-	        </IconButton>
+			<SelectField
+	          onChange={(event, index, value) => { this.props.setToggle(param, value)}}
+	          floatingLabelFixed={true}
+	          labelStyle={{color: SelectLableColor(props.value)}}
+	          selectedMenuItemStyle={{color: SelectLableColor(props.value)}}
+	          {...props}
+	        >
+	          {items}
+	        </SelectField>
 		)
 
 		return (
-		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      	{this.renderLabel(param)}
-	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-	      		{this.renderFieldContent(param, node)}
-			    {this.appendFunctionEditor(param)}
-			    {this.appendTimelineVariable(param)}
-	        </div>
-	    </div>
-		)
-	}
+			<div className="Trial-Form-Item-Container">
+		    	{node}
+				{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
+		  	</div>
+		)}
 
 	renderFunctionEditor = (param) => {
 
@@ -418,7 +455,8 @@ export default class TrialFormItem extends React.Component {
 		// Can its value potentially be an array? That is, can there be multiple keys
 		let isArray = !!parameterInfo.array;
 
-		let alternativeNode = (<IconButton 
+		let toggleAllKey = (
+			<IconButton 
 				onTouchTap={() => {
 					if (isAllKey) {
 						this.props.setKey(param, null, true);
@@ -430,78 +468,81 @@ export default class TrialFormItem extends React.Component {
 				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
 				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BoxUncheckIcon />}
-			</IconButton>);
+			</IconButton>
+		);
+
+		let props = generateFieldProps(parameterValue, parameterInfo);
+		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(value);
+		props.value = isAllKey ? '[ALL KEYS]' : value;
+		props.disabled = props.disabled || isAllKey;
 
 		let node = (
-			(isAllKey) ?
-			    <MenuItem primaryText="[ALL KEYS]" style={{paddingTop: 2}} disabled={true} />:
-			    <TextField
-			      id={this.props.id+"-text-field-"+param}
-			      value={(this.state.useKeyListStr) ? this.state.keyListStr : convertNullToEmptyString(value)}
-			      fullWidth={true}
-			      onChange={(e, v) => { this.setKeyListStr(v); }}
-			      maxLength={(isArray) ?  null : "1"}
-			      onFocus={() => {
-			      	this.setKeyListStr(convertNullToEmptyString(value));
-			      	this.setState({
-			      		useKeyListStr: true
-			      	});
-			      }}
-			      onBlur={() => {
-			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
-			      	this.setState({
-			      		useKeyListStr: false
-			      	})
-			      }}
-			      onKeyPress={(e) => {
-			      	if (e.which === 13) {
-			      		document.activeElement.blur();
-			      	}
-			      }}
-			    />
+			<TextField
+		      id={this.props.id+"-text-field-"+param}
+		      fullWidth={true}
+		      onChange={(e, v) => { this.setKeyListStr(v); }}
+		      maxLength={(isArray) ?  null : "1"}
+		      onFocus={() => {
+		      	this.setKeyListStr(convertNullToEmptyString(value));
+		      	this.setState({
+		      		useKeyListStr: true
+		      	});
+		      }}
+		      onBlur={() => {
+		      	this.props.setKey(param, this.state.keyListStr, false, isArray);
+		      	this.setState({
+		      		useKeyListStr: false
+		      	})
+		      }}
+		      onKeyPress={(e) => {
+		      	if (e.which === 13) {
+		      		document.activeElement.blur();
+		      	}
+		      }}
+		      {...props}
+		    />  
 		)
 
+		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
+		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
+		let inOtherMode = funcMode || tvMode;
 		return (
-			<div style={{display: 'flex', width: "100%"}} >
-			{this.renderLabel(param)}
-		    <div 
-		    	className="Trial-Form-Content-Container" 
-		    	onMouseEnter={(isAllKey) ? ()=>{} : this.showTool} 
-		    	onMouseLeave={this.hideTool}
-		    >
-		    {this.renderFieldContent(param, node, false)}
-			{this.appendFunctionEditor(param, alternativeNode)}
-			{this.appendTimelineVariable(param, alternativeNode)}
-		    </div>
-		  </div>
-	)}
+			<div className="Trial-Form-Item-Container">
+		    	{node}
+		    	{inOtherMode ? null : toggleAllKey}
+		    	{isAllKey ? null : this.appendFunctionEditor(param)}
+				{isAllKey ? null : this.appendTimelineVariable(param)}
+		  	</div>
+		)}
 
 	renderSelect = (param) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+
+		let props = generateFieldProps(parameterValue, parameterInfo);
+
 		let node = (
 			<SelectField
-		    	value={convertNullToEmptyString(parameterValue.value)}
 		    	onChange={(event, index, value) => {
 		    		this.props.setText(param, value);
 		    	}}
+		    	{...props}
 		    >
-		    {this.props.paramInfo.options.map((op, i) => (
-		    	<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
-		    ))}
+		    	{
+		    		this.props.paramInfo.options.map((op, i) => (
+		    			<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
+		    		))
+		    	}
 		    </SelectField>
 		)
 
 		return (
-			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      		{this.renderLabel(param)}
-		      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-		      		{this.renderFieldContent(param, node)}
-					{this.appendFunctionEditor(param)}
-					{this.appendTimelineVariable(param)}
-		        </div>
-	   		</div>
+			<div className="Trial-Form-Item-Container">
+		    	{node}
+				{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
+		  	</div>
 		)
 	}
 
