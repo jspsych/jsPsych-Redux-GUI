@@ -70,12 +70,8 @@ const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
 	}
 }
 
-const setToggle = (dispatch, key) => {
-	dispatch((dispatch, getState) => {
-		let experimentState = getState().experimentState;
-		let flag = experimentState[experimentState.previewId].parameters[key].value;
-		dispatch(editorActions.setPluginParamAction(key, !flag));
-	});
+const setToggle = (dispatch, key, flag) => {
+	dispatch(editorActions.setPluginParamAction(key, flag));
 }
 
 function isNumeric(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
@@ -205,7 +201,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch,ownProps) => ({
 	onChange: (newPluginVal) => { onChangePluginType(dispatch, newPluginVal); },
 	setText: (key, newVal) => { setText(dispatch, key, newVal); },
-	setToggle: (key) => { setToggle(dispatch, key); },
+	setToggle: (key, flag) => { setToggle(dispatch, key, flag); },
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
 	setFunc: (key, code, funcOnly) => { setFunc(dispatch, key, code, funcOnly); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
