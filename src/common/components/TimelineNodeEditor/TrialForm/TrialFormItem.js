@@ -515,10 +515,10 @@ export default class TrialFormItem extends React.Component {
 		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
 		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
 		let inOtherMode = funcMode || tvMode;
+		    	// {this.appendArrayEditor(param)}
 		return (
 			<div className="Trial-Form-Item-Container">
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 		    	{inOtherMode ? null : toggleAllKey}
 		    	{isAllKey ? null : this.appendFunctionEditor(param)}
 				{isAllKey ? null : this.appendTimelineVariable(param)}
