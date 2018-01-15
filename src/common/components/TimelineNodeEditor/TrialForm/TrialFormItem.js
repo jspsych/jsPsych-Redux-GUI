@@ -524,6 +524,7 @@ export default class TrialFormItem extends React.Component {
 
 		let node = (
 			<SelectField
+				id={this.props.id+"-select-field-"+param}
 		    	onChange={(event, index, value) => {
 		    		this.props.setText(param, value);
 		    	}}
@@ -549,9 +550,12 @@ export default class TrialFormItem extends React.Component {
 	renderMediaSelector = (param, multiSelect) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		// let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let selectedFilesString = processMediaPathTag(parameterValue.value);
+		let props = generateFieldProps(parameterValue, parameterInfo);
+		let selectedFilesString = processMediaPathTag(props.value);
+		props.value = this.state.useFileStr ? this.state.fileListStr : selectedFilesString;
+
 		let node = (
 			(multiSelect) ?
 				<TextField 
@@ -560,7 +564,7 @@ export default class TrialFormItem extends React.Component {
 					rowsMax={3}
 					rows={1}
 					fullWidth={true}
-					value={(this.state.useFileStr)? this.state.fileListStr : selectedFilesString}
+					{...props}
 					onChange={(e, v) => { 
 						this.setFileListStr(v); 
 					}}
@@ -590,6 +594,7 @@ export default class TrialFormItem extends React.Component {
 				<AutoComplete
 					id={"Selected-File-Input-"+param}
 					fullWidth={true}
+					{...props}
 					searchText={(this.state.useFileStr) ? this.state.fileStr : selectedFilesString}
 					title={selectedFilesString}
 					dataSource={this.props.filenames}
@@ -621,34 +626,30 @@ export default class TrialFormItem extends React.Component {
 		);
 
 		return (
-			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-				{this.renderLabel(param)}
-	      		<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool}>
-	      			{this.renderFieldContent(param, node, false)}
-	      			{(this.props.parameters[param].mode !== ParameterMode.USE_TV &&
-	      				this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ? 
-	      				<MediaManager 
-	      					parameterName={param} 
-	      					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-	      					insertCallback={(selected, handleClose) => {
-	      						this.props.insertFile(
-	      							param,
-									this.props.s3files,
-									multiSelect,
-									selected,
-									handleClose,
-								);
+			<div className="Trial-Form-Item-Container" style={{alignItems: 'center'}}>
+		    	{node}
+				{(this.props.parameters[param].mode !== ParameterMode.USE_TV &&
+      				this.props.parameters[param].mode !== ParameterMode.USE_FUNC) ? 
+      				<MediaManager 
+      					parameterName={param} 
+      					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+      					insertCallback={(selected, handleClose) => {
+      						this.props.insertFile(
+      							param,
+								this.props.s3files,
+								multiSelect,
+								selected,
+								handleClose,
+							);
 
-	      					}}
-	      				/> :
-	      				null
-	      			}
-	      			{this.appendFunctionEditor(param)}
-					{this.appendTimelineVariable(param)}
-	      		</div>
-	    	</div>
-	    	)
-	}
+      					}}
+      				/> :
+      				null
+      			}
+      			{this.appendFunctionEditor(param)}
+				{this.appendTimelineVariable(param)}
+		  	</div>
+	    	)}
 
 	renderObjectEditor = (param) => {
 

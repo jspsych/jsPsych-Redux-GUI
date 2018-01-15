@@ -69,3 +69,19 @@
 	align-items: baseline;
 	display: flex;
 }
+
+/* *********************************************** */
+
+.Trial-Form-Label-Container {
+	flex-basis: 25%;
+	word-wrap: break-word;      /* IE 5.5-7 */
+    white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
+    white-space: pre-wrap;      /* current browsers */
+    text-align: left;
+}
+
+
+.Trial-Form-Content-Container {
+	flex-grow: 1;
+    display: flex;
+}
