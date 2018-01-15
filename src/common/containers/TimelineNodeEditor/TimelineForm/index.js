@@ -2,6 +2,9 @@ import { connect } from 'react-redux';
 import TimelineForm from '../../../components/TimelineNodeEditor/TimelineForm';
 import * as editorActions from '../../../actions/editorActions';
 
+const setRandomize = (dispatch, flag) => {
+	dispatch(editorActions.setRandomizeAction(flag));
+}
 
 const setRepetitions = (dispatch,newVal) => {
 	dispatch(editorActions.setRepetitionsAction(newVal));
@@ -29,6 +32,7 @@ const mapStateToProps = (state, ownProps) => {
 	let timeline = experimentState[experimentState.previewId];
 	return {
 		id: timeline.id,
+		randomize: timeline.parameters.randomize_order,
 		repetitions: timeline.parameters.repetitions,
 		samplingType: timeline.parameters.sample.type,
 		samplingSize: timeline.parameters.sample.size,
@@ -38,6 +42,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
+	setRandomize: (flag) => { setRandomize(dispatch, flag); },
 	setRepetitions: (e, newVal) => { setRepetitions(dispatch, newVal) },
 	setSampling: (e, key, newVal) => { setSampling(dispatch, key, newVal) },
 	setSampleSize: (newVal) => { setSampleSize(dispatch, newVal) },

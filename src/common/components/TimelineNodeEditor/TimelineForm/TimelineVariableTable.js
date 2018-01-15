@@ -692,22 +692,6 @@ export default class TimelineVariableTable extends React.Component {
 	  	  	 		/>
 	  	  	 	</div>
 		  	  </div>
-		      <div style={{display: 'flex', width: "100%"}} >
-		      		
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
-					>
-					    Randomize order:
-					</p>
-					<div className="Trial-Form-Content-Container">
-					<IconButton 
-				         onTouchTap={() => { this.props.toggleRandomize(); }} 
-				    >
-				       {(this.props.randomize) ? <CheckIcon color={checkRadioColor} /> : <UnCheckIcon />}/>
-				    </IconButton>
-				    </div>
-			</div>
 	      </div>
 		 )
 	}

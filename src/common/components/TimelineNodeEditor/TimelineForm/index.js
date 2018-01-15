@@ -7,66 +7,75 @@ import { labelStyle } from '../TrialForm/TrialFormItem';
 import { convertNullToEmptyString } from '../../../utils';
 import TimelineVariableTable from '../../../containers/TimelineNodeEditor/TimelineForm/TimelineVariableTableContainer';
 import CodeEditor from '../../CodeEditor';
+import {
+  cyan500 as trueColor,
+  pink500 as falseColor
+} from 'material-ui/styles/colors';
+
+const SelectLableColor = (flag) => (flag ? trueColor : falseColor);
 
 class TimelineForm extends React.Component {
 	render(){
 		return (
 			<div className="TimelineForm">
 				<TimelineVariableTable />
-				<div style={{display: 'flex', width: "100%"}} >
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
+				<div className="Trial-Form-Item-Container">
+			    	<SelectField 
+						value={this.props.randomize}
+						onChange={(event, index, value) => { this.props.setRandomize(value)}}
+						fullWidth
+						labelStyle={{color: SelectLableColor(this.props.randomize)}}
+	          			selectedMenuItemStyle={{color: SelectLableColor(this.props.randomize)}}
+						floatingLabelFixed={true}
+						floatingLabelText="Randomize Order"
 					>
-					    Sampling method:
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<SelectField 
-							value={this.props.samplingType}
-							onChange={this.props.setSampling} 
-						>
-							<MenuItem value="with-replacement"
-								primaryText="with-replacement" />
-							<MenuItem value="without-replacement"
-								primaryText="without-replacement" />
-							<MenuItem value="fixed-repititions"
-								primaryText="fixed-repititions" />
-							<MenuItem value="custom"
-								primaryText="custom" />
-						</SelectField>
-					</div>
-				</div>
+						<MenuItem value={true}
+							primaryText="True" />
+						<MenuItem value={false}
+							primaryText="False" />
+					</SelectField>
+			  	</div>
+				<div className="Trial-Form-Item-Container">
+			    	<SelectField 
+						value={this.props.samplingType}
+						onChange={this.props.setSampling} 
+						fullWidth
+						floatingLabelFixed={true}
+						floatingLabelText="Sampling method"
+					>
+						<MenuItem value="with-replacement"
+							primaryText="with-replacement" />
+						<MenuItem value="without-replacement"
+							primaryText="without-replacement" />
+						<MenuItem value="fixed-repititions"
+							primaryText="fixed-repititions" />
+						<MenuItem value="custom"
+							primaryText="custom" />
+					</SelectField>
+			  	</div>
+			  	<div className="Trial-Form-Item-Container">
+			  		<TextField
+						id="Timeline_SampleSize_Input"
+						value={convertNullToEmptyString(this.props.samplingSize)}
+						fullWidth={true}
+						onChange={(event, newVal) => this.props.setSampleSize(newVal)} 
+						type="number"
+						floatingLabelFixed={true}
+						floatingLabelText="Sample size"
+					/>
+			  	</div>
+			  	<div className="Trial-Form-Item-Container">
+			  		<TextField 
+						id="Timeline_Repetitions_Input"
+						fullWidth={true}
+						value={(this.props.repetitions) ? this.props.repetitions : ""}
+						onChange={this.props.setRepetitions} 
+						type="number"
+						floatingLabelFixed={true}
+						floatingLabelText="Repetitions"
+					/>
+			  	</div>
 
-				<div style={{display: 'flex', width: "100%"}} >
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
-					>
-					    Sample size:
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<TextField
-							id="Timeline_SampleSize_Input"
-							value={convertNullToEmptyString(this.props.samplingSize)}
-							fullWidth={true}
-							onChange={(event, newVal) => this.props.setSampleSize(newVal)} />
-					</div>
-				</div>
-				<div style={{display: 'flex', width: "100%"}} >
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
-					>
-					    Repetitions:
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<TextField 
-							id="Timeline_Repetitions_Input"
-							fullWidth={true}
-							value={(this.props.repetitions) ? this.props.repetitions : ""}
-							onChange={this.props.setRepetitions} />
-					</div>
-				</div>
 				<div style={{display: 'flex', width: "100%"}} >
 					<p
 						className="Trial-Form-Label-Container"

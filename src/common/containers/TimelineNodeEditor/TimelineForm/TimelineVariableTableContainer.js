@@ -36,10 +36,6 @@ const deleteColumn = (dispatch, index) => {
 	dispatch(editorActions.deleteTimelineVariableColumnAction(index));
 }
 
-const toggleRandomize = (dispatch) => {
-	dispatch(editorActions.toggleRandomizeAction());
-}
-
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 
@@ -48,8 +44,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		id: timeline.id,
 		rows: createDataGridRows(timeline.parameters.timeline_variables),
-		timeline_variables: timeline.parameters.timeline_variables,
-		randomize: timeline.parameters.randomize_order
+		timeline_variables: timeline.parameters.timeline_variables
 	}
 };
 
@@ -62,7 +57,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	addColumn: () => { addColumn(dispatch); },
 	deleteRow: (index) => { deleteRow(dispatch, index); },
 	deleteColumn: (index) => { deleteColumn(dispatch, index); },
-	toggleRandomize: () => { toggleRandomize(dispatch); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineVariableTable);
