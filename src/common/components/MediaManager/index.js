@@ -293,18 +293,24 @@ export default class MediaManager extends React.Component {
 		let mediaList = null;
 		if (this.props.s3files && this.props.s3files.Contents) {
 			mediaList = this.props.s3files.Contents.map((f, i) =>
-				<ListItem
-					key={f.ETag}
-					primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
-					leftIcon={fileIconFromTitle(f.Key)}
-					onTouchTap={() => { this.openPreviewWindow(f.Key); }}
-					rightIconButton={
-						<IconButton
-							onTouchTap={() => {this.handleSelect(i)}}
-							>
-							{this.state.selected[i] ? <CheckYesIcon color={checkColor}/> : <CheckNoIcon color={checkColor}/>}
-						</IconButton>}
-				/>)
+				<div style={{display: 'flex', width: '100%'}} key={`${f.ETag}-container`}>
+					<div style={{flexGrow: 1}} key={`${f.ETag}-item`}>
+						<ListItem
+							key={f.ETag}
+							primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
+							leftIcon={fileIconFromTitle(f.Key)}
+							onTouchTap={() => { this.openPreviewWindow(f.Key); }}
+						/>
+					</div>
+					<IconButton
+						key={`${f.ETag}-checker`}
+						style={{flexBasis: '48px'}}
+						onTouchTap={() => {this.handleSelect(i)}}
+						>
+						{this.state.selected[i] ? <CheckYesIcon color={checkColor}/> : <CheckNoIcon color={checkColor}/>}
+					</IconButton>
+				</div>
+				)
 		}
 
 		let uploadList = null, completed = Object.keys(this.state.completed);

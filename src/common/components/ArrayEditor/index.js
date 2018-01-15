@@ -14,6 +14,7 @@ import StringEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import Clear from 'material-ui/svg-icons/content/delete-sweep';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
+import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import {
   cyan500 as hoverColor,
   grey100 as toolbarColor,
@@ -175,7 +176,7 @@ export default class ArrayEditor extends React.Component {
 
 	unzip(targetArray) {
 		this.setState({
-			arrayItems: targetArray,
+			arrayItems: targetArray || [],
 		})
 	}
 
@@ -342,12 +343,12 @@ export default class ArrayEditor extends React.Component {
 
 		return (
 			<div>
-				<MenuItem 
-					onTouchTap={this.handleOpen} 
-					primaryText="[Data Array]" 
-					style={{color: fixedTextColor}}
-					title="Click to edit"
-				/>
+				<IconButton
+					onTouchTap={this.handleOpen}
+					tooltip="Click to edit"
+				>
+					<ArrayIcon hoverColor={hoverColor}/>
+				</IconButton>
 				<Dialog
 					open={open}
 					titleStyle={{padding: 0}}
@@ -360,44 +361,44 @@ export default class ArrayEditor extends React.Component {
 					modal={true}
 					actions={actions}
 				>
-				<div style={{display: 'flex', backgroundColor: toolbarColor}}>
-					<IconButton 
-						tooltip="Copy"
-						iconStyle={{width: 20, height: 20}}
-						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={copyArray}
+					<div style={{display: 'flex', backgroundColor: toolbarColor}}>
+						<IconButton 
+							tooltip="Copy"
+							iconStyle={{width: 20, height: 20}}
+							style={{width: 35, height: 35, padding: 10}}
+							onTouchTap={copyArray}
+						>
+							<CopyIcon hoverColor={hoverColor} />
+						</IconButton>
+						<IconButton 
+							tooltip="Paste"
+							iconStyle={{width: 20, height: 20}}
+							style={{width: 35, height: 35, padding: 10}}
+							onTouchTap={paste}
+						>
+							<PasteIcon hoverColor={hoverColor} />
+						</IconButton>
+					</div>
+					<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = [`}</p>
+					<div>
+						<List style={{
+								maxHeight: 200, 
+								minHeight: 200, 
+								overflow: 'auto', 
+								width: "80%", 
+								margin: 'auto'}}>
+							{arrayItems && arrayItems.map((v, i) => (renderRow(v, i, i === arrayItems.length - 1)))}
+						</List>
+					</div>
+					<p style={{color: 'black'}}>]</p>
+					<div style={{paddingTop: 15}}>
+					<FloatingActionButton 
+						mini={true} 
+						onTouchTap={addArrayItem}
 					>
-						<CopyIcon hoverColor={hoverColor} />
-					</IconButton>
-					<IconButton 
-						tooltip="Paste"
-						iconStyle={{width: 20, height: 20}}
-						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={paste}
-					>
-						<PasteIcon hoverColor={hoverColor} />
-					</IconButton>
-				</div>
-				<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = [`}</p>
-				<div>
-					<List style={{
-							maxHeight: 200, 
-							minHeight: 200, 
-							overflow: 'auto', 
-							width: "80%", 
-							margin: 'auto'}}>
-						{arrayItems.map((v, i) => (renderRow(v, i, i === arrayItems.length - 1)))}
-					</List>
-				</div>
-				<p style={{color: 'black'}}>]</p>
-				<div style={{paddingTop: 15}}>
-				<FloatingActionButton 
-					mini={true} 
-					onTouchTap={addArrayItem}
-				>
-      				<ContentAdd />
-    			</FloatingActionButton>
-    			</div>
+	      				<ContentAdd />
+	    			</FloatingActionButton>
+	    			</div>
 				</Dialog>
 			</div>
 		)

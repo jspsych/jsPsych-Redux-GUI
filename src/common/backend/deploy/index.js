@@ -6,7 +6,7 @@ import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../re
 import { createComplexDataObject, ParameterMode } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
-import { injectJsPsychUniversalPluginParameters } from '../../utils';
+import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
 
 const jsPsych = window.jsPsych;
 
@@ -334,8 +334,9 @@ function generateTrialBlock(state, trial, all=false, deploy=false, parameterInfo
           value = parameters[key].value;
           break;
       }
-      if (value === null || value === undefined) {
-        error.push(key);
+
+      if (isValueEmpty(value)) {
+        error.push(parameterInfo[key].pretty_name);
       }
     }
 
