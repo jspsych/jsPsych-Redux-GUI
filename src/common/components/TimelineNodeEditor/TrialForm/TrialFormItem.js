@@ -26,7 +26,7 @@ import {
   pink500 as falseColor
 } from 'material-ui/styles/colors';
 
-import { convertNullToEmptyString, deepCopy } from '../../../utils';
+import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditor from '../../CodeEditor';
@@ -88,7 +88,7 @@ const SelectLableColor = (flag) => (flag ? trueColor : falseColor);
 const isParameterRequired = (parameterInfo) => {
 	let isRequired = false;
 	if (parameterInfo.hasOwnProperty('default')) {
-		isRequired = parameterInfo.defaultValue === undefined;
+		isRequired = parameterInfo.default === undefined;
 	}
 	return isRequired;
 }
@@ -97,7 +97,7 @@ const generateFieldProps = (parameterValue, parameterInfo) => {
 	let isRequired = isParameterRequired(parameterInfo);
 	let val = convertNullToEmptyString(parameterValue.value);
 	let disabled = true;
-	let error = isRequired && (val === '' || val === {} || val === null || val === undefined || val === []);  
+	let error = isRequired && isValueEmpty(val);  
 
 	switch (parameterValue.mode) {
 		case ParameterMode.USE_FUNC:

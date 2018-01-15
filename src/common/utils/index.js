@@ -55,6 +55,10 @@ export function getUUID() {
 }
 
 
+export function isValueEmpty(val) {
+	return val === '' || val === {} || val === null || val === undefined || val === [];
+}
+
 export function injectJsPsychUniversalPluginParameters(obj={}) {
 	return Object.assign(obj, window.jsPsych.plugins.universalPluginParameters);
 }
