@@ -1,8 +1,9 @@
 import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import { createFuncObj } from './jsPsychInit';
 
-const jsPsych = window.jsPsych;
-const EnumPluginType = jsPsych.plugins.parameterType;
+var jsPsych = window.jsPsych || global.jsPsych;
+var EnumPluginType = jsPsych.plugins.parameterType;
+
 
 /*
 Indicate which value (native value, function or timeline variable) should be used
@@ -310,17 +311,17 @@ export function setSampleSize(state, action) {
 /*
 Toggle if randomized timeline variable
 action = {
-
+	value: boolean
 }
 */
-export function toggleRandomize(state, action) {
+export function setRandomize(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
 	node = deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters.randomize_order = !node.parameters.randomize_order;
+	node.parameters.randomize_order = action.value;
 
 	return new_state;
 }

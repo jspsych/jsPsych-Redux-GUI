@@ -10,7 +10,7 @@ updateMedia
 changePlugin // omit
 setSamplingMethod
 setSampleSize
-toggleRandomize
+setRandomize
 setRepetitions
 setLoopFunction
 setConditionFunction
@@ -28,6 +28,7 @@ import { setNameAction } from '../../../actions/organizerActions';
 import { deepCopy } from '../../../utils';
 import * as editor from '../editor';
 import { createFuncObj } from '../jsPsychInit';
+
 
 if (!Array.prototype.move) {
   Array.prototype.move = function(from,to){
@@ -118,7 +119,7 @@ describe('A set of actions that set timeline parameter properties', () => {
 		expected['test0'].parameters.randomize_order = newRandomize_order; 
 		
 		let s1 = deepCopy(initState);
-		s1 = editor.toggleRandomize(s1, Actions.toggleRandomizeAction(newRandomize_order));
+		s1 = editor.setRandomize(s1, Actions.setRandomizeAction(newRandomize_order));
 		expect(s1).toEqual(expected);
 	})
 

@@ -124,8 +124,8 @@ export default function experimentReducer(state=initState, action) {
 			return editor.setSamplingMethod(state, action);
 		case actionTypes.SET_SAMPLE_SIZE:
 		 	return editor.setSampleSize(state, action);
-		 case actionTypes.TOGGLE_RANDOMIZE: 
-		 	return editor.toggleRandomize(state, action); 
+		 case actionTypes.SET_RANDOMIZE: 
+		 	return editor.setRandomize(state, action); 
 		 case actionTypes.SET_REPETITIONS: 
 		 	return editor.setRepetitions(state, action);
 		 case actionTypes.SET_LOOP_FUNCTION:

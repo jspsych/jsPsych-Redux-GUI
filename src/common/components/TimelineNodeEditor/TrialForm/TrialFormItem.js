@@ -115,6 +115,7 @@ const generateFieldProps = (parameterValue, parameterInfo) => {
 		disabled: disabled,
 		floatingLabelText: parameterInfo.pretty_name,
 		errorText: error ? 'This parameter is required.' : '',
+		floatingLabelFixed: true
 	}
 }
 
@@ -365,7 +366,6 @@ export default class TrialFormItem extends React.Component {
 		let node = (
 			<SelectField
 	          onChange={(event, index, value) => { this.props.setToggle(param, value)}}
-	          floatingLabelFixed={true}
 	          labelStyle={{color: SelectLableColor(props.value)}}
 	          selectedMenuItemStyle={{color: SelectLableColor(props.value)}}
 	          {...props}

@@ -106,10 +106,10 @@ export function setSampleSizeAction(newVal) {
 	};
 }
 
-export function toggleRandomizeAction(newBool) {
+export function setRandomizeAction(newBool) {
 	return {
-		type: actionTypes.TOGGLE_RANDOMIZE,
-		newBool: newBool
+		type: actionTypes.SET_RANDOMIZE,
+		value: newBool
 	};
 }
 
