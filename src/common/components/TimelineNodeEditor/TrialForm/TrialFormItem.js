@@ -472,7 +472,7 @@ export default class TrialFormItem extends React.Component {
 		);
 
 		let props = generateFieldProps(parameterValue, parameterInfo);
-		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(value);
+		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(props.value);
 		props.value = isAllKey ? '[ALL KEYS]' : value;
 		props.disabled = props.disabled || isAllKey;
 
