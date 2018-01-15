@@ -334,7 +334,7 @@ function generateTrialBlock(state, trial, all=false, deploy=false, parameterInfo
           value = parameters[key].value;
           break;
       }
-      console.log(`${key} ${value}`)
+
       if (isValueEmpty(value)) {
         error.push(parameterInfo[key].pretty_name);
       }
