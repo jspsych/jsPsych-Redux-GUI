@@ -79,7 +79,7 @@ const setNumber = (dispatch, key, value, isFloat) => {
 	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
-const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) => {
+const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose=()=>{}) => {
 	let filePaths = s3files.Contents.filter((item, i) => (selected[i])).map((item) => (item.Key));
 	let prefix = s3files.Prefix;
 
@@ -101,51 +101,9 @@ const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose) 
 	handleClose();
 }
 
-const autoFileInput = (dispatch, key, filename, prefix, filenames) => {
-	if (!filename.trim()) return;
-	if (filenames.indexOf(filename) === -1) {
-		notify.notifyWarningByDialog(dispatch, `${filename} is not found !`);
-		return;
-	}
-	dispatch(editorActions.setPluginParamAction(key, MediaPathTag(filename)));
-}
-
-const fileArrayInput = (dispatch, key, filelistStr, prefix, filenames) => {
-	filelistStr = filelistStr.trim();
-	if (!filelistStr) return;
-	let i = 0;
-	let fileList = [];
-	let ignoreSpace = false;
-	let part = "", c = "";
-	while (i < filelistStr.length) {
-		c = filelistStr[i++];
-		switch(c) {
-			case ',':
-				ignoreSpace = true;
-				if (part.length > 0) {
-					if (filenames.indexOf(part) === -1) {
-						notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
-						return;
-					}
-					fileList.push(part);
-					part = "";
-				}
-				break;
-			case ' ':
-				if (!ignoreSpace) part += c;
-				break;
-			default:
-				part += c;
-		}
-	}
-	if (part.length > 0) {
-		if (filenames.indexOf(part) === -1) {
-			notify.notifyWarningByDialog(dispatch, `${part} is not found !`);
-			return;
-		}
-		fileList.push(part);
-	}
-	dispatch(editorActions.setPluginParamAction(key, fileList.map((f) => (MediaPathTag(f)))));
+const setMedia = (dispatch, key, value) => {
+	dispatch(editorActions.setPluginParamAction(key, value));
+	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
 }
 
 const populateComplex = (dispatch, key, paramInfo) => {
@@ -208,8 +166,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },
 	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
-	autoFileInput: (key, filename, prefix, filenames) => { autoFileInput(dispatch, key, filename, prefix, filenames); },
-	fileArrayInput: (key, filelistStr, prefix, filenames) => { fileArrayInput(dispatch, key, filelistStr, prefix, filenames); },
+	setMedia: (key, value) => { setMedia(dispatch, key, value); },
 	setObject: (key, obj) => { setObject(dispatch, key, obj); },
 	populateComplex: (key, paramInfo) => { populateComplex(dispatch, key, paramInfo); },
 	depopulateComplex: (key, index) => { depopulateComplex(dispatch, key, index); },
