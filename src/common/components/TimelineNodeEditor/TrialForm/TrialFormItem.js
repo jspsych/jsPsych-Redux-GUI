@@ -92,7 +92,7 @@ const isParameterRequired = (parameterInfo) => {
 	return isRequired;
 }
 
-const generateFieldProps = (parameterValue, parameterInfo) => {
+const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayComponent=true) => {
 	let isRequired = isParameterRequired(parameterInfo);
 	let val = convertNullToEmptyString(parameterValue.value);
 	let disabled = true;
@@ -106,7 +106,7 @@ const generateFieldProps = (parameterValue, parameterInfo) => {
 			val = '[Timeline Variable]';
 			break;
 		default:
-			if (parameterInfo.array) {
+			if (parameterInfo.array && autoConvertToArrayComponent) {
 				if (Array.isArray(val)) {
 					val = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
 				} else {
@@ -480,7 +480,7 @@ export default class TrialFormItem extends React.Component {
 			</IconButton>
 		);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(props.value);
 		props.value = isAllKey ? '[ALL KEYS]' : value;
 		props.disabled = props.disabled || isAllKey;
