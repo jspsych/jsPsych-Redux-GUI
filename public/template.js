@@ -6,6 +6,7 @@ export default function(preloadedState) {
 	    <meta charset="utf-8">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	    <title>jsPsych Experiment Builder</title>
+	    <link rel="shortcut icon" href="./jsPsych/jspsych-favicon.png">
 	    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
