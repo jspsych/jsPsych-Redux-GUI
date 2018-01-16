@@ -3,11 +3,7 @@ This file tests on ../editor.js
 
 Following functions are tested:
 setName
-locateNestedParameterValue // untested
-setPluginParam // untested
-setPluginParamMode // untested
 updateMedia 
-changePlugin // omit
 setSamplingMethod
 setSampleSize
 setRandomize
@@ -21,6 +17,12 @@ addTimelineVariableRow
 addTimelineVariableColumn 
 deleteTimelineVariableRow 
 deleteTimelineVariableColumn 
+
+Not tested:
+locateNestedParameterValue 
+setPluginParam 
+setPluginParamMode 
+changePlugin // omit
 */
 
 import * as Actions from '../../../actions/editorActions';

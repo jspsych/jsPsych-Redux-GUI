@@ -1,7 +1,7 @@
 import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import { createFuncObj } from './jsPsychInit';
 
-var jsPsych = window.jsPsych || global.jsPsych;
+var jsPsych = window.jsPsych || require('./tests/jsPsych.js').jsPsych;
 var EnumPluginType = jsPsych.plugins.parameterType;
 
 
