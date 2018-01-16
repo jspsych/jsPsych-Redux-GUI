@@ -530,10 +530,11 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 
 		let node = (
 			<SelectField
+				multiple={paramInfo.array}
 				id={this.props.id+"-select-field-"+param}
 		    	onChange={(event, index, value) => {
 		    		this.props.setText(param, value);
@@ -551,7 +552,6 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div className="Trial-Form-Item-Container">
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 				{this.appendFunctionEditor(param)}
 				{this.appendTimelineVariable(param)}
 		  	</div>
@@ -563,7 +563,7 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 
 		let node = (
 			<SelectField
@@ -619,7 +619,6 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div className="Trial-Form-Item-Container" style={{alignItems: 'center'}}>
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 				{!inOtherMode ? mediaSelector : null}
       			{this.appendFunctionEditor(param)}
 				{this.appendTimelineVariable(param)}
