@@ -1,6 +1,5 @@
 var path = require('path');
 var webpack = require('webpack');
-// const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {

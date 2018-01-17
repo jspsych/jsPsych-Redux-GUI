@@ -47,8 +47,8 @@ const theme = {
 	},
 	UserMenu: {
 		icon: {
-			hoverColor: colors.secondary,
-			color: '#FF5722',
+			hoverColor: colors.secondaryLight,
+			color: colors.secondary,
 		},
 		avatar: {
 			backgroundColor: 'white',

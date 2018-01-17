@@ -22,19 +22,11 @@
 
 .TimelineNode-Sheet {
 	overflow-y: auto;
+	overflow-x: auto;
 	flex-grow: 1;
 	max-width: 100%;
 	padding-left: 0;
 	width: 100%;
 	position: relative;
 }
-
-.TimelineNode-Button-Container {
-	width: 100%;
-	flex-basis: 60px;
-	max-height: 60px;
-	height: 60px;
-	position: absolute;
-}
-
 

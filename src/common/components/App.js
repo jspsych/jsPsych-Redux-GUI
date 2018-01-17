@@ -8,20 +8,11 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
 import { getFullScreenState } from './PreviewWindow';
 import Notification from '../containers/Notification';
-import { MIN_WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
+import { WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
+import { WIDTH as DEFAULT_TIMELINE_ORGANIZER_WIDTH } from './TimelineNodeOrganizer';
 
 import './App.css';
 
-const DEFAULT_TIMELINE_ORGANIZER_WIDTH = 20;
-
-export const convertPercent = (number) => (number + '%');
-
-const mainBodyWidth = (leftDrawer, leftWidth, rightDrawer, rightWidth=20) => {
-	let width = 100;
-	if (leftDrawer) width -= leftWidth;
-	if (rightDrawer) width -= rightWidth;
-	return convertPercent(width);
-}
 
 const mainBodyPercent = (leftDrawer, leftWidth, rightDrawer, rightWidth=20) => {
 	let res = 1;
@@ -71,30 +62,6 @@ class App extends React.Component {
 			return Math.round(newMainBodyW * 0.9);
 		}
 
-		this.setTimelineOrangizerWidth = (width) => {
-			let mainBodyW = document.querySelector('#main-body').offsetWidth;
-			let {
-				timelineOrganizerDrawerWidth: leftWidth,
-				timelineEditorDrawerToggle: rightDrawer,
-				timelineEditorDrawerWidth: rightWidth,
-			} = this.state;
-			let parent = mainBodyW / mainBodyPercent(true, leftWidth, rightDrawer, rightWidth);
-
-			let newMainBodyWP = mainBodyPercent(true, width, rightDrawer, rightWidth);
-			let newMainBodyW = newMainBodyWP * parent;
-			let newResWidth = Math.round(newMainBodyW * 0.9);
-			let maxZoomWidth = newResWidth;
-			if (this.state.zoomWidthByUser < newResWidth) {
-				newResWidth = this.state.zoomWidthByUser;
-			}
-			this.setState({
-				timelineOrganizerDrawerWidth: width,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
-		}
-
 		this.openTimelineOgranizerDrawer = () => {
 			let newResWidth = this.calcNewResWidth(true, null, this.state.timelineEditorDrawerToggle);
 			let maxZoomWidth = newResWidth;
@@ -113,30 +80,6 @@ class App extends React.Component {
 			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
 			this.setState({
 				timelineOrganizerDrawerToggle: 0,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
-		}
-
-		this.setTimelineEditorWidth = (width) => {
-			let mainBodyW = document.querySelector('#main-body').offsetWidth;
-			let {
-				timelineOrganizerDrawerToggle: leftDrawer,
-				timelineOrganizerDrawerWidth: leftWidth,
-				timelineEditorDrawerWidth: rightWidth,
-			} = this.state;
-			let parent = mainBodyW / mainBodyPercent(leftDrawer, leftWidth, true, rightWidth);
-
-			let newMainBodyWP = mainBodyPercent(leftDrawer, leftWidth, true, width);
-			let newMainBodyW = newMainBodyWP * parent;
-			let newResWidth = Math.round(newMainBodyW * 0.9);
-			let maxZoomWidth = newResWidth;
-			if (this.state.zoomWidthByUser < newResWidth) {
-				newResWidth = this.state.zoomWidthByUser;
-			}
-			this.setState({
-				timelineEditorDrawerWidth: width,
 				zoomWidth: newResWidth,
 				zoomWidthByUser: newResWidth,
 				maxZoomWidth: maxZoomWidth,
@@ -327,10 +270,8 @@ class App extends React.Component {
 		const {
 			openTimelineOgranizerDrawer,
 			closeTimelineOgranizerDrawer,
-			setTimelineOrangizerWidth,
 			openTimelineEditorDrawer,
 			closeTimelineEditorDrawer,
-			setTimelineEditorWidth,
 			onInputZoomHeight,
 			onInputZoomWidth,
 			setZoomHeight,
@@ -356,37 +297,34 @@ class App extends React.Component {
 	  				<div className="main-body"
 	  					id="main-body"
 	  					style={{
-							width: mainBodyWidth(timelineOrganizerDrawerToggle,
-								timelineOrganizerDrawerWidth,
-								timelineEditorDrawerToggle,
-								timelineEditorDrawerWidth),
+	  						flexGrow: 1,
 	  					 	margin: '0 auto',
 						 	backgroundColor: (getFullScreenState()) ? 'black' : '#F0F0F0',
-						 	height: "100%"
+						 	height: "100%",
+						 	overflow: 'auto'
 	  					}}
 	  				>
-	  				<ZoomBar
-	  						zoomScale={zoomScale}
-	  						zoomWidth={zoomWidth}
-	  						zoomHeight={zoomHeight}
-	  						zoomHeightByUser={zoomHeightByUser}
-	  						zoomWidthByUser={zoomWidthByUser}
-	  						setZoomHeight={setZoomHeight}
-	  						setZoomWidth={setZoomWidth}
-	  						onInputZoomHeight={onInputZoomHeight}
-	  						onInputZoomWidth={onInputZoomWidth}
-	  						onSelect={onSelect}
-	  				/>
-	  				<PreviewWindow
-	  						zoomScale={zoomScale}
-	  						zoomWidth={zoomWidth}
-	  						zoomHeight={zoomHeight}
-	  				/>
+		  				<ZoomBar
+		  						zoomScale={zoomScale}
+		  						zoomWidth={zoomWidth}
+		  						zoomHeight={zoomHeight}
+		  						zoomHeightByUser={zoomHeightByUser}
+		  						zoomWidthByUser={zoomWidthByUser}
+		  						setZoomHeight={setZoomHeight}
+		  						setZoomWidth={setZoomWidth}
+		  						onInputZoomHeight={onInputZoomHeight}
+		  						onInputZoomWidth={onInputZoomWidth}
+		  						onSelect={onSelect}
+		  				/>
+		  				<PreviewWindow
+		  						zoomScale={zoomScale}
+		  						zoomWidth={zoomWidth}
+		  						zoomHeight={zoomHeight}
+		  				/>
 	  				</div>
 	  				<TimelineNodeEditor 
 	  					open={timelineEditorDrawerToggle}
 	  					width={timelineEditorDrawerWidth}
-	  					setWidthCallback={setTimelineEditorWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>

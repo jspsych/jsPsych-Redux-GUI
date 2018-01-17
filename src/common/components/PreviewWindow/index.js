@@ -173,7 +173,6 @@ export default class PreviewWindow extends React.Component {
               height: "100%"
             }}
             id="Preview_Window_Container"
-            className="Preview_Window_Container"
         >
           <Paper  id="jsPsych-Layer"
                   style={{

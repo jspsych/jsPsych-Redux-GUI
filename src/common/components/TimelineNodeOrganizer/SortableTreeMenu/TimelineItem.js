@@ -5,14 +5,6 @@ import { ListItem } from 'material-ui/List';
 import CollapsedIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ExpandedIcon from 'material-ui/svg-icons/navigation/expand-more';
 
-import {
-	cyan400 as highlightColor,
-	green500 as checkColor,
-	indigo500 as iconHighlightColor,
-	grey300 as hoverColor,
-	grey600 as normalColor,
-	grey400 as disabledColor
-} from 'material-ui/styles/colors';
 
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
@@ -21,17 +13,8 @@ import Tree from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/Tre
 import NestedContextMenus from './NestedContextMenus';
 import { moveToAction, moveIntoAction } from '../../../actions/organizerActions';
 
-export const INDENT = 32;
+import theme, { INDENT, colorSelector, listItemStyle } from './theme.js';
 
-export const colorSelector = (hovered, isSelected) => {
-	if (hovered)
-		return null;
-
-	if (isSelected) return '#E3E3E3'
-		// return highlightColor;
-
-	return null;
-}
 
 export const treeNodeDnD = {
 	ITEM_TYPE: "Organizer-Item",
@@ -162,10 +145,9 @@ class TimelineItem extends React.Component {
 			connectDragPreview,
 			connectDragSource,
 			isOverCurrent,
-			isEnabled
+			isEnabled,
+			isSelected
 		} = this.props;
-
-		let iconColor = isEnabled ? normalColor : disabledColor;
 
 		return connectDragPreview(connectDropTarget(
 				<div>
@@ -177,29 +159,29 @@ class TimelineItem extends React.Component {
 							connectDragSource(
 								<div>
 									<IconButton className="Timeline-Collapse-Icon"
-											hoveredStyle={{backgroundColor: hoverColor}}
+											hoveredStyle={theme.collpaseButtonHoverStyle}
 											onTouchTap={this.props.toggleCollapsed} 
 											disableTouchRipple={true} 
 									>
 									{(this.props.collapsed || this.props.hasNoChildren) ? 
-										<CollapsedIcon color={(this.props.isSelected) ? iconHighlightColor : iconColor} /> : 
-										<ExpandedIcon color={(this.props.isSelected) ? iconHighlightColor : iconColor} />
+										<CollapsedIcon {...theme.icon(isEnabled, isSelected)}/> : 
+										<ExpandedIcon {...theme.icon(isEnabled, isSelected)}/>
 									}
 									</IconButton>
 								</div>
 							)}
 							<div style={{width: "100%"}}>
 								<ListItem 
-										ref={this.props.id}
-										style={{color: this.props.isEnabled ? 'black' : 'grey'}}
-										primaryText={this.props.name}
-										onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
-										onContextMenu={this.openContextMenu}
-										onTouchTap={(e) => {
-											if (e.nativeEvent.which === 1) {
-												this.props.onClick(setKeyboardFocusId);
-											}
-										}}
+									ref={this.props.id}
+									style={listItemStyle(isEnabled, isSelected)}
+									primaryText={this.props.name}
+									onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
+									onContextMenu={this.openContextMenu}
+									onTouchTap={(e) => {
+										if (e.nativeEvent.which === 1) {
+											this.props.onClick(setKeyboardFocusId);
+										}
+									}}
 								/>
 							</div>
 							<NestedContextMenus

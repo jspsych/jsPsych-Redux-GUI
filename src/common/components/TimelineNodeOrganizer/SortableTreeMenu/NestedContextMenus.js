@@ -15,18 +15,9 @@ import SelectThisOnlyIcon from 'material-ui/svg-icons/device/gps-fixed';
 import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
 import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
-import {
-	pink500 as contextMenuIconColor,
-	grey100 as contextMenuBackgroundColor,
-} from 'material-ui/styles/colors';
+import theme from './theme.js';
 
-const contextMenuStyle = {
-	outerDiv: { position: 'absolute', zIndex: 20},
-	innerDiv: { backgroundColor: contextMenuBackgroundColor,
-				borderBottom: '1px solid #BDBDBD' },
-	lastInnerDiv: { backgroundColor: contextMenuBackgroundColor },
-	iconColor: contextMenuIconColor,
-}
+const contextMenuStyle = theme.contextMenuStyle; 
 
 export default class NestedContextMenus extends React.Component {
 
