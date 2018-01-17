@@ -11,14 +11,36 @@ import Notification from '../containers/Notification';
 import { WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
 import { WIDTH as DEFAULT_TIMELINE_ORGANIZER_WIDTH } from './TimelineNodeOrganizer';
 
-import './App.css';
+import GeneralTheme from './theme.js';
 
+const colors = GeneralTheme.colors;
 
-const mainBodyPercent = (leftDrawer, leftWidth, rightDrawer, rightWidth=20) => {
-	let res = 1;
-	if (leftDrawer) res -= leftWidth / 100;
-	if (rightDrawer) res -= rightWidth / 100;
-	return res
+const style = {
+	App: {
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+		flexDirection: 'column',
+	},
+	AppbarContainer: {
+		flexBasis: '56px',
+		maxHeight: '56px',
+	},
+	AppMainContainer: {
+		flexGrow: '1',
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+		flexDirection: 'row',
+	},
+	AppMainPreview: {
+		flexGrow: 1,
+		backgroundColor: colors.background,
+		height: "100%",
+		overflow: 'auto',
+		display: 'flex',
+		flexDirection: 'column'
+	}
 }
 
 const limitToMax = (v, maxV) => ((v > maxV) ? maxV : v);
@@ -42,28 +64,8 @@ class App extends React.Component {
 			zoomScale: 1,
 		}
 
-		this.calcNewResWidth = (desiredLeftDrawer, width = null, desiredRightDrawer) => {
-			let mainBodyW = document.querySelector('#main-body').offsetWidth;
-			let {
-				timelineOrganizerDrawerToggle: leftDrawer,
-				timelineOrganizerDrawerWidth: leftWidth,
-				timelineEditorDrawerToggle: rightDrawer,
-				timelineEditorDrawerWidth: rightWidth,
-			} = this.state;
-
-			if (width !== null) {
-				leftWidth = width;
-			}
-
-			let parent = mainBodyW / mainBodyPercent(leftDrawer, leftWidth, rightDrawer, rightWidth);
-
-			let newMainBodyW = parent * mainBodyPercent(desiredLeftDrawer, leftWidth, desiredRightDrawer, rightWidth);
-
-			return Math.round(newMainBodyW * 0.9);
-		}
-
 		this.openTimelineOgranizerDrawer = () => {
-			let newResWidth = this.calcNewResWidth(true, null, this.state.timelineEditorDrawerToggle);
+			let newResWidth = document.querySelector('#main-body').offsetWidth;
 			let maxZoomWidth = newResWidth;
 			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
 			this.setState({
@@ -75,7 +77,7 @@ class App extends React.Component {
 		}
 
 		this.closeTimelineOgranizerDrawer = () => {
-			let newResWidth = this.calcNewResWidth(false, null, this.state.timelineEditorDrawerToggle);
+			let newResWidth = document.querySelector('#main-body').offsetWidth;
 			let maxZoomWidth = newResWidth;
 			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
 			this.setState({
@@ -87,7 +89,7 @@ class App extends React.Component {
 		}
 
 		this.openTimelineEditorDrawer = () => {
-			let newResWidth = this.calcNewResWidth(this.state.timelineOrganizerDrawerToggle, null, true);
+			let newResWidth = document.querySelector('#main-body').offsetWidth;
 			let maxZoomWidth = newResWidth;
 			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
 			this.setState({
@@ -99,7 +101,7 @@ class App extends React.Component {
 		}
 
 		this.closeTimelineEditorDrawer = () => {
-			let newResWidth = this.calcNewResWidth(this.state.timelineOrganizerDrawerToggle, null, false);
+			let newResWidth = document.querySelector('#main-body').offsetWidth;
 			let maxZoomWidth = newResWidth;
 			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
 			this.setState({
@@ -210,7 +212,7 @@ class App extends React.Component {
 		}
 
 		this.setZoomMaxHeight = () => {
-			let maxHeight = Math.round(document.querySelector('#main-body').offsetHeight * 0.8);
+			let maxHeight = document.querySelector('#main-body').offsetHeight;
 			let {
 				zoomHeight,
 				zoomHeightByUser
@@ -230,28 +232,6 @@ class App extends React.Component {
 				this.setZoomScale(op);
 			}
 		}
-	}
-
-	componentWillMount() {
-		window.addEventListener("resize", this.setZoomMaxHeight);
-	}
-
-	componentDidMount() {
-		// init
-		let zoomWidth = Math.round(document.querySelector('#main-body').offsetWidth * 0.9);
-		let zoomHeight = Math.round(document.querySelector('#main-body').offsetHeight * 0.8);
-		this.setState({
-			zoomWidth: zoomWidth,
-			zoomHeight: zoomHeight,
-			zoomWidthByUser: zoomWidth,
-			zoomHeightByUser: zoomHeight,
-			maxZoomWidth: zoomWidth,
-			maxZoomHeight: zoomHeight,
-		});
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("resize", this.setZoomMaxHeight);
 	}
 
 	render() {
@@ -280,29 +260,23 @@ class App extends React.Component {
 		} = this;
 
 		return (
-			<div className="App">
-				<div className="Appbar-Container">
+			<div className="App" style={style.App}>
+				<div className="Appbar-Container" style={style.AppbarContainer}>
 					<Appbar 
 						drawerOpened={timelineOrganizerDrawerToggle}
 						drawerOpenCallback={openTimelineOgranizerDrawer}
 	  					drawerCloseCallback={closeTimelineOgranizerDrawer}
 					/>
 				</div>
-	  			<div className="App-Main-Container">
+	  			<div className="App-Main-Container" style={style.AppMainContainer}>
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
-	  				<div className="main-body"
+	  				<div className="App-Main-Preivew"
 	  					id="main-body"
-	  					style={{
-	  						flexGrow: 1,
-	  					 	margin: '0 auto',
-						 	backgroundColor: (getFullScreenState()) ? 'black' : '#F0F0F0',
-						 	height: "100%",
-						 	overflow: 'auto'
-	  					}}
+	  					style={style.AppMainPreview}
 	  				>
 		  				<ZoomBar
 		  						zoomScale={zoomScale}

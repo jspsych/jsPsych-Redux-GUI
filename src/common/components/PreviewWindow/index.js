@@ -122,8 +122,8 @@ export default class PreviewWindow extends React.Component {
     let tooltipPosition = (this.state.fullScreen) ? 'top-center' : 'bottom-center';
     let previewToolBar = (
       <div 
-        style={{paddingTop: 5}}>
-                <Toolbar style={{height: 40, maxWidth: 600, margin: '0 auto'}}>
+        style={{marginTop: '5px', flexBasis: '40px'}}>
+                <Toolbar style={{height: "40px", maxWidth: 600, margin: '0 auto'}}>
                   <ToolbarGroup style={{margin: '0 auto'}}>
                       <IconButton 
                         tooltip="Play all"
@@ -167,10 +167,12 @@ export default class PreviewWindow extends React.Component {
     } = this.props;
 		return (
         <div style={{
-              paddingTop: 5, 
               margin: 'auto', 
               width: "90%",
-              height: "100%"
+              height: "100%",
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column'
             }}
             id="Preview_Window_Container"
         >
@@ -189,8 +191,8 @@ export default class PreviewWindow extends React.Component {
             style={{
               width: "100%", 
               height: "100%",
-              overflowY: 'auto',
-              transform: 'scale(' + zoomScale + ')',
+              overflow: 'auto',
+              transform: `scale(${zoomScale})`,
             }}
             />
             {(this.state.fullScreen) ?

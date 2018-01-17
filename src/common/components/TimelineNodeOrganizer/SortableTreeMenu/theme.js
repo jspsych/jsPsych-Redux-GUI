@@ -4,7 +4,7 @@ import GeneralTheme from '../../theme.js';
 const colors = {
 	...GeneralTheme.colors,
 	deepGrey: '#424242',
-	lightDeepGrey: '#616161',
+	lightDeepGrey: '#757575',
 	lightGrey: '#BDBDBD',
 }
 
@@ -17,7 +17,7 @@ export const colorSelector = (hovered, isSelected) => {
 }
 
 export const listItemStyle = (isEnabled, isSelected) => ({
-	color: isEnabled ? 'black' : colors.lightGrey,
+	color: isEnabled ? colors.deepGrey : colors.lightGrey,
 	fontWeight: isSelected ? 'bold' : 'normal',
 })
 

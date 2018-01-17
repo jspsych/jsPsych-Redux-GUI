@@ -34,20 +34,8 @@ export default class ZoomBar extends React.Component {
 			onSelect,
 		} = this.props;
 		return (
-			<div style={{
-	  					width:"90%", 
-	  					margin: '0 auto', 
-	  				}}
-	  				>
-	  				<span style={{
-	  					paddingTop: 5,
-	  					paddingBottom: 5,
-	  					// paddingLeft: 3,
-	  					display: 'flex', 
-	  					// width: 185,
-	  					// margin: '0 auto',
-	  					// backgroundColor: 'rgb(232, 232, 232)'
-	  				}}>	
+			<div style={{margin: '0 auto', flexBasis: '52px', display: 'flex', alignItems: 'center'}}>
+	  				<span style={{ display: 'flex',}}>	
 			              <input 
 			                className="Responsive-input" 
 			                id="Responsive-input-Width"
