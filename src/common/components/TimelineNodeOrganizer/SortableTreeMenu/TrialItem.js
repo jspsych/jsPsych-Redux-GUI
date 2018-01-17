@@ -88,7 +88,7 @@ class TrialItem extends React.Component {
 						<IconButton 
 							hoveredStyle={theme.collpaseButtonHoverStyle}
 							disableTouchRipple={true} 
-							onTouchTap={onClick}>
+							onClick={onClick}>
 							<TrialIcon {...theme.icon(isEnabled, isSelected)}/>
 						</IconButton>
 					</div>)
@@ -100,7 +100,7 @@ class TrialItem extends React.Component {
 							primaryText={name}
 							onKeyDown={(e) => { listenKey(e, getKeyboardFocusId) }}
 							onContextMenu={this.openContextMenu}
-							onTouchTap={(e) => {
+							onClick={(e) => {
 								if (e.nativeEvent.which === 1) {
 									this.props.onClick(setKeyboardFocusId);
 								}

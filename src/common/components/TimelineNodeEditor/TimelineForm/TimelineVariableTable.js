@@ -350,7 +350,7 @@ class CodeEditor extends React.Component {
 	      <FlatButton
 	        label="Finish"
 	        primary={true}
-	        onTouchTap={() => { setCode(this.state.code); handleClose() }}
+	        onClick={() => { setCode(this.state.code); handleClose() }}
 	      />,
 	    ];
 
@@ -374,7 +374,7 @@ class CodeEditor extends React.Component {
 	                Use Custom Code:
 	              </p>
 	              <IconButton
-	                onTouchTap={setParamMode}
+	                onClick={setParamMode}
 	                >
 	                {(useFunc) ? <Check color={checkColor} /> : <Uncheck />}
 	              </IconButton>
@@ -426,7 +426,7 @@ class TimelineVariableTableOpener extends React.Component {
 	      //   label="Close"
 	      //   labelStyle={{textTransform: 'none'}}
 	      //   primary={true}
-	      //   onTouchTap={handleClose}
+	      //   onClick={handleClose}
 	      // />,
 	    ];
 
@@ -435,14 +435,14 @@ class TimelineVariableTableOpener extends React.Component {
 	                  <ToolbarGroup firstChild={true}>
 	                    <IconButton
 	                    	tooltip="Insert Row"
-	                    	onTouchTap={this.props.addRow}
+	                    	onClick={this.props.addRow}
 		                   	iconStyle={{width: 36, height: 36, color: tableAddColor}}
 		                >
 		                    <AddRowIcon hoverColor={tableAddHoverColor}/>
 	                    </IconButton>
 	                    <IconButton
 	                    	tooltip="Delete Row"
-	                    	onTouchTap={this.onRowDelete}
+	                    	onClick={this.onRowDelete}
 		                   	iconStyle={{width: 36, height: 36, color: tableDelColor}}
 		                >
 		                    <DeleteRowIcon hoverColor={tableDelHoverColor}/>
@@ -452,7 +452,7 @@ class TimelineVariableTableOpener extends React.Component {
 
 	                	<IconButton
 	                    	tooltip="Insert Column"
-	                    	onTouchTap={this.props.addColumn}
+	                    	onClick={this.props.addColumn}
 	                    	iconStyle={{width: 36, height: 36, color: tableAddColor}}
 	                    >
 	                    	<AddColumnIcon hoverColor={tableAddHoverColor}/>
@@ -460,7 +460,7 @@ class TimelineVariableTableOpener extends React.Component {
 
 	                    <IconButton
 	                    	tooltip="Delete Column"
-	                    	onTouchTap={this.onColDelete}
+	                    	onClick={this.onColDelete}
 	                    	iconStyle={{width: 36, height: 36, color: tableDelColor}}
 	                    >
 	                    	<DeleteColumnIcon hoverColor={tableDelHoverColor}/>
@@ -473,7 +473,7 @@ class TimelineVariableTableOpener extends React.Component {
 			<div>
 				<IconButton
 					tooltip="Open in seperate window"
-					onTouchTap={handleOpen}
+					onClick={handleOpen}
 				>
 				<Launch hoverColor={hoverColor} />
 				</IconButton>

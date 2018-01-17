@@ -34,21 +34,21 @@ export default class NestedContextMenus extends React.Component {
 			        <Menu>
 						<MenuItem primaryText="New Timeline" 
 							leftIcon={<NewTimelineIcon color={contextMenuStyle.iconColor} />}
-							onTouchTap={()=>{ this.props.insertTimeline(); this.props.onRequestCloseItemMenu()}}
+							onClick={()=>{ this.props.insertTimeline(); this.props.onRequestCloseItemMenu()}}
 						/>
 						<Divider />
 						<MenuItem primaryText="New Trial"  
 							leftIcon={<NewTrialIcon color={contextMenuStyle.iconColor}/>}
-							onTouchTap={()=>{ this.props.insertTrial(); this.props.onRequestCloseItemMenu()}}
+							onClick={()=>{ this.props.insertTrial(); this.props.onRequestCloseItemMenu()}}
 						/><Divider />
 						<MenuItem primaryText="Delete"  
 							leftIcon={<Delete color={contextMenuStyle.iconColor}/>}
-							onTouchTap={()=>{ this.props.deleteNode(); this.props.onRequestCloseItemMenu()}}
+							onClick={()=>{ this.props.deleteNode(); this.props.onRequestCloseItemMenu()}}
 						/>
 						<Divider />
 						<MenuItem primaryText="Duplicate"  
 							leftIcon={<Duplicate color={contextMenuStyle.iconColor}/>}
-							onTouchTap={()=>{ this.props.duplicateNode(); this.props.onRequestCloseItemMenu()}}
+							onClick={()=>{ this.props.duplicateNode(); this.props.onRequestCloseItemMenu()}}
 						/>
 						<Divider />
 						<MenuItem primaryText={this.props.isEnabled ? "Disable" : "Enable"}
@@ -57,7 +57,7 @@ export default class NestedContextMenus extends React.Component {
 								<CheckIcon color={contextMenuStyle.iconColor} />:
 								<UnCheckIcon color={contextMenuStyle.iconColor} />
 							}
-							onTouchTap={()=>{ this.props.onToggle(); this.props.onRequestCloseItemMenu()}}
+							onClick={()=>{ this.props.onToggle(); this.props.onRequestCloseItemMenu()}}
 						/>
 					</Menu>
 					</Popover>

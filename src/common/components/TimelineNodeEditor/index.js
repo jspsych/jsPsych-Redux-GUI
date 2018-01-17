@@ -62,7 +62,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 			  								margin: '0px 0px 0px -12px'
 			  							}}
 			  							disableTouchRipple={true}
-										onTouchTap={this.props.closeTimelineEditorCallback}
+										onClick={this.props.closeTimelineEditorCallback}
 			  							>
 			  							<CloseDrawerHandle />
 			  						</IconButton>
@@ -138,7 +138,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
   							backgroundColor: DrawerHandleColor,
   							right: 0,
   						}}
-  						onTouchTap={this.props.openTimelineEditorCallback}
+  						onClick={this.props.openTimelineEditorCallback}
   						tooltipPosition="bottom-left"
   						style={{
 	  					position: 'fixed',

@@ -128,21 +128,21 @@ export default class PreviewWindow extends React.Component {
                       <IconButton 
                         tooltip="Play all"
                         tooltipPosition={tooltipPosition}
-                        onTouchTap={()=>{ this.props.playAll(load); }}
+                        onClick={()=>{ this.props.playAll(load); }}
                         >
                         <Play hoverColor={hoverColor} />
                       </IconButton>
                       <IconButton 
                         tooltip="Reload"
                         tooltipPosition={tooltipPosition}
-                        onTouchTap={reload}
+                        onClick={reload}
                         >
                         <Refresh hoverColor={hoverColor} />
                       </IconButton>
 
                       <IconButton 
                         tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
-                        onTouchTap={this.toggleFullScreen}
+                        onClick={this.toggleFullScreen}
                         tooltipPosition={tooltipPosition}
                         >
                         {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
@@ -155,7 +155,7 @@ export default class PreviewWindow extends React.Component {
                       //     <IconButton 
                       //   tooltip="Skip"
                       //   tooltipPosition={tooltipPosition}
-                      //   onTouchTap={() => {}}
+                      //   onClick={() => {}}
                       //   >
                       //   <Skip hoverColor={hoverColor} />
                       // </IconButton>

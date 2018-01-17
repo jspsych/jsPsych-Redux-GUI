@@ -135,7 +135,7 @@ class ObjectKey extends React.Component {
 							onChange={(e, v) => { this.props.setObjectKey(v); }}
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
-				<MenuItem onTouchTap={this.enterEditMode} primaryText={`"${oldKey}"`}/>
+				<MenuItem onClick={this.enterEditMode} primaryText={`"${oldKey}"`}/>
 			)
 	}
 }
@@ -207,7 +207,7 @@ class ObjectValue extends React.Component {
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
 				<MenuItem 
-					onTouchTap={this.enterEditMode} 
+					onClick={this.enterEditMode} 
 					primaryText={
 						<p 
 							className='truncate-long-string'
@@ -458,7 +458,7 @@ export default class ObjectEditor extends React.Component {
 					<IconButton
 						tooltip="delete key"
 						key={`object-delete-${i}`}
-						onTouchTap={()=>{ this.deleteKeyPair(i); }}
+						onClick={()=>{ this.deleteKeyPair(i); }}
 					>
 						<Clear key={`object-delete-icon-${i}`} color={clearColor} />
 					</IconButton>
@@ -483,20 +483,20 @@ export default class ObjectEditor extends React.Component {
 				secondary={true}
 				label="Cancel"
 				labelStyle={{textTransform: "none",}}
-				onTouchTap={handleClose}
+				onClick={handleClose}
 			/>,
 			<FlatButton 
 				primary={true}
 				label="Finish"
 				labelStyle={{textTransform: "none",}}
-				onTouchTap={onSubmit}
+				onClick={onSubmit}
 			/>
 		]
 
 		return (
 			<div>
 				<MenuItem 
-					onTouchTap={this.handleOpen} 
+					onClick={this.handleOpen} 
 					primaryText="[Data Object]" 
 					style={{color: fixedTextColor}}
 					title="Click to edit"
@@ -518,7 +518,7 @@ export default class ObjectEditor extends React.Component {
 						tooltip="Copy"
 						iconStyle={{width: 20, height: 20}}
 						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={copyObj}
+						onClick={copyObj}
 					>
 						<CopyIcon hoverColor={hoverColor} />
 					</IconButton>
@@ -526,7 +526,7 @@ export default class ObjectEditor extends React.Component {
 						tooltip="Paste"
 						iconStyle={{width: 20, height: 20}}
 						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={paste}
+						onClick={paste}
 					>
 						<PasteIcon hoverColor={hoverColor} />
 					</IconButton>
@@ -546,7 +546,7 @@ export default class ObjectEditor extends React.Component {
 				<div style={{paddingTop: 15}}>
 				<FloatingActionButton 
 					mini={true} 
-					onTouchTap={addKeyPair}
+					onClick={addKeyPair}
 				>
       				<ContentAdd />
     			</FloatingActionButton>

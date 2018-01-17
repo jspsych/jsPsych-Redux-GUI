@@ -20,7 +20,7 @@ export const renderDialogTitle = (messageNode=null, handleClose=()=>{}, titleCol
 				hoveredStyle={{
 					backgroundColor: CloseBackHighlightColor,
 				}}
-				onTouchTap={handleClose}
+				onClick={handleClose}
 			disableTouchRipple={true}
 		>
 		<Close hoverColor={CloseDrawerHoverColor} />

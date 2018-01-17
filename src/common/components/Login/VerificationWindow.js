@@ -108,7 +108,7 @@ export default class VerificationWindow extends React.Component {
           <RaisedButton 
                 label="Verify Email Address" 
                 primary={true} 
-                onTouchTap={this.handleVerification} 
+                onClick={this.handleVerification} 
                 fullWidth={true}
           />
         );
@@ -160,7 +160,7 @@ export default class VerificationWindow extends React.Component {
               label="Resend Verification Code" 
               secondary={true} 
               labelStyle={{textTransform: "none", }}
-              onTouchTap={this.resendVerificationCode} 
+              onClick={this.resendVerificationCode} 
             />
           </div>
         </div>

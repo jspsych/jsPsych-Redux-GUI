@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore , applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import rootReducer from '../common/reducers';
 import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -36,7 +35,7 @@ window.addEventListener('beforeunload', (e) => {
 	}
 });
 
-injectTapEventPlugin();
+
 ReactDOM.render(
   <Provider store={store}>
 	<MuiThemeProvider>

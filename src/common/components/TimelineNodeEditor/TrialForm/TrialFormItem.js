@@ -466,7 +466,7 @@ export default class TrialFormItem extends React.Component {
 
 		let toggleAllKey = (
 			<IconButton 
-				onTouchTap={() => {
+				onClick={() => {
 					if (isAllKey) {
 						this.props.setKey(param, null, true);
 					} else {
@@ -661,7 +661,7 @@ export default class TrialFormItem extends React.Component {
 		let node = (
 			<IconButton
   				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
-  				onTouchTap={this.toggleSubFormCollapse}
+  				onClick={this.toggleSubFormCollapse}
   			>
   			{(this.state.subFormCollapse) ? 
   				<CollapseIcon hoverColor={hoverColor} /> :
@@ -727,7 +727,7 @@ export default class TrialFormItem extends React.Component {
 				   							key={`complex-jsPysch-trial-item-delete-${i}`} 
 				   							iconStyle={iconStyle}
 				   							style={iconButtonStyle}
-				   							onTouchTap={() => {this.props.depopulateComplex(param, i)}}
+				   							onClick={() => {this.props.depopulateComplex(param, i)}}
 				   						>
 				   							<DeleteSubItemIcon />
 				   						</IconButton>
@@ -741,7 +741,7 @@ export default class TrialFormItem extends React.Component {
 			    	<div style={{paddingTop: 5, float: 'right'}}>
 				    	<FloatingActionButton 
 				    		mini={true} 
-				    		onTouchTap={() => {this.props.populateComplex(param, parameterInfo.nested)}}
+				    		onClick={() => {this.props.populateComplex(param, parameterInfo.nested)}}
 				    	>
 				    		<ContentAdd />
 				    	</FloatingActionButton>

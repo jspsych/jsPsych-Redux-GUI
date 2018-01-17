@@ -77,13 +77,13 @@ export default class CodeEditor extends React.Component {
         label="Finish"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
+        onClick={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
       />,
     ];
 
   	return (
   		<div>
-	  		<IconButton onTouchTap={this.handleOpen} tooltip={this.props.tooltip}>
+	  		<IconButton onClick={this.handleOpen} tooltip={this.props.tooltip}>
 	  		 {buttonIcon}
 	  		</IconButton>
 	  		<Dialog
@@ -106,7 +106,7 @@ export default class CodeEditor extends React.Component {
                 Use Custom Code:
               </p>
               <IconButton
-                onTouchTap={this.props.setParamMode}
+                onClick={this.props.setParamMode}
                 >
                 {(this.props.useFunc) ? <Check color={checkColor} /> : <Uncheck />}
                 </IconButton>

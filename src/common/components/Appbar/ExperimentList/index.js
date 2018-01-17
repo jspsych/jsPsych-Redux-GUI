@@ -104,7 +104,7 @@ export default class ExperimentList extends React.Component {
 			<IconMenu iconButtonElement={iconButtonElement}>
 			    <MenuItem
 			    	 leftIcon={<Duplicate {...style.duplicateIcon}/>}
-			    	 onTouchTap={() => { 
+			    	 onClick={() => { 
 			    	 	this.props.duplicateExperiment(
 			    	 		id,
 			    	 		() => { this.setPerforming(id); },
@@ -115,7 +115,7 @@ export default class ExperimentList extends React.Component {
 			    </MenuItem>
 				<MenuItem
 			    	leftIcon={<Delete {...style.deleteIcon}/>}
-			    	onTouchTap={() => { 
+			    	onClick={() => { 
 			    		this.props.deleteExperiment(
 			    			id, 
 			    			this.popUpConfirm,
@@ -170,7 +170,7 @@ export default class ExperimentList extends React.Component {
 						(id === this.props.currentId) ? 
 						"Currently open" : 
 						"Last modified: " + displayedTime}
-					onTouchTap={()=>{this.setSeletected(id);}}
+					onClick={()=>{this.setSeletected(id);}}
 					rightIconButton={
 						(this.state.performing === id) ? null : this.renderIconMenu(id)
 					}
@@ -195,7 +195,7 @@ export default class ExperimentList extends React.Component {
 				style={style.actionButton}
 				labelStyle={{textTransform: "none", }}
     			keyboardFocused={true}
-				onTouchTap={() => { 
+				onClick={() => { 
 					this.props.pullExperiment(this.state.selected, 
 											  this.popUpConfirm,
 											  () => { this.setPerforming(Actions.browse); },

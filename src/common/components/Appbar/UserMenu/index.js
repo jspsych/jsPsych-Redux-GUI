@@ -55,11 +55,11 @@ export default class UserMenu extends React.Component {
         <Menu>
             <MenuItem
               primaryText={"Sign In"}
-              onTouchTap={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
+              onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
               primaryText={"Create Account"}
-              onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
+              onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
         </Menu>
       )
     } else {
@@ -68,16 +68,16 @@ export default class UserMenu extends React.Component {
             <MenuItem
               leftIcon={<Profile {...style.icon}/>}
               primaryText={"Your profile"}
-              onTouchTap={() => { this.handleRequestClose(); }} />
+              onClick={() => { this.handleRequestClose(); }} />
             <MenuItem
               primaryText={"Your experiments"}
               leftIcon={<ExperimentIcon {...style.icon} />}
-              onTouchTap={() => { this.openExperimentList(); this.handleRequestClose(); }} />
+              onClick={() => { this.openExperimentList(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
               primaryText={"Sign out"}
               leftIcon={<SignOut {...style.icon} />}
-              onTouchTap={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
+              onClick={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
         </Menu>
       )
     }
@@ -103,7 +103,7 @@ export default class UserMenu extends React.Component {
       <div style={{float: 'right', paddingRight: 1}}>
         <ListItem 
           primaryText={buttonLabel} 
-          onTouchTap={this.handleTouchTap} 
+          onClick={this.handleTouchTap} 
           style={style.username}
           leftAvatar={this.renderUserPic(login)}
         />

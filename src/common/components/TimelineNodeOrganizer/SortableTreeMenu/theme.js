@@ -3,7 +3,9 @@ import GeneralTheme from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
-	deepGrey: '#424242'
+	deepGrey: '#424242',
+	lightDeepGrey: '#616161',
+	lightGrey: '#BDBDBD',
 }
 
 export const INDENT = 32;
@@ -15,13 +17,13 @@ export const colorSelector = (hovered, isSelected) => {
 }
 
 export const listItemStyle = (isEnabled, isSelected) => ({
-	color: isEnabled ? colors.deepGrey : 'grey',
+	color: isEnabled ? 'black' : colors.lightGrey,
 	fontWeight: isSelected ? 'bold' : 'normal',
 })
 
 const iconColorSelector = (isEnabled, isSelected) => {
 	if (isSelected) return colors.secondary; // deep orange
-	return isEnabled ? '#616161' : 'grey';
+	return isEnabled ? colors.lightDeepGrey : colors.lightGrey;
 }
 
 const theme = {

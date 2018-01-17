@@ -62,7 +62,7 @@ export default class jsPsychInitEditor extends React.Component {
       <div style={{padding: 15, color: 'black'}}>{key}</div>
         <IconButton 
           style={{position: 'absolute', right: 0}}
-          onTouchTap={() => { this.props.setJsPsychInit(null, null, key); }} 
+          onClick={() => { this.props.setJsPsychInit(null, null, key); }} 
           >
         {(this.props[key]) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
         </IconButton>
@@ -89,7 +89,7 @@ export default class jsPsychInitEditor extends React.Component {
         label="Close"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
       />,
     ];
 
@@ -97,7 +97,7 @@ export default class jsPsychInitEditor extends React.Component {
         <div className="jsPsych.init-editor">
           <IconButton 
               tooltip="Init Properties Setting"
-              onTouchTap={this.handleOpen}
+              onClick={this.handleOpen}
           >
               <InitSettingIcon {...style.icon}/>
           </IconButton>

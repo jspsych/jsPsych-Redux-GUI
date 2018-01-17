@@ -160,7 +160,7 @@ class TimelineItem extends React.Component {
 								<div>
 									<IconButton className="Timeline-Collapse-Icon"
 											hoveredStyle={theme.collpaseButtonHoverStyle}
-											onTouchTap={this.props.toggleCollapsed} 
+											onClick={this.props.toggleCollapsed} 
 											disableTouchRipple={true} 
 									>
 									{(this.props.collapsed || this.props.hasNoChildren) ? 
@@ -177,7 +177,7 @@ class TimelineItem extends React.Component {
 									primaryText={this.props.name}
 									onKeyDown={(e) => { this.props.listenKey(e, getKeyboardFocusId) }}
 									onContextMenu={this.openContextMenu}
-									onTouchTap={(e) => {
+									onClick={(e) => {
 										if (e.nativeEvent.which === 1) {
 											this.props.onClick(setKeyboardFocusId);
 										}

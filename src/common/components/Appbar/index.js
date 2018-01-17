@@ -136,7 +136,7 @@ export default class Appbar extends React.Component {
 
     const OrangizerToggle = (
       <IconButton 
-        onTouchTap={() => {
+        onClick={() => {
           if (this.props.drawerOpened) {
             this.props.drawerCloseCallback();
           } else {
@@ -163,7 +163,7 @@ export default class Appbar extends React.Component {
           <InitEditor />
           <IconButton 
             tooltip="New Experiment"
-            onTouchTap={() => { this.props.newExperiment(this.popUpConfirm); }}
+            onClick={() => { this.props.newExperiment(this.popUpConfirm); }}
             > 
             <New {...style.icon} />
           </IconButton>
@@ -171,7 +171,7 @@ export default class Appbar extends React.Component {
             <CircularProgress size={30}/> :
             <IconButton 
               tooltip="Save"
-              onTouchTap={() => { this.props.save(()=>{
+              onClick={() => { this.props.save(()=>{
                 this.setPerforming(Actions.save);
               }, () => {
                 this.setPerforming(null);
@@ -184,7 +184,7 @@ export default class Appbar extends React.Component {
             <CircularProgress size={30}/> :
             <IconButton 
               tooltip="Save As"
-              onTouchTap={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
+              onClick={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
               > 
               <SaveAs {...style.icon} />
             </IconButton>
@@ -197,7 +197,7 @@ export default class Appbar extends React.Component {
             </div>:
           <IconButton
             tooltip="DIY Deploy"
-            onTouchTap={() => { 
+            onClick={() => { 
               this.props.diyDeploy(this.progresHook);
             }}
             >
@@ -238,7 +238,7 @@ export default class Appbar extends React.Component {
                   }}
                   primary={true}
                   keyboardFocused={true}
-                  onTouchTap={saveAsCallback}
+                  onClick={saveAsCallback}
                 />,
                 <FlatButton
                   label="Cancel"
@@ -246,7 +246,7 @@ export default class Appbar extends React.Component {
                     textTransform: "none",
                   }}
                   secondary={true}
-                  onTouchTap={this.handleSaveAsClose}
+                  onClick={this.handleSaveAsClose}
                 />
               ]}
             >
