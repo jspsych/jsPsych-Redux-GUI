@@ -1,6 +1,6 @@
 import GeneralTheme from '../theme.js';
 
-const colors = {
+export const colors = {
 	...GeneralTheme.colors,
 	iconColor: 'white',
 	hoverColor: '#B2FF59',
@@ -10,7 +10,7 @@ const colors = {
 
 export const AppbarIcon = {
 	color: colors.iconColor,
-	hoverColor: colors.hoverColor, 
+	hoverColor: colors.primaryDeep, 
 }
 
 const theme = {
@@ -47,8 +47,8 @@ const theme = {
 	},
 	UserMenu: {
 		icon: {
-			color: colors.primary,
 			hoverColor: colors.secondary,
+			color: '#FF5722',
 		},
 		avatar: {
 			backgroundColor: 'white',
@@ -62,7 +62,37 @@ const theme = {
 	},
 	InitEditor: {
 		icon: AppbarIcon
-	}
+	},
+	ExperimentList: {
+		moreIcon: {
+			color: 'black',
+			hoverColor: 'F0F0F0'
+		},
+		duplicateIcon: {
+			color: '#673AB7'
+		},
+		deleteIcon: {
+			color: '#E82062'
+		},
+		avatar: {
+			backgroundColor: colors.primaryDeep
+		},
+		progress: {
+			color: colors.primary
+		},
+		ListItem: {
+			selected: '#E2E2E2'
+		},
+		dialogTitleIcon: {
+			color: colors.primaryDeep
+		},
+		dialogBody: {
+			backgroundColor: '#F4F4F4'
+		},
+		actionButton: {
+			color: colors.primaryDeep
+		}
+	},
 }
 
 

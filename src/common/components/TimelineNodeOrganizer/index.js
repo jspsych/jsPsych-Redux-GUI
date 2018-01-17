@@ -24,10 +24,13 @@ import {
 
 import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
+import GeneralTheme from '../theme.js';
 import './TimelineNodeOrganizer.css';
 
 export const TREE_MENU_INDENT = 20;
 
+
+const colors = GeneralTheme.colors;
 
 class TimelineNodeOrganizer extends React.Component {
 	constructor(props) {
@@ -57,8 +60,9 @@ class TimelineNodeOrganizer extends React.Component {
 								  style={{
 								  	zIndex: 15,
 									float: 'right',
-									paddingRight: '10px'
+									paddingRight: '10px',
 								  }}
+								  fabProps={{backgroundColor: colors.primary}}
 							      fabContentOpen={<ContentAdd />}
 							      fabContentClose={<NavigationClose />}
 							    >
@@ -69,17 +73,17 @@ class TimelineNodeOrganizer extends React.Component {
 							      />
 							      <SpeedDialItem
 							        label="New Trial"
-							        fabContent={<NewTrialIcon/>}
+							        fabContent={<NewTrialIcon />}
 							        onTouchTap={this.props.insertTrial}
 							      />
 							      <SpeedDialItem
 							        label="Delete"
-							        fabContent={<Delete/>}
+							        fabContent={<Delete />}
 							        onTouchTap={this.props.deleteSelected}
 							      />
 							      <SpeedDialItem
 							        label="Duplicate"
-							        fabContent={<Duplicate/>}
+							        fabContent={<Duplicate />}
 							        onTouchTap={this.props.duplicateNode}
 							      />
 							    </SpeedDial>

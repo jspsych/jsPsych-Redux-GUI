@@ -24,11 +24,16 @@ import {
 	orange500 as duplicateColor,
 	blue400 as avatarColor,
 	indigo400 as progressColor,
-	blue800 as titleIconColor
+	blue800 as titleIconColor,
+	grey300
 } from 'material-ui/styles/colors';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
+
+import AppbarTheme, { colors } from '../theme.js';
+
+const style = AppbarTheme.ExperimentList;
 
 const Actions = {
 	browse: "BROWSE",
@@ -42,7 +47,7 @@ const iconButtonElement = (
 	    tooltip="more"
 	    tooltipPosition="bottom-left"
 	  >
-	  <MoreVertIcon hoverColor={hoverColor} />
+	  <MoreVertIcon {...style.moreIcon} />
 	</IconButton>
 ) 
 
@@ -98,7 +103,7 @@ export default class ExperimentList extends React.Component {
 		return (
 			<IconMenu iconButtonElement={iconButtonElement}>
 			    <MenuItem
-			    	 leftIcon={<Duplicate hoverColor={hoverColor} color={duplicateColor}/>}
+			    	 leftIcon={<Duplicate {...style.duplicateIcon}/>}
 			    	 onTouchTap={() => { 
 			    	 	this.props.duplicateExperiment(
 			    	 		id,
@@ -109,7 +114,7 @@ export default class ExperimentList extends React.Component {
 			    	Duplicate
 			    </MenuItem>
 				<MenuItem
-			    	leftIcon={<Delete hoverColor={hoverColor} color={deleteColor}/>}
+			    	leftIcon={<Delete {...style.deleteIcon}/>}
 			    	onTouchTap={() => { 
 			    		this.props.deleteExperiment(
 			    			id, 
@@ -157,7 +162,7 @@ export default class ExperimentList extends React.Component {
 		return (
 			<div key={id+'-ExperimentItem-Container'}>
 				<ListItem
-					style={{backgroundColor: (id === this.state.selected) ? selectedColor : null}}
+					style={{backgroundColor: (id === this.state.selected) ? style.ListItem.selected : null}}
 					key={id}
 					id={id}
 					primaryText={name}
@@ -169,9 +174,9 @@ export default class ExperimentList extends React.Component {
 					rightIconButton={
 						(this.state.performing === id) ? null : this.renderIconMenu(id)
 					}
-					rightIcon={(this.state.performing === id) ? <CircularProgress color={progressColor}/> : null}
+					rightIcon={(this.state.performing === id) ? <CircularProgress {...style.progress}/> : null}
 					leftAvatar={
-						<Avatar backgroundColor={avatarColor} icon={<ExperimentIcon hoverColor={hoverColor}/>} />
+						<Avatar {...style.avatar} icon={<ExperimentIcon />} />
 					}
 				/>
 				<Divider inset={true} />
@@ -187,7 +192,7 @@ export default class ExperimentList extends React.Component {
 		(this.state.performing !== Actions.browse) ?
 			<FlatButton
 				label="Open Experiment"
-				primary={true}
+				style={style.actionButton}
 				labelStyle={{textTransform: "none", }}
     			keyboardFocused={true}
 				onTouchTap={() => { 
@@ -198,7 +203,7 @@ export default class ExperimentList extends React.Component {
 					}
 				}
 			/> :
-			<CircularProgress />
+			<CircularProgress {...style.progress}/>
 		]
 
 		return (
@@ -211,7 +216,7 @@ export default class ExperimentList extends React.Component {
 						<Subheader style={{maxHeight: 48}}>
 		      				<div style={{display: 'flex'}}>
 							<div style={{paddingTop: 8, paddingRight: 10}}>
-								<Repository color={titleIconColor}/>
+								<Repository {...style.dialogTitleIcon}/>
 							</div>
 							<div style={{fontSize: 20,}}>
 		      					Your experiments
@@ -223,7 +228,7 @@ export default class ExperimentList extends React.Component {
 					)
 				}
 				onRequestClose={handleClose}
-				bodyStyle={{backgroundColor: dialogBodyColor}}
+				bodyStyle={style.dialogBody}
 				autoScrollBodyContent={true}
 				modal={true}
 				actions={actions}
