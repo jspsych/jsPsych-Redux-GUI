@@ -59,7 +59,7 @@ class App extends React.Component {
 		this.state = {
 			timelineOrganizerDrawerToggle: true,
 			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
-			timelineEditorDrawerToggle: false,
+			timelineEditorDrawerToggle: true,
 			timelineEditorDrawerWidth: DEFAULT_TIMELINE_EDITOR_WIDTH,
 			zoomScale: 1,
 		}
