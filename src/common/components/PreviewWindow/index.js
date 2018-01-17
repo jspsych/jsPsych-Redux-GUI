@@ -170,9 +170,7 @@ export default class PreviewWindow extends React.Component {
               margin: 'auto', 
               width: "90%",
               height: "100%",
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column'
+              flexGrow: 1
             }}
             id="Preview_Window_Container"
         >
