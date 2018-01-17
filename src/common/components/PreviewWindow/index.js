@@ -19,6 +19,7 @@ import {
   // grey600 as textColor
 } from 'material-ui/styles/colors';
 
+
 const runtime_script_ele_id = 'Runtime-Script-Tag';
 
 export const getFullScreenState = () => (

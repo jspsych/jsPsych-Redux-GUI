@@ -9,14 +9,13 @@ import Divider from 'material-ui/Divider';
 import Profile from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
-import {
-  indigo500 as hoverColor,
-  cyan500 as iconColor,
-  blue400 as avatarBackgroundColor
-} from 'material-ui/styles/colors';
 
 import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/ExperimentList';
+
+import AppbarTheme from '../theme.js';
+
+const style = AppbarTheme.UserMenu;
 
 export default class UserMenu extends React.Component {
   state = {
@@ -67,17 +66,17 @@ export default class UserMenu extends React.Component {
       return (
         <Menu>
             <MenuItem
-              leftIcon={<Profile hoverColor={hoverColor} color={iconColor}/>}
+              leftIcon={<Profile {...style.icon}/>}
               primaryText={"Your profile"}
-              onTouchTap={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
+              onTouchTap={() => { this.handleRequestClose(); }} />
             <MenuItem
               primaryText={"Your experiments"}
-              leftIcon={<ExperimentIcon hoverColor={hoverColor} color={iconColor} />}
+              leftIcon={<ExperimentIcon {...style.icon} />}
               onTouchTap={() => { this.openExperimentList(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
               primaryText={"Sign out"}
-              leftIcon={<SignOut hoverColor={hoverColor} color={iconColor} />}
+              leftIcon={<SignOut {...style.icon} />}
               onTouchTap={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
         </Menu>
       )
@@ -89,7 +88,7 @@ export default class UserMenu extends React.Component {
             null:
             <Avatar 
               size={size} 
-              backgroundColor={avatarBackgroundColor}
+              {...style.avatar}
             >
               {this.props.username.charAt(0)}
             </Avatar>)
@@ -105,7 +104,7 @@ export default class UserMenu extends React.Component {
         <ListItem 
           primaryText={buttonLabel} 
           onTouchTap={this.handleTouchTap} 
-          style={{textDecoration: (login) ? 'underline' : 'none'}}
+          style={style.username}
           leftAvatar={this.renderUserPic(login)}
         />
       </div>

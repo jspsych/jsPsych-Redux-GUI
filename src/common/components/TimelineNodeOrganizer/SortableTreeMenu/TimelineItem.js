@@ -27,8 +27,8 @@ export const colorSelector = (hovered, isSelected) => {
 	if (hovered)
 		return null;
 
-	if (isSelected)
-		return highlightColor;
+	if (isSelected) return '#E3E3E3'
+		// return highlightColor;
 
 	return null;
 }

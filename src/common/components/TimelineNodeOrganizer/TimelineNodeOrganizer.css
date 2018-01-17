@@ -3,6 +3,7 @@
 	display: flex;
 	overflow: hidden;
 	flex-direction: row;
+	background-color: #F1F1F1;
 }
 
 .TimelineNode-Organizer-Container {
@@ -36,22 +37,4 @@
 	position: absolute;
 }
 
-.TimelineNode-Organizer-Dragger {
-	height: 100%;
-	width: 8px;
-	flex-basis: 8px;
-	cursor: col-resize;
-	border-left: 1px solid #aaa;
-	background-color: rgb(232, 232, 232);
-	/*position: absolute;*/
-}
 
-.TimelineNode-Organizer-Close-Handle-Container {
-    display: none;
-    top: 50%;
-    position: fixed;
-}
-
-.TimelineNode-Organizer-Dragger:hover .TimelineNode-Organizer-Close-Handle-Container{
-    display: inline-block;
-}

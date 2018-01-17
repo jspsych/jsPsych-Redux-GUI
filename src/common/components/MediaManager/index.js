@@ -34,6 +34,8 @@ import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 import { getSignedUrl } from '../../backend/s3';
 
+import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
+
 var __DEBUG__ = false;
 
 export function fileIconFromTitle(title, color=null) {
@@ -212,10 +214,7 @@ export default class MediaManager extends React.Component {
 		              tooltip="Upload Media"
 		              onTouchTap={this.handleOpen}
 		          	>
-		              <MediaManagerIcon
-		                color={(this.state.open) ? iconHighlightColor :normalColor}
-		                hoverColor={iconHighlightColor}
-		              />
+		              <MediaManagerIcon {...AppbarIconStyle}/>
 		          	</IconButton>
 				);
 		}

@@ -341,15 +341,15 @@ class App extends React.Component {
 		return (
 			<div className="App">
 				<div className="Appbar-Container">
-					<Appbar />
+					<Appbar 
+						drawerOpened={timelineOrganizerDrawerToggle}
+						drawerOpenCallback={openTimelineOgranizerDrawer}
+	  					drawerCloseCallback={closeTimelineOgranizerDrawer}
+					/>
 				</div>
 	  			<div className="App-Main-Container">
 	  				<TimelineNodeOrganizer
 	  					open={timelineOrganizerDrawerToggle}
-	  					width={timelineOrganizerDrawerWidth}
-	  					openCallback={openTimelineOgranizerDrawer}
-	  					closeCallback={closeTimelineOgranizerDrawer}
-	  					setWidthCallback={setTimelineOrangizerWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
@@ -361,7 +361,7 @@ class App extends React.Component {
 								timelineEditorDrawerToggle,
 								timelineEditorDrawerWidth),
 	  					 	margin: '0 auto',
-						 	backgroundColor: (getFullScreenState()) ? 'black' : 'rgb(232, 232, 232)',
+						 	backgroundColor: (getFullScreenState()) ? 'black' : '#F0F0F0',
 						 	height: "100%"
 	  					}}
 	  				>

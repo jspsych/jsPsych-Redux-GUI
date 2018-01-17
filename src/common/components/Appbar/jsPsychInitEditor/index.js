@@ -19,6 +19,10 @@ import CodeEditor from '../../CodeEditor';
 import { renderDialogTitle } from '../../gadgets';
 import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
+import AppbarTheme from '../theme.js';
+
+const style = AppbarTheme.InitEditor;
+
 export default class jsPsychInitEditor extends React.Component {
   state = {
     open: false
@@ -95,10 +99,7 @@ export default class jsPsychInitEditor extends React.Component {
               tooltip="Init Properties Setting"
               onTouchTap={this.handleOpen}
           >
-              <InitSettingIcon 
-                color={(this.state.open) ? iconHighlightColor :normalColor}
-                hoverColor={iconHighlightColor}
-              />
+              <InitSettingIcon {...style.icon}/>
           </IconButton>
           <Dialog
             contentStyle={{minHeight: 500}}
