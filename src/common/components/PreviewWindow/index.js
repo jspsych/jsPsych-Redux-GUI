@@ -18,6 +18,8 @@ import GeneralTheme from '../theme.js';
 
 const colors = GeneralTheme.colors;
 
+export const PreviewWindowContainerWidth = 0.9;
+
 const style = {
   Toolbar: {
     flexBasis: '40px',
@@ -36,7 +38,7 @@ const style = {
     alignItems: 'center'
   },
   PreviewWindowContainer: {
-    width: "90%",
+    width: `${PreviewWindowContainerWidth * 100}%`,
     flexGrow: 1,
     display: 'flex',
     justifyContent: 'center',
@@ -63,12 +65,6 @@ const style = {
 }
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';
-
-const Preview_Window_Container_Id = "Preview_Window_Container";
-
-export const getMaxPreviewWidth = () => (document.querySelector(`#${Preview_Window_Container_Id}`).offsetWidth);
-
-export const getMaxPreviewHeight = () => (document.querySelector(`#${Preview_Window_Container_Id}`).offsetHeight);
 
 export const getFullScreenState = () => (
   document.fullscreenElement ||
@@ -215,11 +211,12 @@ export default class PreviewWindow extends React.Component {
       zoomScale,
       zoomWidth,
       zoomHeight,
+      sizeRef
     } = this.props;
 
 		return (
       <div style={style.PreviewWindow}>
-          <div style={style.PreviewWindowContainer} id={Preview_Window_Container_Id} >
+          <div style={style.PreviewWindowContainer} ref={sizeRef}>
             <Paper  id="jsPsych-Layer"
                     style={{
                       ...style.jsPsychLayer,

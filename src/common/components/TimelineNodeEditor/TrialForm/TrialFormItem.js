@@ -16,6 +16,8 @@ import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import {
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
+  cyan500 as trueColor,
+  pink500 as falseColor
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
@@ -34,8 +36,8 @@ const EnumPluginType = jsPsych.plugins.parameterType;
 import GeneralTheme from '../../theme.js';
 
 const hoverColor = GeneralTheme.colors.secondary;
-const trueColor = GeneralTheme.colors.primaryDeep;
-const falseColor = GeneralTheme.colors.secondaryDeep;
+// const trueColor = GeneralTheme.colors.primaryDeep;
+// const falseColor = GeneralTheme.colors.secondaryDeep;
 
 export const labelStyle = {
 	paddingTop: 15,

@@ -6,7 +6,7 @@ import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
-import { getFullScreenState, getMaxPreviewWidth, getMaxPreviewHeight } from './PreviewWindow';
+import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
 import Notification from '../containers/Notification';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
@@ -58,9 +58,7 @@ class App extends React.Component {
 
 		this.state = {
 			timelineOrganizerDrawerToggle: true,
-			timelineOrganizerDrawerWidth: OrganizerWidth,
 			timelineEditorDrawerToggle: true,
-			timelineEditorDrawerWidth: EditorWidth,
 			zoomScale: 1,
 			zoomWidth: null,
 			zoomHeight: null,
@@ -75,9 +73,15 @@ class App extends React.Component {
 				zoomHeight,
 				zoomWidthByUser,
 				zoomHeightByUser,
+				timelineOrganizerDrawerToggle : organizerOpened,
+				timelineEditorDrawerToggle: editorOpened
 			} = this.state;
-			let maxWidth = getMaxPreviewWidth(),
-				maxHeight = getMaxPreviewHeight();
+
+			let left = organizerOpened ? OrganizerWidth : 0,
+				right = editorOpened ? EditorWidth : 0,
+				mainBodyWidth = this.AppPage.clientWidth - left - right,
+				maxWidth = mainBodyWidth * PreviewWindowContainerWidth,
+				maxHeight = this.previewWindow.clientHeight;
 
 			return {
 				zoomWidthByUser: limitToMax(zoomWidthByUser, maxWidth),
@@ -96,23 +100,19 @@ class App extends React.Component {
 		}
 
 		this.openTimelineOgranizerDrawer = () => {
-			this.setState({ timelineOrganizerDrawerToggle: true, });
-			this.updateMaxSize();
+			this.setState({ timelineOrganizerDrawerToggle: true, }, this.updateMaxSize);
 		}
 
 		this.closeTimelineOgranizerDrawer = () => {
-			this.setState({ timelineOrganizerDrawerToggle: false, });
-			this.updateMaxSize();
+			this.setState({ timelineOrganizerDrawerToggle: false, }, this.updateMaxSize);
 		}
 
 		this.openTimelineEditorDrawer = () => {
-			this.setState({ timelineEditorDrawerToggle: true, });
-			this.updateMaxSize();
+			this.setState({ timelineEditorDrawerToggle: true, }, this.updateMaxSize);
 		}
 
 		this.closeTimelineEditorDrawer = () => {
-			this.setState({ timelineEditorDrawerToggle: false, });
-			this.updateMaxSize();
+			this.setState({ timelineEditorDrawerToggle: false, }, this.updateMaxSize);
 		}
 
 		this.setZoomWidth = (e) => {
@@ -227,10 +227,11 @@ class App extends React.Component {
 			setZoomHeight,
 			setZoomWidth,
 			setDisplayZoom,
+			updateMaxSize
 		} = this;
 
 		return (
-			<div className="App" style={style.App}>
+			<div className="App" style={style.App} ref={el => this.AppPage = el}>
 				<div className="Appbar-Container" style={style.AppbarContainer}>
 					<Appbar 
 						drawerOpened={timelineOrganizerDrawerToggle}
@@ -243,6 +244,7 @@ class App extends React.Component {
 	  					open={timelineOrganizerDrawerToggle}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
+	  					updateMaxSize={updateMaxSize}
 	  				/>
 	  				<div className="App-Main-Preivew"
 	  					id="main-body"
@@ -263,6 +265,7 @@ class App extends React.Component {
 		  						zoomScale={zoomScale}
 		  						zoomWidth={zoomWidth}
 		  						zoomHeight={zoomHeight}
+		  						sizeRef={el => this.previewWindow = el}
 		  				/>
 	  				</div>
 	  				<TimelineNodeEditor 
@@ -270,6 +273,7 @@ class App extends React.Component {
 	  					width={timelineEditorDrawerWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
+	  					updateMaxSize={updateMaxSize}
 	  				/>
 	  			</div>
 	  			<Notification />
