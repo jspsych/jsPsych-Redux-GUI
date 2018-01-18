@@ -37,7 +37,7 @@ const theme = {
 				color: colors.font
 			},
 			underlineFocusStyle: {
-				borderColor: colors.highlightColor
+				borderColor: colors.primaryDeep
 			}
 		},
 		text: {

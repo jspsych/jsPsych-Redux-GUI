@@ -348,7 +348,7 @@ export default class ArrayEditor extends React.Component {
 					onClick={this.handleOpen}
 					tooltip="Click to edit"
 				>
-					<ArrayIcon hoverColor={hoverColor}/>
+					<ArrayIcon color='#4D4D4D' hoverColor={hoverColor}/>
 				</IconButton>
 				<Dialog
 					open={open}
