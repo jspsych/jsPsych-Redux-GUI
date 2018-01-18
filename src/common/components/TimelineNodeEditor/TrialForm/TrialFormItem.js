@@ -7,8 +7,6 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
 import BoxUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
@@ -16,13 +14,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import {
-  green500 as checkColor,
-  cyan500 as boxCheckColor,
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
-  cyan500 as hoverColor,
-  cyan500 as trueColor,
-  pink500 as falseColor
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
@@ -37,6 +30,12 @@ import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/Trial
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
+
+import GeneralTheme from '../../theme.js';
+
+const hoverColor = GeneralTheme.colors.secondary;
+const trueColor = GeneralTheme.colors.primaryDeep;
+const falseColor = GeneralTheme.colors.secondaryDeep;
 
 export const labelStyle = {
 	paddingTop: 15,
@@ -123,7 +122,13 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 		floatingLabelText: parameterInfo.pretty_name,
 		errorText: error ? 'This parameter is required.' : '',
 		floatingLabelFixed: true,
-		title: parameterInfo.description
+		title: parameterInfo.description,
+		floatingLabelFocusStyle: {
+			color: GeneralTheme.colors.secondary
+		},
+		underlineFocusStyle: {
+			borderColor: GeneralTheme.colors.secondary
+		}
 	}
 }
 
@@ -476,7 +481,7 @@ export default class TrialFormItem extends React.Component {
 				tooltip="All Keys"
 				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
-				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BoxUncheckIcon />}
+				{(isAllKey) ? <BoxCheckIcon color={GeneralTheme.colors.primary} /> : <BoxUncheckIcon />}
 			</IconButton>
 		);
 
@@ -539,6 +544,7 @@ export default class TrialFormItem extends React.Component {
 		    	onChange={(event, index, value) => {
 		    		this.props.setText(param, value);
 		    	}}
+		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
 		    	{...props}
 		    >
 		    	{
@@ -575,6 +581,7 @@ export default class TrialFormItem extends React.Component {
 				onChange={(event, index, value) => {
 		    		this.props.setMedia(param, value);
 		    	}}
+		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
 			>
 				{this.props.filenames.map(
 					filename => {

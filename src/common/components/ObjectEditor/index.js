@@ -28,6 +28,7 @@ import { ParameterMode, createComplexDataObject } from '../../reducers/Experimen
 import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
+import GeneralTheme from '../theme.js';
 
 // const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
@@ -480,15 +481,13 @@ export default class ObjectEditor extends React.Component {
 		let { objectValues, objectKeys, open } = this.state;
 		let actions = [
 			<FlatButton
-				secondary={true}
 				label="Cancel"
-				labelStyle={{textTransform: "none",}}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondary}}
 				onClick={handleClose}
 			/>,
 			<FlatButton 
-				primary={true}
 				label="Finish"
-				labelStyle={{textTransform: "none",}}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
 				onClick={onSubmit}
 			/>
 		]
@@ -498,7 +497,7 @@ export default class ObjectEditor extends React.Component {
 				<MenuItem 
 					onClick={this.handleOpen} 
 					primaryText="[Data Object]" 
-					style={{color: fixedTextColor}}
+					style={{color: GeneralTheme.colors.primary}}
 					title="Click to edit"
 				/>
 				<Dialog
@@ -520,7 +519,7 @@ export default class ObjectEditor extends React.Component {
 						style={{width: 35, height: 35, padding: 10}}
 						onClick={copyObj}
 					>
-						<CopyIcon hoverColor={hoverColor} />
+						<CopyIcon {...GeneralTheme.Icon} />
 					</IconButton>
 					<IconButton 
 						tooltip="Paste"
@@ -528,7 +527,7 @@ export default class ObjectEditor extends React.Component {
 						style={{width: 35, height: 35, padding: 10}}
 						onClick={paste}
 					>
-						<PasteIcon hoverColor={hoverColor} />
+						<PasteIcon {...GeneralTheme.Icon} />
 					</IconButton>
 				</div>
 				<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = {`}</p>
@@ -546,6 +545,7 @@ export default class ObjectEditor extends React.Component {
 				<div style={{paddingTop: 15}}>
 				<FloatingActionButton 
 					mini={true} 
+					backgroundColor={GeneralTheme.colors.primaryDeep}
 					onClick={addKeyPair}
 				>
       				<ContentAdd />

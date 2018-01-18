@@ -35,6 +35,8 @@ import Notification from '../../containers/Notification';
 import { getSignedUrl } from '../../backend/s3';
 
 import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
+import GeneralTheme from '../theme.js';
+
 
 var __DEBUG__ = false;
 
@@ -204,7 +206,7 @@ export default class MediaManager extends React.Component {
 						onClick={this.handleOpen}
 						tooltip="Insert Media"
 					>
-						<Add hoverColor={hoverColor} color={iconColor}/>
+						<Add color='#4D4D4D' hoverColor={GeneralTheme.colors.secondary}/>
 					</IconButton>
 				);
 			case MediaManagerMode.upload:
@@ -223,7 +225,7 @@ export default class MediaManager extends React.Component {
 	renderActions = () => {
 		const deleteButton = (<FlatButton
 				label="Delete"
-				labelStyle={{textTransform: "none", color: 'red'}}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
 				onClick={this.handleDelete}
 			/>);
 		switch(this.props.mode) {
@@ -232,7 +234,7 @@ export default class MediaManager extends React.Component {
 				return [
 				<FlatButton
 					label="Insert"
-					labelStyle={{textTransform: "none", color: 'blue'}}
+					labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
 					onClick={this.insertFile}
 				/>,
 				deleteButton
@@ -245,7 +247,7 @@ export default class MediaManager extends React.Component {
 			            label="Close"
 			            primary={true}
 			            keyboardFocused={true}
-			            labelStyle={{textTransform: "none",}}
+			            labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
 			            onClick={this.handleClose}
 			        />
 				]
@@ -306,7 +308,7 @@ export default class MediaManager extends React.Component {
 						style={{flexBasis: '48px'}}
 						onClick={() => {this.handleSelect(i)}}
 						>
-						{this.state.selected[i] ? <CheckYesIcon color={checkColor}/> : <CheckNoIcon color={checkColor}/>}
+						{this.state.selected[i] ? <CheckYesIcon color={GeneralTheme.colors.primary}/> : <CheckNoIcon color={GeneralTheme.colors.primary}/>}
 					</IconButton>
 				</div>
 				)
@@ -351,8 +353,8 @@ export default class MediaManager extends React.Component {
 			      				<div style={{display: 'flex'}}>
 									<div style={{paddingTop: 8, paddingRight: 10}}>
 										{(this.props.mode === MediaManagerMode.upload) ?
-											<MediaManagerIcon color={titleIconColor} />:
-											<Media color={titleIconColor}/>
+											<MediaManagerIcon color={GeneralTheme.colors.primaryDeep} />:
+											<Media color={GeneralTheme.colors.primaryDeep}/>
 										}
 									</div>
 									<div style={{fontSize: 20,}}>

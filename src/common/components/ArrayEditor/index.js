@@ -16,7 +16,6 @@ import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import {
-  cyan500 as hoverColor,
   grey100 as toolbarColor,
   pink500 as clearColor,
   orange500 as fixedTextColor,
@@ -29,7 +28,9 @@ import { ParameterMode, createComplexDataObject } from '../../reducers/Experimen
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
 import CodeEditor from '../CodeEditor';
+import GeneralTheme from '../theme.js';
 
+const hoverColor = GeneralTheme.colors.secondary;
 
 const jsPysch_Builder_Array_Storage = "jsPsych_builder_array_clipboard";
 

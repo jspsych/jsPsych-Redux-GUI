@@ -13,12 +13,14 @@ import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
 // import DialogIcon from 'material-ui/svg-icons/content/create';
 import {
-  cyan500 as hoverColor,
   grey800 as normalColor,
   yellow500 as checkColor,
   // blue500 as titleIconColor,
 } from 'material-ui/styles/colors';
 import { renderDialogTitle } from '../gadgets';
+import GeneralTheme from '../theme.js';
+
+const hoverColor = GeneralTheme.colors.secondary;
 
 export default class CodeEditor extends React.Component {
   static propTypes = { 

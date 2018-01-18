@@ -17,9 +17,11 @@ import {
 	cyan500 as checkColor,
 	// blue500 as titleIconColor,
 	yellow500 as checkStarColor,
-	cyan500 as hoverColor
 } from 'material-ui/styles/colors';
 
+import GeneralTheme from '../../theme.js';
+
+const hoverColor = GeneralTheme.colors.secondary;
 
 import { renderDialogTitle } from '../../gadgets';
 
