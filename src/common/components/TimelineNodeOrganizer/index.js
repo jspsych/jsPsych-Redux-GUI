@@ -30,6 +30,7 @@ const style = {
 	TimelineNodeOrganizer: (open) => ({
 		width: (open) ? `${WIDTH}px` : "0px",
 		flexBasis: 'auto',
+		flexShrink: 0,
 		'WebkitTransition': 'all 0.4s ease',
 		'MozTransition': 'all 0.4s ease',
 		transition: 'all 0.4s ease',

@@ -8,17 +8,6 @@ html, body {
     height: 100%;
 }
 
-.Responsive-input::-webkit-outer-spin-button,
-.Responsive-input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-}
-
-.Responsive-input {
-	-moz-appearance:textfield;
-}
-
 .react-context-menu {
     min-width: 160px;
     outline: none;

@@ -6,10 +6,10 @@ import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
-import { getFullScreenState } from './PreviewWindow';
+import { getFullScreenState, getMaxPreviewWidth, getMaxPreviewHeight } from './PreviewWindow';
 import Notification from '../containers/Notification';
-import { WIDTH as DEFAULT_TIMELINE_EDITOR_WIDTH } from './TimelineNodeEditor';
-import { WIDTH as DEFAULT_TIMELINE_ORGANIZER_WIDTH } from './TimelineNodeOrganizer';
+import { WIDTH as EditorWidth } from './TimelineNodeEditor';
+import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
 
 import GeneralTheme from './theme.js';
 
@@ -37,19 +37,19 @@ const style = {
 		flexGrow: 1,
 		backgroundColor: colors.background,
 		height: "100%",
-		overflow: 'auto',
+		overflow: 'hidden',
 		display: 'flex',
-		flexDirection: 'column'
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'center'
 	}
 }
 
-const limitToMax = (v, maxV) => ((v > maxV) ? maxV : v);
+const isValidSize = (v) => (v !== null && v !== undefined && v > 0);
+const limitToMax = (v, maxV) => (!isValidSize(v) || v > maxV ? maxV : v);
 
-const checkValidSize = (s) => {
-	if (s < 0 || s > 9999)
-		return false;
-	return true;
-}
+const checkValidSize = (s) => (s > 0);
+
 
 class App extends React.Component {
 
@@ -58,180 +58,149 @@ class App extends React.Component {
 
 		this.state = {
 			timelineOrganizerDrawerToggle: true,
-			timelineOrganizerDrawerWidth: DEFAULT_TIMELINE_ORGANIZER_WIDTH,
+			timelineOrganizerDrawerWidth: OrganizerWidth,
 			timelineEditorDrawerToggle: true,
-			timelineEditorDrawerWidth: DEFAULT_TIMELINE_EDITOR_WIDTH,
+			timelineEditorDrawerWidth: EditorWidth,
 			zoomScale: 1,
+			zoomWidth: null,
+			zoomHeight: null,
+			zoomWidthByUser: null,
+			zoomHeightByUser: null,
+			displayZoom: -1,
+		}
+
+		this.getMaxSize = () => {
+			const {
+				zoomWidth,
+				zoomHeight,
+				zoomWidthByUser,
+				zoomHeightByUser,
+			} = this.state;
+			let maxWidth = getMaxPreviewWidth(),
+				maxHeight = getMaxPreviewHeight();
+
+			return {
+				zoomWidthByUser: limitToMax(zoomWidthByUser, maxWidth),
+				zoomHeightByUser: limitToMax(zoomHeightByUser, maxHeight),
+				zoomWidth: limitToMax(zoomWidth, maxWidth),
+				zoomHeight: limitToMax(zoomHeight, maxHeight),
+				maxZoomWidth: maxWidth,
+				maxZoomHeight: maxHeight,
+			}
+		}
+
+		this.updateMaxSize = () => {
+			this.setState({
+				...this.getMaxSize()
+			})
 		}
 
 		this.openTimelineOgranizerDrawer = () => {
-			let newResWidth = document.querySelector('#main-body').offsetWidth;
-			let maxZoomWidth = newResWidth;
-			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
-			this.setState({
-				timelineOrganizerDrawerToggle: true,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
+			this.setState({ timelineOrganizerDrawerToggle: true, });
+			this.updateMaxSize();
 		}
 
 		this.closeTimelineOgranizerDrawer = () => {
-			let newResWidth = document.querySelector('#main-body').offsetWidth;
-			let maxZoomWidth = newResWidth;
-			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
-			this.setState({
-				timelineOrganizerDrawerToggle: 0,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
+			this.setState({ timelineOrganizerDrawerToggle: false, });
+			this.updateMaxSize();
 		}
 
 		this.openTimelineEditorDrawer = () => {
-			let newResWidth = document.querySelector('#main-body').offsetWidth;
-			let maxZoomWidth = newResWidth;
-			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
-			this.setState({
-				timelineEditorDrawerToggle: true,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
+			this.setState({ timelineEditorDrawerToggle: true, });
+			this.updateMaxSize();
 		}
 
 		this.closeTimelineEditorDrawer = () => {
-			let newResWidth = document.querySelector('#main-body').offsetWidth;
-			let maxZoomWidth = newResWidth;
-			newResWidth = limitToMax(this.state.zoomWidthByUser, maxZoomWidth);
-			this.setState({
-				timelineEditorDrawerToggle: false,
-				zoomWidth: newResWidth,
-				zoomWidthByUser: newResWidth,
-				maxZoomWidth: maxZoomWidth,
-			});
-		}
-
-		this.setZoomScale = (op) => {
-			let scale;
-			switch (op) {
-				case "0":
-					scale = 0.25;
-					break;
-				case "1":
-					scale = 0.5;
-					break;
-				case "2":
-					scale = 0.75;
-					break;
-				case "3":
-					scale = 1;
-					break;
-				case "4":
-					scale = 1.25;
-					break;
-				case "5":
-					scale = 1.5;
-					break;
-				default:
-					scale = 1;
-			}
-
-			let desiredW = this.state.zoomWidthByUser;
-			let desiredH = this.state.zoomHeightByUser;
-			let newZoomWidth = Math.round(desiredW * scale);
-			let newZoomHeight = Math.round(desiredH * scale);
-
-			while (newZoomWidth > this.state.maxZoomWidth) {
-				desiredW -= 1;
-				newZoomWidth = Math.round(desiredW * scale);
-			}
-			while (newZoomHeight > this.state.maxZoomHeight) {
-				desiredH -= 1;
-				newZoomHeight = Math.round(desiredH * scale);
-			}
-
-			this.setState({
-				zoomScale: scale,
-				zoomWidth: (scale < 1) ? this.state.zoomWidth : newZoomWidth,
-				zoomWidthByUser: (scale < 1) ? Math.round(this.state.zoomWidthByUser / (scale/this.state.zoomScale)) : desiredW,
-				zoomHeight: (scale < 1) ? this.state.zoomHeight : newZoomHeight,
-				zoomHeightByUser: (scale < 1) ? Math.round(this.state.zoomHeightByUser / (scale/this.state.zoomScale)) :desiredH,
-			});
-		}
-
-		this.onInputZoomHeight = (e) => {
-			let newValue = parseFloat(e.target.value);
-			if (checkValidSize(newValue)) {
-				this.setState({
-					zoomHeightByUser: newValue
-				})
-			}
+			this.setState({ timelineEditorDrawerToggle: false, });
+			this.updateMaxSize();
 		}
 
 		this.setZoomWidth = (e) => {
 			if (e.which === 13) {
-				let scale = this.state.zoomScale;
-				let desired = this.state.zoomWidthByUser;
-				let newZoomWidth = desired * scale;
-				while (newZoomWidth > this.state.maxZoomWidth) {
-					scale -= 0.01;
-					newZoomWidth = desired * scale;
-				}
-				newZoomWidth = Math.round(newZoomWidth);
-				this.setState({
-					zoomWidth: newZoomWidth,
-					zoomScale: scale
-				})
-			}
-		}
+				let {
+					zoomScale: scale,
+					zoomWidthByUser: desired,
+					maxZoomWidth: max
+				} = this.state;
 
-		this.onInputZoomWidth = (e) => {
-			let newValue = parseFloat(e.target.value);
-			if (checkValidSize(newValue)) {
+				let newSize = desired * scale;
+				if (newSize > max) scale = max / newSize;
 				this.setState({
-					zoomWidthByUser: newValue
+					zoomWidth: limitToMax(newSize, max),
+					zoomScale: scale,
+					displayZoom: -1,
 				})
 			}
 		}
 
 		this.setZoomHeight = (e) => {
 			if (e.which === 13) {
-				let scale = this.state.zoomScale;
-				let desired = this.state.zoomHeightByUser;
-				let newZoomHeight = desired * scale;
-				while (newZoomHeight > this.state.maxZoomHeight) {
-					scale -= 0.01;
-					newZoomHeight = desired * scale;
-				}
+				let {
+					zoomScale: scale,
+					zoomHeightByUser: desired,
+					maxZoomHeight: max
+				} = this.state;
+
+				let newSize = desired * scale;
+				if (newSize > max) scale = max / newSize;
 				this.setState({
-					zoomHeight: newZoomHeight,
-					zoomScale: scale
+					zoomHeight: limitToMax(newSize, max),
+					zoomScale: scale,
+					displayZoom: -1,
 				})
 			}
 		}
 
-		this.setZoomMaxHeight = () => {
-			let maxHeight = document.querySelector('#main-body').offsetHeight;
+		this.setZoomScale = (scale) => {
 			let {
-				zoomHeight,
-				zoomHeightByUser
+				zoomWidthByUser,
+				zoomHeightByUser,
+				zoomScale
 			} = this.state;
-			zoomHeight = limitToMax(zoomHeight, maxHeight);
-			zoomHeightByUser = limitToMax(zoomHeightByUser, maxHeight);
+
 			this.setState({
-				maxZoomHeight: maxHeight,
-				zoomHeight: zoomHeight,
-				zoomHeightByUser: zoomHeightByUser
-			})
+				zoomScale: scale,
+				zoomWidthByUser: Math.round(zoomWidthByUser / (scale/zoomScale)),
+				zoomHeightByUser: Math.round(zoomHeightByUser / (scale/zoomScale)),
+			});
 		}
 
-		this.onSelect = (e) => {
-			let op = e.target.value;
-			if (op >= 0) {
-				this.setZoomScale(op);
+		this.onInputZoomHeight = (e) => {
+			if (isValidSize(e.target.value)) {
+				this.setState({
+					zoomHeightByUser: e.target.value
+				})
 			}
 		}
+
+		this.onInputZoomWidth = (e) => {
+			if (isValidSize(e.target.value)) {
+				this.setState({
+					zoomWidthByUser: e.target.value
+				})
+			}
+		}
+
+		this.setDisplayZoom = (event, index, value) => {
+			this.setState({
+				displayZoom: value
+			})
+			if (value >= 0) {
+				this.setZoomScale(value);
+			}
+		}
+	}
+
+	componentWillMount() {
+		window.addEventListener("resize", this.updateMaxSize);
+	}
+
+	componentDidMount() {
+		this.updateMaxSize();
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("resize", this.updateMaxSize);
 	}
 
 	render() {
@@ -245,6 +214,7 @@ class App extends React.Component {
 			zoomHeight,
 			zoomWidthByUser,
 			zoomHeightByUser,
+			displayZoom
 		} = this.state;
 
 		const {
@@ -256,7 +226,7 @@ class App extends React.Component {
 			onInputZoomWidth,
 			setZoomHeight,
 			setZoomWidth,
-			onSelect,
+			setDisplayZoom,
 		} = this;
 
 		return (
@@ -280,15 +250,14 @@ class App extends React.Component {
 	  				>
 		  				<ZoomBar
 		  						zoomScale={zoomScale}
-		  						zoomWidth={zoomWidth}
-		  						zoomHeight={zoomHeight}
 		  						zoomHeightByUser={zoomHeightByUser}
 		  						zoomWidthByUser={zoomWidthByUser}
+		  						displayZoom={displayZoom}
 		  						setZoomHeight={setZoomHeight}
 		  						setZoomWidth={setZoomWidth}
 		  						onInputZoomHeight={onInputZoomHeight}
 		  						onInputZoomWidth={onInputZoomWidth}
-		  						onSelect={onSelect}
+		  						setDisplayZoom={setDisplayZoom}
 		  				/>
 		  				<PreviewWindow
 		  						zoomScale={zoomScale}

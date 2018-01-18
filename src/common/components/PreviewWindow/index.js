@@ -14,13 +14,61 @@ import FullScreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
 import { Welcome } from '../../backend/deploy';
 
-import {
-  cyan600 as hoverColor,
-  // grey600 as textColor
-} from 'material-ui/styles/colors';
+import GeneralTheme from '../theme.js';
 
+const colors = GeneralTheme.colors;
+
+const style = {
+  Toolbar: {
+    flexBasis: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    flexShrink: 0
+  },
+  ToolbarIcon: {
+    hoverColor: colors.secondary
+  },
+  PreviewWindow: {
+    flexGrow: 1,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  PreviewWindowContainer: {
+    width: "90%",
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  jsPsychLayer: {
+    overflow: 'hidden'
+  },
+  jsPsychDisplayElement: (zoomScale) => ({
+    width: "100%",
+    height: "100%",
+    overflow: 'auto',
+    transform: `scale(${zoomScale})`,
+  }),
+  FullScreenToolbarContainer: {
+    position: 'fixed',
+    bottom: 0,
+    margin: '0 auto',
+    width: "100%",
+  },
+  FullScreenGhostToolbar: {
+    width: "100%",
+    height: 30
+  }
+}
 
 const runtime_script_ele_id = 'Runtime-Script-Tag';
+
+const Preview_Window_Container_Id = "Preview_Window_Container";
+
+export const getMaxPreviewWidth = () => (document.querySelector(`#${Preview_Window_Container_Id}`).offsetWidth);
+
+export const getMaxPreviewHeight = () => (document.querySelector(`#${Preview_Window_Container_Id}`).offsetHeight);
 
 export const getFullScreenState = () => (
   document.fullscreenElement ||
@@ -55,10 +103,19 @@ const reload = () => {
   document.body.appendChild(script);
 }
 
+
 export default class PreviewWindow extends React.Component {
-  state = {
-    fullScreen: false,
-    showToolBar: false
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      fullScreen: false,
+      showToolBar: false,
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
   }
 
   componentWillMount() {
@@ -121,36 +178,30 @@ export default class PreviewWindow extends React.Component {
 	render() {
     let tooltipPosition = (this.state.fullScreen) ? 'top-center' : 'bottom-center';
     let previewToolBar = (
-      <div 
-        style={{marginTop: '5px', flexBasis: '40px'}}>
-                <Toolbar style={{height: "40px", maxWidth: 600, margin: '0 auto'}}>
-                  <ToolbarGroup style={{margin: '0 auto'}}>
-                      <IconButton 
-                        tooltip="Play all"
-                        tooltipPosition={tooltipPosition}
-                        onClick={()=>{ this.props.playAll(load); }}
-                        >
-                        <Play hoverColor={hoverColor} />
-                      </IconButton>
-                      <IconButton 
-                        tooltip="Reload"
-                        tooltipPosition={tooltipPosition}
-                        onClick={reload}
-                        >
-                        <Refresh hoverColor={hoverColor} />
-                      </IconButton>
+      <div style={style.Toolbar}>
+          <IconButton 
+            tooltip="Play all"
+            tooltipPosition={tooltipPosition}
+            onClick={()=>{ this.props.playAll(load); }}
+            >
+            <Play {...style.ToolbarIcon} />
+          </IconButton>
+          <IconButton 
+            tooltip="Reload"
+            tooltipPosition={tooltipPosition}
+            onClick={reload}
+            >
+            <Refresh {...style.ToolbarIcon} />
+          </IconButton>
 
-                      <IconButton 
-                        tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
-                        onClick={this.toggleFullScreen}
-                        tooltipPosition={tooltipPosition}
-                        >
-                        {(!this.state.fullScreen) ? <FullScreen hoverColor={hoverColor} /> : <FullScreenExit hoverColor={hoverColor} />}
-                      </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
-          </div>
-    )
+          <IconButton 
+            tooltip={(!this.state.fullScreen) ? "Full screen" : "Exit full screen"}
+            onClick={this.toggleFullScreen}
+            tooltipPosition={tooltipPosition}
+            >
+            {(!this.state.fullScreen) ? <FullScreen {...style.ToolbarIcon} /> : <FullScreenExit {...style.ToolbarIcon} />}
+          </IconButton>
+      </div>)
 
                       //     <IconButton 
                       //   tooltip="Skip"
@@ -160,60 +211,42 @@ export default class PreviewWindow extends React.Component {
                       //   <Skip hoverColor={hoverColor} />
                       // </IconButton>
                       
-    const {
+    let {
       zoomScale,
       zoomWidth,
       zoomHeight,
     } = this.props;
+
 		return (
-        <div style={{
-              margin: 'auto', 
-              width: "90%",
-              height: "100%",
-              flexGrow: 1
-            }}
-            id="Preview_Window_Container"
-        >
-          <Paper  id="jsPsych-Layer"
-                  style={{
-                  width:  (!this.state.fullScreen) ? zoomWidth : "100%",
-                  height: (!this.state.fullScreen) ? zoomHeight : "100%", 
-                  margin: 'auto',
-                  overflow: 'hidden',
-                  }}
-                  zDepth={1}
-                  onClick={()=>{document.getElementById(jsPsych_Display_Element).focus();}}
-          >
-          <div
-            id={jsPsych_Display_Element}
-            style={{
-              width: "100%", 
-              height: "100%",
-              overflow: 'auto',
-              transform: `scale(${zoomScale})`,
-            }}
-            />
-            {(this.state.fullScreen) ?
-              <div 
-                onMouseEnter={() => { this.setState({showToolBar: true}); }}
-                onMouseLeave={() => { this.setState({showToolBar: false}); }}
-                style={{
-                  position: 'fixed', 
-                  bottom: 0, 
-                  margin: 'auto', 
-                  width: "100%",
-                }}
-              >
-                {(this.state.showToolBar) ? 
-                  previewToolBar : 
-                  <div style={{width: "100%", height: 30}}/>
-                }
-              </div> :
-                null
+      <div style={style.PreviewWindow}>
+          <div style={style.PreviewWindowContainer} id={Preview_Window_Container_Id} >
+            <Paper  id="jsPsych-Layer"
+                    style={{
+                      ...style.jsPsychLayer,
+                      width:  (!this.state.fullScreen) ? zoomWidth : "100%",
+                      height: (!this.state.fullScreen) ? zoomHeight : "100%", 
+                    }}
+                    zDepth={1}
+                    onClick={()=>{document.getElementById(jsPsych_Display_Element).focus();}}
+            >
+              <div id={jsPsych_Display_Element} style={style.jsPsychDisplayElement(zoomScale)} />
+              {(this.state.fullScreen) ?
+                  <div 
+                    onMouseEnter={() => { this.setState({showToolBar: true}); }}
+                    onMouseLeave={() => { this.setState({showToolBar: false}); }}
+                    style={style.FullScreenToolbarContainer}
+                  >
+                    {(this.state.showToolBar) ? 
+                      previewToolBar : 
+                      <div style={style.FullScreenGhostToolbar}/>
+                    }
+                  </div> :
+                  null
               }
-          </Paper>
+            </Paper>
+          </div>
           {previewToolBar}
-        </div>
+      </div>
   		);
 	}
 }
