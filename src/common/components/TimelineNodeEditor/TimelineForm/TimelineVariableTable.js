@@ -73,52 +73,54 @@ const DeleteColumnIcon = (props) => (
 )
 
 class HeaderCell extends React.Component {
-	defaultProps = {
-		name: "",
+	constructor(props) {
+		super(props);
+		this.state = {
+			edit: false,
+			value: this.props.name
+		}
 
-	}
+		this.startEdit = () => {
+			this.setState({
+				edit: true
+			})
+		}
 
-	state = {
-		edit: false,
-		value: this.props.name
-	}
+		this.closeEdit = () => {
+			this.setState({
+				edit: false
+			})
+			this.onCommit();
+		}
 
-	startEdit = () => {
-		this.setState({
-			edit: true
-		})
-	}
+		this.setValue = (e) => {
+			this.setState({
+				value: e.target.value
+			})
+		}
 
-	closeEdit = () => {
-		this.setState({
-			edit: false
-		})
-		this.onCommit();
-	}
-
-	setValue = (e) => {
-		this.setState({
-			value: e.target.value
-		})
-	}
-
-	onCommit = () => {
-		if (this.state.value !== this.props.name) {
-			let newName = this.state.value;
-			let i = 0;
-			while (!this.isValid(newName)) {
-				if (newName.trim() === "") {
-					newName = `H${i++}`;
-				} else {
-					newName = `${this.state.value}${++i}`;
+		this.onCommit = () => {
+			if (this.state.value !== this.props.name) {
+				let newName = this.state.value;
+				let i = 0;
+				while (!this.isValid(newName)) {
+					if (newName.trim() === "") {
+						newName = `H${i++}`;
+					} else {
+						newName = `${this.state.value}${++i}`;
+					}
 				}
+				this.props.onCommit(newName);
 			}
-			this.props.onCommit(newName);
+		}
+
+		this.isValid = (name) => {
+			return name.trim() !== "" && !this.props.hist[name];
 		}
 	}
 
-	isValid = (name) => {
-		return name.trim() !== "" && !this.props.hist[name];
+	defaultProps = {
+		name: "",
 	}
 
 	render() {
@@ -144,39 +146,38 @@ class HeaderCell extends React.Component {
 	}
 }
 
-function headerRenderer(props) {
-	return <HeaderCell {...props} />
-}
-
 class MyContextMenu extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.setEdittingCell = () => {
+			this.props.setEdittingCell({
+				row: this.props.rowIdx,
+				col: this.props.idx
+			})
+		}
+
+		this.onRowDelete = () => {
+			this.props.onRowDelete(this.props.rowIdx);
+		}
+
+		this.onColDelete = () => {
+			this.props.onColDelete(this.props.idx);
+		}
+
+		this.insertRowAbove = () => {
+			this.props.addRow(this.props.rowIdx);
+		}
+
+		this.insertRowBelow = () => {
+			this.props.addRow(this.props.rowIdx + 1);
+		}
+
+		this.addColumn = () => {
+			this.props.addColumn(this.props.idx);
+		}
+	}
 	
-	setEdittingCell = () => {
-		this.props.setEdittingCell({
-			row: this.props.rowIdx,
-			col: this.props.idx
-		})
-	}
-
-	onRowDelete = () => {
-		this.props.onRowDelete(this.props.rowIdx);
-	}
-
-	onColDelete = () => {
-		this.props.onColDelete(this.props.idx);
-	}
-
-	insertRowAbove = () => {
-		this.props.addRow(this.props.rowIdx);
-	}
-
-	insertRowBelow = () => {
-		this.props.addRow(this.props.rowIdx + 1);
-	}
-
-	addColumn = () => {
-		this.props.addColumn(this.props.idx);
-	}
-
 	render() {
 	    return (
 	    	<ContextMenu >
@@ -221,85 +222,81 @@ class MyContextMenu extends React.Component {
 }
 
 class CustomEditor extends React.Component {
-  state = {
-  	value: this.props.value
-  }
+	constructor(props) {
+		super(props);
 
-  getValue = () => {
-    return {
-      [this.props.column.key]: this.state.value
-    };
-  }
+		this.state = {
+	  		value: this.props.value
+	  	}
 
-  getInputNode = () => {
-    return this.refs.CustomEditorWrapper;
-  }
+	  	this.getValue = () => ({[this.props.column.key]: this.state.value});
 
-  getStyle = () => {
-    return {
-      width: '100%'
-    };
-  }
+	  	this.getInputNode = () => (this.refs.CustomEditorWrapper);
 
-  inheritContainerStyles() {
-    return true;
-  }
+		this.getStyle = () => ({
+			width: '100%'
+		});
 
-  handleOpen = () => {
-  	this.setState({
-  		open: true
-  	})
-  }
+		this.handleOpen = () => {
+			this.setState({
+				open: true
+			})
+		}
 
-  handleClose = () => {
-  	this.setState({
-  		open: false
-  	})
-  }
+		this.handleClose = () => {
+			this.setState({
+				open: false
+			})
+		}
 
-  setValue = (v) => {
-  	this.setState({
-  		value: Object.assign({}, this.state.value, {
-  			value: v
-  		})
-  	});
-  }
+		this.setValue = (v) => {
+			this.setState({
+				value: Object.assign({}, this.state.value, {
+					value: v
+				})
+			});
+		}
+	}
 
-  render() {
-  	let { value } = this.state;
-    return (
-      <div>
-        <div ref="CustomEditorWrapper">
-          {(value.mode === ParameterMode.USE_FUNC) ?
-          	<div style={{width: "80%"}}>
-	          	<TextField 
-	          		title="[Custom Code]" 
-	          		fullWidth={true}
-	          		style={{paddingLeft: "10%", height: 40,}}
-	          		inputStyle={{color: 'rgba(0, 0, 0, 0.3)', textAlign: 'center', fontSize: 14}}
-	          		id="Timeline-Variable-Table-Editor"
-	          		value="[Custom Code]" 
-	          		underlineShow={false}
-	          		disabled={true}
-	          	/>
-          	</div> :
-          	<div style={{width: "80%",}}>
-	          	<TextField 
-	          		title={(value.value === null) ? "" : value.value}
-	          		fullWidth={true}
-	          		style={{paddingLeft: "10%", height: 40}}
-	          		id="Timeline-Variable-Table-Editor"
-	          		value={(value.value === null) ? "" : value.value}
-	          		onChange={(e, v) => {
-	          			this.setValue(v);
-	          		}}
-	          	/>
-          	</div>
-          }
-        </div>
-      </div>
-    )
-  }
+	inheritContainerStyles() {
+		return true;
+	}
+
+	render() {
+	  	let { value } = this.state;
+	    return (
+	      <div>
+	        <div ref="CustomEditorWrapper">
+	          {(value.mode === ParameterMode.USE_FUNC) ?
+	          	<div style={{width: "80%"}}>
+		          	<TextField 
+		          		title="[Custom Code]" 
+		          		fullWidth={true}
+		          		style={{paddingLeft: "10%", height: 40,}}
+		          		inputStyle={{color: 'rgba(0, 0, 0, 0.3)', textAlign: 'center', fontSize: 14}}
+		          		id="Timeline-Variable-Table-Editor"
+		          		value="[Custom Code]" 
+		          		underlineShow={false}
+		          		disabled={true}
+		          	/>
+	          	</div> :
+	          	<div style={{width: "80%",}}>
+		          	<TextField 
+		          		title={(value.value === null) ? "" : value.value}
+		          		fullWidth={true}
+		          		style={{paddingLeft: "10%", height: 40}}
+		          		id="Timeline-Variable-Table-Editor"
+		          		value={(value.value === null) ? "" : value.value}
+		          		onChange={(e, v) => {
+		          			this.setValue(v);
+		          		}}
+		          	/>
+	          	</div>
+	          }
+	        </div>
+	      </div>
+	    )
+	}
 }
 
 class GridCell extends React.Component {
@@ -320,20 +317,23 @@ class GridCell extends React.Component {
 }
 
 class CodeEditor extends React.Component {
-	state = {
-		code: this.props.code,
+	constructor(props) {
+		super(props);
+		this.state = {
+			code: this.props.code,
+		}
+
+		this.onUpdate = (newCode) => {
+			this.setState({
+				code: newCode
+			});
+		}
 	}
 
 	componentDidMount() {
 		this.setState({
 			code: (this.props.code === null) ? "" : this.props.code
 		})
-	}
-
-	onUpdate = (newCode) => {
-		this.setState({
-			code: newCode
-		});
 	}
 
 	render() {
@@ -390,34 +390,38 @@ class CodeEditor extends React.Component {
 }
 
 class TimelineVariableTableOpener extends React.Component {
-	state = {
-		open: false
-	}
+	constructor(props) {
+		super(props);
 
-	handleOpen = () => {
-		this.setState({
-			open: true
-		})
-	}
-
-	handleClose = () => {
-		this.setState({
+		this.state = {
 			open: false
-		})
-	}
+		}
 
-	onRowDelete = () => {
-		let index = this.props.selectedCell.row !== null ? this.props.selectedCell.row : this.props.numRows - 1;
-		this.props.onRowDelete(index);
-		this.props.loseFocusCallback();
-	}
+		this.handleOpen = () => {
+			this.setState({
+				open: true
+			})
+		}
 
-	onColDelete = () => {
-		let index = this.props.selectedCell.col !== null ? this.props.selectedCell.col : this.props.numCols - 1;
-		this.props.onColDelete(index);
-		this.props.loseFocusCallback();
-	}
+		this.handleClose = () => {
+			this.setState({
+				open: false
+			})
+		}
 
+		this.onRowDelete = () => {
+			let index = this.props.selectedCell.row !== null ? this.props.selectedCell.row : this.props.numRows - 1;
+			this.props.onRowDelete(index);
+			this.props.loseFocusCallback();
+		}
+
+		this.onColDelete = () => {
+			let index = this.props.selectedCell.col !== null ? this.props.selectedCell.col : this.props.numCols - 1;
+			this.props.onColDelete(index);
+			this.props.loseFocusCallback();
+		}
+	}
+	
 	render() {
 		let { handleOpen, handleClose } = this;
 
@@ -430,20 +434,25 @@ class TimelineVariableTableOpener extends React.Component {
 	      // />,
 	    ];
 
+	    const iconSize = {
+	    	width: 36,
+	    	height: 36
+	    }
+
 	    const toolbar = (
 	    	<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
 	                  <ToolbarGroup firstChild={true}>
 	                    <IconButton
 	                    	tooltip="Insert Row"
 	                    	onClick={this.props.addRow}
-		                   	iconStyle={{width: 36, height: 36, color: tableAddColor}}
+		                   	iconStyle={{...iconSize, color: tableAddColor}}
 		                >
 		                    <AddRowIcon hoverColor={tableAddHoverColor}/>
 	                    </IconButton>
 	                    <IconButton
 	                    	tooltip="Delete Row"
 	                    	onClick={this.onRowDelete}
-		                   	iconStyle={{width: 36, height: 36, color: tableDelColor}}
+		                   	iconStyle={{...iconSize, color: tableDelColor}}
 		                >
 		                    <DeleteRowIcon hoverColor={tableDelHoverColor}/>
 	                    </IconButton>		
@@ -453,7 +462,7 @@ class TimelineVariableTableOpener extends React.Component {
 	                	<IconButton
 	                    	tooltip="Insert Column"
 	                    	onClick={this.props.addColumn}
-	                    	iconStyle={{width: 36, height: 36, color: tableAddColor}}
+	                    	iconStyle={{...iconSize, color: tableAddColor}}
 	                    >
 	                    	<AddColumnIcon hoverColor={tableAddHoverColor}/>
 	                    </IconButton>
@@ -461,7 +470,7 @@ class TimelineVariableTableOpener extends React.Component {
 	                    <IconButton
 	                    	tooltip="Delete Column"
 	                    	onClick={this.onColDelete}
-	                    	iconStyle={{width: 36, height: 36, color: tableDelColor}}
+	                    	iconStyle={{...iconSize, color: tableDelColor}}
 	                    >
 	                    	<DeleteColumnIcon hoverColor={tableDelHoverColor}/>
 	                    </IconButton>
@@ -516,82 +525,86 @@ export function createDataGridRows(timelineVariable) {
 }
 
 export default class TimelineVariableTable extends React.Component {
-	state = {
-		open: false,
-		edittingCell: null,
-		selectedCell: {row: null, col: null},
-	}
+	constructor(props) {
+		super(props);
 
-	rowGetter = (i) => {
-		return this.props.rows[i];
-	}
+		this.state = {
+			open: false,
+			edittingCell: null,
+			selectedCell: { row: null, col: null },
+		}
 
-	handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-		this.props.updateTimelineVariableRow(fromRow, toRow, updated);
-	}
+		this.rowGetter = (i) => {
+			return this.props.rows[i];
+		}
 
-	createDataGridColumn = () => {
-		let columns = [];
-		let { timeline_variables } = this.props;
-		if (timeline_variables.length < 1) return columns;
+		this.handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+			this.props.updateTimelineVariableRow(fromRow, toRow, updated);
+		}
 
-		// since in jspsych data form, rows are objects with
-		// same keys but possibly different values (see reducers/editor for detailed explanation)
-		let sampleRowObject = timeline_variables[0];
-		// generate table columns
-		let variables = Object.keys(sampleRowObject);
-		let hist = {};
-		variables.forEach((v) => { hist[v] = true });
-		for (let key of variables) {
-			columns.push({
-				key: key,
-				name: key,
-				resizable: true,
-				editable: true,
-				editor: CustomEditor,
-				formatter: GridCell,
-				width: 120,
-				headerRenderer: () => { 
-					return headerRenderer({
-						name: key,
-						onCommit: (newName) => {
-							this.props.updateTimelineVariableName(key, newName);
-						},
-						hist: hist
-					}); 
-				},
+		this.createDataGridColumn = () => {
+			let columns = [];
+			let { timeline_variables } = this.props;
+			if (timeline_variables.length < 1) return columns;
 
+			// since in jspsych data form, rows are objects with
+			// same keys but possibly different values (see reducers/editor for detailed explanation)
+			let sampleRowObject = timeline_variables[0];
+			// generate table columns
+			let variables = Object.keys(sampleRowObject);
+			let hist = {};
+			variables.forEach((v) => { hist[v] = true });
+			for (let key of variables) {
+				columns.push({
+					key: key,
+					name: key,
+					resizable: true,
+					editable: true,
+					editor: CustomEditor,
+					formatter: GridCell,
+					width: 120,
+					headerRenderer: () => (
+						<HeaderCell 
+							name={key}
+							onCommit={(newName) => {
+								this.props.updateTimelineVariableName(key, newName);
+							}}
+							hist={hist}
+						/>
+					),
+				});
+			}
+
+			return columns;
+		}
+
+		this.setEdittingCell = (data) => {
+			this.setState({
+				edittingCell: data,
+				open: true,
 			});
 		}
 
-		return columns;
-	}
+		this.setSelectedCell = (row, col) => {
+			this.setState({
+				selectedCell: {row: row, col: col}
+			});
+		}
 
-	setEdittingCell = (data) => {
-		this.setState({
-			edittingCell: data,
-			open: true,
-		});
-	}
+		this.loseFocus = () => {
+			this.setState({
+				selectedCell: {row: null, col: null}
+			})
+		}
 
-	setSelectedCell = (row, col) => {
-		this.setState({
-			selectedCell: {row: row, col: col}
-		});
+		this.handleCloseCodeEditor = () => {
+			this.setState({
+				open: false,
+				edittingCell: null
+			});
+		}
 	}
-
-	loseFocus = () => {
-		this.setState({
-			selectedCell: {row: null, col: null}
-		})
-	}
-
-	handleCloseCodeEditor = () => {
-		this.setState({
-			open: false,
-			edittingCell: null
-		});
-	}
+	
 
 	render() {
 	    let chosenCol, chosenCell;
@@ -629,51 +642,32 @@ export default class TimelineVariableTable extends React.Component {
 			        onCellSelected={(data) => {
 			        	this.setSelectedCell(data.rowIdx, data.idx);
 			        }}
-			        // onGridKeyDown={(e) => {
-			        // 	let { row, col } = this.state.selectedCell;
-			        // 	switch(e.which) {
-			        // 		// right arrow
-			        // 		case 39:
-			        // 			if (++col === columns.length) {
-			        // 				this.props.addColumn();
-			        // 			}
-			        // 			break;
-			        // 		// down arrow
-			        // 		case 40:
-			        // 			if (++row === this.props.rows.length) {
-			        // 				this.props.addRow();
-			        // 			}
-			        // 			break;
-			        // 		default:
-			        // 			break;
-			        // 	}
-			        // }}
 			        onGridRowsUpdated={this.handleGridRowsUpdated}
-			      />
-			      {(this.state.edittingCell !== null) ?
-		      	  	<CodeEditor
-		      	  		open={this.state.open}
-		      	  		code={chosenCell.func.code}
-		      	  		useFunc={chosenCell.mode === ParameterMode.USE_FUNC}
-		      	  		handleClose={this.handleCloseCodeEditor}
-		      	  		setParamMode={() => {
-		      	  			let { row, col } = this.state.edittingCell;
-		      	  			this.props.setParamMode(row, col);
-		      	  		}}
-		      	  		title={`${columns[this.state.edittingCell.col].name}, row ${this.state.edittingCell.row}`}
-		      	  		setCode={(code) => {
-		      	  			let { row, col } = this.state.edittingCell;
-		      	  			this.props.setCode(row, col, code);
-		      	  		}}
-		      	  	/> :
-		      	  	null
-		      	  }
+			    />
+		        {(this.state.edittingCell !== null) ?
+	      	  	  <CodeEditor
+	      	  		open={this.state.open}
+	      	  		code={chosenCell.func.code}
+	      	  		useFunc={chosenCell.mode === ParameterMode.USE_FUNC}
+	      	  		handleClose={this.handleCloseCodeEditor}
+	      	  		setParamMode={() => {
+	      	  			let { row, col } = this.state.edittingCell;
+	      	  			this.props.setParamMode(row, col);
+	      	  		}}
+	      	  		title={`${columns[this.state.edittingCell.col].name}, row ${this.state.edittingCell.row}`}
+	      	  		setCode={(code) => {
+	      	  			let { row, col } = this.state.edittingCell;
+	      	  			this.props.setCode(row, col, code);
+	      	  		}}
+	      	  	  /> :
+	      	  	  null
+	      	    }
 	      	  </div>
 		)
 
 		return (
 		  <div>
-		      <div style={{display: 'flex', width: "100%"}} >
+		      <div style={{display: 'flex', width: "100%"}}>
 		      	<p  className="Trial-Form-Label-Container"
 				    style={labelStyle}
 				>
@@ -698,4 +692,29 @@ export default class TimelineVariableTable extends React.Component {
 }
 
 
-			
+/*
+key control
+
+
+			        // onGridKeyDown={(e) => {
+			        // 	let { row, col } = this.state.selectedCell;
+			        // 	switch(e.which) {
+			        // 		// right arrow
+			        // 		case 39:
+			        // 			if (++col === columns.length) {
+			        // 				this.props.addColumn();
+			        // 			}
+			        // 			break;
+			        // 		// down arrow
+			        // 		case 40:
+			        // 			if (++row === this.props.rows.length) {
+			        // 				this.props.addRow();
+			        // 			}
+			        // 			break;
+			        // 		default:
+			        // 			break;
+			        // 	}
+			        // }}
+
+
+*/

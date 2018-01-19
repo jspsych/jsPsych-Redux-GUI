@@ -211,7 +211,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		this.updateMaxSize();
-		this.testBug();
+		// this.testBug();
 	}
 
 	componentWillUnmount() {
@@ -221,7 +221,7 @@ class App extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		if (prevState.timelineEditorDrawerToggle !== this.state.timelineEditorDrawerToggle ||
 			prevState.timelineOrganizerDrawerToggle !== this.state.timelineOrganizerDrawerToggle) {
-			this.testBug();
+			// this.testBug();
 		}
 	}
 
