@@ -32,10 +32,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 		super(props);
 	}
 
-	componentDidUpdate() {
-		// console.log(document.querySelector(`#Preview_Window_Container`).offsetWidth)
-	}
-
 	render() {
 		return (
 			<div className="TimelineNode-Editor"

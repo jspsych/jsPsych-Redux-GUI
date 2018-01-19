@@ -26,14 +26,16 @@ export const WIDTH = 285;
 
 const colors = GeneralTheme.colors;
 
+const duration = 400;
+
 const style = {
 	TimelineNodeOrganizer: (open) => ({
 		width: (open) ? `${WIDTH}px` : "0px",
 		flexBasis: 'auto',
 		flexShrink: 0,
-		'WebkitTransition': 'all 0.4s ease',
-		'MozTransition': 'all 0.4s ease',
-		transition: 'all 0.4s ease',
+		'WebkitTransition': `all ${duration}ms ease`,
+		'MozTransition': `all ${duration}ms ease`,
+		transition: `all ${duration}ms ease`,
 		height: '100%',
 		display: 'flex',
 		overflow: 'hidden',

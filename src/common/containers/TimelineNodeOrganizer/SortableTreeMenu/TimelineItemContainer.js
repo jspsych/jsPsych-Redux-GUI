@@ -9,11 +9,11 @@ const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
 		if (previewId === null || previewId !== ownProps.id) {
 			dispatch(organizerActions.onPreviewAction(ownProps.id));
 			ownProps.openTimelineEditorCallback();
-			setKeyboardFocusId(ownProps.id);
+			if (setKeyboardFocusId) setKeyboardFocusId(ownProps.id);
 		} else {
 			dispatch(organizerActions.onPreviewAction(null));
 			// ownProps.closeTimelineEditorCallback();
-			setKeyboardFocusId(null);
+			if (setKeyboardFocusId) setKeyboardFocusId(null);
 		}
 	})
 }

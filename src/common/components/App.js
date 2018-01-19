@@ -65,6 +65,7 @@ class App extends React.Component {
 			zoomWidthByUser: null,
 			zoomHeightByUser: null,
 			displayZoom: -1,
+			test: 0
 		}
 
 		this.getMaxSize = () => {
@@ -80,8 +81,11 @@ class App extends React.Component {
 			let left = organizerOpened ? OrganizerWidth : 0,
 				right = editorOpened ? EditorWidth : 0,
 				mainBodyWidth = this.AppPage.clientWidth - left - right,
-				maxWidth = mainBodyWidth * PreviewWindowContainerWidth,
+				maxWidth = Math.round(mainBodyWidth * PreviewWindowContainerWidth),
 				maxHeight = this.previewWindow.clientHeight;
+
+			// let maxWidth = this.previewWindow.clientWidth,
+			// 	maxHeight = this.previewWindow.clientHeight;
 
 			return {
 				zoomWidthByUser: limitToMax(zoomWidthByUser, maxWidth),
@@ -189,6 +193,16 @@ class App extends React.Component {
 				this.setZoomScale(value);
 			}
 		}
+
+		this.testBug = () => {
+			this.setState({test: this.previewWindow.clientWidth}, 
+				() => { 
+					console.log(
+						`${this.state.test}, should be ${this.getMaxSize().maxZoomWidth}`
+					);
+				}
+			);
+		}
 	}
 
 	componentWillMount() {
@@ -197,10 +211,18 @@ class App extends React.Component {
 
 	componentDidMount() {
 		this.updateMaxSize();
+		this.testBug();
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener("resize", this.updateMaxSize);
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (prevState.timelineEditorDrawerToggle !== this.state.timelineEditorDrawerToggle ||
+			prevState.timelineOrganizerDrawerToggle !== this.state.timelineOrganizerDrawerToggle) {
+			this.testBug();
+		}
 	}
 
 	render() {
@@ -227,7 +249,6 @@ class App extends React.Component {
 			setZoomHeight,
 			setZoomWidth,
 			setDisplayZoom,
-			updateMaxSize
 		} = this;
 
 		return (
@@ -244,7 +265,6 @@ class App extends React.Component {
 	  					open={timelineOrganizerDrawerToggle}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
-	  					updateMaxSize={updateMaxSize}
 	  				/>
 	  				<div className="App-Main-Preivew"
 	  					id="main-body"
@@ -273,7 +293,6 @@ class App extends React.Component {
 	  					width={timelineEditorDrawerWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
-	  					updateMaxSize={updateMaxSize}
 	  				/>
 	  			</div>
 	  			<Notification />
