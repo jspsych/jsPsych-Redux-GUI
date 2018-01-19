@@ -17,9 +17,11 @@ import {
 	cyan500 as checkColor,
 	// blue500 as titleIconColor,
 	yellow500 as checkStarColor,
-	cyan500 as hoverColor
 } from 'material-ui/styles/colors';
 
+import GeneralTheme from '../../theme.js';
+
+const hoverColor = GeneralTheme.colors.secondary;
 
 import { renderDialogTitle } from '../../gadgets';
 
@@ -71,7 +73,7 @@ export default class TimelineVariableSelector extends React.Component {
 	render() {
 		return (
 			<div>
-				<IconButton onTouchTap={this.handleOpen} tooltip="Insert timeline variable">
+				<IconButton onClick={this.handleOpen} tooltip="Insert timeline variable">
 					<AddTimelineVarIcon hoverColor={hoverColor}/>
 				</IconButton>
 				<Dialog
@@ -92,7 +94,7 @@ export default class TimelineVariableSelector extends React.Component {
 								primary={true}
 								labelStyle={{textTransform: "none", }}
 				    			keyboardFocused={true}
-								onTouchTap={this.handleClose}
+								onClick={this.handleClose}
 							/>]}
 				>	
 					<div style={{display: 'flex'}}>
@@ -100,7 +102,7 @@ export default class TimelineVariableSelector extends React.Component {
 			                Use Timeline Variable:
 			              </p>
 			              <IconButton
-			                onTouchTap={this.props.setParamMode}
+			                onClick={this.props.setParamMode}
 			                >
 			                {(this.props.useTV) ? <CheckStar color={checkStarColor} /> : <UncheckStar />}
 			                </IconButton>
@@ -111,7 +113,7 @@ export default class TimelineVariableSelector extends React.Component {
 								<ListItem 
 									primaryText={!v ? "null" : v} 
 									key={"TimelineVariableSelector-"+v}
-									onTouchTap={() => {
+									onClick={() => {
 										this.props.submitCallback(v);
 									}}
 									rightIcon={

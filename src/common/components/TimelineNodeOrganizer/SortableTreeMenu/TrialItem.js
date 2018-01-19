@@ -5,18 +5,9 @@ import { ListItem } from 'material-ui/List';
  
 import TrialIcon from 'material-ui/svg-icons/editor/mode-edit';
 
-import {
-	indigo500 as iconHighlightColor,
-	green500 as checkColor,
-	grey300 as hoverColor,
-	grey600 as normalColor,
-	grey400 as disabledColor
-} from 'material-ui/styles/colors';
-
 import { DropTarget, DragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import {
-	colorSelector,
 	treeNodeDnD,
 	setKeyboardFocusId,
 	getKeyboardFocusId
@@ -24,6 +15,7 @@ import {
 
 import NestedContextMenus from './NestedContextMenus';
 
+import theme, { colorSelector, listItemStyle } from './theme.js';
 
 class TrialItem extends React.Component {
 	constructor(props) {
@@ -84,8 +76,6 @@ class TrialItem extends React.Component {
 			name,
 			listenKey
 		} = this.props;
-		
-		let iconColor = isEnabled ? normalColor : disabledColor;
 
 		return connectDragPreview(connectDropTarget(
 			<div>
@@ -96,21 +86,21 @@ class TrialItem extends React.Component {
 					{
 					connectDragSource(<div className="Drag-Handle">
 						<IconButton 
-							hoveredStyle={{backgroundColor: hoverColor}}
+							hoveredStyle={theme.collpaseButtonHoverStyle}
 							disableTouchRipple={true} 
-							onTouchTap={onClick}>
-							<TrialIcon color={(isSelected) ? iconHighlightColor : iconColor}/>
+							onClick={onClick}>
+							<TrialIcon {...theme.icon(isEnabled, isSelected)}/>
 						</IconButton>
 					</div>)
 					}
 					<div style={{width: "100%"}} >
 						<ListItem  
 							ref={id}
-							style={{color: isEnabled ? 'black' : 'grey'}}
+							style={listItemStyle(isEnabled, isSelected)}
 							primaryText={name}
 							onKeyDown={(e) => { listenKey(e, getKeyboardFocusId) }}
 							onContextMenu={this.openContextMenu}
-							onTouchTap={(e) => {
+							onClick={(e) => {
 								if (e.nativeEvent.which === 1) {
 									this.props.onClick(setKeyboardFocusId);
 								}

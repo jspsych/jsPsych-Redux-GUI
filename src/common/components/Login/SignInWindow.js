@@ -111,7 +111,7 @@ export default class SignInWindow extends React.Component {
                       fontSize: 15
                 }}
                 primary={true} 
-                onTouchTap={handleSignIn} 
+                onClick={handleSignIn} 
                 fullWidth={true}
               /> :
               <CircularProgress />
@@ -122,7 +122,7 @@ export default class SignInWindow extends React.Component {
               label="Forgot my password" 
               labelStyle={{textTransform: "none", }}
               secondary={true}
-              onTouchTap={popForgotPassword}
+              onClick={popForgotPassword}
             />
           </div>
           
@@ -137,6 +137,6 @@ export default class SignInWindow extends React.Component {
 //               label="Not right now"
 //               secondary={true}
 //               keyboardFocused={true}
-//               onTouchTap={handleClose}
+//               onClick={handleClose}
 //             />
 //           </div>

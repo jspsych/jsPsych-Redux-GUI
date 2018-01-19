@@ -16,7 +16,6 @@ import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import {
-  cyan500 as hoverColor,
   grey100 as toolbarColor,
   pink500 as clearColor,
   orange500 as fixedTextColor,
@@ -29,7 +28,9 @@ import { ParameterMode, createComplexDataObject } from '../../reducers/Experimen
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
 import CodeEditor from '../CodeEditor';
+import GeneralTheme from '../theme.js';
 
+const hoverColor = GeneralTheme.colors.secondary;
 
 const jsPysch_Builder_Array_Storage = "jsPsych_builder_array_clipboard";
 
@@ -146,7 +147,7 @@ class ArrayValue extends React.Component {
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
 				<MenuItem 
-					onTouchTap={this.enterEditMode}
+					onClick={this.enterEditMode}
 					primaryText={
 						<p 
 							className='truncate-long-string'
@@ -305,7 +306,7 @@ export default class ArrayEditor extends React.Component {
 					<IconButton
 						tooltip="delete item"
 						key={`array-delete-${i}`}
-						onTouchTap={()=>{ this.deleteArrayItem(i); }}
+						onClick={()=>{ this.deleteArrayItem(i); }}
 					>
 						<Clear key={`array-delete-icon-${i}`} color={clearColor} />
 					</IconButton>
@@ -331,23 +332,23 @@ export default class ArrayEditor extends React.Component {
 				secondary={true}
 				label="Cancel"
 				labelStyle={{textTransform: "none",}}
-				onTouchTap={handleClose}
+				onClick={handleClose}
 			/>,
 			<FlatButton 
 				primary={true}
 				label="Finish"
 				labelStyle={{textTransform: "none",}}
-				onTouchTap={onSubmit}
+				onClick={onSubmit}
 			/>
 		]
 
 		return (
 			<div>
 				<IconButton
-					onTouchTap={this.handleOpen}
+					onClick={this.handleOpen}
 					tooltip="Click to edit"
 				>
-					<ArrayIcon hoverColor={hoverColor}/>
+					<ArrayIcon color='#4D4D4D' hoverColor={hoverColor}/>
 				</IconButton>
 				<Dialog
 					open={open}
@@ -366,7 +367,7 @@ export default class ArrayEditor extends React.Component {
 							tooltip="Copy"
 							iconStyle={{width: 20, height: 20}}
 							style={{width: 35, height: 35, padding: 10}}
-							onTouchTap={copyArray}
+							onClick={copyArray}
 						>
 							<CopyIcon hoverColor={hoverColor} />
 						</IconButton>
@@ -374,7 +375,7 @@ export default class ArrayEditor extends React.Component {
 							tooltip="Paste"
 							iconStyle={{width: 20, height: 20}}
 							style={{width: 35, height: 35, padding: 10}}
-							onTouchTap={paste}
+							onClick={paste}
 						>
 							<PasteIcon hoverColor={hoverColor} />
 						</IconButton>
@@ -394,7 +395,7 @@ export default class ArrayEditor extends React.Component {
 					<div style={{paddingTop: 15}}>
 					<FloatingActionButton 
 						mini={true} 
-						onTouchTap={addArrayItem}
+						onClick={addArrayItem}
 					>
 	      				<ContentAdd />
 	    			</FloatingActionButton>

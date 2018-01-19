@@ -1,10 +1,10 @@
 import React from 'react';
-import Draggable from 'react-draggable';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import Divider from 'material-ui/Divider';
 import { List } from 'material-ui/List';
-import { SpeedDial, SpeedDialItem } from 'react-mui-speeddial';
+import Avatar from 'material-ui/Avatar';
+import { SpeedDial, BubbleList, BubbleListItem } from 'react-speed-dial';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
@@ -15,184 +15,138 @@ import Duplicate from 'material-ui/svg-icons/content/content-copy';
 
 import CloseDrawerHandle from 'material-ui/svg-icons/navigation/chevron-left';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
-import {
-	grey300 as popDrawerColor,
-	grey400 as DrawerHandleColor,
-	grey300 as CloseBackHighlightColor,
-	grey50 as CloseDrawerHoverColor
-} from 'material-ui/styles/colors';
 
-import { convertPercent } from '../App';
 import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
-import './TimelineNodeOrganizer.css';
+import GeneralTheme from '../theme.js';
 
 export const TREE_MENU_INDENT = 20;
 
-const MIN_WIDTH = 20;
-const MAX_WIDTH = 40;
+export const WIDTH = 285;
 
-const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
+const colors = GeneralTheme.colors;
 
-const getWidthFromDragging = (e) => {
-	let percent = (e.pageX / window.innerWidth) * 100;
-	if (percent < MIN_WIDTH) percent = MIN_WIDTH;
-	if (percent > MAX_WIDTH) percent = MAX_WIDTH;
-	return percent;
+const duration = 400;
+
+const style = {
+	TimelineNodeOrganizer: (open) => ({
+		width: (open) ? `${WIDTH}px` : "0px",
+		flexBasis: 'auto',
+		flexShrink: 0,
+		'WebkitTransition': `all ${duration}ms ease`,
+		'MozTransition': `all ${duration}ms ease`,
+		transition: `all ${duration}ms ease`,
+		height: '100%',
+		display: 'flex',
+		overflow: 'hidden',
+		flexDirection: 'row',
+		backgroundColor: colors.background
+	}),
+	TimelineNodeOrganizerContainer: {
+		height: '100%',
+		width: '100%',
+		position: 'relative',
+		flexGrow: '1',
+	},
+	TimelineNodeOrganizerContent: {
+		height: '100%',
+		width: '100%',
+		display: 'flex',
+		flexDirection: 'column-reverse'
+	},
+	TimelineNodeSheet: {
+		overflow: 'auto',
+		flexGrow: 1,
+		maxWidth: '100%',
+		paddingLeft: '0px',
+		width: '100%',
+		position: 'relative'
+	}
 }
 
-function pauseEvent(e){
-    if(e.stopPropagation) e.stopPropagation();
-    if(e.preventDefault) e.preventDefault();
-    e.cancelBubble=true;
-    e.returnValue=false;
-    return false;
+const avatarStyle = {
+	backgroundColor: colors.secondaryDeep
 }
 
 class TimelineNodeOrganizer extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			dragging: false,
-		}
-
-		this.onDragStart = (e) => {
-			this.setState({
-				dragging: true,
-			});
-		}
-
-		this.onDragEnd = (e) => {
-			this.setState({
-				dragging: false,
-			});
-		}
-
-		this.onDrag = (e) => {
-			this.props.setWidthCallback(getWidthFromDragging(e));
-			pauseEvent(e)
-		}
-
 	}
-
 
 	render() {
 		return (
-			<div className="TimelineNode-Organizer"
-				 style={{width: (this.props.open) ? convertPercent(this.props.width) : "0%",
-						'WebkitTransition': enableAnimation(this.state.dragging),
-						'MozTransition': enableAnimation(this.state.dragging),
-						transition: enableAnimation(this.state.dragging),
-				}}>
-				<div className="TimelineNode-Organizer-Container" >
+		<div className="TimelineNode-Organizer" style={style.TimelineNodeOrganizer(this.props.open)}>
+				<div className="TimelineNode-Organizer-Container" style={style.TimelineNodeOrganizerContainer}>
 					{(this.props.open) ?
-					<div className="TimelineNode-Organizer-Content">
-						<div className="TimelineNode-Sheet">
-							<SortableTreeMenu
-								openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-								closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-							/>
-						</div>
-						<div className="TimelineNode-Button-Container">
-								<SpeedDial
-								  style={{
-								  	zIndex: 15,
-									float: 'right',
-									paddingRight: '10px'
-								  }}
-							      fabContentOpen={<ContentAdd />}
-							      fabContentClose={<NavigationClose />}
-							    >
-							      <SpeedDialItem
-							        label="New Timeline"
-							        fabContent={<NewTimelineIcon />}
-							        onTouchTap={this.props.insertTimeline}
+					<div className="TimelineNode-Organizer-Content" style={style.TimelineNodeOrganizerContent}>
+					<div className="TimelineNode-Sheet" style={style.TimelineNodeSheet}>
+						<SortableTreeMenu
+							openTimelineEditorCallback={this.props.openTimelineEditorCallback}
+							closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
+						/>
+					</div>
+					<SpeedDial
+						  hasBackdrop={false}
+						  style={{
+						  	zIndex: 15,
+						  	position: 'absolute',
+						  }}
+						  floatingActionButtonProps={{
+						  	backgroundColor: colors.secondary,
+						  }}
+					      icon={<ContentAdd />}
+					      iconOpen={<NavigationClose />}
+					    >
+						   <BubbleList>
+							     <BubbleListItem
+							        primaryText="New Timeline"
+							        rightAvatar={
+							        	<Avatar
+								          icon={<NewTimelineIcon />}
+								          {...avatarStyle}
+								          size={30}
+								        />
+							        }
+							        onClick={this.props.insertTimeline}
 							      />
-							      <SpeedDialItem
-							        label="New Trial"
-							        fabContent={<NewTrialIcon/>}
-							        onTouchTap={this.props.insertTrial}
+							      <BubbleListItem
+							        primaryText="New Trial"
+							        rightAvatar={
+							        	<Avatar
+								          icon={<NewTrialIcon />}
+								          {...avatarStyle}
+								          size={30}
+								        />
+							        }
+							        onClick={this.props.insertTrial}
 							      />
-							      <SpeedDialItem
-							        label="Delete"
-							        fabContent={<Delete/>}
-							        onTouchTap={this.props.deleteSelected}
+							      <BubbleListItem
+							        primaryText="Delete"
+							        rightAvatar={
+							        	<Avatar
+								          icon={<Delete />}
+								          {...avatarStyle}
+								          size={30}
+								        />
+							        }
+							        onClick={this.props.deleteSelected}
 							      />
-							      <SpeedDialItem
-							        label="Duplicate"
-							        fabContent={<Duplicate/>}
-							        onTouchTap={this.props.duplicateNode}
+							      <BubbleListItem
+							        primaryText="Duplicate"
+							        rightAvatar={
+							        	<Avatar
+								          icon={<Duplicate />}
+								          {...avatarStyle}
+								          size={30}
+								        />
+							        }
+							        onClick={this.props.duplicateNode}
 							      />
-							    </SpeedDial>
-					    </div>
-					</div>: null}
-				</div>
-
-				{this.props.open ? 
-					<Draggable
-				        axis="x"
-				        handle=".TimelineNode-Organizer-Dragger"
-				        zIndex={10}
-				        position={{x: this.props.width}}
-				        onStart={this.onDragStart}
-				        onDrag={this.onDrag}
-				        onStop={this.onDragEnd}
-				        >
-		  				<div className="TimelineNode-Organizer-Dragger"
-		  					style={{width: '8px', minWidth: '8px'}}>
-		  						<div className="TimelineNode-Organizer-Close-Handle-Container">
-			  						<IconButton
-			  							className="TimelineNode-Organizer-Close-Handle"
-			  							tooltip="Close"
-			  							tooltipPosition="bottom-right"
-			  							hoveredStyle={{
-			  								left: -28,
-				  							width: 26.5,
-			  								backgroundColor: CloseBackHighlightColor
-			  							}}
-			  							style={{
-				  							left: -22,
-				  							width: 25,
-			  							}}
-			  							iconStyle={{
-						  					margin:"0px 0px 0px -8px"
-			  							}}
-			  							disableTouchRipple={true}
-										onTouchTap={this.props.closeCallback}
-			  							>
-			  							<CloseDrawerHandle />
-			  						</IconButton>
-			  					</div>
-	  					</div>
-	  				</Draggable> :
-	  				null
-				}
-				
-  				{(this.props.open) ? 
-  					null :
-  					<IconButton
-  						className="TimelineNode-Organizer-Handle"
-  						tooltip="Open Timeline/Trial Organizer"
-  						hoveredStyle={{
-  							backgroundColor: DrawerHandleColor,
-  							left: 0,
-  						}}
-  						onTouchTap={this.props.openCallback}
-  						tooltipPosition="bottom-right"
-  						style={{
-		  					position: 'fixed',
-		  					left: -8,
-		  					top: '50%',
-		  					width: '25px',
-		  					backgroundColor: popDrawerColor,
-		  					padding: '12px 0',
-		  					zIndex: 1,
-  						}}
-  					>
-  						<OpenDrawer />
-  					</IconButton>}
-  			</div>
+						      </BubbleList>
+					</SpeedDial>
+				</div>: null}
+			</div>
+  		</div>
   			)
 	}
 }

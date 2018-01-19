@@ -7,8 +7,6 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
 import BoxUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
@@ -16,11 +14,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import {
-  green500 as checkColor,
-  cyan500 as boxCheckColor,
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
-  cyan500 as hoverColor,
   cyan500 as trueColor,
   pink500 as falseColor
 } from 'material-ui/styles/colors';
@@ -37,6 +32,25 @@ import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/Trial
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
+
+import GeneralTheme from '../../theme.js';
+
+const colors = {
+	...GeneralTheme.colors,
+	labelColor: '#B1B1B1'
+};
+
+const style = {
+	label: {
+		color: colors.labelColor,
+		marginRight: '15px',
+		fontSize: '14px',
+	},
+}
+
+const hoverColor = GeneralTheme.colors.secondary;
+// const trueColor = GeneralTheme.colors.primaryDeep;
+// const falseColor = GeneralTheme.colors.secondaryDeep;
 
 export const labelStyle = {
 	paddingTop: 15,
@@ -92,7 +106,7 @@ const isParameterRequired = (parameterInfo) => {
 	return isRequired;
 }
 
-const generateFieldProps = (parameterValue, parameterInfo) => {
+const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayComponent=true) => {
 	let isRequired = isParameterRequired(parameterInfo);
 	let val = convertNullToEmptyString(parameterValue.value);
 	let disabled = true;
@@ -106,7 +120,7 @@ const generateFieldProps = (parameterValue, parameterInfo) => {
 			val = '[Timeline Variable]';
 			break;
 		default:
-			if (parameterInfo.array) {
+			if (parameterInfo.array && autoConvertToArrayComponent) {
 				if (Array.isArray(val)) {
 					val = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
 				} else {
@@ -123,7 +137,8 @@ const generateFieldProps = (parameterValue, parameterInfo) => {
 		floatingLabelText: parameterInfo.pretty_name,
 		errorText: error ? 'This parameter is required.' : '',
 		floatingLabelFixed: true,
-		title: parameterInfo.description
+		title: parameterInfo.description,
+		...GeneralTheme.TextFieldFocusStyle
 	}
 }
 
@@ -135,69 +150,72 @@ paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
 
 */
 export default class TrialFormItem extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			showTool: true,
+			// function editor dialog
+			openFuncEditor: false, 
+			// timeline variable selector dialog
+			openTimelineVariable: false,
+			keyListStr: "",
+			useKeyListStr: false,
+			subFormCollapse: false,
+		}
+
+		this.toggleSubFormCollapse = () => {
+			this.setState({
+				subFormCollapse: !this.state.subFormCollapse
+			})
+		}
+
+		this.setKeyListStr = (str) => {
+			this.setState({
+				keyListStr: str
+			});
+		}
+
+		this.showTool = () => {
+			this.setState({
+				showTool: true
+			});
+		}
+
+		this.hideTool = () => {
+			this.setState({
+				// showTool: false
+				showTool: true
+			});
+		}
+
+		this.showFuncEditor = () => {
+			this.setState({
+				openFuncEditor: true
+			});
+		}
+
+		this.hideFuncEditor = () => {
+			this.setState({
+				openFuncEditor: false
+			});
+		}
+
+		this.showTVSelector = () => {
+			this.setState({
+				openTimelineVariable: true
+			});
+		}
+
+		this.hideTVSelector = () => {
+			this.setState({
+				openTimelineVariable: false
+			});
+		}
+	}
+
 	static defaultProps = {
 		paramInfo: "",
 		param: "",
-	}
-
-	state = {
-		showTool: true,
-		// function editor dialog
-		openFuncEditor: false, 
-		// timeline variable selector dialog
-		openTimelineVariable: false,
-		keyListStr: "",
-		useKeyListStr: false,
-		subFormCollapse: false,
-	}
-
-	toggleSubFormCollapse = () => {
-		this.setState({
-			subFormCollapse: !this.state.subFormCollapse
-		})
-	}
-
-	setKeyListStr = (str) => {
-		this.setState({
-			keyListStr: str
-		});
-	}
-
-	showTool = () => {
-		this.setState({
-			showTool: true
-		});
-	}
-
-	hideTool = () => {
-		this.setState({
-			// showTool: false
-			showTool: true
-		});
-	}
-
-	showFuncEditor = () => {
-		this.setState({
-			openFuncEditor: true
-		});
-	}
-
-	hideFuncEditor = () => {
-		this.setState({
-			openFuncEditor: false
-		});
-	}
-
-	showTVSelector = () => {
-		this.setState({
-			openTimelineVariable: true
-		});
-	}
-
-	hideTVSelector = () => {
-		this.setState({
-			openTimelineVariable: false
-		});
 	}
 
 	renderLabel = (param) => {
@@ -466,7 +484,7 @@ export default class TrialFormItem extends React.Component {
 
 		let toggleAllKey = (
 			<IconButton 
-				onTouchTap={() => {
+				onClick={() => {
 					if (isAllKey) {
 						this.props.setKey(param, null, true);
 					} else {
@@ -476,11 +494,11 @@ export default class TrialFormItem extends React.Component {
 				tooltip="All Keys"
 				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
 			>
-				{(isAllKey) ? <BoxCheckIcon color={boxCheckColor} /> : <BoxUncheckIcon />}
+				{(isAllKey) ? <BoxCheckIcon color={GeneralTheme.colors.primary} /> : <BoxUncheckIcon />}
 			</IconButton>
 		);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(props.value);
 		props.value = isAllKey ? '[ALL KEYS]' : value;
 		props.disabled = props.disabled || isAllKey;
@@ -515,10 +533,10 @@ export default class TrialFormItem extends React.Component {
 		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
 		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
 		let inOtherMode = funcMode || tvMode;
+		    	// {this.appendArrayEditor(param)}
 		return (
 			<div className="Trial-Form-Item-Container">
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 		    	{inOtherMode ? null : toggleAllKey}
 		    	{isAllKey ? null : this.appendFunctionEditor(param)}
 				{isAllKey ? null : this.appendTimelineVariable(param)}
@@ -530,14 +548,16 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 
 		let node = (
 			<SelectField
+				multiple={paramInfo.array}
 				id={this.props.id+"-select-field-"+param}
 		    	onChange={(event, index, value) => {
 		    		this.props.setText(param, value);
 		    	}}
+		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
 		    	{...props}
 		    >
 		    	{
@@ -551,7 +571,6 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div className="Trial-Form-Item-Container">
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 				{this.appendFunctionEditor(param)}
 				{this.appendTimelineVariable(param)}
 		  	</div>
@@ -563,7 +582,7 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let props = generateFieldProps(parameterValue, parameterInfo, false);
 
 		let node = (
 			<SelectField
@@ -575,6 +594,7 @@ export default class TrialFormItem extends React.Component {
 				onChange={(event, index, value) => {
 		    		this.props.setMedia(param, value);
 		    	}}
+		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
 			>
 				{this.props.filenames.map(
 					filename => {
@@ -619,7 +639,6 @@ export default class TrialFormItem extends React.Component {
 		return (
 			<div className="Trial-Form-Item-Container" style={{alignItems: 'center'}}>
 		    	{node}
-		    	{this.appendArrayEditor(param)}
 				{!inOtherMode ? mediaSelector : null}
       			{this.appendFunctionEditor(param)}
 				{this.appendTimelineVariable(param)}
@@ -640,12 +659,14 @@ export default class TrialFormItem extends React.Component {
 		);
 
 		return (
-			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-			{this.renderLabel(param)}
-			<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-				{this.renderFieldContent(param, node, false)}
-				{this.appendFunctionEditor(param)}
-			</div>
+			<div className="Trial-Form-Item-Container" style={{flexDirection: 'column'}}>
+				<div style={style.label} title={parameterInfo.description}>
+				    {`${parameterInfo.pretty_name}: `}
+				</div>
+				<div style={{display: 'flex'}}>
+					{this.renderFieldContent(param, node, false)}
+					{this.appendFunctionEditor(param)}
+				</div>
 			</div>
 		)
 	}
@@ -662,7 +683,7 @@ export default class TrialFormItem extends React.Component {
 		let node = (
 			<IconButton
   				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
-  				onTouchTap={this.toggleSubFormCollapse}
+  				onClick={this.toggleSubFormCollapse}
   			>
   			{(this.state.subFormCollapse) ? 
   				<CollapseIcon hoverColor={hoverColor} /> :
@@ -728,7 +749,7 @@ export default class TrialFormItem extends React.Component {
 				   							key={`complex-jsPysch-trial-item-delete-${i}`} 
 				   							iconStyle={iconStyle}
 				   							style={iconButtonStyle}
-				   							onTouchTap={() => {this.props.depopulateComplex(param, i)}}
+				   							onClick={() => {this.props.depopulateComplex(param, i)}}
 				   						>
 				   							<DeleteSubItemIcon />
 				   						</IconButton>
@@ -742,7 +763,7 @@ export default class TrialFormItem extends React.Component {
 			    	<div style={{paddingTop: 5, float: 'right'}}>
 				    	<FloatingActionButton 
 				    		mini={true} 
-				    		onTouchTap={() => {this.props.populateComplex(param, parameterInfo.nested)}}
+				    		onClick={() => {this.props.populateComplex(param, parameterInfo.nested)}}
 				    	>
 				    		<ContentAdd />
 				    	</FloatingActionButton>

@@ -91,6 +91,13 @@ export function deleteTimelineVariableColumnAction(index) {
 	}
 }
 
+export function setTimelineVariableAction(table) {
+	return {
+		type: actionTypes.SET_TIMELINE_VARIABLE,
+		table: table
+	}
+}
+
 export function setSamplingMethodAction(key, newVal) {
 	return {
 		type: actionTypes.SET_SAMPLING_METHOD,

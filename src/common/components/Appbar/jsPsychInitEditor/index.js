@@ -19,6 +19,10 @@ import CodeEditor from '../../CodeEditor';
 import { renderDialogTitle } from '../../gadgets';
 import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
+import AppbarTheme from '../theme.js';
+
+const style = AppbarTheme.InitEditor;
+
 export default class jsPsychInitEditor extends React.Component {
   state = {
     open: false
@@ -58,7 +62,7 @@ export default class jsPsychInitEditor extends React.Component {
       <div style={{padding: 15, color: 'black'}}>{key}</div>
         <IconButton 
           style={{position: 'absolute', right: 0}}
-          onTouchTap={() => { this.props.setJsPsychInit(null, null, key); }} 
+          onClick={() => { this.props.setJsPsychInit(null, null, key); }} 
           >
         {(this.props[key]) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
         </IconButton>
@@ -85,7 +89,7 @@ export default class jsPsychInitEditor extends React.Component {
         label="Close"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
       />,
     ];
 
@@ -93,12 +97,9 @@ export default class jsPsychInitEditor extends React.Component {
         <div className="jsPsych.init-editor">
           <IconButton 
               tooltip="Init Properties Setting"
-              onTouchTap={this.handleOpen}
+              onClick={this.handleOpen}
           >
-              <InitSettingIcon 
-                color={(this.state.open) ? iconHighlightColor :normalColor}
-                hoverColor={iconHighlightColor}
-              />
+              <InitSettingIcon {...style.icon}/>
           </IconButton>
           <Dialog
             contentStyle={{minHeight: 500}}

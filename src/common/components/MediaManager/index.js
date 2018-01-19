@@ -34,6 +34,10 @@ import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 import { getSignedUrl } from '../../backend/s3';
 
+import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
+import GeneralTheme from '../theme.js';
+
+
 var __DEBUG__ = false;
 
 export function fileIconFromTitle(title, color=null) {
@@ -199,10 +203,10 @@ export default class MediaManager extends React.Component {
 			case MediaManagerMode.multiSelect:
 				return (
 					<IconButton 
-						onTouchTap={this.handleOpen}
+						onClick={this.handleOpen}
 						tooltip="Insert Media"
 					>
-						<Add hoverColor={hoverColor} color={iconColor}/>
+						<Add color='#4D4D4D' hoverColor={GeneralTheme.colors.secondary}/>
 					</IconButton>
 				);
 			case MediaManagerMode.upload:
@@ -210,12 +214,9 @@ export default class MediaManager extends React.Component {
 				return (
 					<IconButton
 		              tooltip="Upload Media"
-		              onTouchTap={this.handleOpen}
+		              onClick={this.handleOpen}
 		          	>
-		              <MediaManagerIcon
-		                color={(this.state.open) ? iconHighlightColor :normalColor}
-		                hoverColor={iconHighlightColor}
-		              />
+		              <MediaManagerIcon {...AppbarIconStyle}/>
 		          	</IconButton>
 				);
 		}
@@ -224,8 +225,8 @@ export default class MediaManager extends React.Component {
 	renderActions = () => {
 		const deleteButton = (<FlatButton
 				label="Delete"
-				labelStyle={{textTransform: "none", color: 'red'}}
-				onTouchTap={this.handleDelete}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
+				onClick={this.handleDelete}
 			/>);
 		switch(this.props.mode) {
 			case MediaManagerMode.select:
@@ -233,8 +234,8 @@ export default class MediaManager extends React.Component {
 				return [
 				<FlatButton
 					label="Insert"
-					labelStyle={{textTransform: "none", color: 'blue'}}
-					onTouchTap={this.insertFile}
+					labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
+					onClick={this.insertFile}
 				/>,
 				deleteButton
 				];
@@ -246,8 +247,8 @@ export default class MediaManager extends React.Component {
 			            label="Close"
 			            primary={true}
 			            keyboardFocused={true}
-			            labelStyle={{textTransform: "none",}}
-			            onTouchTap={this.handleClose}
+			            labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
+			            onClick={this.handleClose}
 			        />
 				]
 			}
@@ -299,15 +300,15 @@ export default class MediaManager extends React.Component {
 							key={f.ETag}
 							primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
 							leftIcon={fileIconFromTitle(f.Key)}
-							onTouchTap={() => { this.openPreviewWindow(f.Key); }}
+							onClick={() => { this.openPreviewWindow(f.Key); }}
 						/>
 					</div>
 					<IconButton
 						key={`${f.ETag}-checker`}
 						style={{flexBasis: '48px'}}
-						onTouchTap={() => {this.handleSelect(i)}}
+						onClick={() => {this.handleSelect(i)}}
 						>
-						{this.state.selected[i] ? <CheckYesIcon color={checkColor}/> : <CheckNoIcon color={checkColor}/>}
+						{this.state.selected[i] ? <CheckYesIcon color={GeneralTheme.colors.primary}/> : <CheckNoIcon color={GeneralTheme.colors.primary}/>}
 					</IconButton>
 				</div>
 				)
@@ -352,8 +353,8 @@ export default class MediaManager extends React.Component {
 			      				<div style={{display: 'flex'}}>
 									<div style={{paddingTop: 8, paddingRight: 10}}>
 										{(this.props.mode === MediaManagerMode.upload) ?
-											<MediaManagerIcon color={titleIconColor} />:
-											<Media color={titleIconColor}/>
+											<MediaManagerIcon color={GeneralTheme.colors.primaryDeep} />:
+											<Media color={GeneralTheme.colors.primaryDeep}/>
 										}
 									</div>
 									<div style={{fontSize: 20,}}>

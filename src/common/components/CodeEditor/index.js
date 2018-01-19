@@ -13,12 +13,14 @@ import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
 // import DialogIcon from 'material-ui/svg-icons/content/create';
 import {
-  cyan500 as hoverColor,
   grey800 as normalColor,
   yellow500 as checkColor,
   // blue500 as titleIconColor,
 } from 'material-ui/styles/colors';
 import { renderDialogTitle } from '../gadgets';
+import GeneralTheme from '../theme.js';
+
+const hoverColor = GeneralTheme.colors.secondary;
 
 export default class CodeEditor extends React.Component {
   static propTypes = { 
@@ -77,13 +79,13 @@ export default class CodeEditor extends React.Component {
         label="Finish"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
+        onClick={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
       />,
     ];
 
   	return (
   		<div>
-	  		<IconButton onTouchTap={this.handleOpen} tooltip={this.props.tooltip}>
+	  		<IconButton onClick={this.handleOpen} tooltip={this.props.tooltip}>
 	  		 {buttonIcon}
 	  		</IconButton>
 	  		<Dialog
@@ -106,7 +108,7 @@ export default class CodeEditor extends React.Component {
                 Use Custom Code:
               </p>
               <IconButton
-                onTouchTap={this.props.setParamMode}
+                onClick={this.props.setParamMode}
                 >
                 {(this.props.useFunc) ? <Check color={checkColor} /> : <Uncheck />}
                 </IconButton>

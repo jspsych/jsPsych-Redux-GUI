@@ -127,7 +127,7 @@ export default class RegisterWindow extends React.Component {
                       fontSize: 15
                 }}
                 primary={true} 
-                onTouchTap={this.handleCreateAccount} 
+                onClick={this.handleCreateAccount} 
                 fullWidth={true}
               /> :
               <CircularProgress />
@@ -141,7 +141,7 @@ export default class RegisterWindow extends React.Component {
               }}
               secondary={true}
               keyboardFocused={true}
-              onTouchTap={this.props.handleClose}
+              onClick={this.props.handleClose}
             />
           </div>
         </div>

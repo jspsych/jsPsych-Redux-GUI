@@ -138,6 +138,8 @@ action = {
 }
 */
 
+const isEnabled = (parent, isEnabled) => (parent ? parent.enabled && isEnabled : isEnabled);
+
 export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
@@ -157,6 +159,7 @@ export function addTimeline(state, action) {
 	}
 
 	let timeline = createTimeline(id, action.parent, getDefaultTimelineName(n));
+	timeline.enabled = isEnabled(parent, timeline.enabled);
 
 	new_state[id] = timeline;
 
@@ -188,6 +191,7 @@ export function addTrial(state, action) {
 	}
 
 	let trial = createTrial(id, action.parent, getDefaultTrialName(n));
+	trial.enabled = isEnabled(parent, trial.enabled);
 
 	new_state[id] = trial;
 	return new_state;
@@ -549,6 +553,7 @@ export function moveInto(state, action) {
 		if (parentCandidate.childrenById.indexOf(node.id) === -1)
 			parentCandidate.childrenById.push(node.id);
 		node.parent = parentCandidateId;
+		node.enabled = isEnabled(parentCandidate, node.enabled);
 
 		return new_state;
 	} else {

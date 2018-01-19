@@ -126,7 +126,7 @@ export default class forgotPasswordWindow extends React.Component {
                 label="Next" 
                 primary={true} 
                 labelStyle={{textTransform: "none", }}
-                onTouchTap={this.handleFogortPassword} 
+                onClick={this.handleFogortPassword} 
               />}
             </div>
           </div>
@@ -172,7 +172,7 @@ export default class forgotPasswordWindow extends React.Component {
                 fullWidth={true}
                 primary={true} 
                 labelStyle={{textTransform: "none", }}
-                onTouchTap={this.handlePasswordReset} 
+                onClick={this.handlePasswordReset} 
               />}
             </div>
             <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
@@ -180,7 +180,7 @@ export default class forgotPasswordWindow extends React.Component {
                 label="Resend verification Code" 
                 secondary={true} 
                 labelStyle={{textTransform: "none", }}
-                onTouchTap={this.handleFogortPassword} 
+                onClick={this.handleFogortPassword} 
               />
             </div>
           </div>

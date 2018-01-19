@@ -10,7 +10,7 @@ import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
-// import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
+import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import Clear from 'material-ui/svg-icons/content/delete-sweep';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
@@ -28,6 +28,18 @@ import { ParameterMode, createComplexDataObject } from '../../reducers/Experimen
 import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
+import GeneralTheme from '../theme.js';
+
+const colors = {
+	...GeneralTheme.colors
+};
+
+const style = {
+	triggerIcon: {
+		color: '#4D4D4D',
+		hoverColor: colors.secondary,
+	}
+}
 
 // const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
@@ -135,7 +147,7 @@ class ObjectKey extends React.Component {
 							onChange={(e, v) => { this.props.setObjectKey(v); }}
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
-				<MenuItem onTouchTap={this.enterEditMode} primaryText={`"${oldKey}"`}/>
+				<MenuItem onClick={this.enterEditMode} primaryText={`"${oldKey}"`}/>
 			)
 	}
 }
@@ -207,7 +219,7 @@ class ObjectValue extends React.Component {
 							style={{minWidth: 200, maxWidth: 200}}
 							/>:
 				<MenuItem 
-					onTouchTap={this.enterEditMode} 
+					onClick={this.enterEditMode} 
 					primaryText={
 						<p 
 							className='truncate-long-string'
@@ -458,7 +470,7 @@ export default class ObjectEditor extends React.Component {
 					<IconButton
 						tooltip="delete key"
 						key={`object-delete-${i}`}
-						onTouchTap={()=>{ this.deleteKeyPair(i); }}
+						onClick={()=>{ this.deleteKeyPair(i); }}
 					>
 						<Clear key={`object-delete-icon-${i}`} color={clearColor} />
 					</IconButton>
@@ -480,25 +492,30 @@ export default class ObjectEditor extends React.Component {
 		let { objectValues, objectKeys, open } = this.state;
 		let actions = [
 			<FlatButton
-				secondary={true}
 				label="Cancel"
-				labelStyle={{textTransform: "none",}}
-				onTouchTap={handleClose}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondary}}
+				onClick={handleClose}
 			/>,
 			<FlatButton 
-				primary={true}
 				label="Finish"
-				labelStyle={{textTransform: "none",}}
-				onTouchTap={onSubmit}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
+				onClick={onSubmit}
 			/>
 		]
+
+		// <IconButton
+		// 			onClick={this.handleOpen}
+		// 			title="Click to edit"
+		// 		>
+		// 			<ObjectEditorIcon {...style.triggerIcon}/>
+		// 		</IconButton>
 
 		return (
 			<div>
 				<MenuItem 
-					onTouchTap={this.handleOpen} 
+					onClick={this.handleOpen} 
 					primaryText="[Data Object]" 
-					style={{color: fixedTextColor}}
+					style={{color: GeneralTheme.colors.primary}}
 					title="Click to edit"
 				/>
 				<Dialog
@@ -518,17 +535,17 @@ export default class ObjectEditor extends React.Component {
 						tooltip="Copy"
 						iconStyle={{width: 20, height: 20}}
 						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={copyObj}
+						onClick={copyObj}
 					>
-						<CopyIcon hoverColor={hoverColor} />
+						<CopyIcon {...GeneralTheme.Icon} />
 					</IconButton>
 					<IconButton 
 						tooltip="Paste"
 						iconStyle={{width: 20, height: 20}}
 						style={{width: 35, height: 35, padding: 10}}
-						onTouchTap={paste}
+						onClick={paste}
 					>
-						<PasteIcon hoverColor={hoverColor} />
+						<PasteIcon {...GeneralTheme.Icon} />
 					</IconButton>
 				</div>
 				<p style={{padding: 0, paddingTop: 10, color: 'black'}}>{`${keyName} = {`}</p>
@@ -546,7 +563,8 @@ export default class ObjectEditor extends React.Component {
 				<div style={{paddingTop: 15}}>
 				<FloatingActionButton 
 					mini={true} 
-					onTouchTap={addKeyPair}
+					backgroundColor={GeneralTheme.colors.primaryDeep}
+					onClick={addKeyPair}
 				>
       				<ContentAdd />
     			</FloatingActionButton>

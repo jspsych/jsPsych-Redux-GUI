@@ -69,7 +69,7 @@ export default class Notification extends React.Component {
 	          			<FlatButton
 	          				label="Okay"
 	          				labelStyle={{textTransform: "none", }}
-	          				onTouchTap={handleClose}
+	          				onClick={handleClose}
 	          				keyboardFocused={true}
 	          			/>
 	          		]}

@@ -8,8 +8,6 @@ import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 
-import Draggable from 'react-draggable';
-
 import CloseDrawerHandle from 'material-ui/svg-icons/navigation/chevron-right';
 import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-left';
 import {
@@ -21,79 +19,66 @@ import {
 
 import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
-import { convertPercent } from '../App';
 
 import './TimelineNodeEditor.css';
+import GeneralTheme from '../theme.js';
 
-export const MIN_WIDTH = 25;
-const MAX_WIDTH = 50;
+export const WIDTH = 335;
 
 const jsPsych = window.jsPsych;
-const PluginList = Object.keys(jsPsych.plugins).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
+const PluginList = Object.keys(jsPsych.plugins || {}).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
 
-const enableAnimation = (flag) => ((flag) ? 'none' : 'all 0.4s ease');
-
-const getWidthFromDragging = (e) => {
-	let percent = (1 - (e.pageX / window.innerWidth)) * 100;
-	if (percent < MIN_WIDTH) percent = MIN_WIDTH;
-	if (percent > MAX_WIDTH) percent = MAX_WIDTH;
-	return percent;
-}
-
-function pauseEvent(e){
-    if(e.stopPropagation) e.stopPropagation();
-    if(e.preventDefault) e.preventDefault();
-    e.cancelBubble=true;
-    e.returnValue=false;
-    return false;
+const colors = {
+	...GeneralTheme.colors,
+	labelColor: '#B1B1B1'
+};
+const style = {
+	PluginSelectContainer: {
+		display: 'flex',
+		alignItems: 'baseline'
+	},
+	label: {
+		color: colors.labelColor,
+		marginRight: '15px',
+		fontSize: '14px',
+		fontFamily: 'Roboto, sans-serif'
+	},
+	TextFieldStyle: {
+		...GeneralTheme.TextFieldFocusStyle
+	},
+	SelectFieldStyle: {
+		autoWidth: true,
+		fullWidth: true,
+		maxHeight: 300,
+		// floatingLabelText: "Plugin",
+		// floatingLabelFixed: true,
+		selectedMenuItemStyle: {
+			color: colors.secondary
+		},
+		underlineFocusStyle: {
+			color: colors.secondary
+		}
+	}
 }
 
 export default class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			dragging: false,
-		}
-
-		this.onDragStart = (e) => {
-			this.setState({
-				dragging: true,
-			});
-		}
-
-		this.onDragEnd = (e) => {
-			this.setState({
-				dragging: false,
-			});
-		}
-
-		this.onDrag = (e) => {
-			this.props.setWidthCallback(getWidthFromDragging(e));
-			pauseEvent(e)
-		}
-
 	}
 
 	render() {
 		return (
 			<div className="TimelineNode-Editor"
-					style={{width: (this.props.open) ? convertPercent(this.props.width) : '0%',
-						'WebkitTransition': enableAnimation(this.state.dragging),
-						'MozTransition': enableAnimation(this.state.dragging),
-						transition: enableAnimation(this.state.dragging),
+					style={{
+						width: (this.props.open) ? `${WIDTH}px` : '0px',
+						flexBasis: 'auto',
+						flexShrink: 0,
+						'WebkitTransition': 'all 0.4s ease',
+						'MozTransition': 'all 0.4s ease',
+						transition: 'all 0.4s ease',
 						}}>
 				{this.props.open ?
-					<Draggable
-					        axis="x"
-					        handle=".TimelineNode-Editor-Dragger"
-					        zIndex={10}
-					        position={{x: this.props.width}}
-					        onStart={this.onDragStart}
-					        onDrag={this.onDrag}
-					        onStop={this.onDragEnd}
-					        >
-		  				<div className="TimelineNode-Editor-Dragger" style={{width: '8px', minWidth: '8px'}}>
+		  				<div className="TimelineNode-Editor-Dragger">
 			  				<div className="TimelineNode-Editor-Close-Handle-Container">
 			  						<IconButton
 			  							className="TimelineNode-Editor-Close-Handle"
@@ -112,13 +97,12 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 			  								margin: '0px 0px 0px -12px'
 			  							}}
 			  							disableTouchRipple={true}
-										onTouchTap={this.props.closeTimelineEditorCallback}
+										onClick={this.props.closeTimelineEditorCallback}
 			  							>
 			  							<CloseDrawerHandle />
 			  						</IconButton>
 			  					</div>
-			  			</div>
-		  			</Draggable> :
+			  			</div> :
 		  			null
 				}
 				
@@ -141,26 +125,27 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 											id="Node-Name-Textfield"
 			                				value={this.props.nodeName}
 			                				fullWidth={true}
+			                				{...style.TextFieldStyle}
 											onChange={this.props.changeNodeName} />
-									{(!this.props.isTimeline) ?
-									<div style={{display: 'flex', width: "100%"}}>
-										<p style={{display: 'inline-block', paddingRight: 15}}>
-												{"Plugin:"}
-											</p>
-										<div style={{display: 'inline-block', width: "100%"}}>
+									{!this.props.isTimeline ?
+										<div style={style.PluginSelectContainer}>
+											<p style={style.label}>Plugin: </p>
 											<SelectField
-												fullWidth={true}
+												{...style.SelectFieldStyle}
 												value={this.props.pluginType}
 												title={this.props.pluginType}
-												maxHeight={300}
 												onChange={(event, key) => this.props.changePlugin(PluginList[key])} 
 											>
-											{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
+												{PluginList.map(
+													(plugin) => (
+														<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />
+														)
+													)
+												}
 											</SelectField>
-										</div>
-									</div>:
-									null
-									}
+										</div>:
+										null
+								    }
 								</div>
 								: null
 							}
@@ -189,7 +174,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
   							backgroundColor: DrawerHandleColor,
   							right: 0,
   						}}
-  						onTouchTap={this.props.openTimelineEditorCallback}
+  						onClick={this.props.openTimelineEditorCallback}
   						tooltipPosition="bottom-left"
   						style={{
 	  					position: 'fixed',

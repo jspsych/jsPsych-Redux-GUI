@@ -5,17 +5,17 @@ import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import Subheader from 'material-ui/Subheader';
+import AppBar from 'material-ui/AppBar';
 
 import { ListItem } from 'material-ui/List';
-import { GridTile } from 'material-ui/GridList';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; // , ToolbarSeparator, ToolbarTitle
 
 import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
 import DIYDeploy from 'material-ui/svg-icons/action/work';
+import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import {
-  cyan500 as hoverColor,
   grey100 as dialogBodyColor
 } from 'material-ui/styles/colors';
 
@@ -26,7 +26,9 @@ import MediaManager from '../../containers/MediaManager';
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
 
-import './Appbar.css';
+import AppbarTheme from './theme.js';
+
+const style = AppbarTheme.Appbar;
 
 const Actions = {
   save: "SAVE",
@@ -132,132 +134,141 @@ export default class Appbar extends React.Component {
 
     let isBundling = this.state.total !== 0;
 
+    const OrangizerToggle = (
+      <IconButton 
+        onClick={() => {
+          if (this.props.drawerOpened) {
+            this.props.drawerCloseCallback();
+          } else {
+            this.props.drawerOpenCallback();
+          }
+        }}
+      >
+        <MenuIcon {...style.DrawerToggle.iconColor}/>
+      </IconButton>
+    );
+
+    const title = (
+      <TextField
+        id="Experiment-Name-Textfield"
+        {...style.NameField}
+        value={this.props.experimentName}
+        errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
+        onChange={this.props.changeExperimentName}
+      />
+    );
+
+    const toolbar = (
+      <div className="Appbar-tools" style={style.Toolbar}>
+          <InitEditor />
+          <IconButton 
+            tooltip="New Experiment"
+            onClick={() => { this.props.newExperiment(this.popUpConfirm); }}
+            > 
+            <New {...style.icon} />
+          </IconButton>
+          {(this.state.performing === Actions.save) ?
+            <CircularProgress size={30}/> :
+            <IconButton 
+              tooltip="Save"
+              onClick={() => { this.props.save(()=>{
+                this.setPerforming(Actions.save);
+              }, () => {
+                this.setPerforming(null);
+              });}}
+            > 
+              <Save {...style.icon} />
+            </IconButton>
+          }
+          {(this.state.performing === Actions.saveAs) ?
+            <CircularProgress size={30}/> :
+            <IconButton 
+              tooltip="Save As"
+              onClick={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
+              > 
+              <SaveAs {...style.icon} />
+            </IconButton>
+          }
+          <MediaManager />
+          {isBundling ?
+            <div style={{display:'flex', paddingLeft: 10}}>
+              <div style={{paddingTop: 10}}><CircularProgress size={30} value={this.state.percent} mode="determinate"/></div>
+              <ListItem primaryText={this.state.percent+"%"} disabled={true}/>
+            </div>:
+          <IconButton
+            tooltip="DIY Deploy"
+            onClick={() => { 
+              this.props.diyDeploy(this.progresHook);
+            }}
+            >
+            <DIYDeploy {...style.icon} />
+          </IconButton>
+          }
+      </div>
+    )
+
 		return (
-      		<div className="Appbar" draggable={false} >
-  						<div className="App-Logo" >
-                <img src='./jsPsych/jspsych-logo-readme.jpg' />
-              </div>
-        			<div className="Appbar-main">
-          			<div className="Appbar-info">
-  								<UserMenu />
-  								<TextField
-    								id="Experiment-Name-Textfield"
-                    value={this.props.experimentName}
-                    errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
-    								onChange={this.props.changeExperimentName}
-                    />
-  							</div>
-  							<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
-                  <ToolbarGroup firstChild={true}>
-                    <InitEditor />
-                    <ToolbarSeparator />
-                    <IconButton 
-                      tooltip="New Experiment"
-                      onTouchTap={() => { this.props.newExperiment(this.popUpConfirm); }}
-                      > 
-                      <New hoverColor={hoverColor} />
-                    </IconButton>
-                    {(this.state.performing === Actions.save) ?
-                      <CircularProgress size={30}/> :
-                      <IconButton 
-                        tooltip="Save"
-                        onTouchTap={() => { this.props.save(()=>{
-                          this.setPerforming(Actions.save);
-                        }, () => {
-                          this.setPerforming(null);
-                        });}}
-                      > 
-                        <Save hoverColor={hoverColor} />
-                      </IconButton>
-                    }
-                    {(this.state.performing === Actions.saveAs) ?
-                      <CircularProgress size={30}/> :
-                      <IconButton 
-                        tooltip="Save As"
-                        onTouchTap={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
-                        > 
-                        <SaveAs hoverColor={hoverColor} />
-                      </IconButton>
-                    }
-                    <ToolbarSeparator />
-										
-                    <MediaManager />
-                    
-                    <ToolbarSeparator />
-                    {isBundling ?
-                      <div style={{display:'flex', paddingLeft: 10}}>
-                        <div style={{paddingTop: 10}}><CircularProgress size={30} value={this.state.percent} mode="determinate"/></div>
-                        <ListItem primaryText={this.state.percent+"%"} disabled={true}/>
-                      </div>:
-                    <IconButton
-                      tooltip="DIY Deploy"
-                      onTouchTap={() => { 
-                        this.props.diyDeploy(this.progresHook);
-                      }}
-                      >
-                      <DIYDeploy hoverColor={hoverColor} />
-                    </IconButton>
-                    }
-                  </ToolbarGroup>
-  							</Toolbar>
-  						</div>
+      		<div className="Appbar" style={style.Appbar} >
+            {OrangizerToggle}
+            {title}
+            {toolbar}
+            <UserMenu />
+            <ConfirmationDialog
+              open={this.state.confirmOpen}
+              message={this.state.confirmMessage}
+              handleClose={this.handleConfirmClose}
+              proceedWithOperation={this.state.proceedWithOperation}
+              proceedWithOperationLabel={this.state.proceedWithOperationLabel}
+              proceed={this.state.proceed}
+              proceedLabel={this.state.proceedLabel}
+              />
 
-              <ConfirmationDialog
-                open={this.state.confirmOpen}
-                message={this.state.confirmMessage}
-                handleClose={this.handleConfirmClose}
-                proceedWithOperation={this.state.proceedWithOperation}
-                proceedWithOperationLabel={this.state.proceedWithOperationLabel}
-                proceed={this.state.proceed}
-                proceedLabel={this.state.proceedLabel}
+            <Dialog
+              open={this.state.saveAsOpen}
+              onRequestClose={this.handleSaveAsClose}
+              titleStyle={{padding: 0}}
+              title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null)}
+              contentStyle={{width: 450, height: 300, padding: 0}}
+              bodyStyle={{backgroundColor: dialogBodyColor}}
+              actions={[
+                <FlatButton
+                  label="Save As"
+                  labelStyle={{
+                    textTransform: "none",
+                  }}
+                  primary={true}
+                  keyboardFocused={true}
+                  onClick={saveAsCallback}
+                />,
+                <FlatButton
+                  label="Cancel"
+                  labelStyle={{
+                    textTransform: "none",
+                  }}
+                  secondary={true}
+                  onClick={this.handleSaveAsClose}
                 />
-
-              <Dialog
-                open={this.state.saveAsOpen}
-                onRequestClose={this.handleSaveAsClose}
-                titleStyle={{padding: 0}}
-                title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null)}
-                contentStyle={{width: 450, height: 300, padding: 0}}
-                bodyStyle={{backgroundColor: dialogBodyColor}}
-                actions={[
-                  <FlatButton
-                    label="Save As"
-                    labelStyle={{
-                      textTransform: "none",
-                    }}
-                    primary={true}
-                    keyboardFocused={true}
-                    onTouchTap={saveAsCallback}
-                  />,
-                  <FlatButton
-                    label="Cancel"
-                    labelStyle={{
-                      textTransform: "none",
-                    }}
-                    secondary={true}
-                    onTouchTap={this.handleSaveAsClose}
-                  />
-                ]}
-              >
-              <div style={{width: 400, margin: 'auto'}}
-                onKeyPress={(e)=>{
-                  if (e.which === 13) {
-                    saveAsCallback();
-                  }
-                 }}
-              >
-                <TextField
-                  id="Save-as-new-experiment-name"
-                  floatingLabelFixed={true}
-                  floatingLabelText="New experiment name"
-                  value={this.state.saveAsName}
-                  errorText={this.state.saveAsNameError}
-                  onChange={this.setSaveAsName}
-                  fullWidth={true}
-                />
-              </div>
-              </Dialog>
-  					</div>
+              ]}
+            >
+            <div style={{width: 400, margin: 'auto'}}
+              onKeyPress={(e)=>{
+                if (e.which === 13) {
+                  saveAsCallback();
+                }
+               }}
+            >
+              <TextField
+                id="Save-as-new-experiment-name"
+                floatingLabelFixed={true}
+                floatingLabelText="New experiment name"
+                value={this.state.saveAsName}
+                errorText={this.state.saveAsNameError}
+                onChange={this.setSaveAsName}
+                fullWidth={true}
+              />
+            </div>
+            </Dialog>
+					</div>
 		   )
 	}
 

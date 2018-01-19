@@ -1,6 +1,5 @@
 var path = require('path');
 var webpack = require('webpack');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
@@ -18,7 +17,10 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       mangle: true,
