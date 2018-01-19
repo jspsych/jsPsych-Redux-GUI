@@ -7,14 +7,24 @@ const colors = {
 	secondaryDeep: '#FF5722',
 	secondaryLight: '#FFB74D',
 	font: 'white',
-}
+};
 
 const Icon = {
 	color: colors.primary,
 	hoverColor: colors.secondary
-}
+};
+
+const TextFieldFocusStyle = {
+	floatingLabelFocusStyle: {
+		color: colors.secondary
+	},
+	underlineFocusStyle: {
+		borderColor: colors.secondary
+	}
+};
 
 export default {
 	colors: colors,
-	Icon: Icon
+	Icon: Icon,
+	TextFieldFocusStyle: TextFieldFocusStyle
 };

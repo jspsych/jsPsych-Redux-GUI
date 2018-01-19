@@ -132,6 +132,8 @@ export default function experimentReducer(state=initState, action) {
 		 	return editor.setLoopFunction(state, action);
 		 case actionTypes.SET_CONDITION_FUNCTION:
 		 	return editor.setConditionFunction(state, action);
+		 case actionTypes.SET_TIMELINE_VARIABLE:
+		 	return editor.setTimelineVariable(state, action);
 		default:
 			return state;
 	}

@@ -29,18 +29,7 @@ const style = {
 		inputStyle: {
 			textAlign: 'center'
 		},
-		floatingLabelStyle: {
-			// color: 'black'
-		},
-		floatingLabelFocusStyle: {
-			color: colors.secondary
-		},
-		underlineStyle: {
-			// borderColor: 'black'
-		},
-		underlineFocusStyle: {
-			borderColor: colors.secondary
-		}
+		...GeneralTheme.TextFieldFocusStyle
 	},
 	X: {
 		paddingLeft: 8,

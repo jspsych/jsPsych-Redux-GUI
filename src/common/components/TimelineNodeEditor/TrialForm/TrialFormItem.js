@@ -35,6 +35,19 @@ const EnumPluginType = jsPsych.plugins.parameterType;
 
 import GeneralTheme from '../../theme.js';
 
+const colors = {
+	...GeneralTheme.colors,
+	labelColor: '#B1B1B1'
+};
+
+const style = {
+	label: {
+		color: colors.labelColor,
+		marginRight: '15px',
+		fontSize: '14px',
+	},
+}
+
 const hoverColor = GeneralTheme.colors.secondary;
 // const trueColor = GeneralTheme.colors.primaryDeep;
 // const falseColor = GeneralTheme.colors.secondaryDeep;
@@ -125,12 +138,7 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 		errorText: error ? 'This parameter is required.' : '',
 		floatingLabelFixed: true,
 		title: parameterInfo.description,
-		floatingLabelFocusStyle: {
-			color: GeneralTheme.colors.secondary
-		},
-		underlineFocusStyle: {
-			borderColor: GeneralTheme.colors.secondary
-		}
+		...GeneralTheme.TextFieldFocusStyle
 	}
 }
 
@@ -142,69 +150,72 @@ paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
 
 */
 export default class TrialFormItem extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			showTool: true,
+			// function editor dialog
+			openFuncEditor: false, 
+			// timeline variable selector dialog
+			openTimelineVariable: false,
+			keyListStr: "",
+			useKeyListStr: false,
+			subFormCollapse: false,
+		}
+
+		this.toggleSubFormCollapse = () => {
+			this.setState({
+				subFormCollapse: !this.state.subFormCollapse
+			})
+		}
+
+		this.setKeyListStr = (str) => {
+			this.setState({
+				keyListStr: str
+			});
+		}
+
+		this.showTool = () => {
+			this.setState({
+				showTool: true
+			});
+		}
+
+		this.hideTool = () => {
+			this.setState({
+				// showTool: false
+				showTool: true
+			});
+		}
+
+		this.showFuncEditor = () => {
+			this.setState({
+				openFuncEditor: true
+			});
+		}
+
+		this.hideFuncEditor = () => {
+			this.setState({
+				openFuncEditor: false
+			});
+		}
+
+		this.showTVSelector = () => {
+			this.setState({
+				openTimelineVariable: true
+			});
+		}
+
+		this.hideTVSelector = () => {
+			this.setState({
+				openTimelineVariable: false
+			});
+		}
+	}
+
 	static defaultProps = {
 		paramInfo: "",
 		param: "",
-	}
-
-	state = {
-		showTool: true,
-		// function editor dialog
-		openFuncEditor: false, 
-		// timeline variable selector dialog
-		openTimelineVariable: false,
-		keyListStr: "",
-		useKeyListStr: false,
-		subFormCollapse: false,
-	}
-
-	toggleSubFormCollapse = () => {
-		this.setState({
-			subFormCollapse: !this.state.subFormCollapse
-		})
-	}
-
-	setKeyListStr = (str) => {
-		this.setState({
-			keyListStr: str
-		});
-	}
-
-	showTool = () => {
-		this.setState({
-			showTool: true
-		});
-	}
-
-	hideTool = () => {
-		this.setState({
-			// showTool: false
-			showTool: true
-		});
-	}
-
-	showFuncEditor = () => {
-		this.setState({
-			openFuncEditor: true
-		});
-	}
-
-	hideFuncEditor = () => {
-		this.setState({
-			openFuncEditor: false
-		});
-	}
-
-	showTVSelector = () => {
-		this.setState({
-			openTimelineVariable: true
-		});
-	}
-
-	hideTVSelector = () => {
-		this.setState({
-			openTimelineVariable: false
-		});
 	}
 
 	renderLabel = (param) => {
@@ -648,12 +659,14 @@ export default class TrialFormItem extends React.Component {
 		);
 
 		return (
-			<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-			{this.renderLabel(param)}
-			<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-				{this.renderFieldContent(param, node, false)}
-				{this.appendFunctionEditor(param)}
-			</div>
+			<div className="Trial-Form-Item-Container" style={{flexDirection: 'column'}}>
+				<div style={style.label} title={parameterInfo.description}>
+				    {`${parameterInfo.pretty_name}: `}
+				</div>
+				<div style={{display: 'flex'}}>
+					{this.renderFieldContent(param, node, false)}
+					{this.appendFunctionEditor(param)}
+				</div>
 			</div>
 		)
 	}

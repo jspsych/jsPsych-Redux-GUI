@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
+import { Menu as ReactDataGridAddonMenu } from 'react-data-grid-addons';
+const { ContextMenu, MenuItem: ContextmenuItem } = ReactDataGridAddonMenu;
 
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
@@ -20,6 +22,7 @@ import Add from 'material-ui/svg-icons/content/add-circle';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import Launch from  'material-ui/svg-icons/action/launch';
 import TableIcon from 'material-ui/svg-icons/action/view-list';
+import UndoIcon from  'material-ui/svg-icons/content/undo';
 import {
 	cyan500 as hoverColor,
 	yellow500 as checkColor,
@@ -33,12 +36,53 @@ import {
 } from 'material-ui/styles/colors';
 
 import { ParameterMode } from '../../../reducers/Experiment/editor';
-const { Menu: { ContextMenu, MenuItem: ContextmenuItem } } = require('react-data-grid-addons');
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
-import { renderDialogTitle } from '../../gadgets';
-import { labelStyle } from '../TrialForm/TrialFormItem';
+import { renderDialogTitle, FloatingLabelButton } from '../../gadgets';
 
+import GeneralTheme from '../../theme.js';
+import { deepCopy } from '../../../utils';
+
+const colors = {
+	...GeneralTheme.colors,
+	labelColor: '#B1B1B1'
+};
+
+const style = {
+	triggerIconStyle: {
+		hoverColor: colors.secondary
+	},
+	deleteIconStyle: {
+		color: colors.secondaryDeep,
+		hoverColor: colors.secondary
+	},
+	addIconStyle: {
+		...GeneralTheme.Icon
+	},
+	iconSize: {
+		width: 36,
+		height: 36
+	},
+	undoIconStyle: {
+		hoverColor: colors.secondary
+	},
+	label: {
+		position: 'absolute',
+		lineHeight: '22px',
+		top: '38px',
+		transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+		zIndex: '1',
+		transform: 'scale(0.75) translate(0px, -28px)',
+		transformOrigin: 'left top 0px',
+		pointerEvents: 'none',
+		userSelect: 'none',
+		color: 'rgba(0, 0, 0, 0.3)',
+		display: 'inline-block',
+		maxWidth: '100%',
+		marginBottom: '5px',
+		fontWeight: '700',
+	},
+};
 
 const AddRowIcon = (props) => (
 	<SvgIcon {...props}>
@@ -100,6 +144,7 @@ class HeaderCell extends React.Component {
 		}
 
 		this.onCommit = () => {
+			this.props.recordHistory();
 			if (this.state.value !== this.props.name) {
 				let newName = this.state.value;
 				let i = 0;
@@ -119,7 +164,7 @@ class HeaderCell extends React.Component {
 		}
 	}
 
-	defaultProps = {
+	static defaultProps = {
 		name: "",
 	}
 
@@ -393,22 +438,6 @@ class TimelineVariableTableOpener extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			open: false
-		}
-
-		this.handleOpen = () => {
-			this.setState({
-				open: true
-			})
-		}
-
-		this.handleClose = () => {
-			this.setState({
-				open: false
-			})
-		}
-
 		this.onRowDelete = () => {
 			let index = this.props.selectedCell.row !== null ? this.props.selectedCell.row : this.props.numRows - 1;
 			this.props.onRowDelete(index);
@@ -420,10 +449,59 @@ class TimelineVariableTableOpener extends React.Component {
 			this.props.onColDelete(index);
 			this.props.loseFocusCallback();
 		}
+
+		this.renderToolbar = () => (
+			<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
+                  <ToolbarGroup firstChild={true}>
+                    <IconButton
+                    	tooltip="Insert Row"
+                    	onClick={this.props.addRow}
+	                   	iconStyle={{...style.iconSize}}
+	                >
+	                    <AddRowIcon {...style.addIconStyle}/>
+                    </IconButton>
+                    <IconButton
+                    	tooltip="Delete Row"
+                    	onClick={this.onRowDelete}
+	                   	iconStyle={{...style.iconSize}}
+	                >
+	                    <DeleteRowIcon {...style.deleteIconStyle}/>
+                    </IconButton>		
+     
+                    <ToolbarSeparator />
+
+                	<IconButton
+                    	tooltip="Insert Column"
+                    	onClick={this.props.addColumn}
+                    	iconStyle={{...style.iconSize}}
+                    >
+                    	<AddColumnIcon {...style.addIconStyle}/>
+                    </IconButton>
+
+                    <IconButton
+                    	tooltip="Delete Column"
+                    	onClick={this.onColDelete}
+                    	iconStyle={{...style.iconSize}}
+                    >
+                    	<DeleteColumnIcon {...style.deleteIconStyle}/>
+                    </IconButton>
+
+                    <ToolbarSeparator />
+
+                    <IconButton
+                    	tooltip="Undo"
+                    	disabled={this.props.history.length === 0}
+                    	onClick={this.props.handleUndo}
+                    >
+                    	<UndoIcon {...style.undoIconStyle}/>
+                    </IconButton>
+                  </ToolbarGroup>
+  			</Toolbar>
+		)
 	}
 	
 	render() {
-		let { handleOpen, handleClose } = this;
+		let { handleOpen, handleClose, open } = this.props;
 
 		const actions = [
 	      // <FlatButton
@@ -438,64 +516,29 @@ class TimelineVariableTableOpener extends React.Component {
 	    	width: 36,
 	    	height: 36
 	    }
-
-	    const toolbar = (
-	    	<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
-	                  <ToolbarGroup firstChild={true}>
-	                    <IconButton
-	                    	tooltip="Insert Row"
-	                    	onClick={this.props.addRow}
-		                   	iconStyle={{...iconSize, color: tableAddColor}}
-		                >
-		                    <AddRowIcon hoverColor={tableAddHoverColor}/>
-	                    </IconButton>
-	                    <IconButton
-	                    	tooltip="Delete Row"
-	                    	onClick={this.onRowDelete}
-		                   	iconStyle={{...iconSize, color: tableDelColor}}
-		                >
-		                    <DeleteRowIcon hoverColor={tableDelHoverColor}/>
-	                    </IconButton>		
-	     
-	                    <ToolbarSeparator />
-
-	                	<IconButton
-	                    	tooltip="Insert Column"
-	                    	onClick={this.props.addColumn}
-	                    	iconStyle={{...iconSize, color: tableAddColor}}
-	                    >
-	                    	<AddColumnIcon hoverColor={tableAddHoverColor}/>
-	                    </IconButton>
-
-	                    <IconButton
-	                    	tooltip="Delete Column"
-	                    	onClick={this.onColDelete}
-	                    	iconStyle={{...iconSize, color: tableDelColor}}
-	                    >
-	                    	<DeleteColumnIcon hoverColor={tableDelHoverColor}/>
-	                    </IconButton>
-	                  </ToolbarGroup>
-  			</Toolbar>
-	    )
-
+// <MenuItem
+// 					primaryText="Timeline Variables"
+// 					onClick={handleOpen}
+// 					style={{color: colors.secondary}}
+// 				/>				
 		return (
 			<div>
 				<IconButton
-					tooltip="Open in seperate window"
+					tooltip="Edit table"
 					onClick={handleOpen}
 				>
-				<Launch hoverColor={hoverColor} />
+					<Launch {...style.triggerIconStyle}/>
 				</IconButton>
 				<Dialog
-					open={this.state.open}
+					open={open}
 		      		contentStyle={{minHeight: 700}}
 	              	titleStyle={{padding: 0}}
 	              	style={{zIndex: 1000}}
 		            title={renderDialogTitle(
-			            	<Subheader style={{maxHeight: 58}}>{toolbar}</Subheader>,  
+			            	<Subheader style={{maxHeight: 58}}>{this.renderToolbar()}</Subheader>,  
 			            	handleClose,  
 			            	null, 
-			            	{borderTop: `10px solid ${addColor}`}
+			            	{borderTop: `10px solid ${colors.secondary}`}
 		            	)}
 		            actions={actions}
 		            modal={true}
@@ -504,24 +547,13 @@ class TimelineVariableTableOpener extends React.Component {
 					  	paddingTop: '25px', 
 					  	paddingBottom: '50px', 
 					  	borderTop: '1px solid #aaa'
-					  }}
+				}}
 		      	>
-
 		      		{this.props.spreadSheet}
 		      	</Dialog>
 	      	</div>
 		)
 	}
-}
-
-export function createDataGridRows(timelineVariable) {
-	return timelineVariable.map((row) => {
-		let strRow = {};
-		for (let key of Object.keys(row)) {
-			strRow[key] = (row[key] === null) ? "" : row[key];
-		}
-		return strRow;
-	})
 }
 
 export default class TimelineVariableTable extends React.Component {
@@ -530,16 +562,47 @@ export default class TimelineVariableTable extends React.Component {
 
 		this.state = {
 			open: false,
+			history: [],
+			openSheetEditor: false,
 			edittingCell: null,
 			selectedCell: { row: null, col: null },
+		}
+
+		this.handleOpen = () => {
+			this.setState({
+				open: true,
+				history: []
+			})
+		}
+
+		this.handleClose = () => {
+			this.setState({
+				open: false,
+				history: []
+			})
 		}
 
 		this.rowGetter = (i) => {
 			return this.props.rows[i];
 		}
 
+		this.recordHistory = () => {
+			let history = this.state.history.slice();
+			history.push(deepCopy(this.props.timeline_variables));
+			this.setState({
+				history: history
+			}) 
+		}
+
 		this.handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+			this.recordHistory();
 			this.props.updateTimelineVariableRow(fromRow, toRow, updated);
+		}
+
+		this.handleUndo = () => {
+			if (this.state.history.length > 0) {
+				this.props.setTable(this.state.history.pop());
+			}
 		}
 
 		this.createDataGridColumn = () => {
@@ -565,6 +628,7 @@ export default class TimelineVariableTable extends React.Component {
 					width: 120,
 					headerRenderer: () => (
 						<HeaderCell 
+							recordHistory={this.recordHistory}
 							name={key}
 							onCommit={(newName) => {
 								this.props.updateTimelineVariableName(key, newName);
@@ -581,13 +645,13 @@ export default class TimelineVariableTable extends React.Component {
 		this.setEdittingCell = (data) => {
 			this.setState({
 				edittingCell: data,
-				open: true,
+				openSheetEditor: true,
 			});
 		}
 
 		this.setSelectedCell = (row, col) => {
 			this.setState({
-				selectedCell: {row: row, col: col}
+				selectedCell: { row: row, col: col }
 			});
 		}
 
@@ -599,9 +663,29 @@ export default class TimelineVariableTable extends React.Component {
 
 		this.handleCloseCodeEditor = () => {
 			this.setState({
-				open: false,
+				openSheetEditor: false,
 				edittingCell: null
 			});
+		}
+
+		this.deleteRow = () => {
+			this.recordHistory();
+			this.props.deleteRow();
+		}
+
+		this.deleteColumn = () => {
+			this.recordHistory();
+			this.props.deleteColumn();
+		}
+
+		this.addRow = () => {
+			this.recordHistory();
+			this.props.addRow();
+		}
+
+		this.addColumn = () => {
+			this.recordHistory();
+			this.props.addColumn();
 		}
 	}
 	
@@ -624,10 +708,10 @@ export default class TimelineVariableTable extends React.Component {
 			        enableCellSelect={true}
 			        contextMenu={
 			        	<MyContextMenu 
-			        		onRowDelete={this.props.deleteRow} 
-			        		onColDelete={this.props.deleteColumn} 
-			        		addRow={this.props.addRow}
-			        		addColumn={this.props.addColumn}
+			        		onRowDelete={this.deleteRow} 
+			        		onColDelete={this.deleteColumn} 
+			        		addRow={this.addRow}
+			        		addColumn={this.addColumn}
 			        		setEdittingCell={this.setEdittingCell} 
 			        		loseFocusCallback={this.loseFocus}
 			        	/>
@@ -646,7 +730,7 @@ export default class TimelineVariableTable extends React.Component {
 			    />
 		        {(this.state.edittingCell !== null) ?
 	      	  	  <CodeEditor
-	      	  		open={this.state.open}
+	      	  		open={this.state.openSheetEditor}
 	      	  		code={chosenCell.func.code}
 	      	  		useFunc={chosenCell.mode === ParameterMode.USE_FUNC}
 	      	  		handleClose={this.handleCloseCodeEditor}
@@ -666,26 +750,28 @@ export default class TimelineVariableTable extends React.Component {
 		)
 
 		return (
-		  <div>
-		      <div style={{display: 'flex', width: "100%"}}>
-		      	<p  className="Trial-Form-Label-Container"
-				    style={labelStyle}
-				>
-				    Timeline variables:
-				</p>
-				<div className="Trial-Form-Content-Container">
-	  	  	 		<TimelineVariableTableOpener 
-	  	  	 			onRowDelete={this.props.deleteRow} 
-			        	onColDelete={this.props.deleteColumn} 
-			        	addRow={this.props.addRow}
-			        	addColumn={this.props.addColumn}
-	  	  	 			spreadSheet={spreadSheet} 
-	  	  	 			selectedCell={this.state.selectedCell}
-	  	  	 			numCols={numCols}
-	  	  	 			numRows={numRows}
-	  	  	 		/>
-	  	  	 	</div>
-		  	  </div>
+		  <div className="Trial-Form-Item-Container">
+		  	<FloatingLabelButton
+		  		button={
+		  			<TimelineVariableTableOpener
+		  	 			open={this.state.open}
+		  	 			history={this.state.history}
+		  	 			handleUndo={this.handleUndo}
+		  	 			handleOpen={this.handleOpen}
+		  	 			handleClose={this.handleClose}
+		  	 			handleUndo={this.handleUndo}
+		  	 			onRowDelete={this.deleteRow} 
+		        		onColDelete={this.deleteColumn} 
+		        		addRow={this.addRow}
+		        		addColumn={this.addColumn}
+		  	 			spreadSheet={spreadSheet} 
+		  	 			selectedCell={this.state.selectedCell}
+		  	 			numCols={numCols}
+		  	 			numRows={numRows}
+		  	 		/>
+		  		}
+		  		labelText={"Timeline variables"}
+		  	/>
 	      </div>
 		 )
 	}
@@ -693,6 +779,9 @@ export default class TimelineVariableTable extends React.Component {
 
 
 /*
+
+		  	  	
+
 key control
 
 

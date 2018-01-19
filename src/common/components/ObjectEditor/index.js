@@ -10,7 +10,7 @@ import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 import ContentAdd from 'material-ui/svg-icons/content/add';
-// import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
+import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import Clear from 'material-ui/svg-icons/content/delete-sweep';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import PasteIcon from 'material-ui/svg-icons/content/content-paste';
@@ -29,6 +29,17 @@ import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialF
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
 import GeneralTheme from '../theme.js';
+
+const colors = {
+	...GeneralTheme.colors
+};
+
+const style = {
+	triggerIcon: {
+		color: '#4D4D4D',
+		hoverColor: colors.secondary,
+	}
+}
 
 // const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
 
@@ -491,6 +502,13 @@ export default class ObjectEditor extends React.Component {
 				onClick={onSubmit}
 			/>
 		]
+
+		// <IconButton
+		// 			onClick={this.handleOpen}
+		// 			title="Click to edit"
+		// 		>
+		// 			<ObjectEditorIcon {...style.triggerIcon}/>
+		// 		</IconButton>
 
 		return (
 			<div>

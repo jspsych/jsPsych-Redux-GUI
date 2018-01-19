@@ -1,7 +1,5 @@
 import { connect } from 'react-redux';
-import TimelineVariableTable, {
-	createDataGridRows
-} from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
+import TimelineVariableTable from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
 import * as editorActions from '../../../actions/editorActions';
 
 const updateTimelineVariableRow = (dispatch, fromRow, toRow, updated) => {
@@ -36,9 +34,22 @@ const deleteColumn = (dispatch, index) => {
 	dispatch(editorActions.deleteTimelineVariableColumnAction(index));
 }
 
+const setTable = (dispatch, table) => {
+	dispatch(editorActions.setTimelineVariableAction(table));
+}
+
+function createDataGridRows(timelineVariable) {
+	return timelineVariable.map((row) => {
+		let strRow = {};
+		for (let key of Object.keys(row)) {
+			strRow[key] = (row[key] === null) ? "" : row[key];
+		}
+		return strRow;
+	})
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
-
 	
 	let timeline = experimentState[experimentState.previewId];
 	return {
@@ -57,6 +68,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	addColumn: () => { addColumn(dispatch); },
 	deleteRow: (index) => { deleteRow(dispatch, index); },
 	deleteColumn: (index) => { deleteColumn(dispatch, index); },
+	setTable: (table) => { setTable(dispatch, table); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineVariableTable);

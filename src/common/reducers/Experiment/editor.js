@@ -598,3 +598,16 @@ export function deleteTimelineVariableColumn(state, action) {
 
 	return new_state;
 }
+
+export function setTimelineVariable(state, action) {
+	let { table } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.timeline_variables = table;
+	return new_state;
+}

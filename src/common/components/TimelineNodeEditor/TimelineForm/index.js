@@ -3,7 +3,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 
-import { labelStyle } from '../TrialForm/TrialFormItem';
+import { FloatingLabelButton } from '../../gadgets';
 import { convertNullToEmptyString } from '../../../utils';
 import TimelineVariableTable from '../../../containers/TimelineNodeEditor/TimelineForm/TimelineVariableTableContainer';
 import CodeEditor from '../../CodeEditor';
@@ -76,35 +76,29 @@ class TimelineForm extends React.Component {
 					/>
 			  	</div>
 
-				<div style={{display: 'flex', width: "100%"}} >
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
-					>
-					    Loop function:
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<CodeEditor
-							initCode={this.props.loopFunction.code}
-							title="Loop function"
-							submitCallback={this.props.setLoopFunction}
-						/>
-					</div>
+				<div className="Trial-Form-Item-Container">
+					<FloatingLabelButton
+						labelText={"Loop function"}
+						button={
+							<CodeEditor
+								initCode={this.props.loopFunction.code}
+								title="Loop function"
+								submitCallback={this.props.setLoopFunction}
+							/>
+						}
+					/>
 				</div>
-				<div style={{display: 'flex', width: "100%"}} >
-					<p
-						className="Trial-Form-Label-Container"
-					    style={labelStyle}
-					>
-					    Conditional function:
-					</p>
-					<div className="Trial-Form-Content-Container">
-						<CodeEditor
-							initCode={this.props.conditionalFunction.code}
-							title="Condition function"
-							submitCallback={this.props.setConditionFunction}
-						/>
-					</div>
+				<div className="Trial-Form-Item-Container">
+					<FloatingLabelButton
+						labelText={"Conditional function"}
+						button={
+							<CodeEditor
+								initCode={this.props.conditionalFunction.code}
+								title="Condition function"
+								submitCallback={this.props.setConditionFunction}
+							/>
+						}
+					/>
 				</div>
 			</div>
 		)

@@ -21,11 +21,45 @@ import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 
 import './TimelineNodeEditor.css';
+import GeneralTheme from '../theme.js';
 
 export const WIDTH = 335;
 
 const jsPsych = window.jsPsych;
 const PluginList = Object.keys(jsPsych.plugins || {}).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
+
+const colors = {
+	...GeneralTheme.colors,
+	labelColor: '#B1B1B1'
+};
+const style = {
+	PluginSelectContainer: {
+		display: 'flex',
+		alignItems: 'baseline'
+	},
+	label: {
+		color: colors.labelColor,
+		marginRight: '15px',
+		fontSize: '14px',
+		fontFamily: 'Roboto, sans-serif'
+	},
+	TextFieldStyle: {
+		...GeneralTheme.TextFieldFocusStyle
+	},
+	SelectFieldStyle: {
+		autoWidth: true,
+		fullWidth: true,
+		maxHeight: 300,
+		// floatingLabelText: "Plugin",
+		// floatingLabelFixed: true,
+		selectedMenuItemStyle: {
+			color: colors.secondary
+		},
+		underlineFocusStyle: {
+			color: colors.secondary
+		}
+	}
+}
 
 export default class TimelineNodeEditorDrawer extends React.Component {
 	constructor(props) {
@@ -91,26 +125,27 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 											id="Node-Name-Textfield"
 			                				value={this.props.nodeName}
 			                				fullWidth={true}
+			                				{...style.TextFieldStyle}
 											onChange={this.props.changeNodeName} />
-									{(!this.props.isTimeline) ?
-									<div style={{display: 'flex', width: "100%"}}>
-										<p style={{display: 'inline-block', paddingRight: 15}}>
-												{"Plugin:"}
-											</p>
-										<div style={{display: 'inline-block', width: "100%"}}>
+									{!this.props.isTimeline ?
+										<div style={style.PluginSelectContainer}>
+											<p style={style.label}>Plugin: </p>
 											<SelectField
-												fullWidth={true}
+												{...style.SelectFieldStyle}
 												value={this.props.pluginType}
 												title={this.props.pluginType}
-												maxHeight={300}
 												onChange={(event, key) => this.props.changePlugin(PluginList[key])} 
 											>
-											{PluginList.map((plugin) => (<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />))}
+												{PluginList.map(
+													(plugin) => (
+														<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />
+														)
+													)
+												}
 											</SelectField>
-										</div>
-									</div>:
-									null
-									}
+										</div>:
+										null
+								    }
 								</div>
 								: null
 							}
