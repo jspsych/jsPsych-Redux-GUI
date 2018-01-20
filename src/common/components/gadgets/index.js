@@ -51,19 +51,23 @@ const style = {
 		ButtonGroup: {
 			position: 'absolute',
 			marginTop: '30px',
-			width: '100%'
+			width: '100%',
+			borderBottom: `1px solid ${colors.dividerColor}`
+		},
+		ButtonContainer: {
+			display: 'inline-flex',
+			alignItems: 'center',
+			// width: '100%',
 		},
 		ButtonDescription: {
 			color: colors.primaryDeep,
 			fontSize: '13px',
-			marginRight: '10px'
+			marginRight: '10px',
+			marginBottom: '-2px',
+			pointerEvents: 'none',
+    		userSelect: 'none',
+    		cursor: 'auto'
 		},
-		ButtonContainer: {
-			display: 'flex',
-			alignItems: 'flex-end',
-			width: '100%',
-			borderBottom: `1px solid ${colors.dividerColor}`
-		}
 	}
 }
 
@@ -93,22 +97,22 @@ export const FloatingLabelButton = ({
 		buttonGroupStyle
 	}) => (
 	<div style={{
+		...style.FloatingLabelButton.root,
 		...rootStyle,
-		...style.FloatingLabelButton.root
 	}}>
 		<label style={{
+			...style.FloatingLabelButton.FloatingLabel,
 			...labelStyle,
-			...style.FloatingLabelButton.FloatingLabel
 		}}>
 			{labelText}
 		</label>
 		<div style={{
+			...style.FloatingLabelButton.ButtonGroup,
 			...buttonContainerStyle,
-			...style.FloatingLabelButton.ButtonGroup
 		}}>
-			<div style={{
+			<span style={{
+				...style.FloatingLabelButton.ButtonContainer,
 				...buttonGroupStyle,
-				...style.FloatingLabelButton.ButtonContainer
 			}}>
 				<p style={{
 					...style.FloatingLabelButton.ButtonDescription,
@@ -117,7 +121,7 @@ export const FloatingLabelButton = ({
 					{description}
 				</p>
 				{button}
-			</div>
+			</span>
 		</div>
 	</div>
 )

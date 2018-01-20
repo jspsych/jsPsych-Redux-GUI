@@ -755,7 +755,7 @@ export default class TimelineVariableTable extends React.Component {
 		  	 		/>
 		  		}
 		  		labelText={"Timeline variables"}
-		  		description={"Edit Variables"}
+		  		description={"EDIT VARIABLES"}
 		  	/>
 	      </div>
 		 )

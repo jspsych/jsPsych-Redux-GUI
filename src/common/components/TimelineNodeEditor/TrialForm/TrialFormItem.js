@@ -674,7 +674,7 @@ export default class TrialFormItem extends React.Component {
 						</div>
 					}
 					descriptionStyle={useFunc ? { color: '#B1B1B1' } : {}}
-					description={useFunc ? "[Custom Code]" : "Edit Object"}
+					description={useFunc ? "[Custom Code]" : "EDIT OBJECT"}
 				/>
 			</div>
 		)

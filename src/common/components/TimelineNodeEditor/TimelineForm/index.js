@@ -89,7 +89,7 @@ class TimelineForm extends React.Component {
 								submitCallback={this.props.setLoopFunction}
 							/>
 						}
-						description={"Edit Code"}
+						description={"EDIT CODE"}
 					/>
 				</div>
 				<div className="Trial-Form-Item-Container">
@@ -102,7 +102,7 @@ class TimelineForm extends React.Component {
 								submitCallback={this.props.setConditionFunction}
 							/>
 						}
-						description={"Edit Code"}
+						description={"EDIT CODE"}
 					/>
 				</div>
 			</div>
