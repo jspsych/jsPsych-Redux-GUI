@@ -39,3 +39,4 @@ jspm_packages
 
 *.duplicate.*
 
+./*/Thumbs.db
