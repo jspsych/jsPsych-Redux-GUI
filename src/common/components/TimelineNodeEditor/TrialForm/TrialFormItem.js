@@ -21,6 +21,7 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
+import { FloatingLabelButton } from '../../gadgets';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditor from '../../CodeEditor';
@@ -413,40 +414,39 @@ export default class TrialFormItem extends React.Component {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let node = (<MenuItem primaryText="[Undefined]" style={{paddingTop: 2}} disabled={true} />);
+
+        let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
+        	useTV = parameterValue.mode === ParameterMode.USE_TV,
+        	isUndefined = !useFunc && !useTV,
+        	description = useTV ? "[Timeline Variable]" : (isUndefined ? '[Undefined]' : '[User Code]');
+
+		let node = (
+			<CodeEditor 
+				initCode={convertNullToEmptyString(parameterValue.func.code)} 
+                submitCallback={(newCode) => { 
+                  this.props.setFunc(param, newCode);
+                }}
+                useFunc={useFunc}
+				showEditMode={true}
+                setParamMode={() => { this.props.setParamMode(param); }}
+                title={`${parameterInfo.pretty_name}: `}
+    		/>
+        );
 
 		return (
-		<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-	      	{this.renderLabel(param)}
-	      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-	      		{this.renderFieldContent(param, node, false)}
-			    <CodeEditor 
-					initCode={convertNullToEmptyString(parameterValue.func.code)} 
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
-                    }}
-                    useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
-					showEditMode={true}
-                    setParamMode={() => { this.props.setParamMode(param); }}
-                    title={`${parameterInfo.pretty_name}: `}
-        		/>
-        		{((this.state.showTool || 
-				this.state.openTimelineVariable || 
-				parameterValue.mode === ParameterMode.USE_TV)) ?
-        		<TimelineVariableSelector 
-					openCallback={this.showTVSelector}
-					closeCallback={this.hideTVSelector}
-					useTV={parameterValue.mode === ParameterMode.USE_TV}
-					title={`${parameterInfo.pretty_name}: `}
-					selectedTV={parameterValue.timelineVariable}
-					submitCallback={(newTV) => {
-						this.props.setTimelineVariable(param, newTV);
-					}}
-					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
-				/> :
-				null}
-	        </div>
-	    </div>
+			<div className="Trial-Form-Item-Container">
+				<FloatingLabelButton
+					labelText={`${parameterInfo.pretty_name}`}
+					button={
+						<div style={{display: 'flex'}}>
+							{useTV ? null : node}
+							{this.appendTimelineVariable(param)}
+						</div>
+					}
+					descriptionStyle={!useFunc ? { color: '#B1B1B1' } : {}}
+					description={description}
+				/>
+			</div>
 		)
 	}
 
@@ -460,13 +460,16 @@ export default class TrialFormItem extends React.Component {
 	renderKeyboardInput = (param) => {
 
 		// 1. Extract data and information
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// deep copy as we need to parse key
+		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param));
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let value = parameterValue.value;
 
 		// 2. Parse keys
-		if (Array.isArray(value)) {
+		// Can its value potentially be an array? That is, can there be multiple keys
+		let isArray = !!parameterInfo.array;
+		if (isArray && Array.isArray(value)) {
 			let s = "";
 			for (let v of value) {
 				if (v === jsPsych.ALL_KEYS) s += v;
@@ -476,12 +479,12 @@ export default class TrialFormItem extends React.Component {
 			value = s;
 		}
 
+		parameterValue.value = value;
+
 		// 3. Set flags
 		// Is its value an Enum?
 		let isAllKey = value === jsPsych.ALL_KEYS;
-		// Can its value potentially be an array? That is, can there be multiple keys
-		let isArray = !!parameterInfo.array;
-
+		
 		let toggleAllKey = (
 			<IconButton 
 				onClick={() => {
@@ -643,7 +646,8 @@ export default class TrialFormItem extends React.Component {
       			{this.appendFunctionEditor(param)}
 				{this.appendTimelineVariable(param)}
 		  	</div>
-	    	)}
+	    	)
+	}
 
 	renderObjectEditor = (param) => {
 
@@ -658,15 +662,20 @@ export default class TrialFormItem extends React.Component {
 			/>
 		);
 
+		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC;
 		return (
-			<div className="Trial-Form-Item-Container" style={{flexDirection: 'column'}}>
-				<div style={style.label} title={parameterInfo.description}>
-				    {`${parameterInfo.pretty_name}: `}
-				</div>
-				<div style={{display: 'flex'}}>
-					{this.renderFieldContent(param, node, false)}
-					{this.appendFunctionEditor(param)}
-				</div>
+			<div className="Trial-Form-Item-Container">
+				<FloatingLabelButton
+					labelText={`${parameterInfo.pretty_name}`}
+					button={
+						<div style={{display: 'flex'}}>
+							{useFunc ? null : node}
+							{this.appendFunctionEditor(param)}
+						</div>
+					}
+					descriptionStyle={useFunc ? { color: '#B1B1B1' } : {}}
+					description={useFunc ? "[Custom Code]" : "EDIT OBJECT"}
+				/>
 			</div>
 		)
 	}

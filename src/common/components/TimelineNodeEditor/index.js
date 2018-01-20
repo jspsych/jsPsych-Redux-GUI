@@ -113,8 +113,9 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						<div className="TimelineNode-Editor-Header" 
 							 style={{
 							 	flexBasis: 'auto',
-							 	height: (this.props.isTimeline) ? '60px' : '120px',
-							 	minHeight: (this.props.isTimeline) ? '60px' : '120px',
+							 	height: (this.props.isTimeline) ? '60px' : '130px',
+							 	minHeight: (this.props.isTimeline) ? '60px' : '130px',
+							 	alignItems: 'center'
 							 }}
 							 >
 							<Subheader >

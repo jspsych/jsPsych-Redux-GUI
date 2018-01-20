@@ -66,22 +66,6 @@ const style = {
 	undoIconStyle: {
 		hoverColor: colors.secondary
 	},
-	label: {
-		position: 'absolute',
-		lineHeight: '22px',
-		top: '38px',
-		transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
-		zIndex: '1',
-		transform: 'scale(0.75) translate(0px, -28px)',
-		transformOrigin: 'left top 0px',
-		pointerEvents: 'none',
-		userSelect: 'none',
-		color: 'rgba(0, 0, 0, 0.3)',
-		display: 'inline-block',
-		maxWidth: '100%',
-		marginBottom: '5px',
-		fontWeight: '700',
-	},
 };
 
 const AddRowIcon = (props) => (
@@ -516,11 +500,11 @@ class TimelineVariableTableOpener extends React.Component {
 	    	width: 36,
 	    	height: 36
 	    }
-// <MenuItem
-// 					primaryText="Timeline Variables"
-// 					onClick={handleOpen}
-// 					style={{color: colors.secondary}}
-// 				/>				
+			// <MenuItem
+			// 			primaryText="Timeline Variables"
+			// 			onClick={handleOpen}
+			// 			style={{color: colors.secondary}}
+			// 		/>	
 		return (
 			<div>
 				<IconButton
@@ -771,6 +755,7 @@ export default class TimelineVariableTable extends React.Component {
 		  	 		/>
 		  		}
 		  		labelText={"Timeline variables"}
+		  		description={"EDIT VARIABLES"}
 		  	/>
 	      </div>
 		 )
