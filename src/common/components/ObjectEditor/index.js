@@ -503,21 +503,20 @@ export default class ObjectEditor extends React.Component {
 			/>
 		]
 
-		// <IconButton
-		// 			onClick={this.handleOpen}
-		// 			title="Click to edit"
-		// 		>
-		// 			<ObjectEditorIcon {...style.triggerIcon}/>
-		// 		</IconButton>
-
+// <MenuItem 
+// 					onClick={this.handleOpen} 
+// 					primaryText="[Data Object]" 
+// 					style={{color: GeneralTheme.colors.primary}}
+// 					title="Click to edit"
+// 				/>
 		return (
 			<div>
-				<MenuItem 
-					onClick={this.handleOpen} 
-					primaryText="[Data Object]" 
-					style={{color: GeneralTheme.colors.primary}}
+				<IconButton
+					onClick={this.handleOpen}
 					title="Click to edit"
-				/>
+				>
+					<ObjectEditorIcon {...style.triggerIcon}/>
+				</IconButton>
 				<Dialog
 					open={open}
 					titleStyle={{padding: 0}}

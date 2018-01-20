@@ -11,8 +11,11 @@ import {
   cyan500 as trueColor,
   pink500 as falseColor
 } from 'material-ui/styles/colors';
+import GeneralTheme from '../../theme.js';
 
 const SelectLableColor = (flag) => (flag ? trueColor : falseColor);
+// const trueColor = GeneralTheme.colors.primaryDeep;
+// const falseColor = GeneralTheme.colors.secondaryDeep;
 
 class TimelineForm extends React.Component {
 	render(){
@@ -86,6 +89,7 @@ class TimelineForm extends React.Component {
 								submitCallback={this.props.setLoopFunction}
 							/>
 						}
+						description={"Edit Code"}
 					/>
 				</div>
 				<div className="Trial-Form-Item-Container">
@@ -98,6 +102,7 @@ class TimelineForm extends React.Component {
 								submitCallback={this.props.setConditionFunction}
 							/>
 						}
+						description={"Edit Code"}
 					/>
 				</div>
 			</div>
