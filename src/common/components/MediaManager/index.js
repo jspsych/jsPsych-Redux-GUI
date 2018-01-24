@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
@@ -63,16 +62,6 @@ export const MediaManagerMode = {
 }
 
 export default class MediaManager extends React.Component {
-	static propTypes = {
-		parameterName: PropTypes.string,
-		mode: PropTypes.string
-	};
-
-	static defaultProps = {
-		mode: MediaManagerMode.upload,
-		parameterName: null,
-	}
-
 	constructor(props) {
 		super(props);
 
@@ -175,109 +164,122 @@ export default class MediaManager extends React.Component {
 				selected: (this.props.s3files.Contents) ? this.props.s3files.Contents.map((f) => (false)) : []
 			})
 		}
-	}
 
-	openPreviewWindow = (s3filePath) => {
-		let url = null;
-		try {
-			url = getSignedUrl(s3filePath);
-		} catch(e) {
-			console.log(e);
-		}
-		this.setState({
-			previewFileUrl: url,
-			previewFileTitle: s3filePath.replace(this.props.s3files.Prefix, ''),
-		})
-	}
-
-	closePreviewWindow = () => {
-		this.setState({
-			previewFileUrl: null,
-			previewFileTitle: null,
-		})
-	}
-
-	renderTrigger = () => {
-		switch(this.props.mode) {
-			case MediaManagerMode.select:
-			case MediaManagerMode.multiSelect:
-				return (
-					<IconButton 
-						onClick={this.handleOpen}
-						tooltip="Insert Media"
-					>
-						<Add color='#4D4D4D' hoverColor={GeneralTheme.colors.secondary}/>
-					</IconButton>
-				);
-			case MediaManagerMode.upload:
-			default:
-				return (
-					<IconButton
-		              tooltip="Upload Media"
-		              onClick={this.handleOpen}
-		          	>
-		              <MediaManagerIcon {...AppbarIconStyle}/>
-		          	</IconButton>
-				);
-		}
-	}
-
-	renderActions = () => {
-		const deleteButton = (<FlatButton
-				label="Delete"
-				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
-				onClick={this.handleDelete}
-			/>);
-		switch(this.props.mode) {
-			case MediaManagerMode.select:
-			case MediaManagerMode.multiSelect:
-				return [
-				<FlatButton
-					label="Insert"
-					labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
-					onClick={this.insertFile}
-				/>,
-				deleteButton
-				];
-			case MediaManagerMode.upload:
-			default:
-				return [
-					deleteButton,
-					<FlatButton
-			            label="Close"
-			            primary={true}
-			            keyboardFocused={true}
-			            labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
-			            onClick={this.handleClose}
-			        />
-				]
+		this.openPreviewWindow = (s3filePath) => {
+			let url = null;
+			try {
+				url = getSignedUrl(s3filePath);
+			} catch(e) {
+				console.log(e);
 			}
-	}
+			this.setState({
+				previewFileUrl: url,
+				previewFileTitle: s3filePath.replace(this.props.s3files.Prefix, ''),
+			})
+		}
 
-	renderPreviewTag = () => {
-		if (!this.state.previewFileTitle) return <div />;
+		this.closePreviewWindow = () => {
+			this.setState({
+				previewFileUrl: null,
+				previewFileTitle: null,
+			})
+		}
 
-		let type = mime.lookup(this.state.previewFileTitle);
+		this.renderTrigger = () => {
+			switch(this.props.mode) {
+				case MediaManagerMode.select:
+				case MediaManagerMode.multiSelect:
+					return (
+						<this.props.Trigger_insert onClick={this.handleOpen}/>
+					);
+				case MediaManagerMode.upload:
+				default:
+					return (
+						<this.props.Trigger_upload onClick={this.handleOpen}/>
+					);
+			}
+		}
 
-		if(type.indexOf('image') > -1){
-			return <embed type={type} src={this.state.previewFileUrl} />
-		} else if(type.indexOf('video') > -1){
-			return <video controls width="100%" height={350} style={{paddingTop: 20}}>
-						<source src={this.state.previewFileUrl} type={type} />
-					</video>
-		} else if(type.indexOf('audio') > -1){
-			return <audio controls>
-						<source src={this.state.previewFileUrl} type={type} />
-					</audio>
-		} else {
-			return (
-				<div style={{fontSize: 18, paddingTop: "20%"}}>
-					<p>{`Sorry, but file "${this.state.previewFileTitle}" is not supported for preview.`}</p>
-					<p>You may download it for further operations.</p>
-				</div>
-			)
+		this.renderActions = () => {
+			const deleteButton = (<FlatButton
+					label="Delete"
+					labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
+					onClick={this.handleDelete}
+				/>);
+			switch(this.props.mode) {
+				case MediaManagerMode.select:
+				case MediaManagerMode.multiSelect:
+					return [
+					<FlatButton
+						label="Insert"
+						labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
+						onClick={this.insertFile}
+					/>,
+					deleteButton
+					];
+				case MediaManagerMode.upload:
+				default:
+					return [
+						deleteButton,
+						<FlatButton
+				            label="Close"
+				            primary={true}
+				            keyboardFocused={true}
+				            labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
+				            onClick={this.handleClose}
+				        />
+					]
+				}
+		}
+
+		this.renderPreviewTag = () => {
+			if (!this.state.previewFileTitle) return <div />;
+
+			let type = mime.lookup(this.state.previewFileTitle);
+
+			if(type.indexOf('image') > -1){
+				return <embed type={type} src={this.state.previewFileUrl} />
+			} else if(type.indexOf('video') > -1){
+				return <video controls width="100%" height={350} style={{paddingTop: 20}}>
+							<source src={this.state.previewFileUrl} type={type} />
+						</video>
+			} else if(type.indexOf('audio') > -1){
+				return <audio controls>
+							<source src={this.state.previewFileUrl} type={type} />
+						</audio>
+			} else {
+				return (
+					<div style={{fontSize: 18, paddingTop: "20%"}}>
+						<p>{`Sorry, but file "${this.state.previewFileTitle}" is not supported for preview.`}</p>
+						<p>You may download it for further operations.</p>
+					</div>
+				)
+			}
 		}
 	}
+
+	static defaultProps = {
+		mode: MediaManagerMode.upload,
+		parameterName: null,
+		Trigger_upload: ({onClick}) => (
+			<IconButton
+              tooltip="Upload Media"
+              onClick={onClick}
+          	>
+              <MediaManagerIcon {...AppbarIconStyle}/>
+          	</IconButton>
+		),
+		Trigger_insert: ({onClick}) => (
+			<IconButton 
+				onClick={onClick}
+				tooltip="Insert Media"
+			>
+				<Add color='#4D4D4D' hoverColor={GeneralTheme.colors.secondary}/>
+			</IconButton>
+		)
+	}
+
+	
 
 	render() {
 		const overlayStyle = {

@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 import { List, ListItem } from 'material-ui/List';
@@ -23,18 +23,33 @@ import GeneralTheme from '../../theme.js';
 
 const hoverColor = GeneralTheme.colors.secondary;
 
+const style = {
+	TriggerIcon: GeneralTheme.Icon
+}
+
 import { renderDialogTitle } from '../../gadgets';
 
 export default class TimelineVariableSelector extends React.Component {
-	static propTypes = {
-		submitCallback: PropTypes.func,
-		openCallback: PropTypes.func,
-		closeCallback: PropTypes.func,
-		setParamMode: PropTypes.func,
-		title: PropTypes.string,
-		useTV: PropTypes.bool,
-		selectedTV: PropTypes.string,
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			open: false,
+		}
+
+		this.handleOpen = () => {
+			this.setState({
+				open: true
+			});
+			this.props.openCallback();
+		}
+
+		this.handleClose = () => {
+			this.setState({
+				open: false
+			});
+			this.props.closeCallback();
+		}
+	}
 
 	static defaultProps = {
 		title: "Timeline Variables",
@@ -49,33 +64,18 @@ export default class TimelineVariableSelector extends React.Component {
 		},
 		setParamMode: function() {
 			return;
-		}
-	}
-
-	state = {
-		open: false,
-	}
-
-	handleOpen = () => {
-		this.setState({
-			open: true
-		});
-		this.props.openCallback();
-	}
-
-	handleClose = () => {
-		this.setState({
-			open: false
-		});
-		this.props.closeCallback();
+		},
+		Trigger: ({onClick}) => (
+			<IconButton onClick={onClick} tooltip="Insert timeline variable">
+				<AddTimelineVarIcon {...style.TriggerIcon}/>
+			</IconButton>
+		)
 	}
 
 	render() {
 		return (
 			<div>
-				<IconButton onClick={this.handleOpen} tooltip="Insert timeline variable">
-					<AddTimelineVarIcon hoverColor={hoverColor}/>
-				</IconButton>
+				<this.props.Trigger onClick={this.handleOpen}/>
 				<Dialog
 					open={this.state.open}
 					contentStyle={{minHeight: 500}}

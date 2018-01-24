@@ -25,6 +25,8 @@ const style = {
 	AppbarContainer: {
 		flexBasis: '56px',
 		maxHeight: '56px',
+		zIndex: 5,
+		boxShadow: '0 2px 5px rgba(0,0,0, .26)',
 	},
 	AppMainContainer: {
 		flexGrow: '1',

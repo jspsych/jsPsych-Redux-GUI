@@ -1,5 +1,4 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -35,10 +34,8 @@ const colors = {
 };
 
 const style = {
-	triggerIcon: {
-		color: '#4D4D4D',
-		hoverColor: colors.secondary,
-	}
+	TriggerStyle: GeneralTheme.Icon,
+
 }
 
 // const fixedTextColor = 'rgba(0, 0, 0, 0.3)';
@@ -108,29 +105,32 @@ const ValueTextColor = (value) => {
 }
 
 class ObjectKey extends React.Component {
-	defaultProps = {
+	constructor(props) {
+		super(props);
+		this.state = {
+			edit: false,
+		}
+
+		this.enterEditMode = () => {
+			this.setState({
+				edit: true
+			});
+		}
+
+		this.exitEditMode = () => {
+			if (this.props.errorCode !== ObjectKeyErrorCode.Good) return;
+			this.setState({
+				edit: false
+			});
+		}
+	}
+
+	static defaultProps = {
 		oldKey: "",
 		setObjectKey: () => {},
 		errorCode: ObjectKeyErrorCode.Good,
 	}
-
-	state = {
-		edit: false,
-	}
-
-	enterEditMode = () => {
-		this.setState({
-			edit: true
-		});
-	}
-
-	exitEditMode = () => {
-		if (this.props.errorCode !== ObjectKeyErrorCode.Good) return;
-		this.setState({
-			edit: false
-		});
-	}
-
+	
 	render() {
 		let { oldKey, errorCode } = this.props;
 		return (
@@ -153,33 +153,36 @@ class ObjectKey extends React.Component {
 }
 
 class ObjectValue extends React.Component {
-	defaultProps = {
+	constructor(props) {
+		super(props);
+		this.state = {
+			edit: false,
+		}
+
+		this.enterEditMode = () => {
+			this.setState({
+				edit: true
+			});
+		}
+
+		this.exitEditMode = () => {
+			this.setState({
+				edit: false
+			});
+		}
+
+		this.processNot = (s) => {
+			if (s === null) return "null";
+			if (s === undefined) return "undefined";
+			return s;
+		}
+	}
+
+	static defaultProps = {
 		value: "",
 		setObjectValue: () => {},
 		keyName: "",
 		index: 0,
-	}
-
-	state = {
-		edit: false,
-	}
-
-	enterEditMode = () => {
-		this.setState({
-			edit: true
-		});
-	}
-
-	exitEditMode = () => {
-		this.setState({
-			edit: false
-		});
-	}
-
-	processNot = (s) => {
-		if (s === null) return "null";
-		if (s === undefined) return "undefined";
-		return s;
 	}
 
 	render() {
@@ -235,252 +238,264 @@ class ObjectValue extends React.Component {
 }
 
 export default class ObjectEditor extends React.Component {
-	defaultProps = {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			open: false,
+			objectKeys: [],
+			objectValues: [],
+			objectKeyErrors: [],
+			valid: true,
+		}
+
+		this.unzip = (targetObj) => {
+			let objectKeys = Object.keys(targetObj);
+			let objectValues = objectKeys.map((key) => (targetObj[key]));
+			this.setState({
+				objectKeys: objectKeys,
+				objectValues: objectValues,
+				objectKeyErrors: objectKeys.map(k => ObjectKeyErrorCode.Good),
+			})
+		}
+
+		this.handleOpen = () => {
+			this.unzip(this.props.targetObj);
+			this.setState({
+				open: true
+			});
+		}
+
+		this.handleClose = () => {
+			this.setState({
+				open: false,
+			});
+		}
+
+		/*
+		param:
+		oldKey, old key value
+		newKey, new key value,
+		i, position of key to be modified
+		*/
+		this.setObjectKey = (oldKey, newKey, i) => {
+			let newObjectKeys = this.state.objectKeys.slice();
+			let newObjectKeyErrors = this.state.objectKeyErrors.slice();
+			newObjectKeys[i] = newKey;
+
+			// check for duplicate
+			let hist = {};
+			for (let i = 0; i < newObjectKeys.length; i++) {
+				let key = newObjectKeys[i];
+				if (!hist[key]) {
+					hist[key] = [i];
+				} else {
+					hist[key].push(i);
+				}
+			}
+			let valid = true;
+			// set error message
+			for (let v of Object.values(hist)) {
+				// if duplicate happens
+				if (v.length > 1) {
+					for (let i of v) {
+						newObjectKeyErrors[i] = ObjectKeyErrorCode.ContainsDuplicate;
+					}
+					valid = false;
+					// else this key is good
+				} else {
+					newObjectKeyErrors[v[0]] = ObjectKeyErrorCode.Good;
+				}
+			}
+
+			this.setState({
+				objectKeys: newObjectKeys,
+				objectKeyErrors: newObjectKeyErrors,
+				valid: valid
+			});
+		}
+
+		this.setObjectValue = (value, i) => {
+			let newObjectValues = this.state.objectValues.slice();
+			newObjectValues[i].value = convertReserved(value);
+			this.setState({
+				objectValues: newObjectValues
+			})
+		}
+
+		this.setObjectValueMode = (i) => {
+			let newObjectValues = this.state.objectValues.slice();
+			newObjectValues[i].mode = newObjectValues[i].mode === ParameterMode.USE_TV ? null : ParameterMode.USE_TV;
+			this.setState({
+				objectValues: newObjectValues
+			})
+		}
+
+		this.setObjectTimelineVariable = (v, i) => {
+			let newObjectValues = this.state.objectValues.slice();
+			newObjectValues[i].timelineVariable = v;
+			this.setState({
+				objectValues: newObjectValues
+			})
+		}
+
+		this.deleteKeyPair = (i) => {
+			let newObjectKeys = this.state.objectKeys.slice();
+			let newObjectValues = this.state.objectValues.slice();
+			let newObjectKeyErrors = this.state.objectKeyErrors.slice();
+			newObjectKeys.splice(i, 1);
+			newObjectValues.splice(i, 1);
+			newObjectKeyErrors.splice(i, 1);
+
+			// update if object now is valid
+			let valid = true;
+			for (let e of newObjectKeyErrors) {
+				if (e !== ObjectKeyErrorCode.Good) {
+					valid = false;
+					break;
+				}
+			}
+			this.setState({
+				objectKeys: newObjectKeys,
+				objectValues: newObjectValues,
+				objectKeyErrors: newObjectKeyErrors,
+				valid: valid
+			});
+		}
+
+		this.addKeyPair = () => {
+			// generate unique default key name
+			let hist = {};
+			for (let key of this.state.objectKeys) hist[key] = true; 
+			let i = 0, key = `key${i++}`;
+			while (hist[key]) key = `key${i++}`;
+
+			let newObjectKeys = this.state.objectKeys.slice();
+			let newObjectValues = this.state.objectValues.slice();
+			let newObjectKeyErrors = this.state.objectKeyErrors.slice();
+			newObjectKeys.push(key);
+			// init
+			newObjectValues.push(createComplexDataObject(""));
+			newObjectKeyErrors.push(ObjectKeyErrorCode.Good);
+			this.setState({
+				objectKeys: newObjectKeys,
+				objectValues: newObjectValues,
+				objectKeyErrors: newObjectKeyErrors,
+			});
+		}
+
+		/*
+		Will convert "" and undefined to null if we save it in redux store
+		(so that dynamoDB will not ignore it)
+		*/
+		this.generateObj = (convert2Null=false) => {
+			let { objectKeys, objectValues } = this.state;
+			let resObj = {};
+			for (let i = 0; i < objectKeys.length; i++) {
+				resObj[objectKeys[i]] = deepCopy(objectValues[i]);
+				resObj[objectKeys[i]].value = (convert2Null) ? convertToNull(resObj[objectKeys[i]].value) : resObj[objectKeys[i]].value;
+			}
+			return resObj;
+		}
+
+		this.copyObj = () => {
+			if (this.state.valid) {
+				let obj = this.generateObj();
+				let objStr = JSON.stringify(obj);
+				copyToLocalStorage(objStr);
+				copy(stringify(obj));
+				this.props.notifySuccess("Object copied !");
+			} else {
+				this.props.notifyError("Object is not valid !");
+			}
+				
+		}
+
+		this.paste = () => {
+			let content = pasteFromLocalStorage();
+			if (!content) {
+				this.props.notifyError("Content is empty !");
+			} else {
+				try {
+					this.unzip(JSON.parse(content));
+				} catch(e) {
+					this.props.notifyError(e.message);
+				}
+			}
+		}
+
+		this.onSubmit = () => {
+			let { valid } = this.state;
+			if (!valid) {
+				this.props.notifyError("Object is not valid !");
+				return;
+			}
+			this.props.submitCallback(this.generateObj(true));
+			this.handleClose();
+		}
+
+
+		this.renderRow = (key, value, i) => {
+			return (
+				<div style={{display: 'flex', paddingTop: (i === 0) ? 0 : 5}} key={`object-container-${i}`}>
+					<ObjectKey 
+						oldKey={key}
+						key={`object-key-${i}`}
+						errorCode={this.state.objectKeyErrors[i]}
+						setObjectKey={(newKey) => {
+							this.setObjectKey(key, newKey, i);
+						}}
+					/>
+					<MenuItem key={`object-sep-${i}`} primaryText=":" disabled={true} />
+					<ObjectValue
+						complexDataObject={value}
+						keyName={key}
+						index={i}
+						key={`object-value-${i}`}
+						setObjectValue={(newValue) => {
+							this.setObjectValue(newValue, i);
+						}}
+					/>
+					<div style={{right: 0}} key={`object-timeline-variable-container-${i}`}>
+						<TimelineVariableSelector 
+							key={`object-timeline-variable-${i}`}
+							setParamMode={() => { this.setObjectValueMode(i); }}
+							submitCallback={(v) => { this.setObjectTimelineVariable(v, i); }}
+							useTV={this.state.objectValues[i].mode === ParameterMode.USE_TV}
+							selectedTV={this.state.objectValues[i].timelineVariable}
+						/>
+					</div>
+					<div style={{right: 0}} key={`object-delete-container-${i}`}>
+						<IconButton
+							tooltip="delete key"
+							key={`object-delete-${i}`}
+							onClick={()=>{ this.deleteKeyPair(i); }}
+						>
+							<Clear key={`object-delete-icon-${i}`} color={clearColor} />
+						</IconButton>
+					</div>
+				</div>
+			)
+		}
+	}
+
+	static defaultProps = {
 		targetObj: {},
 		title: "",
 		keyName: "",
-		submitCallback: (p) => {}
-	}
-
-	state = {
-		open: false,
-		objectKeys: [],
-		objectValues: [],
-		objectKeyErrors: [],
-		valid: true,
-	}
-
-	unzip(targetObj) {
-		let objectKeys = Object.keys(targetObj);
-		let objectValues = objectKeys.map((key) => (targetObj[key]));
-		this.setState({
-			objectKeys: objectKeys,
-			objectValues: objectValues,
-			objectKeyErrors: objectKeys.map(k => ObjectKeyErrorCode.Good),
-		})
-	}
-
-	handleOpen = () => {
-		this.unzip(this.props.targetObj);
-		this.setState({
-			open: true
-		});
-	}
-
-	handleClose = () => {
-		this.setState({
-			open: false,
-		});
-	}
-
-	/*
-	param:
-	oldKey, old key value
-	newKey, new key value,
-	i, position of key to be modified
-	*/
-	setObjectKey = (oldKey, newKey, i) => {
-		let newObjectKeys = this.state.objectKeys.slice();
-		let newObjectKeyErrors = this.state.objectKeyErrors.slice();
-		newObjectKeys[i] = newKey;
-
-		// check for duplicate
-		let hist = {};
-		for (let i = 0; i < newObjectKeys.length; i++) {
-			let key = newObjectKeys[i];
-			if (!hist[key]) {
-				hist[key] = [i];
-			} else {
-				hist[key].push(i);
-			}
-		}
-		let valid = true;
-		// set error message
-		for (let v of Object.values(hist)) {
-			// if duplicate happens
-			if (v.length > 1) {
-				for (let i of v) {
-					newObjectKeyErrors[i] = ObjectKeyErrorCode.ContainsDuplicate;
-				}
-				valid = false;
-				// else this key is good
-			} else {
-				newObjectKeyErrors[v[0]] = ObjectKeyErrorCode.Good;
-			}
-		}
-
-		this.setState({
-			objectKeys: newObjectKeys,
-			objectKeyErrors: newObjectKeyErrors,
-			valid: valid
-		});
-	}
-
-	setObjectValue = (value, i) => {
-		let newObjectValues = this.state.objectValues.slice();
-		newObjectValues[i].value = convertReserved(value);
-		this.setState({
-			objectValues: newObjectValues
-		})
-	}
-
-	setObjectValueMode = (i) => {
-		let newObjectValues = this.state.objectValues.slice();
-		newObjectValues[i].mode = newObjectValues[i].mode === ParameterMode.USE_TV ? null : ParameterMode.USE_TV;
-		this.setState({
-			objectValues: newObjectValues
-		})
-	}
-
-	setObjectTimelineVariable = (v, i) => {
-		let newObjectValues = this.state.objectValues.slice();
-		newObjectValues[i].timelineVariable = v;
-		this.setState({
-			objectValues: newObjectValues
-		})
-	}
-
-	deleteKeyPair = (i) => {
-		let newObjectKeys = this.state.objectKeys.slice();
-		let newObjectValues = this.state.objectValues.slice();
-		let newObjectKeyErrors = this.state.objectKeyErrors.slice();
-		newObjectKeys.splice(i, 1);
-		newObjectValues.splice(i, 1);
-		newObjectKeyErrors.splice(i, 1);
-
-		// update if object now is valid
-		let valid = true;
-		for (let e of newObjectKeyErrors) {
-			if (e !== ObjectKeyErrorCode.Good) {
-				valid = false;
-				break;
-			}
-		}
-		this.setState({
-			objectKeys: newObjectKeys,
-			objectValues: newObjectValues,
-			objectKeyErrors: newObjectKeyErrors,
-			valid: valid
-		});
-	}
-
-	addKeyPair = () => {
-		// generate unique default key name
-		let hist = {};
-		for (let key of this.state.objectKeys) hist[key] = true; 
-		let i = 0, key = `key${i++}`;
-		while (hist[key]) key = `key${i++}`;
-
-		let newObjectKeys = this.state.objectKeys.slice();
-		let newObjectValues = this.state.objectValues.slice();
-		let newObjectKeyErrors = this.state.objectKeyErrors.slice();
-		newObjectKeys.push(key);
-		// init
-		newObjectValues.push(createComplexDataObject(""));
-		newObjectKeyErrors.push(ObjectKeyErrorCode.Good);
-		this.setState({
-			objectKeys: newObjectKeys,
-			objectValues: newObjectValues,
-			objectKeyErrors: newObjectKeyErrors,
-		});
-	}
-
-	/*
-	Will convert "" and undefined to null if we save it in redux store
-	(so that dynamoDB will not ignore it)
-	*/
-	generateObj = (convert2Null=false) => {
-		let { objectKeys, objectValues } = this.state;
-		let resObj = {};
-		for (let i = 0; i < objectKeys.length; i++) {
-			resObj[objectKeys[i]] = deepCopy(objectValues[i]);
-			resObj[objectKeys[i]].value = (convert2Null) ? convertToNull(resObj[objectKeys[i]].value) : resObj[objectKeys[i]].value;
-		}
-		return resObj;
-	}
-
-	copyObj = () => {
-		if (this.state.valid) {
-			let obj = this.generateObj();
-			let objStr = JSON.stringify(obj);
-			copyToLocalStorage(objStr);
-			copy(stringify(obj));
-			this.props.notifySuccess("Object copied !");
-		} else {
-			this.props.notifyError("Object is not valid !");
-		}
-			
-	}
-
-	paste = () => {
-		let content = pasteFromLocalStorage();
-		if (!content) {
-			this.props.notifyError("Content is empty !");
-		} else {
-			try {
-				this.unzip(JSON.parse(content));
-			} catch(e) {
-				this.props.notifyError(e.message);
-			}
-		}
-	}
-
-	onSubmit = () => {
-		let { valid } = this.state;
-		if (!valid) {
-			this.props.notifyError("Object is not valid !");
-			return;
-		}
-		this.props.submitCallback(this.generateObj(true));
-		this.handleClose();
-	}
-
-
-	renderRow = (key, value, i) => {
-		return (
-			<div style={{display: 'flex', paddingTop: (i === 0) ? 0 : 5}} key={`object-container-${i}`}>
-				<ObjectKey 
-					oldKey={key}
-					key={`object-key-${i}`}
-					errorCode={this.state.objectKeyErrors[i]}
-					setObjectKey={(newKey) => {
-						this.setObjectKey(key, newKey, i);
-					}}
-				/>
-				<MenuItem key={`object-sep-${i}`} primaryText=":" disabled={true} />
-				<ObjectValue
-					complexDataObject={value}
-					keyName={key}
-					index={i}
-					key={`object-value-${i}`}
-					setObjectValue={(newValue) => {
-						this.setObjectValue(newValue, i);
-					}}
-				/>
-				<div style={{right: 0}} key={`object-timeline-variable-container-${i}`}>
-					<TimelineVariableSelector 
-						key={`object-timeline-variable-${i}`}
-						setParamMode={() => { this.setObjectValueMode(i); }}
-						submitCallback={(v) => { this.setObjectTimelineVariable(v, i); }}
-						useTV={this.state.objectValues[i].mode === ParameterMode.USE_TV}
-						selectedTV={this.state.objectValues[i].timelineVariable}
-					/>
-				</div>
-				<div style={{right: 0}} key={`object-delete-container-${i}`}>
-					<IconButton
-						tooltip="delete key"
-						key={`object-delete-${i}`}
-						onClick={()=>{ this.deleteKeyPair(i); }}
-					>
-						<Clear key={`object-delete-icon-${i}`} color={clearColor} />
-					</IconButton>
-				</div>
-			</div>
+		submitCallback: (p) => {},
+		Trigger: ({onClick}) => (
+			<IconButton
+				onClick={onClick}
+				title="Click to edit"
+			>
+				<ObjectEditorIcon {...style.TriggerStyle}/>
+			</IconButton>
 		)
 	}
 
 	render() {
-		let { title, keyName } = this.props;
+		let { title, keyName, Trigger } = this.props;
 		let {
 			handleClose,
 			renderRow,
@@ -493,30 +508,20 @@ export default class ObjectEditor extends React.Component {
 		let actions = [
 			<FlatButton
 				label="Cancel"
-				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondary}}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
 				onClick={handleClose}
 			/>,
 			<FlatButton 
 				label="Finish"
-				labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
+				labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
 				onClick={onSubmit}
 			/>
 		]
 
-// <MenuItem 
-// 					onClick={this.handleOpen} 
-// 					primaryText="[Data Object]" 
-// 					style={{color: GeneralTheme.colors.primary}}
-// 					title="Click to edit"
-// 				/>
+
 		return (
 			<div>
-				<IconButton
-					onClick={this.handleOpen}
-					title="Click to edit"
-				>
-					<ObjectEditorIcon {...style.triggerIcon}/>
-				</IconButton>
+				<Trigger onClick={this.handleOpen}/>
 				<Dialog
 					open={open}
 					titleStyle={{padding: 0}}
