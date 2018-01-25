@@ -6,6 +6,8 @@ import { ListItem } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
 
+import SignInIcon from 'material-ui/svg-icons/action/input';
+import SignUpIcon from 'material-ui/svg-icons/social/person-add';
 import Profile from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
@@ -72,10 +74,12 @@ export default class UserMenu extends React.Component {
       return (
         <Menu>
             <MenuItem
+              leftIcon={<SignInIcon {...style.icon}/>}
               primaryText={"Sign In"}
               onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
             <Divider />
             <MenuItem
+              leftIcon={<SignUpIcon {...style.icon}/>}
               primaryText={"Create Account"}
               onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
         </Menu>
