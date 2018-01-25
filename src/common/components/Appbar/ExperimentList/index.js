@@ -31,9 +31,42 @@ import {
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
 
-import AppbarTheme, { colors } from '../theme.js';
+import AppbarTheme from '../theme.js';
 
-const style = AppbarTheme.ExperimentList;
+const colors = {
+  ...AppbarTheme.colors
+}
+
+const style = {
+	moreIcon: {
+		color: 'black',
+		hoverColor: 'F0F0F0'
+	},
+	duplicateIcon: {
+		color: '#673AB7'
+	},
+	deleteIcon: {
+		color: '#E82062'
+	},
+	avatar: {
+		backgroundColor: colors.primaryDeep
+	},
+	progress: {
+		color: colors.primary
+	},
+	ListItem: {
+		selected: '#E2E2E2'
+	},
+	dialogTitleIcon: {
+		color: colors.primaryDeep
+	},
+	dialogBody: {
+		backgroundColor: '#F4F4F4'
+	},
+	actionButton: {
+		color: colors.primaryDeep
+	},
+}
 
 const Actions = {
 	browse: "BROWSE",

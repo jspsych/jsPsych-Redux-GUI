@@ -15,7 +15,7 @@ const style = {
   TextFieldFocusStyle: {
     ...GeneralTheme.TextFieldFocusStyle
   },
-  ActionButtons: {
+  Actions: {
     SignIn: {
       labelStyle: {
         textTransform: "none",
@@ -30,6 +30,9 @@ const style = {
         textTransform: "none",
         color: colors.secondary
       }
+    },
+    Wait: {
+      colors: colors.primary
     }
   }
 }
@@ -142,16 +145,16 @@ export default class SignInWindow extends React.Component {
               <RaisedButton 
                 label="Sign In" 
                 onClick={handleSignIn} 
-                {...style.ActionButtons.SignIn}
+                {...style.Actions.SignIn}
               /> :
-              <CircularProgress />
+              <CircularProgress {...style.Actions.Wait}/>
             }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
             <FlatButton 
               label="Forgot my password" 
               onClick={popForgotPassword}
-              {...style.ActionButtons.Forget}
+              {...style.Actions.Forget}
             />
           </div>
         </div>

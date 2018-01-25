@@ -21,15 +21,34 @@ import { settingType } from '../../../reducers/Experiment/jsPsychInit';
 
 import AppbarTheme from '../theme.js';
 
-const style = AppbarTheme.InitEditor;
+const colors = {
+  ...AppbarTheme.colors
+}
+
+const style = {
+  icon: AppbarTheme.AppbarIcon,
+  TitleIcon: {
+    color: colors.primaryDeep
+  },
+  TextFieldFocusStyle: {
+    ...AppbarTheme.TextFieldFocusStyle
+  },
+  Actions: {
+    Close: {
+      labelStyle: {
+        color: colors.secondaryDeep
+      }
+    }
+  }
+}
 
 export default class jsPsychInitEditor extends React.Component {
-  state = {
-    open: false
-  }
-
   constructor(props) {
     super(props);
+
+    this.state = {
+      open: false
+    }
 
     this.handleOpen = () => {
       this.setState({
@@ -43,52 +62,54 @@ export default class jsPsychInitEditor extends React.Component {
       });
     };
 
-  }
-
-  textFieldRow = (key, type="number", unit=null) => (
-  <div style={{display: 'flex'}}>
-    <div style={{padding: 15, color: 'black'}}>{key + ((unit) ? " (" + unit + ")" : "")}: </div>
-    <TextField
-      id={"text-field-"+key}
-      value={this.props[key]}
-      type={type}
-      onChange={(e, value) => { this.props.setJsPsychInit(e, value, key); }}
-    />
-  </div>
-  )
-
-  toggleRow = (key) => (
-    <div style={{display: 'flex', width: 370, position: 'relative'}}>
-      <div style={{padding: 15, color: 'black'}}>{key}</div>
-        <IconButton 
-          style={{position: 'absolute', right: 0}}
-          onClick={() => { this.props.setJsPsychInit(null, null, key); }} 
-          >
-        {(this.props[key]) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
-        </IconButton>
-    </div>
-  )
-
-  codeRow = (key) => (
-    <div style={{display: 'flex', width: 370, position: 'relative'}}>
-      <div style={{padding: 15, color: 'black'}}>{key}</div>
-      <div style={{position: 'absolute', right: 0}}>
-        <CodeEditor initCode={this.props[key].code} 
-                    submitCallback={(newCode) => { 
-                      this.props.setJsPsychInit(null, newCode, key);
-                    }}
-                    title={key+": "}
+    this.textFieldRow = (key, type="number", unit=null) => (
+      <div style={{display: 'flex'}}>
+        <div style={{padding: 15, color: 'black'}}>{key + ((unit) ? " (" + unit + ")" : "")}: </div>
+        <TextField
+          {...style.TextFieldFocusStyle}
+          id={"text-field-"+key}
+          value={this.props[key]}
+          type={type}
+          onChange={(e, value) => { this.props.setJsPsychInit(e, value, key); }}
         />
       </div>
-    </div>
-  )
+    )
 
+    this.toggleRow = (key) => (
+      <div style={{display: 'flex', width: 370, position: 'relative'}}>
+        <div style={{padding: 15, color: 'black'}}>{key}</div>
+          <IconButton 
+            style={{position: 'absolute', right: 0}}
+            onClick={() => { this.props.setJsPsychInit(null, null, key); }} 
+            >
+          {(this.props[key]) ? <CheckIcon color={checkColor} /> : <UnCheckIcon />}/>
+          </IconButton>
+      </div>
+    )
+
+    this.codeRow = (key) => (
+      <div style={{display: 'flex', width: 370, position: 'relative'}}>
+        <div style={{padding: 15, color: 'black'}}>{key}</div>
+        <div style={{position: 'absolute', right: 0}}>
+          <CodeEditor 
+            initCode={this.props[key].code} 
+            submitCallback={(newCode) => { 
+              this.props.setJsPsychInit(null, newCode, key);
+            }}
+            title={key+": "}
+          />
+        </div>
+      </div>
+    )
+
+  }
+
+  
   render() {
     const actions = [
       <FlatButton
         label="Close"
-        primary={true}
-        keyboardFocused={true}
+        {...style.Actions.Close}
         onClick={this.handleClose}
       />,
     ];
@@ -109,7 +130,7 @@ export default class jsPsychInitEditor extends React.Component {
                   <Subheader style={{maxHeight: 48}}>
                     <div style={{display: 'flex'}}>
                     <div style={{paddingTop: 8, paddingRight: 15}}>
-                      <InitSettingIcon color={titleIconColor}/>
+                      <InitSettingIcon {...style.TitleIcon}/>
                     </div>
                     <div style={{fontSize: 16,}}>
                         jsPsych.init properties

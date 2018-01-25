@@ -32,6 +32,9 @@ const style = {
     labelStyle: {
       fontSize: '13px'
     }
+  },
+  DefaultTrigger: {
+    hoverColor: colors.secondary
   }
 }
 
@@ -79,7 +82,7 @@ export default class CodeEditor extends React.Component {
         onClick={onClick}
         title="Click to edit"
       >
-        <EditCodeIcon {...style.TriggerStyle}/>
+        <EditCodeIcon {...style.DefaultTrigger}/>
       </IconButton>
     )
   };

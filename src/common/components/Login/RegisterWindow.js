@@ -16,7 +16,7 @@ const style = {
   TextFieldFocusStyle: {
     ...GeneralTheme.TextFieldFocusStyle
   },
-  ActionButtons: {
+  Actions: {
     Create: {
       labelStyle: {
         textTransform: "none",
@@ -31,6 +31,9 @@ const style = {
         textTransform: "none",
         color: colors.secondary
       }
+    },
+    Wait: {
+      color: colors.primary
     }
   }
 }
@@ -158,15 +161,15 @@ export default class RegisterWindow extends React.Component {
               <RaisedButton 
                 label="Create Account" 
                 onClick={this.handleCreateAccount} 
-                {...style.ActionButtons.Create}
+                {...style.Actions.Create}
               /> :
-              <CircularProgress />
+              <CircularProgress {...style.Actions.Wait}/>
             }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
           <FlatButton
               label="Not right now"
-              {...style.ActionButtons.Cancel}
+              {...style.Actions.Cancel}
               onClick={this.props.handleClose}
             />
           </div>

@@ -15,10 +15,10 @@ import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/ExperimentList';
 
-import { colors as AppbarThemeColors} from '../theme.js';
+import AppbarTheme from '../theme.js';
 
 const colors = {
-  ...AppbarThemeColors
+  ...AppbarTheme.colors
 }
 
 const style = {
