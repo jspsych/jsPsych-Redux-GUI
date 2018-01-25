@@ -74,6 +74,7 @@
     "eject": "react-scripts eject",
     "deploy": "deploy.cmd",
     "test": "jest",
-    "test:watch": "npm test -- --watch"
+    "test:watch": "npm test -- --watch",
+    "updateJspsych": "updateJspsych.cmd"
   }
 }
