@@ -1,8 +1,8 @@
-git submodule update
+@echo git submodule update
+@git submodule update
 @echo.
-@echo Finish updating jsPsych
+@echo Finish updating jsPsych...
 @echo.
 @cd library
-@"bundleJspsych.cmd"
+@cmd /c "bundleJspsych.cmd && exit"
 @echo done...
-@pasue>nul
