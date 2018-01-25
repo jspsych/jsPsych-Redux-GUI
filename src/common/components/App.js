@@ -25,6 +25,8 @@ const style = {
 	AppbarContainer: {
 		flexBasis: '56px',
 		maxHeight: '56px',
+		zIndex: 5,
+		boxShadow: '0 2px 5px rgba(0,0,0, .26)',
 	},
 	AppMainContainer: {
 		flexGrow: '1',
@@ -45,10 +47,10 @@ const style = {
 	}
 }
 
-const isValidSize = (v) => (v !== null && v !== undefined && v > 0);
+const isValidSize = (v) => (v !== null && v !== undefined && v >= 0);
 const limitToMax = (v, maxV) => (!isValidSize(v) || v > maxV ? maxV : v);
 
-const checkValidSize = (s) => (s > 0);
+const checkValidSize = (s) => (s >= 0);
 
 
 class App extends React.Component {

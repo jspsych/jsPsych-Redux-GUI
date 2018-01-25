@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
@@ -13,11 +14,14 @@ import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
+import EditCodeIcon from 'material-ui/svg-icons/action/code';
+import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
+import AddMediaIcon from 'material-ui/svg-icons/av/library-add';
+import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
+import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import {
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
-  cyan500 as trueColor,
-  pink500 as falseColor
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
@@ -38,20 +42,212 @@ import GeneralTheme from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
-	labelColor: '#B1B1B1'
+	labelColor: '#B1B1B1',
+	normalToggleColor: '#414141',
+	dividerColor: 'rgb(224, 224, 224)',
+	disabledColor: '#B1B1B1',
+	errorRed: '#F34335'
 };
 
 const style = {
-	label: {
-		color: colors.labelColor,
-		marginRight: '15px',
-		fontSize: '14px',
+	SelectFieldToggleStyle: flag => ({
+		labelStyle: {
+			// color: flag ? colors.primary : colors.secondary
+			color: colors.primaryDeep
+		},
+		selectedMenuItemStyle: {
+			// color: flag ? colors.primary : colors.secondary
+			color: colors.secondary
+		}
+	}),
+	SelectFieldStyle: {
+		selectedMenuItemStyle: {
+			color: colors.secondary
+		}
 	},
+	ToggleStyle: {
+		IconButton: toggled => ({
+			disableTouchRipple: true,
+			style: {
+				width: 24,
+				height: 24,
+				padding: 0,
+				// backgroundColor: toggled ? '#C7C7C7' : '',
+			},
+			iconStyle: {
+				width: 16,
+				height: 16
+			}
+		}),
+		Icon: toggled => ({
+			color: toggled ? 'black' : '#BFBFBF',
+			hoverColor: colors.secondary
+		}),
+	},
+	ToggleGroup: {
+		display: 'flex',
+		justifyContent: 'space-evenly',
+		backgroundColor: 'white',
+		// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
+		marginLeft: '10px'
+	},
+	CustomFloatingLabelField: {
+		root: {
+			backgroundColor: 'transparent',
+			fontFamily: 'Roboto, sans-serif',
+			cursor: 'auto',
+			width: '100%',
+			display: 'flex',
+			flexDirection: 'column',
+			marginTop: '10px',
+			marginBottom: '10px',
+		},
+		FloatingLabel: error => ({
+			zIndex: '1',
+			transform: 'scale(0.95) translate(-1px, -3px)',
+			transformOrigin: 'left top 0px',
+			pointerEvents: 'none',
+			userSelect: 'none',
+			color: error ? colors.errorRed : 'rgba(0, 0, 0, 0.3)',
+			display: 'inline-block',
+			maxWidth: '100%',
+			fontWeight: '700',
+			fontSize: '13px',
+			margin: 0,
+		}),
+		FieldGroup: {
+			display: 'flex',
+			alignItems: 'center'
+		},
+		ContentGroup: error => ({
+			flexGrow: 1,
+			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
+			paddingBottom: '5px',
+		}),
+		ErrorText: {
+			color: colors.errorRed,
+			fontWeight: 'bold',
+			fontSize: '10px',
+			paddingTop: '5px'
+		},
+		ToggleGroup: {
+			flexBasis: 'auto',
+			alignSelf: 'flex-end',
+			display: 'flex',
+			justifyContent: 'space-evenly',
+			backgroundColor: 'white',
+			// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
+			marginLeft: '10px',
+			marginBottom: '10px',
+		}
+	},
+	TriggerStyle: {
+		backgroundColor: 'rgba(153, 153, 153, 0.15)',
+		hoverColor: 'rgba(153, 153, 153, 0.25)',
+		labelStyle: {
+			color: colors.primaryDeep
+		},
+		labelPosition: 'before'
+	},
+	TriggerIconStyle: {
+		...GeneralTheme.Icon,
+		style: {
+			width: 16,
+			height: 16,
+		}
+	},
+	UndefinedStyle: {
+		backgroundColor: 'rgba(153, 153, 153, 0.15)',
+		hoverColor: 'rgba(153, 153, 153, 0.25)',
+	}
+}
+
+
+const components = {
+	/*
+	Keep them seperate in case of future changes
+	*/
+	Triggers: {
+		ObjectEditor: ({label="Edit Object", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				label={label}
+				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
+			/>
+		),
+		ArrayEditor: ({label="Edit Array", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				label={label}
+				onClick={onClick}
+				icon={<ArrayIcon {...style.TriggerIconStyle}/>}
+			/>
+		),
+		CodeEditor: ({label="Edit Code", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				label={label}
+				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
+			/>
+		),
+		TimelineVariableSelector: ({label="Timeline Variables", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				label={label}
+				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
+			/>
+		),
+		MediaSelector: ({label="Media Manager", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				labelStyle={{
+					textTransform: 'none',
+					color: colors.primaryDeep
+				}}
+				labelPosition="before"
+				icon={<AddMediaIcon {...style.TriggerIconStyle}/>}
+				// icon={<img src='./middle.png'/>}
+				label={label}
+				onClick={onClick}
+			/>
+		),
+	},
+	Undefined: ({props={}}) => (
+				<FlatButton
+					disabled
+					label={'[Undefined]'}
+					{...props}
+					{...style.UndefinedStyle}
+				/>
+	),
+	CustomFloatingLabelField: ({label, node=null, ToggleFunc=null, ToggleTV=null, error=false, errorText=''}) => (
+		<div style={{...style.CustomFloatingLabelField.root}}>
+			<label style={{...style.CustomFloatingLabelField.FloatingLabel(error)}}>
+				{label}
+			</label>
+			<div style={{...style.CustomFloatingLabelField.FieldGroup}}>
+				<div style={{...style.CustomFloatingLabelField.ContentGroup(error)}}>
+					{node}
+				</div>
+				<div style={{...style.CustomFloatingLabelField.ToggleGroup}}>
+					{ToggleFunc}
+					{ToggleTV}
+				</div>
+			</div> 
+			{error ? 
+				<span style={{...style.CustomFloatingLabelField.ErrorText}}>
+					{errorText}
+				</span> :
+				null
+			}
+		</div>
+	)
 }
 
 const hoverColor = GeneralTheme.colors.secondary;
-// const trueColor = GeneralTheme.colors.primaryDeep;
-// const falseColor = GeneralTheme.colors.secondaryDeep;
 
 export const labelStyle = {
 	paddingTop: 15,
@@ -97,8 +293,6 @@ const locateNestedParameterInfo = (paramInfo, path) => {
 	return parameterInfo
 }
 
-const SelectLableColor = (flag) => (flag ? trueColor : falseColor);
-
 const isParameterRequired = (parameterInfo) => {
 	let isRequired = false;
 	if (parameterInfo.hasOwnProperty('default')) {
@@ -121,15 +315,7 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 			val = '[Timeline Variable]';
 			break;
 		default:
-			if (parameterInfo.array && autoConvertToArrayComponent) {
-				if (Array.isArray(val)) {
-					val = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
-				} else {
-					val = '0 Array Item';
-				}
-			} else {
-				disabled = false;
-			}
+			disabled = false;
 	}
 
 	return {
@@ -219,6 +405,8 @@ export default class TrialFormItem extends React.Component {
 		param: "",
 	}
 
+	/**************************************************************************/
+
 	renderLabel = (param) => {
 
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
@@ -266,6 +454,7 @@ export default class TrialFormItem extends React.Component {
 			parameterValue.mode === ParameterMode.USE_TV) &&
 			parameterValue.mode !== ParameterMode.USE_FUNC) ?
 		<TimelineVariableSelector 
+
 			openCallback={this.showTVSelector}
 			closeCallback={this.hideTVSelector}
 			useTV={parameterValue.mode === ParameterMode.USE_TV}
@@ -287,6 +476,7 @@ export default class TrialFormItem extends React.Component {
 		if (parameterInfo.array && autoConvertToArrayComponent) {
 			node = (
 				<ArrayEditor
+					Trigger={components.Triggers.ArrayEditor}
 					targetArray={parameterValue.value}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
@@ -304,6 +494,7 @@ export default class TrialFormItem extends React.Component {
 		if (parameterInfo.array && autoConvertToArrayComponent) {
 			node = (
 				<ArrayEditor
+					Trigger={components.Triggers.ArrayEditor}
 					targetArray={parameterValue.value}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
@@ -326,39 +517,151 @@ export default class TrialFormItem extends React.Component {
 		}
 	}
 	
+	/**************************************************************************/
+
+	renderToggleFunc = ({param, parameterValue, parameterInfo}) => (
+		<IconButton
+			onClick={() => { this.props.setParamMode(param); }}
+			{...style.ToggleStyle.IconButton(parameterValue.mode === ParameterMode.USE_FUNC)}
+		>
+			<EditCodeIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_FUNC)}/>
+		</IconButton>
+	)
+
+	renderToggleTV = ({param, parameterValue, parameterInfo}) => (
+		<IconButton
+			{...style.ToggleStyle.IconButton(parameterValue.mode === ParameterMode.USE_TV)}
+			onClick={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+		>
+			<AddTimelineVarIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_TV)}/>
+		</IconButton>
+	)
+
+	renderField = ({
+		param,
+		parameterValue,
+		parameterInfo,
+		node = null,
+		autoConvertToArrayComponent = true,
+		forceCustomFloatingLabel = false,
+	}) => {
+		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
+			useTV = parameterValue.mode === ParameterMode.USE_TV,
+			customFloatingLabel = true,
+			isRequired = isParameterRequired(parameterInfo),
+			error = isRequired && isValueEmpty(convertNullToEmptyString(parameterValue.value));  
+
+		if (useFunc) {
+			node = (
+				<CodeEditor 
+					Trigger={components.Triggers.CodeEditor}
+			    	setParamMode={() => { this.props.setParamMode(param); }}
+					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
+					showEditMode={true}
+					initCode={convertNullToEmptyString(parameterValue.func.code)} 
+					openCallback={this.showFuncEditor}
+					closeCallback={this.hideFuncEditor}
+                    submitCallback={(newCode) => { 
+                      this.props.setFunc(param, newCode);
+                    }}
+                    title={`${parameterInfo.pretty_name}: `}
+        		/>
+			)
+		} else if (useTV) {
+			node = (
+				<TimelineVariableSelector 
+					Trigger={components.Triggers.TimelineVariableSelector}
+					openCallback={this.showTVSelector}
+					closeCallback={this.hideTVSelector}
+					useTV={parameterValue.mode === ParameterMode.USE_TV}
+					title={`${parameterInfo.pretty_name}: `}
+					selectedTV={parameterValue.timelineVariable}
+					submitCallback={(newTV) => {
+						this.props.setTimelineVariable(param, newTV);
+					}}
+					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+				/>
+			)
+		} else if (parameterInfo.array && autoConvertToArrayComponent) {
+			let val = parameterValue.value, label;
+			if (Array.isArray(val)) {
+				label = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
+			} else {
+				label = '0 Array Item';
+			}
+			node = (
+				<ArrayEditor
+					Trigger={({onClick}) => (components.Triggers.ArrayEditor({label: label, onClick: onClick}))}
+					targetArray={parameterValue.value}
+					title={`${parameterInfo.pretty_name}: `}
+					keyName={param}
+					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+				/>
+			)
+		} else {
+			customFloatingLabel = false;
+		}
+
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+		}
+		let ToggleFunc = this.renderToggleFunc(args);
+		let ToggleTV = this.renderToggleTV(args);
+
+		return (customFloatingLabel || forceCustomFloatingLabel ?
+			<div className="Trial-Form-Item-Container">
+				<components.CustomFloatingLabelField
+					label={parameterInfo.pretty_name}
+					node={node}
+					ToggleFunc={ToggleFunc}
+					ToggleTV={ToggleTV}
+					error={error}
+					errorText={error ? 'This parameter is required.' : ''}
+				/>
+			</div> :
+			<div className="Trial-Form-Item-Container">
+				{node}
+				<div style={{...style.ToggleGroup}}>
+					{ToggleFunc}
+					{ToggleTV}
+				</div>
+			</div>
+			);
+	}
+
 	renderTextField = (param) => {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		let node = (
-			<TextField
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: (
+				<TextField
 			      id={"text-field-"+param}
 			      min={-1}
 			      fullWidth={true}
 			      onChange={(e, v) => { this.props.setText(param, v); }}
 			      {...generateFieldProps(parameterValue, parameterInfo)}
 			    />
-		);
-
-		return (
-		  <div className="Trial-Form-Item-Container">
-		    	{node}
-		    	{this.appendArrayEditor(param)}
-				{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
-		  </div>
-	  )}
+			)
+		}
+		return this.renderField(args);
+	}
 
 	renderNumberField = (param) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		let props = generateFieldProps(parameterValue, parameterInfo);
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
+			props = generateFieldProps(parameterValue, parameterInfo);
 		props.type = props.disabled ? 'text' : 'number';
-
-		let node = (
-			<TextField
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: (
+				<TextField
 			      type="number"
 			      id={"number-field-"+param}
 			      fullWidth={true}
@@ -367,87 +670,47 @@ export default class TrialFormItem extends React.Component {
 					}}
 				  {...props}
 			    />
-		)
-
-		return (
-			<div className="Trial-Form-Item-Container">
-		    	{node}
-		    	{this.appendArrayEditor(param)}
-				{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
-		  	</div>
-		)}
+			)
+		}
+		return this.renderField(args);
+	}
 
 	renderToggle = (param) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		let items = [
-			<MenuItem key={`toggle-field-${param}-1`} value={true}  primaryText="True"/>,
-			<MenuItem key={`toggle-field-${param}-2`} value={false}  primaryText="False"/>
-		];
-
-		let props = generateFieldProps(parameterValue, parameterInfo);
-
-		let node = (
-			<SelectField
-	          onChange={(event, index, value) => { this.props.setToggle(param, value)}}
-	          labelStyle={{color: SelectLableColor(props.value)}}
-	          selectedMenuItemStyle={{color: SelectLableColor(props.value)}}
-	          {...props}
-	        >
-	          {items}
-	        </SelectField>
-		)
-
-		return (
-			<div className="Trial-Form-Item-Container">
-		    	{node}
-		    	{this.appendArrayEditor(param)}
-				{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
-		  	</div>
-		)}
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
+			props = generateFieldProps(parameterValue, parameterInfo, false),
+			items = [
+				<MenuItem key={`toggle-field-${param}-1`} value={true}  primaryText="True"/>,
+				<MenuItem key={`toggle-field-${param}-2`} value={false}  primaryText="False"/>
+			];
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: (
+				<SelectField
+		          onChange={(event, index, value) => { this.props.setToggle(param, value)}}
+		          {...style.SelectFieldToggleStyle(props.value)}
+		          {...props}
+		        >
+		          {items}
+		        </SelectField>
+			)
+		}
+		return this.renderField(args);
+	}
 
 	renderFunctionEditor = (param) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-        let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
-        	useTV = parameterValue.mode === ParameterMode.USE_TV,
-        	isUndefined = !useFunc && !useTV,
-        	description = useTV ? "[Timeline Variable]" : (isUndefined ? '[Undefined]' : '[User Code]');
-
-		let node = (
-			<CodeEditor 
-				initCode={convertNullToEmptyString(parameterValue.func.code)} 
-                submitCallback={(newCode) => { 
-                  this.props.setFunc(param, newCode);
-                }}
-                useFunc={useFunc}
-				showEditMode={true}
-                setParamMode={() => { this.props.setParamMode(param); }}
-                title={`${parameterInfo.pretty_name}: `}
-    		/>
-        );
-
-		return (
-			<div className="Trial-Form-Item-Container">
-				<FloatingLabelButton
-					labelText={`${parameterInfo.pretty_name}`}
-					button={
-						<div style={{display: 'flex'}}>
-							{useTV ? null : node}
-							{this.appendTimelineVariable(param)}
-						</div>
-					}
-					descriptionStyle={!useFunc ? { color: '#B1B1B1' } : {}}
-					description={description}
-				/>
-			</div>
-		)
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let args = {
+			param: param,
+			parameterInfo: parameterInfo,
+			parameterValue: parameterValue,
+			node: <components.Undefined />,
+			forceCustomFloatingLabel: true
+		}	
+		return this.renderField(args);
 	}
 
 
@@ -507,177 +770,129 @@ export default class TrialFormItem extends React.Component {
 		props.disabled = props.disabled || isAllKey;
 
 		let node = (
-			<TextField
-		      id={this.props.id+"-text-field-"+param}
-		      fullWidth={true}
-		      onChange={(e, v) => { this.setKeyListStr(v); }}
-		      maxLength={(isArray) ?  null : "1"}
-		      onFocus={() => {
-		      	this.setKeyListStr(convertNullToEmptyString(value));
-		      	this.setState({
-		      		useKeyListStr: true
-		      	});
-		      }}
-		      onBlur={() => {
-		      	this.props.setKey(param, this.state.keyListStr, false, isArray);
-		      	this.setState({
-		      		useKeyListStr: false
-		      	})
-		      }}
-		      onKeyPress={(e) => {
-		      	if (e.which === 13) {
-		      		document.activeElement.blur();
-		      	}
-		      }}
-		      {...props}
-		    />  
+			<div style={{display: 'flex', alignItems: 'baseline'}}>
+				<TextField
+			      id={this.props.id+"-text-field-"+param}
+			      fullWidth={true}
+			      onChange={(e, v) => { this.setKeyListStr(v); }}
+			      maxLength={(isArray) ?  null : "1"}
+			      onFocus={() => {
+			      	this.setKeyListStr(convertNullToEmptyString(value));
+			      	this.setState({
+			      		useKeyListStr: true
+			      	});
+			      }}
+			      onBlur={() => {
+			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
+			      	this.setState({
+			      		useKeyListStr: false
+			      	})
+			      }}
+			      onKeyPress={(e) => {
+			      	if (e.which === 13) {
+			      		document.activeElement.blur();
+			      	}
+			      }}
+			      {...props}
+			   />
+			   {toggleAllKey} 
+			</div> 
 		)
 
-		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
-		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
-		let inOtherMode = funcMode || tvMode;
-		    	// {this.appendArrayEditor(param)}
-		return (
-			<div className="Trial-Form-Item-Container">
-		    	{node}
-		    	{inOtherMode ? null : toggleAllKey}
-		    	{isAllKey ? null : this.appendFunctionEditor(param)}
-				{isAllKey ? null : this.appendTimelineVariable(param)}
-		  	</div>
-		)}
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: node,
+			autoConvertToArrayComponent: false
+		}
+
+		return this.renderField(args);
+	}
 
 	renderSelect = (param) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		let props = generateFieldProps(parameterValue, parameterInfo, false);
-
-		let node = (
-			<SelectField
-				multiple={paramInfo.array}
-				id={this.props.id+"-select-field-"+param}
-		    	onChange={(event, index, value) => {
-		    		this.props.setText(param, value);
-		    	}}
-		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
-		    	{...props}
-		    >
-		    	{
-		    		this.props.paramInfo.options.map((op, i) => (
-		    			<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
-		    		))
-		    	}
-		    </SelectField>
-		)
-
-		return (
-			<div className="Trial-Form-Item-Container">
-		    	{node}
-				{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
-		  	</div>
-		)
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
+			props = generateFieldProps(parameterValue, parameterInfo, false);
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: (
+				<SelectField
+					multiple={paramInfo.array}
+					id={this.props.id+"-select-field-"+param}
+			    	onChange={(event, index, value) => {
+			    		this.props.setText(param, value);
+			    	}}
+			    	{...style.SelectFieldStyle}
+			    	{...props}
+			    >
+			    	{
+			    		this.props.paramInfo.options.map((op, i) => (
+			    			<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
+			    		))
+			    	}
+			    </SelectField>
+			)
+		}
+		return this.renderField(args);
 	}
 
 	renderMediaSelector = (param, multiSelect) => {
 
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let props = generateFieldProps(parameterValue, parameterInfo, false);
+		let regex = /<path>(.*)<\/path>/g;
+		let label = regex.exec(parameterValue.value);
+		if (label && label.length > 0) label = label[1];
+		else label = 'Select Media';
 
-		let node = (
-			<SelectField
-				autoWidth
-				id={this.props.id+"-media-selector-"+param}
-				multiple={multiSelect}
-				floatingLabelFixed
-				{...props}
-				onChange={(event, index, value) => {
-		    		this.props.setMedia(param, value);
-		    	}}
-		    	selectedMenuItemStyle={{color: GeneralTheme.colors.secondary}}
-			>
-				{this.props.filenames.map(
-					filename => {
-						let val = `<path>${filename}</path>`;
-						let checked = multiSelect ?
-									  Array.isArray(props.value) && props.value.indexOf(val) > -1 :
-									  props.value === val;
-						return (
-							<MenuItem 
-								key={`${this.props.id}-${filename}`}
-								value={val}
-								insetChildren={true}
-								checked={checked}
-								primaryText={filename}
-							/>
-						)
-					}
-				)}
-			</SelectField>
-		)
-
-		let mediaSelector = (
-			<MediaManager 
-				parameterName={param} 
-				mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-				insertCallback={(selected, handleClose) => {
-					this.props.insertFile(
-						param,
-					this.props.s3files,
-					multiSelect,
-					selected,
-					handleClose,
-				);
-
-				}}
-			/>
-		)
-
-		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
-		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
-		let inOtherMode = funcMode || tvMode;
-		return (
-			<div className="Trial-Form-Item-Container" style={{alignItems: 'center'}}>
-		    	{node}
-				{!inOtherMode ? mediaSelector : null}
-      			{this.appendFunctionEditor(param)}
-				{this.appendTimelineVariable(param)}
-		  	</div>
-	    	)
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: (
+				<MediaManager 
+					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
+					parameterName={param} 
+					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+					insertCallback={(selected, handleClose) => {
+						this.props.insertFile(
+							param,
+							this.props.s3files,
+							multiSelect,
+							selected,
+							handleClose,
+						);
+					}}
+				/>
+			),
+			forceCustomFloatingLabel: true
+		};
+		return this.renderField(args);
 	}
 
 	renderObjectEditor = (param) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let node = (
-			<ObjectEditor
-				targetObj={parameterValue.value}
-				title={`${parameterInfo.pretty_name}: `}
-				keyName={param}
-				submitCallback={(obj) => { this.props.setObject(param, obj); }}
-			/>
-		);
-
-		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC;
-		return (
-			<div className="Trial-Form-Item-Container">
-				<FloatingLabelButton
-					labelText={`${parameterInfo.pretty_name}`}
-					button={
-						<div style={{display: 'flex'}}>
-							{useFunc ? null : node}
-							{this.appendFunctionEditor(param)}
-						</div>
-					}
-					descriptionStyle={useFunc ? { color: '#B1B1B1' } : {}}
-					description={useFunc ? "[Custom Code]" : "EDIT OBJECT"}
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let args = {
+			param: param,
+			parameterInfo: parameterInfo,
+			parameterValue: parameterValue,
+			node: (
+				<ObjectEditor
+					Trigger={components.Triggers.ObjectEditor}
+					targetObj={parameterValue.value}
+					title={`${parameterInfo.pretty_name}: `}
+					keyName={param}
+					submitCallback={(obj) => { this.props.setObject(param, obj); }}
 				/>
-			</div>
-		)
+			),
+			forceCustomFloatingLabel: true
+		}	
+		return this.renderField(args);
 	}
 
 	renderComplex = (param) => {
