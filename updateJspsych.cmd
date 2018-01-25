@@ -5,4 +5,4 @@ git submodule update
 @cd library
 @"bundleJspsych.cmd"
 @echo done...
-@pasue > null
+@pasue>nul
