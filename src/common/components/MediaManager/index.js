@@ -28,6 +28,7 @@ import FileIcon from 'material-ui/svg-icons/editor/insert-drive-file';
 import PDFIcon from 'material-ui/svg-icons/image/picture-as-pdf';
 import CheckNoIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
+import PreviewIcon from 'material-ui/svg-icons/image/remove-red-eye'
 
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
@@ -36,6 +37,9 @@ import { getSignedUrl } from '../../backend/s3';
 import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
 import GeneralTheme from '../theme.js';
 
+const colors = {
+	...GeneralTheme.colors
+}
 
 var __DEBUG__ = false;
 
@@ -302,15 +306,21 @@ export default class MediaManager extends React.Component {
 							key={f.ETag}
 							primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
 							leftIcon={fileIconFromTitle(f.Key)}
-							onClick={() => { this.openPreviewWindow(f.Key); }}
+							onClick={() => {this.handleSelect(i)}}
+							rightIcon={
+								this.state.selected[i] ? 
+									<CheckYesIcon color={GeneralTheme.colors.primary}/> : 
+									<CheckNoIcon color={GeneralTheme.colors.primary}/>
+							}
 						/>
 					</div>
 					<IconButton
 						key={`${f.ETag}-checker`}
 						style={{flexBasis: '48px'}}
-						onClick={() => {this.handleSelect(i)}}
+						onClick={() => { this.openPreviewWindow(f.Key); }}
+						tooltip="Preview Media"
 						>
-						{this.state.selected[i] ? <CheckYesIcon color={GeneralTheme.colors.primary}/> : <CheckNoIcon color={GeneralTheme.colors.primary}/>}
+						<PreviewIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep} />
 					</IconButton>
 				</div>
 				)

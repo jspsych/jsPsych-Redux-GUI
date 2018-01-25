@@ -47,10 +47,10 @@ const style = {
 	}
 }
 
-const isValidSize = (v) => (v !== null && v !== undefined && v > 0);
+const isValidSize = (v) => (v !== null && v !== undefined && v >= 0);
 const limitToMax = (v, maxV) => (!isValidSize(v) || v > maxV ? maxV : v);
 
-const checkValidSize = (s) => (s > 0);
+const checkValidSize = (s) => (s >= 0);
 
 
 class App extends React.Component {

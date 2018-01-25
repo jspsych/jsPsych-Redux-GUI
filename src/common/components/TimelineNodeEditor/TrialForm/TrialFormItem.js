@@ -16,6 +16,9 @@ import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
 import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
+import AddMediaIcon from 'material-ui/svg-icons/av/library-add';
+import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
+import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import {
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
@@ -49,10 +52,12 @@ const colors = {
 const style = {
 	SelectFieldToggleStyle: flag => ({
 		labelStyle: {
-			color: flag ? colors.primary : colors.secondary
+			// color: flag ? colors.primary : colors.secondary
+			color: colors.primaryDeep
 		},
 		selectedMenuItemStyle: {
-			color: flag ? colors.primary : colors.secondary
+			// color: flag ? colors.primary : colors.secondary
+			color: colors.secondary
 		}
 	}),
 	SelectFieldStyle: {
@@ -139,6 +144,17 @@ const style = {
 	TriggerStyle: {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
+		labelStyle: {
+			color: colors.primaryDeep
+		},
+		labelPosition: 'before'
+	},
+	TriggerIconStyle: {
+		...GeneralTheme.Icon,
+		style: {
+			width: 16,
+			height: 16,
+		}
 	},
 	UndefinedStyle: {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
@@ -157,6 +173,7 @@ const components = {
 				{...style.TriggerStyle}
 				label={label}
 				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
 			/>
 		),
 		ArrayEditor: ({label="Edit Array", onClick=()=>{}}) => (
@@ -164,6 +181,7 @@ const components = {
 				{...style.TriggerStyle}
 				label={label}
 				onClick={onClick}
+				icon={<ArrayIcon {...style.TriggerIconStyle}/>}
 			/>
 		),
 		CodeEditor: ({label="Edit Code", onClick=()=>{}}) => (
@@ -171,6 +189,7 @@ const components = {
 				{...style.TriggerStyle}
 				label={label}
 				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
 			/>
 		),
 		TimelineVariableSelector: ({label="Timeline Variables", onClick=()=>{}}) => (
@@ -178,16 +197,18 @@ const components = {
 				{...style.TriggerStyle}
 				label={label}
 				onClick={onClick}
+				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
 			/>
 		),
 		MediaSelector: ({label="Media Manager", onClick=()=>{}}) => (
 			<FlatButton
-				labelStyle={{
-					// textTransform: 'none',
-				}}
 				{...style.TriggerStyle}
+				labelStyle={{
+					textTransform: 'none',
+					color: colors.primaryDeep
+				}}
 				labelPosition="before"
-				icon={<ContentAdd color={colors.secondary}/>}
+				icon={<AddMediaIcon {...style.TriggerIconStyle}/>}
 				// icon={<img src='./middle.png'/>}
 				label={label}
 				onClick={onClick}
@@ -384,6 +405,8 @@ export default class TrialFormItem extends React.Component {
 		param: "",
 	}
 
+	/**************************************************************************/
+
 	renderLabel = (param) => {
 
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
@@ -494,6 +517,8 @@ export default class TrialFormItem extends React.Component {
 		}
 	}
 	
+	/**************************************************************************/
+
 	renderToggleFunc = ({param, parameterValue, parameterInfo}) => (
 		<IconButton
 			onClick={() => { this.props.setParamMode(param); }}
@@ -745,44 +770,45 @@ export default class TrialFormItem extends React.Component {
 		props.disabled = props.disabled || isAllKey;
 
 		let node = (
-			<TextField
-		      id={this.props.id+"-text-field-"+param}
-		      fullWidth={true}
-		      onChange={(e, v) => { this.setKeyListStr(v); }}
-		      maxLength={(isArray) ?  null : "1"}
-		      onFocus={() => {
-		      	this.setKeyListStr(convertNullToEmptyString(value));
-		      	this.setState({
-		      		useKeyListStr: true
-		      	});
-		      }}
-		      onBlur={() => {
-		      	this.props.setKey(param, this.state.keyListStr, false, isArray);
-		      	this.setState({
-		      		useKeyListStr: false
-		      	})
-		      }}
-		      onKeyPress={(e) => {
-		      	if (e.which === 13) {
-		      		document.activeElement.blur();
-		      	}
-		      }}
-		      {...props}
-		    />  
+			<div style={{display: 'flex', alignItems: 'baseline'}}>
+				<TextField
+			      id={this.props.id+"-text-field-"+param}
+			      fullWidth={true}
+			      onChange={(e, v) => { this.setKeyListStr(v); }}
+			      maxLength={(isArray) ?  null : "1"}
+			      onFocus={() => {
+			      	this.setKeyListStr(convertNullToEmptyString(value));
+			      	this.setState({
+			      		useKeyListStr: true
+			      	});
+			      }}
+			      onBlur={() => {
+			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
+			      	this.setState({
+			      		useKeyListStr: false
+			      	})
+			      }}
+			      onKeyPress={(e) => {
+			      	if (e.which === 13) {
+			      		document.activeElement.blur();
+			      	}
+			      }}
+			      {...props}
+			   />
+			   {toggleAllKey} 
+			</div> 
 		)
 
-		let funcMode = parameterValue.mode == ParameterMode.USE_FUNC;
-		let tvMode = parameterValue.mode == ParameterMode.USE_TV;
-		let inOtherMode = funcMode || tvMode;
-		    	// {this.appendArrayEditor(param)}
-		return (
-			<div className="Trial-Form-Item-Container">
-		    	{node}
-		    	{inOtherMode ? null : toggleAllKey}
-		    	{isAllKey ? null : this.appendFunctionEditor(param)}
-				{isAllKey ? null : this.appendTimelineVariable(param)}
-		  	</div>
-		)}
+		let args = {
+			param: param,
+			parameterValue: parameterValue,
+			parameterInfo: parameterInfo,
+			node: node,
+			autoConvertToArrayComponent: false
+		}
+
+		return this.renderField(args);
+	}
 
 	renderSelect = (param) => {
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param),

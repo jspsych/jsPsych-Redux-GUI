@@ -61,12 +61,17 @@ const style = {
 		paddingLeft: '0px',
 		width: '100%',
 		position: 'relative'
-	}
+	},
+	SpeedDial: {
+		FloatingActionButton: {
+			backgroundColor: colors.primary,
+		},
+		AvatarStyle: {
+			backgroundColor: colors.primaryDeep
+		}
+	},
 }
 
-const avatarStyle = {
-	backgroundColor: colors.secondaryDeep
-}
 
 class TimelineNodeOrganizer extends React.Component {
 	constructor(props) {
@@ -92,7 +97,7 @@ class TimelineNodeOrganizer extends React.Component {
 						  	position: 'absolute',
 						  }}
 						  floatingActionButtonProps={{
-						  	backgroundColor: colors.secondary,
+						  	...style.SpeedDial.FloatingActionButton
 						  }}
 					      icon={<ContentAdd />}
 					      iconOpen={<NavigationClose />}
@@ -103,7 +108,7 @@ class TimelineNodeOrganizer extends React.Component {
 							        rightAvatar={
 							        	<Avatar
 								          icon={<NewTimelineIcon />}
-								          {...avatarStyle}
+								          {...style.SpeedDial.AvatarStyle}
 								          size={30}
 								        />
 							        }
@@ -114,7 +119,7 @@ class TimelineNodeOrganizer extends React.Component {
 							        rightAvatar={
 							        	<Avatar
 								          icon={<NewTrialIcon />}
-								          {...avatarStyle}
+								          {...style.SpeedDial.AvatarStyle}
 								          size={30}
 								        />
 							        }
@@ -125,7 +130,7 @@ class TimelineNodeOrganizer extends React.Component {
 							        rightAvatar={
 							        	<Avatar
 								          icon={<Delete />}
-								          {...avatarStyle}
+								          {...style.SpeedDial.AvatarStyle}
 								          size={30}
 								        />
 							        }
@@ -136,7 +141,7 @@ class TimelineNodeOrganizer extends React.Component {
 							        rightAvatar={
 							        	<Avatar
 								          icon={<Duplicate />}
-								          {...avatarStyle}
+								          {...style.SpeedDial.AvatarStyle}
 								          size={30}
 								        />
 							        }
