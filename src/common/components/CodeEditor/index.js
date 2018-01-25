@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -8,7 +7,7 @@ import Subheader from 'material-ui/Subheader';
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
 
-import ButtonIcon from 'material-ui/svg-icons/action/code';
+import EditCodeIcon from 'material-ui/svg-icons/action/code';
 import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
 // import DialogIcon from 'material-ui/svg-icons/content/create';
@@ -20,60 +19,74 @@ import {
 import { renderDialogTitle } from '../gadgets';
 import GeneralTheme from '../theme.js';
 
+const colors = {
+  ...GeneralTheme.colors,
+}
+
 const hoverColor = GeneralTheme.colors.secondary;
 
+const style = {
+  Trigger: {
+    labelColor: 'white',
+    backgroundColor: colors.primary,
+    labelStyle: {
+      fontSize: '13px'
+    }
+  }
+}
+
 export default class CodeEditor extends React.Component {
-  static propTypes = { 
-    submitCallback: PropTypes.func,
-    openCallback: PropTypes.func,
-  	initCode: PropTypes.string,
-  	buttonIcon: PropTypes.object,
-    title: PropTypes.string,
-    showEditMode: PropTypes.bool,
-    useFunc: PropTypes.bool,
-    setParamMode: PropTypes.func
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      code: ""
+    }
+
+
+    this.handleOpen = () => {
+      this.setState({
+        open: true,
+        code: this.props.initCode
+      });
+      this.props.openCallback();
+    }
+
+    this.handleClose = () => {
+      this.setState({
+        open: false,
+      });
+      this.props.closeCallback();
+    }
+
+    this.onUpdate = (newCode) => {
+      this.setState({
+        code: newCode
+      });
+    }
+  }
 
   static defaultProps = { 
   	initCode: "",
     tooltip: "Insert code",
-  	buttonIcon: (<ButtonIcon color={normalColor} hoverColor={hoverColor} />),
     title: "Code Editor",
     openCallback: function() { return; },
     closeCallback: function() { return; },
     submitCallback: function(newCode) { return; },
     showEditMode: false,
+    Trigger: ({onClick}) => (
+      <IconButton
+        onClick={onClick}
+        title="Click to edit"
+      >
+        <EditCodeIcon {...style.TriggerStyle}/>
+      </IconButton>
+    )
   };
 
-  state = {
-  	open: false,
-    code: ""
-  }
-
-
-  handleOpen = () => {
-  	this.setState({
-  		open: true,
-      code: this.props.initCode
-  	});
-    this.props.openCallback();
-  }
-
-  handleClose = () => {
-  	this.setState({
-  		open: false,
-  	});
-    this.props.closeCallback();
-  }
-
-  onUpdate = (newCode) => {
-    this.setState({
-      code: newCode
-    });
-  }
-
+  
   render() {
-  	const { buttonIcon, title, submitCallback, closeCallback } = this.props;
+  	const { buttonIcon, title, submitCallback, closeCallback, Trigger } = this.props;
   	const actions = [
       <FlatButton
         label="Finish"
@@ -85,9 +98,7 @@ export default class CodeEditor extends React.Component {
 
   	return (
   		<div>
-	  		<IconButton onClick={this.handleOpen} tooltip={this.props.tooltip}>
-	  		 {buttonIcon}
-	  		</IconButton>
+        <Trigger onClick={this.handleOpen} />
 	  		<Dialog
 	            contentStyle={{minHeight: 500}}
               titleStyle={{padding: 0}}

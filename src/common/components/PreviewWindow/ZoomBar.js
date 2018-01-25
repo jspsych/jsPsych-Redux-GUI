@@ -27,7 +27,7 @@ const style = {
 			minWidth: `${TextFieldWidth}px`,
 		},
 		inputStyle: {
-			textAlign: 'center'
+			textAlign: 'left'
 		},
 		...GeneralTheme.TextFieldFocusStyle
 	},
@@ -84,7 +84,7 @@ export default class ZoomBar extends React.Component {
 						floatingLabelText="Width"
 						floatingLabelFixed={true}
 						title={`width: ${zoomWidthByUser}px`}
-						value={zoomWidthByUser || ""}
+						value={zoomWidthByUser || 0}
 						onChange={onInputZoomWidth}
 		                onKeyPress={setZoomWidth}
 		                onBlur={() => { let e = {which: 13}; setZoomWidth(e) }}
@@ -100,7 +100,7 @@ export default class ZoomBar extends React.Component {
 						floatingLabelText="Height"
 						floatingLabelFixed={true}
 						title={`height: ${zoomHeightByUser}px`}
-						value={zoomHeightByUser || ""}
+						value={zoomHeightByUser || 0}
 				        onChange={onInputZoomHeight}
 				        onKeyPress={setZoomHeight}
 				        onBlur={() => { let e = {which: 13}; setZoomHeight(e) }}

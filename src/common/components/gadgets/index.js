@@ -6,6 +6,7 @@ Repeatedly used components
 
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {
 	grey50 as dialogTitleColor,
@@ -114,12 +115,10 @@ export const FloatingLabelButton = ({
 				...style.FloatingLabelButton.ButtonContainer,
 				...buttonGroupStyle,
 			}}>
-				<p style={{
-					...style.FloatingLabelButton.ButtonDescription,
-					...descriptionStyle,
-				}}>
-					{description}
-				</p>
+				<FlatButton
+					label="Test"
+					style={{...style.FloatingLabelButton.ButtonDescription,}}
+				/>
 				{button}
 			</span>
 		</div>
