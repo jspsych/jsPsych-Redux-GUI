@@ -13,9 +13,27 @@ import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/ExperimentList';
 
-import AppbarTheme from '../theme.js';
+import { colors as AppbarThemeColors} from '../theme.js';
 
-const style = AppbarTheme.UserMenu;
+const colors = {
+  ...AppbarThemeColors
+}
+
+const style = {
+  icon: {
+    hoverColor: colors.secondaryLight,
+    color: colors.secondary,
+  },
+  avatar: {
+    backgroundColor: 'white',
+    color: colors.primary
+  },
+  username: login => ({
+    color: colors.font,
+    fontWeight: login ? 'bold' : 'normal',
+    textDecoration: login ? 'underline' : 'none'
+  })
+}
 
 export default class UserMenu extends React.Component {
   state = {
@@ -96,7 +114,7 @@ export default class UserMenu extends React.Component {
 
   render() {
     let login = this.props.username !== null;
-    let buttonLabel = (!login) ? 'Your Account' : this.props.username;
+    let buttonLabel = (!login) ? 'Sign Up/Log In' : this.props.username;
 
     return (
       <div>
@@ -104,7 +122,7 @@ export default class UserMenu extends React.Component {
         <ListItem 
           primaryText={buttonLabel} 
           onClick={this.handleTouchTap} 
-          style={style.username}
+          style={{...style.username(login)}}
           leftAvatar={this.renderUserPic(login)}
         />
       </div>

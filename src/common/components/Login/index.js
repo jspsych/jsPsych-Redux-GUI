@@ -10,13 +10,47 @@ import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowCon
 
 import {
 	grey50 as dialogBodyColor,
-	grey200 as tabColor,
-	grey900 as tabTextColor,
 } from 'material-ui/styles/colors';
 
 import { LoginModes } from '../../reducers/User';
 import { login } from '../../backend/cognito';
 import { renderDialogTitle } from '../gadgets';
+
+import GeneralTheme from '../theme.js';
+
+const colors = {
+	...GeneralTheme.colors,
+	tabTextColor: '#212121',
+	tabColor: '#EEEEEE'
+}
+
+const style = {
+	Tabs: {
+		inkBarStyle: {
+			backgroundColor: colors.secondary
+		}
+	},
+	Tab_SignIn: {
+		buttonStyle: loginMode => ({
+			backgroundColor: (LoginModes.signIn === loginMode) ? colors.primary : colors.tabColor,
+			textTransform: "none",
+			fontSize: 15
+		}),
+		style: loginMode => ({
+			color: (LoginModes.signIn === loginMode) ? 'white' : colors.tabTextColor
+		})
+	},
+	Tab_Register: {
+		buttonStyle: loginMode => ({
+			backgroundColor: (LoginModes.register === loginMode) ? colors.primary : colors.tabColor,
+			textTransform: "none",
+			fontSize: 15
+		}),
+		style: loginMode => ({
+			color: (LoginModes.register === loginMode) ? 'white' : colors.tabTextColor
+		})
+	},
+}
 
 const signInDialogStyle = {
 	title: "Sign In",
@@ -28,58 +62,60 @@ const registerDialogStyle = {
 
 
 export default class Login extends React.Component {
-	state = {
-		username: '',
-      	password: '',
-      	email: '',
-	}
-
-	setUserName = (name) => {
-		this.setState({username: name});
-	}
-
-	setPassword = (password) => {
-		this.setState({password: password});
-	}
-
-	setEmail = (email) => {
-		this.setState({email: email});
-	}
-
-	clearField = () => {
-		this.setState({
+	constructor(props) {
+		super(props);
+		this.state = {
 			username: '',
-			password: '',
-			email: '',
-		});
-	}
-
-	handleClose = () => {
-		this.clearField();
-		this.props.handleClose();
-	}
-
-	// isFirstTime denotes if it is first signIn after signing up
-	handleSignIn = (onFailure, isFirstTime=false) => {
-		var authenticationData = {
-			Username: this.state.username,
-			Password: this.state.password
+	      	password: '',
+	      	email: '',
 		}
-		
-		login(this.state.username,
-			authenticationData,
-			() => {
-				if (isFirstTime) {
-					// signUpPush flow, see container
-					this.props.signUp();
-				} else {
-					// signIn pull, see container
-					this.props.signIn();
-				}
-				this.clearField();
-			},
-			onFailure);
-		
+
+		this.setUserName = (name) => {
+			this.setState({username: name});
+		}
+
+		this.setPassword = (password) => {
+			this.setState({password: password});
+		}
+
+		this.setEmail = (email) => {
+			this.setState({email: email});
+		}
+
+		this.clearField = () => {
+			this.setState({
+				username: '',
+				password: '',
+				email: '',
+			});
+		}
+
+		this.handleClose = () => {
+			this.clearField();
+			this.props.handleClose();
+		}
+
+		// isFirstTime denotes if it is first signIn after signing up
+		this.handleSignIn = (onFailure, isFirstTime=false) => {
+			var authenticationData = {
+				Username: this.state.username,
+				Password: this.state.password
+			}
+			
+			login(this.state.username,
+				authenticationData,
+				() => {
+					if (isFirstTime) {
+						// signUpPush flow, see container
+						this.props.signUp();
+					} else {
+						// signIn pull, see container
+						this.props.signIn();
+					}
+					this.clearField();
+				},
+				onFailure);
+		}
 	}
 
 
@@ -133,16 +169,15 @@ export default class Login extends React.Component {
 					<Tabs
 				        value={loginMode}
 				        onChange={(mode) => { setLoginMode(mode); clearField(); }}
+				        {...style.Tabs}
 				      >
 				      <Tab label={signInDialogStyle.title} 
 				      		value={LoginModes.signIn}
 				      		buttonStyle={{
-				      			backgroundColor: (LoginModes.signIn === loginMode) ? null : tabColor,
-				      			textTransform: "none",
-				      			fontSize: 15
+				      			...style.Tab_SignIn.buttonStyle(loginMode),
 				      		}}
 				      		style={{
-				      		 	color: (LoginModes.signIn === loginMode) ? 'white' : tabTextColor
+				      			...style.Tab_SignIn.style(loginMode),
 				      		}}>
 				      	<div style={{paddingTop: 10}} />
 				      	<SignInWindow 
@@ -160,12 +195,10 @@ export default class Login extends React.Component {
 				      <Tab label={registerDialogStyle.title} 
 				      		value={LoginModes.register}
 				      		buttonStyle={{
-				      			backgroundColor: (LoginModes.register === loginMode) ? null : tabColor, 
-				      			textTransform: "none",
-				      			fontSize: 15
+				      			...style.Tab_Register.buttonStyle(loginMode),
 				      		}}
 				      		style={{
-				      			color: (LoginModes.register === loginMode) ? 'white' : tabTextColor
+				      			...style.Tab_Register.style(loginMode),
 				      		}}>
 				      	<div style={{paddingTop: 10}} />
 				      	<RegisterWindow

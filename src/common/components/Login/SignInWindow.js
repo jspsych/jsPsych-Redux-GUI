@@ -5,74 +5,106 @@ import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 
+import GeneralTheme from '../theme.js';
+
+const colors = {
+  ...GeneralTheme.colors,
+}
+
+const style = {
+  TextFieldFocusStyle: {
+    ...GeneralTheme.TextFieldFocusStyle
+  },
+  ActionButtons: {
+    SignIn: {
+      labelStyle: {
+        textTransform: "none",
+        fontSize: 15,
+        color: 'white'
+      },
+      backgroundColor: colors.primary,
+      fullWidth: true,
+    },
+    Forget: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.secondary
+      }
+    }
+  }
+}
 
 export default class SignInWindow extends React.Component {
+  constructor(props) {
+    super(props);
 
-  state = {
-    userError: null,
-    passwordError: null,
-    ready: true,
-  }
-
-  handleReadyChange = (r) => {
-    this.setState({
-      ready: r
-    });
-  }
-
-  handleUserNameChange = (e, newVal) => {
-    this.props.setUserName(newVal);
-    this.setState({
-      userError: newVal.length > 0 ? null : "Please enter your username or email address"
-    });
-  }
-
-  handlePasswordChange = (e, newVal) => {
-    this.props.setPassword(newVal);
-    this.setState({
-      passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
-    });
-  }
-
-  handleSignIn = () => {
-    this.handleReadyChange(false);
-    var cont_flag = true;
-    if(this.props.username === ''){
-      this.setState({userError: "Please enter your username or email"});
-      cont_flag = false;
+    this.state = {
+      userError: null,
+      passwordError: null,
+      ready: true,
     }
-    if(this.props.password === ''){
-      this.setState({passwordError: "Please enter your password"});
-      cont_flag = false;
+
+    this.handleReadyChange = (r) => {
+      this.setState({
+        ready: r
+      });
     }
-    if(!cont_flag){
-      return;
+
+    this.handleUserNameChange = (e, newVal) => {
+      this.props.setUserName(newVal);
+      this.setState({
+        userError: newVal.length > 0 ? null : "Please enter your username or email address"
+      });
     }
-    
-    this.props.signIn((err) => {
-      if (err) {
-        this.handleReadyChange(true);
+
+    this.handlePasswordChange = (e, newVal) => {
+      this.props.setPassword(newVal);
+      this.setState({
+        passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+      });
+    }
+
+    this.handleSignIn = () => {
+      this.handleReadyChange(false);
+      var cont_flag = true;
+      if(this.props.username === ''){
+        this.setState({userError: "Please enter your username or email"});
+        cont_flag = false;
       }
-
-      if (err.code === "NotAuthorizedException") {
-        this.setState({
-          passwordError: "Invalid password"
-        });
+      if(this.props.password === ''){
+        this.setState({passwordError: "Please enter your password"});
+        cont_flag = false;
+      }
+      if(!cont_flag){
         return;
       }
-      if (err.code === "UserNotFoundException") {
-        this.setState({
-          userError: "No account found for this username / email"
-        });
-        return;
-      }
-      if (err.code === "UserNotConfirmedException") {
-        this.props.popVerification();
-        return;
-      }
-      this.props.notifyError(err.message);
-    });
+      
+      this.props.signIn((err) => {
+        if (err) {
+          this.handleReadyChange(true);
+        }
+
+        if (err.code === "NotAuthorizedException") {
+          this.setState({
+            passwordError: "Invalid password"
+          });
+          return;
+        }
+        if (err.code === "UserNotFoundException") {
+          this.setState({
+            userError: "No account found for this username / email"
+          });
+          return;
+        }
+        if (err.code === "UserNotConfirmedException") {
+          this.props.popVerification();
+          return;
+        }
+        this.props.notifyError(err.message);
+      });
+    }
   }
+  
 
   render(){
     let { username, password, popForgotPassword } = this.props;
@@ -87,14 +119,17 @@ export default class SignInWindow extends React.Component {
               }
              }}>
           <TextField 
+            {...style.TextFieldFocusStyle}
             fullWidth={true}
-            id="username" 
+            id="username-signIn" 
             floatingLabelText="Username or Email" 
             value={username} 
             errorText={this.state.userError} 
             onChange={this.handleUserNameChange}
           />
-          <TextField id="password" 
+          <TextField 
+            {...style.TextFieldFocusStyle}
+            id="password-signIn" 
             fullWidth={true}
             type="password" 
             floatingLabelText="Password" 
@@ -106,13 +141,8 @@ export default class SignInWindow extends React.Component {
             {this.state.ready ?
               <RaisedButton 
                 label="Sign In" 
-                labelStyle={{
-                      textTransform: "none",
-                      fontSize: 15
-                }}
-                primary={true} 
                 onClick={handleSignIn} 
-                fullWidth={true}
+                {...style.ActionButtons.SignIn}
               /> :
               <CircularProgress />
             }
@@ -120,12 +150,10 @@ export default class SignInWindow extends React.Component {
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
             <FlatButton 
               label="Forgot my password" 
-              labelStyle={{textTransform: "none", }}
-              secondary={true}
               onClick={popForgotPassword}
+              {...style.ActionButtons.Forget}
             />
           </div>
-          
         </div>
       </Paper>
     )

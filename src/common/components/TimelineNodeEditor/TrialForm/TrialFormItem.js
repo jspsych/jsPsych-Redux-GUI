@@ -42,7 +42,7 @@ import GeneralTheme from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
-	labelColor: '#B1B1B1',
+	labelColor: '#757575',
 	normalToggleColor: '#414141',
 	dividerColor: 'rgb(224, 224, 224)',
 	disabledColor: '#B1B1B1',
@@ -100,7 +100,7 @@ const style = {
 			display: 'flex',
 			flexDirection: 'column',
 			marginTop: '10px',
-			marginBottom: '10px',
+			marginBottom: '5px',
 		},
 		FloatingLabel: error => ({
 			zIndex: '1',
@@ -121,8 +121,9 @@ const style = {
 		},
 		ContentGroup: error => ({
 			flexGrow: 1,
-			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
-			paddingBottom: '5px',
+			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `none`,
+			// borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
+			paddingBottom: error ? '5px' : '0px',
 		}),
 		ErrorText: {
 			color: colors.errorRed,
@@ -145,12 +146,13 @@ const style = {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
 		labelStyle: {
-			color: colors.primaryDeep
+			color: colors.labelColor
 		},
 		labelPosition: 'before'
 	},
 	TriggerIconStyle: {
-		...GeneralTheme.Icon,
+		color: colors.labelColor,
+		hoverColor: colors.secondaryDeep,
 		style: {
 			width: 16,
 			height: 16,
@@ -205,11 +207,9 @@ const components = {
 				{...style.TriggerStyle}
 				labelStyle={{
 					textTransform: 'none',
-					color: colors.primaryDeep
+					...style.TriggerStyle.labelStyle,
 				}}
-				labelPosition="before"
 				icon={<AddMediaIcon {...style.TriggerIconStyle}/>}
-				// icon={<img src='./middle.png'/>}
 				label={label}
 				onClick={onClick}
 			/>

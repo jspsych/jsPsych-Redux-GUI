@@ -3,6 +3,8 @@
 	display: flex;
 	overflow: hidden;
 	flex-direction: row;
+	z-index: 4;
+	box-shadow: 0 2px 5px rgba(0,0,0, .26)
 }
 
 .TimelineNode-Editor-Container {
@@ -28,7 +30,7 @@
 
 .TimelineNode-Editor-Sheet {
 	overflow-y: auto;
-	overflow-x: scroll;
+	overflow-x: auto;
 	flex-grow: 1;
 }
 
@@ -38,7 +40,7 @@
 	min-width: 8px;
 	flex-basis: 8px;
 	cursor: col-resize;
-	border-left: 1px solid #aaa;
+	/*border-left: 1px solid #aaa;*/
 }
 
 .TimelineNode-Editor-Close-Handle-Container {

@@ -45,21 +45,6 @@ const theme = {
 		},
 		icon: AppbarIcon
 	},
-	UserMenu: {
-		icon: {
-			hoverColor: colors.secondaryLight,
-			color: colors.secondary,
-		},
-		avatar: {
-			backgroundColor: 'white',
-			color: colors.primary
-		},
-		username: {
-			color: colors.font,
-			fontWeight: 'bold',
-			textDecoration: 'underline'
-		}
-	},
 	InitEditor: {
 		icon: AppbarIcon
 	},
