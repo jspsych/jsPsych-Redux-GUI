@@ -66,7 +66,22 @@ const style = {
     Wait: {
       size: 30,
       color: colors.primary
-    }
+    },
+    SaveAs: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.primary
+      }
+    },
+    Cancel: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.secondary
+      }
+    },
+  },
+  TextFieldFocusStyle: {
+    ...AppbarTheme.TextFieldFocusStyle
   }
 }
 
@@ -194,8 +209,8 @@ export default class Appbar extends React.Component {
 
     const title = (
       <TextField
-        id="Experiment-Name-Textfield"
         {...style.NameField}
+        id="Experiment-Name-Textfield"
         value={this.props.experimentName}
         errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
         onChange={this.props.changeExperimentName}
@@ -278,20 +293,13 @@ export default class Appbar extends React.Component {
               bodyStyle={{backgroundColor: dialogBodyColor}}
               actions={[
                 <FlatButton
+                  {...style.Actions.SaveAs}
                   label="Save As"
-                  labelStyle={{
-                    textTransform: "none",
-                  }}
-                  primary={true}
-                  keyboardFocused={true}
                   onClick={saveAsCallback}
                 />,
                 <FlatButton
+                  {...style.Actions.Cancel}
                   label="Cancel"
-                  labelStyle={{
-                    textTransform: "none",
-                  }}
-                  secondary={true}
                   onClick={this.handleSaveAsClose}
                 />
               ]}
@@ -304,6 +312,7 @@ export default class Appbar extends React.Component {
                }}
             >
               <TextField
+                {...style.TextFieldFocusStyle}
                 id="Save-as-new-experiment-name"
                 floatingLabelFixed={true}
                 floatingLabelText="New experiment name"

@@ -38,82 +38,85 @@ const style = {
 }
 
 export default class UserMenu extends React.Component {
-  state = {
-      open: false,
-      experimentListOpen: false,
-  }
-
-
-  handleTouchTap = (event) => {
-    this.setState({
-      open: true,
-      anchorEl: event.currentTarget
-    });
-  }
-
-  handleRequestClose = () => {
-    this.setState({
-      open: false
-    })
-  }
-
-  openExperimentList = () => {
-    this.setState({
-      experimentListOpen: true
-    })
-  }
-
-  closeExperimentList = () => {
-    this.setState({
-      experimentListOpen: false
-    })
-  }
-
-  renderMenu = (login) => {
-    if (!login) {
-      return (
-        <Menu>
-            <MenuItem
-              leftIcon={<SignInIcon {...style.icon}/>}
-              primaryText={"Sign In"}
-              onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
-            <Divider />
-            <MenuItem
-              leftIcon={<SignUpIcon {...style.icon}/>}
-              primaryText={"Create Account"}
-              onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
-        </Menu>
-      )
-    } else {
-      return (
-        <Menu>
-            <MenuItem
-              leftIcon={<Profile {...style.icon}/>}
-              primaryText={"Your profile"}
-              onClick={() => { this.handleRequestClose(); }} />
-            <MenuItem
-              primaryText={"Your experiments"}
-              leftIcon={<ExperimentIcon {...style.icon} />}
-              onClick={() => { this.openExperimentList(); this.handleRequestClose(); }} />
-            <Divider />
-            <MenuItem
-              primaryText={"Sign out"}
-              leftIcon={<SignOut {...style.icon} />}
-              onClick={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
-        </Menu>
-      )
+  constructor(props) {
+    super(props);
+    this.state = {
+        open: false,
+        experimentListOpen: false,
     }
-  }
 
-  renderUserPic = (login, size=36) => {
-    return ((!login) ? 
-            null:
-            <Avatar 
-              size={size} 
-              {...style.avatar}
-            >
-              {this.props.username.charAt(0)}
-            </Avatar>)
+
+    this.handleTouchTap = (event) => {
+      this.setState({
+        open: true,
+        anchorEl: event.currentTarget
+      });
+    }
+
+    this.handleRequestClose = () => {
+      this.setState({
+        open: false
+      })
+    }
+
+    this.openExperimentList = () => {
+      this.setState({
+        experimentListOpen: true
+      })
+    }
+
+    this.closeExperimentList = () => {
+      this.setState({
+        experimentListOpen: false
+      })
+    }
+
+    this.renderMenu = (login) => {
+      if (!login) {
+        return (
+          <Menu>
+              <MenuItem
+                leftIcon={<SignInIcon {...style.icon}/>}
+                primaryText={"Sign In"}
+                onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
+              <Divider />
+              <MenuItem
+                leftIcon={<SignUpIcon {...style.icon}/>}
+                primaryText={"Create Account"}
+                onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
+          </Menu>
+        )
+      } else {
+        return (
+          <Menu>
+              <MenuItem
+                leftIcon={<Profile {...style.icon}/>}
+                primaryText={"Your profile"}
+                onClick={() => { this.handleRequestClose(); }} />
+              <MenuItem
+                primaryText={"Your experiments"}
+                leftIcon={<ExperimentIcon {...style.icon} />}
+                onClick={() => { this.openExperimentList(); this.handleRequestClose(); }} />
+              <Divider />
+              <MenuItem
+                primaryText={"Sign out"}
+                leftIcon={<SignOut {...style.icon} />}
+                onClick={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
+          </Menu>
+        )
+      }
+    }
+
+    this.renderUserPic = (login, size=36) => {
+      return ((!login) ? 
+              null:
+              <Avatar 
+                size={size} 
+                {...style.avatar}
+              >
+                {this.props.username.charAt(0)}
+              </Avatar>)
+    }
   }
 
   render() {
