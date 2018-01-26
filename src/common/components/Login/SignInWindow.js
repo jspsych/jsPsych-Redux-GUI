@@ -32,7 +32,7 @@ const style = {
       }
     },
     Wait: {
-      colors: colors.primary
+      color: colors.primary
     }
   }
 }
