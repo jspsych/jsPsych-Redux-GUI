@@ -28,7 +28,63 @@ import { renderDialogTitle } from '../gadgets';
 
 import AppbarTheme from './theme.js';
 
-const style = AppbarTheme.Appbar;
+const colors = {
+  ...AppbarTheme.colors
+}
+
+const style = {
+  Appbar: {
+    width: '100%',
+    height: '100%',
+    margin: '0 auto',
+    borderBottom: '1px solid #aaa',
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: colors.background,
+  },
+  DrawerToggle: {
+    iconColor: AppbarTheme.AppbarIcon,
+  },
+  Toolbar: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexGrow: 1,
+  },
+  NameField: {
+    inputStyle: {
+      color: colors.font
+    },
+    underlineFocusStyle: {
+      borderColor: colors.primaryDeep
+    }
+  },
+  text: {
+    color: colors.font
+  },
+  icon: AppbarTheme.AppbarIcon,
+  Actions: {
+    Wait: {
+      size: 30,
+      color: colors.primary
+    },
+    SaveAs: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.primary
+      }
+    },
+    Cancel: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.secondary
+      }
+    },
+  },
+  TextFieldFocusStyle: {
+    ...AppbarTheme.TextFieldFocusStyle
+  }
+}
+
 
 const Actions = {
   save: "SAVE",
@@ -36,86 +92,89 @@ const Actions = {
 }
 
 export default class Appbar extends React.Component {
-  state = {
-    saveAsOpen: false,
-    saveAsName: '',
-    saveAsNameError: '',
-
-    performing: null,
-    confirmOpen: false,
-    confirmMessage: "Null",
-    proceedWithOperation: () => {},
-    proceedWithOperationLabel: "Yes",
-    proceed: () => {},
-    proceedLabel: "No",
-
-    total: 0,
-    loaded: [],
-    percent: 0,
-  }
-
-  setPerforming = (p) => {
-    this.setState({
-      performing: p
-    });
-  }
-
-  progresHook = (loadedInfo, total, onFinish=false) => {
-    if (onFinish) {
-      this.setState({
-        loaded: [],
-        total: 0,
-      })
-      return;
-    }
-    let loaded = this.state.loaded.slice();
-    loaded[loadedInfo.index] = loadedInfo.value;
-
-    let percent = loaded.reduce((sum, val) => (sum+val), 0) / total * 100;
-    this.setState({
-      loaded: loaded,
-      total: total,
-      percent: (percent > 100) ? 100 : parseInt(percent, 10)
-    });
-  }
-
-  handleSaveAsOpen = () => {
-    this.setState({
-      saveAsOpen: true,
-      saveAsName: this.props.experimentName
-    })
-  }
-
-  handleSaveAsClose = () => {
-    this.setState({
+  constructor(props) {
+    super(props);
+    this.state = {
       saveAsOpen: false,
       saveAsName: '',
       saveAsNameError: '',
-    })
-  }
 
-  setSaveAsName = (e, n) => {
-    this.setState({
-      saveAsName: n,
-      saveAsNameError: (/\S/.test(n)) ? '' : "New experiment name can't be empty."
-    })
-  } 
+      performing: null,
+      confirmOpen: false,
+      confirmMessage: "Null",
+      proceedWithOperation: () => {},
+      proceedWithOperationLabel: "Yes",
+      proceed: () => {},
+      proceedLabel: "No",
 
-  handleConfirmClose = () => {
-    this.setState({
-      confirmOpen: false
-    })
-  }
+      total: 0,
+      loaded: [],
+      percent: 0,
+    }
 
-  popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
-    this.setState({
-      confirmOpen: true,
-      confirmMessage: message,
-      proceedWithOperation: proceedWithOperation,
-      proceedWithOperationLabel: proceedWithOperationLabel,
-      proceed: proceed,
-      proceedLabel: proceedLabel,
-    })
+    this.setPerforming = (p) => {
+      this.setState({
+        performing: p
+      });
+    }
+
+    this.progresHook = (loadedInfo, total, onFinish=false) => {
+      if (onFinish) {
+        this.setState({
+          loaded: [],
+          total: 0,
+        })
+        return;
+      }
+      let loaded = this.state.loaded.slice();
+      loaded[loadedInfo.index] = loadedInfo.value;
+
+      let percent = loaded.reduce((sum, val) => (sum+val), 0) / total * 100;
+      this.setState({
+        loaded: loaded,
+        total: total,
+        percent: (percent > 100) ? 100 : parseInt(percent, 10)
+      });
+    }
+
+    this.handleSaveAsOpen = () => {
+      this.setState({
+        saveAsOpen: true,
+        saveAsName: this.props.experimentName
+      })
+    }
+
+    this.handleSaveAsClose = () => {
+      this.setState({
+        saveAsOpen: false,
+        saveAsName: '',
+        saveAsNameError: '',
+      })
+    }
+
+    this.setSaveAsName = (e, n) => {
+      this.setState({
+        saveAsName: n,
+        saveAsNameError: (/\S/.test(n)) ? '' : "New experiment name can't be empty."
+      })
+    } 
+
+    this.handleConfirmClose = () => {
+      this.setState({
+        confirmOpen: false
+      })
+    }
+
+    this.popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
+      this.setState({
+        confirmOpen: true,
+        confirmMessage: message,
+        proceedWithOperation: proceedWithOperation,
+        proceedWithOperationLabel: proceedWithOperationLabel,
+        proceed: proceed,
+        proceedLabel: proceedLabel,
+      })
+    }
   }
 
 	render() {
@@ -150,8 +209,8 @@ export default class Appbar extends React.Component {
 
     const title = (
       <TextField
-        id="Experiment-Name-Textfield"
         {...style.NameField}
+        id="Experiment-Name-Textfield"
         value={this.props.experimentName}
         errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
         onChange={this.props.changeExperimentName}
@@ -168,7 +227,7 @@ export default class Appbar extends React.Component {
             <New {...style.icon} />
           </IconButton>
           {(this.state.performing === Actions.save) ?
-            <CircularProgress size={30}/> :
+            <CircularProgress {...style.Actions.Wait}/> :
             <IconButton 
               tooltip="Save"
               onClick={() => { this.props.save(()=>{
@@ -181,7 +240,7 @@ export default class Appbar extends React.Component {
             </IconButton>
           }
           {(this.state.performing === Actions.saveAs) ?
-            <CircularProgress size={30}/> :
+            <CircularProgress {...style.Actions.Wait}/> :
             <IconButton 
               tooltip="Save As"
               onClick={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
@@ -192,7 +251,9 @@ export default class Appbar extends React.Component {
           <MediaManager />
           {isBundling ?
             <div style={{display:'flex', paddingLeft: 10}}>
-              <div style={{paddingTop: 10}}><CircularProgress size={30} value={this.state.percent} mode="determinate"/></div>
+              <div style={{paddingTop: 10}}>
+                <CircularProgress {...style.Actions.Wait} value={this.state.percent} mode="determinate"/>
+              </div>
               <ListItem primaryText={this.state.percent+"%"} disabled={true}/>
             </div>:
           <IconButton
@@ -232,20 +293,13 @@ export default class Appbar extends React.Component {
               bodyStyle={{backgroundColor: dialogBodyColor}}
               actions={[
                 <FlatButton
+                  {...style.Actions.SaveAs}
                   label="Save As"
-                  labelStyle={{
-                    textTransform: "none",
-                  }}
-                  primary={true}
-                  keyboardFocused={true}
                   onClick={saveAsCallback}
                 />,
                 <FlatButton
+                  {...style.Actions.Cancel}
                   label="Cancel"
-                  labelStyle={{
-                    textTransform: "none",
-                  }}
-                  secondary={true}
                   onClick={this.handleSaveAsClose}
                 />
               ]}
@@ -258,6 +312,7 @@ export default class Appbar extends React.Component {
                }}
             >
               <TextField
+                {...style.TextFieldFocusStyle}
                 id="Save-as-new-experiment-name"
                 floatingLabelFixed={true}
                 floatingLabelText="New experiment name"

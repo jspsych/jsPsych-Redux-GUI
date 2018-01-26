@@ -6,81 +6,116 @@ import Paper from 'material-ui/Paper';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import { signUp } from '../../backend/cognito';
+import GeneralTheme from '../theme.js';
+
+const colors = {
+  ...GeneralTheme.colors,
+}
+
+const style = {
+  TextFieldFocusStyle: {
+    ...GeneralTheme.TextFieldFocusStyle
+  },
+  Actions: {
+    Create: {
+      labelStyle: {
+        textTransform: "none",
+        fontSize: 15,
+        color: 'white'
+      },
+      backgroundColor: colors.primary,
+      fullWidth: true,
+    },
+    Cancel: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.secondary
+      }
+    },
+    Wait: {
+      color: colors.primary
+    }
+  }
+}
 
 export default class RegisterWindow extends React.Component {
-  state = {
-    usernameError: null,
-    emailError: null,
-    passwordError: null,
-    ready: true,
-  }
-
-  handleReadyChange = (r) => {
-    this.setState({
-      ready: r
-    });
-  }
-
-  handleUserNameChange = (e, newVal) => {
-    this.props.setUserName(newVal);
-    this.setState({
-      usernameError: newVal.length > 0 ? null : "Please enter a username"
-    });
-  }
-
-  handleEmailChange = (e, newVal) => {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    const validEmail = re.test(newVal);
-    this.props.setEmail(newVal);
-    this.setState({
-      emailError: validEmail ? null : "Please enter a valid email address"
-    });
-  }
-
-  handlePasswordChange = (e, newVal) => {
-    this.props.setPassword(newVal);
-    this.setState({
-      passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
-    });
-  }
-
-  handleCreateAccount = () => {
-    this.handleReadyChange(false);
-    var cont_flag = true;
-    if(this.props.username === ''){
-      this.setState({usernameError: "Please enter a username"});
-      cont_flag = false;
-    }
-    if(this.props.email === '' || this.state.emailError !== null){
-      this.setState({emailError: "Please enter a valid email address"});
-      cont_flag = false;
+  constructor(props) {
+    super(props);
+    this.state = {
+      usernameError: null,
+      emailError: null,
+      passwordError: null,
+      ready: true,
     }
 
-    if(this.props.password === '' || this.state.passwordError !== null){
-      this.setState({passwordError: "Password must be at least 10 characters long"});
-      cont_flag = false;
-    }
-    if(!cont_flag){
-      this.handleReadyChange(true);
-      return;
+    this.handleReadyChange = (r) => {
+      this.setState({
+        ready: r
+      });
     }
 
-    var attributes = [{
-      Name: 'email',
-      Value: this.props.email,
-    }];
+    this.handleUserNameChange = (e, newVal) => {
+      this.props.setUserName(newVal);
+      this.setState({
+        usernameError: newVal.length > 0 ? null : "Please enter a username"
+      });
+    }
 
+    this.handleEmailChange = (e, newVal) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const validEmail = re.test(newVal);
+      this.props.setEmail(newVal);
+      this.setState({
+        emailError: validEmail ? null : "Please enter a valid email address"
+      });
+    }
 
+    this.handlePasswordChange = (e, newVal) => {
+      this.props.setPassword(newVal);
+      this.setState({
+        passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+      });
+    }
 
-    signUp(this.props.username, this.props.password, attributes, (err, result) => {
-      if (err) {
+    this.handleCreateAccount = () => {
+      this.handleReadyChange(false);
+      var cont_flag = true;
+      if(this.props.username === ''){
+        this.setState({usernameError: "Please enter a username"});
+        cont_flag = false;
+      }
+      if(this.props.email === '' || this.state.emailError !== null){
+        this.setState({emailError: "Please enter a valid email address"});
+        cont_flag = false;
+      }
+
+      if(this.props.password === '' || this.state.passwordError !== null){
+        this.setState({passwordError: "Password must be at least 10 characters long"});
+        cont_flag = false;
+      }
+      if(!cont_flag){
         this.handleReadyChange(true);
-        this.props.notifyError(err.message);
         return;
       }
-      this.props.popVerification();
-    });
+
+      var attributes = [{
+        Name: 'email',
+        Value: this.props.email,
+      }];
+
+
+
+      signUp(this.props.username, this.props.password, attributes, (err, result) => {
+        if (err) {
+          this.handleReadyChange(true);
+          this.props.notifyError(err.message);
+          return;
+        }
+        this.props.popVerification();
+      });
+    }
   }
+  
 
   render(){
 
@@ -94,6 +129,7 @@ export default class RegisterWindow extends React.Component {
              }}
           >
           <TextField 
+            {...style.TextFieldFocusStyle}
             fullWidth={true}
             id="userName" 
             floatingLabelText="Username" 
@@ -102,6 +138,7 @@ export default class RegisterWindow extends React.Component {
             onChange={this.handleUserNameChange}>
           </TextField>
           <TextField 
+            {...style.TextFieldFocusStyle}
             fullWidth={true}
             id="email" 
             floatingLabelText="Email" 
@@ -110,6 +147,7 @@ export default class RegisterWindow extends React.Component {
             onChange={this.handleEmailChange}>
           </TextField>
           <TextField 
+            {...style.TextFieldFocusStyle}
             fullWidth={true}
             id="password" 
             type="password" 
@@ -122,25 +160,16 @@ export default class RegisterWindow extends React.Component {
             {this.state.ready ?
               <RaisedButton 
                 label="Create Account" 
-                labelStyle={{
-                      textTransform: "none",
-                      fontSize: 15
-                }}
-                primary={true} 
                 onClick={this.handleCreateAccount} 
-                fullWidth={true}
+                {...style.Actions.Create}
               /> :
-              <CircularProgress />
+              <CircularProgress {...style.Actions.Wait}/>
             }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
           <FlatButton
               label="Not right now"
-              labelStyle={{
-                textTransform: "none",
-              }}
-              secondary={true}
-              keyboardFocused={true}
+              {...style.Actions.Cancel}
               onClick={this.props.handleClose}
             />
           </div>

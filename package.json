@@ -47,7 +47,6 @@
     "preact": "^8.2.7",
     "preact-compat": "^3.17.0",
     "prerender-node": "^2.7.4",
-    "prop-types": "^15.5.10",
     "react": "^15.6.2",
     "react-addons-css-transition-group": "^15.6.2",
     "react-codemirror": "^1.0.0",
@@ -74,6 +73,7 @@
     "eject": "react-scripts eject",
     "deploy": "deploy.cmd",
     "test": "jest",
-    "test:watch": "npm test -- --watch"
+    "test:watch": "npm test -- --watch",
+    "updateJspsych": "updateJspsych.cmd"
   }
 }
