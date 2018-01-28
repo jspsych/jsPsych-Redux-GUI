@@ -25,7 +25,7 @@ module.exports = {
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
-      mangle: true,
+      mangle: { except: ['exports'] },
       compress: {
         warnings: false, // Suppress uglification warnings
         pure_getters: true,
