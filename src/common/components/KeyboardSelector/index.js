@@ -201,7 +201,7 @@ class Keyboard extends React.Component {
 		}
 
 		this.selectKey = (key) => {
-			if (this.props.mulitSelect) {
+			if (this.props.multiSelect) {
 				let temp = this.state.selected.slice() || [];
 				temp.push(key);
 				this.setState({
@@ -215,7 +215,7 @@ class Keyboard extends React.Component {
 		}
 
 		this.deselectKey = (key) => {
-			if (this.props.mulitSelect) {
+			if (this.props.multiSelect) {
 				let temp = [];
 				for (let v of this.state.selected) {
 					if (v !== key) {
@@ -305,7 +305,7 @@ export default class KeyboardSelector extends React.Component {
 	}
 
 	static defaultProps = {
-		mulitSelect: false,
+		multiSelect: false,
 		value: '',
 		Trigger: ({onClick}) => (
 			<IconButton
