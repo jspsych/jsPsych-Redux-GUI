@@ -33,41 +33,8 @@ const setObject = (dispatch, key, obj) => {
 	dispatch(editorActions.setPluginParamAction(key, obj));
 }
 
-const setKey = (dispatch, key, keyListStr, useEnum=false, isArray=false) => {
-	if (useEnum || !isArray) {
-		dispatch(editorActions.setPluginParamAction(key, (keyListStr) ? keyListStr : null));
-	} else {
-		let val = [];
-		let hist = {};
-		let i = 0, len = keyListStr.length, part = "", spec = false;
-		while (i < len) {
-			let c = keyListStr[i++];
-			switch(c) {
-				case '{':
-					spec = true;
-					break;
-				case '}':
-					if (part.trim().length > 0 && !hist[part]) {
-						val.push(part);
-						hist[part] = true;
-					}
-					part = "";
-					spec = false;
-					break;
-				case ' ':
-					break;
-				default:
-					if (spec) part += c;
-					else {
-						if (!hist[c]) {
-							val.push(c);
-							hist[c] = true;
-						}
-					}
-			}
-		}
-		dispatch(editorActions.setPluginParamAction(key, val));
-	}
+const setKey = (dispatch, key, value) => {
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
 }
 
 const setToggle = (dispatch, key, flag) => {
@@ -163,7 +130,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
 	setFunc: (key, code, funcOnly) => { setFunc(dispatch, key, code, funcOnly); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
-	setKey: (key, keyListStr, useEnum, isArray) => { setKey(dispatch, key, keyListStr, useEnum, isArray); },
+	setKey: (key, value) => { setKey(dispatch, key, value); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },
 	insertFile: (key, s3files, multiSelect, selected, handleClose) => { insertFile(dispatch, key, s3files, multiSelect, selected, handleClose); },
 	setMedia: (key, value) => { setMedia(dispatch, key, value); },

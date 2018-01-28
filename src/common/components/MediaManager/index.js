@@ -205,11 +205,13 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.renderActions = () => {
-			const deleteButton = (<FlatButton
+			const deleteButton = (
+				<FlatButton
 					label="Delete"
 					labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
 					onClick={this.handleDelete}
-				/>);
+				/>
+			);
 			switch(this.props.mode) {
 				case MediaManagerMode.select:
 				case MediaManagerMode.multiSelect:
@@ -225,13 +227,6 @@ export default class MediaManager extends React.Component {
 				default:
 					return [
 						deleteButton,
-						<FlatButton
-				            label="Close"
-				            primary={true}
-				            keyboardFocused={true}
-				            labelStyle={{textTransform: "none", color: GeneralTheme.colors.primary}}
-				            onClick={this.handleClose}
-				        />
 					]
 				}
 		}

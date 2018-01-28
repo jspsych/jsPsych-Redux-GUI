@@ -58,9 +58,9 @@ class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			timelineOrganizerDrawerToggle: true,
-			timelineEditorDrawerToggle: true,
+		this.state = {	
+			timelineOrganizerDrawerToggle: false,
+			timelineEditorDrawerToggle: false,
 			zoomScale: 1,
 			zoomWidth: null,
 			zoomHeight: null,
@@ -221,9 +221,15 @@ class App extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState.timelineEditorDrawerToggle !== this.state.timelineEditorDrawerToggle ||
-			prevState.timelineOrganizerDrawerToggle !== this.state.timelineOrganizerDrawerToggle) {
-			// this.testBug();
+		if (prevProps.shouldEditorStayOpen !== this.props.shouldEditorStayOpen) {
+			this.setState({
+				timelineEditorDrawerToggle: this.props.shouldEditorStayOpen,
+			});
+		}
+		if (prevProps.shouldOrganizerStayOpen !== this.props.shouldOrganizerStayOpen) {
+			this.setState({
+				timelineOrganizerDrawerToggle: this.props.shouldOrganizerStayOpen
+			});
 		}
 	}
 
@@ -273,21 +279,21 @@ class App extends React.Component {
 	  					style={style.AppMainPreview}
 	  				>
 		  				<ZoomBar
-		  						zoomScale={zoomScale}
-		  						zoomHeightByUser={zoomHeightByUser}
-		  						zoomWidthByUser={zoomWidthByUser}
-		  						displayZoom={displayZoom}
-		  						setZoomHeight={setZoomHeight}
-		  						setZoomWidth={setZoomWidth}
-		  						onInputZoomHeight={onInputZoomHeight}
-		  						onInputZoomWidth={onInputZoomWidth}
-		  						setDisplayZoom={setDisplayZoom}
+	  						zoomScale={zoomScale}
+	  						zoomHeightByUser={zoomHeightByUser}
+	  						zoomWidthByUser={zoomWidthByUser}
+	  						displayZoom={displayZoom}
+	  						setZoomHeight={setZoomHeight}
+	  						setZoomWidth={setZoomWidth}
+	  						onInputZoomHeight={onInputZoomHeight}
+	  						onInputZoomWidth={onInputZoomWidth}
+	  						setDisplayZoom={setDisplayZoom}
 		  				/>
 		  				<PreviewWindow
-		  						zoomScale={zoomScale}
-		  						zoomWidth={zoomWidth}
-		  						zoomHeight={zoomHeight}
-		  						sizeRef={el => this.previewWindow = el}
+	  						zoomScale={zoomScale}
+	  						zoomWidth={zoomWidth}
+	  						zoomHeight={zoomHeight}
+	  						sizeRef={el => this.previewWindow = el}
 		  				/>
 	  				</div>
 	  				<TimelineNodeEditor 
