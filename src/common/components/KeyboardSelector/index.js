@@ -1,3 +1,8 @@
+/*
+keyChoices uses the names of keys in the { keylookup } object defined in jspsych.js, which are subject to future changes.
+
+*/
+
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
@@ -104,6 +109,21 @@ const keyChoices = [
 	['uparrow', 'downarrow', 'leftarrow', 'rightarrow']
 ]
 
+const toPrettyName = (key) => {
+	let newKey;
+	switch(key) {
+		case 'uparrow':
+		case 'downarrow':
+		case 'leftarrow':
+		case 'rightarrow':
+			newKey = 'Arrow-' + key.replace('arrow', '');
+			break;
+		default:
+			newKey = key;
+	}
+	return newKey.toUpperCase();
+}
+
 class Key extends React.Component {
 	constructor(props) {
 		super(props);
@@ -136,7 +156,7 @@ class Key extends React.Component {
 		return (
 			<RaisedButton
 				{...style.Key(isSelected, this.props.allKeys)}
-				label={this.props.label}
+				label={toPrettyName(this.props.label)}
 				onClick={isSelected ? this.deselectKey : this.selectKey}
 				disabled={this.props.allKeys}
 			/>
@@ -171,7 +191,6 @@ class KeyRow extends React.Component {
 		) 
 	}
 }
-
 
 class Keyboard extends React.Component {
 	constructor(props) {
@@ -302,12 +321,12 @@ export default class KeyboardSelector extends React.Component {
 
 		let label;
 		if (Array.isArray(this.props.value)) {
-			label = this.props.value.length > 0 ? `[Keys: ${this.props.value[0]}...]` : 'Key Choices'
+			label = this.props.value.length > 0 ? `[Keys: ${toPrettyName(this.props.value[0])}...]` : 'Key Choices'
 		} else {
 			if (this.props.value === jsPsych.ALL_KEYS) {
 				label = '[ALL KEYS]';
 			} else {
-				label = this.props.value ? `[Key: ${this.props.value}]` : 'Key Choices';
+				label = this.props.value ? `[Key: ${toPrettyName(this.props.value)}]` : 'Key Choices';
 			}
 		}
 
