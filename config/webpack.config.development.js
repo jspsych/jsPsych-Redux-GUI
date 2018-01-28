@@ -17,7 +17,12 @@ module.exports = {
   ],
 
   module: {
-    loaders: [{
+    rules: [
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader']
+    },
+    {
       test: /\.jsx?$/,
       loader: 'babel-loader',
       exclude: /node_modules/,
@@ -25,13 +30,7 @@ module.exports = {
       query: {
         presets: ['es2015', 'react', 'stage-0']
       }
-    }, {
-      test: /\.css$/,
-      loader: 'style!css!'
-    }, {
-        test: /\.json$/,
-        loader: 'json-loader'
-    }]
+    }] 
   },
 
   node: {
