@@ -7,9 +7,11 @@ module.exports = {
   entry: [
     path.resolve(__dirname, '../src/client/index.js'),
   ],
-  alias: {
-   'react': 'preact-compat',
-   'react-dom': 'preact-compat'
+  resolve: {
+    alias: {
+      'react': 'preact-compat',
+      'react-dom': 'preact-compat',
+    }
   },
   output: {
     path: path.resolve(__dirname, '../public/static'),
@@ -21,9 +23,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
-      mangle: true,
+      sourceMap: true,
+      mangle: { except: ['exports'] },
       compress: {
         warnings: false, // Suppress uglification warnings
         pure_getters: true,
@@ -40,7 +42,12 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ],
   module: {
-    loaders: [{
+    rules: [
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader']
+    },
+    {
       test: /\.jsx?$/,
       loader: 'babel-loader',
       exclude: /node_modules/,
@@ -48,15 +55,8 @@ module.exports = {
       query: {
         presets: ['es2015', 'react', 'stage-0']
       }
-    }, {
-      test: /\.css$/,
-      loader: 'style!css!'
-    }, {
-        test: /\.json$/,
-        loader: 'json-loader'
-    }]
+    }] 
   },
-
   node: {
     fs: "empty",
     module: "empty",

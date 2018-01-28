@@ -146,7 +146,12 @@ const style = {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
 		labelStyle: {
-			color: colors.labelColor
+			color: colors.labelColor,
+			textOverflow: 'ellipsis',
+			whiteSpace: 'nowrap',
+		},
+		style: {
+			maxWidth: '220px'
 		},
 		labelPosition: 'before'
 	},
@@ -206,8 +211,8 @@ const components = {
 			<FlatButton
 				{...style.TriggerStyle}
 				labelStyle={{
-					textTransform: 'none',
 					...style.TriggerStyle.labelStyle,
+					textTransform: 'none',
 				}}
 				icon={<AddMediaIcon {...style.TriggerIconStyle}/>}
 				label={label}
@@ -218,8 +223,8 @@ const components = {
 			<FlatButton
 				{...style.TriggerStyle}
 				labelStyle={{
-					textTransform: 'none',
 					...style.TriggerStyle.labelStyle,
+					textTransform: 'none',
 				}}
 				icon={<KeyboardIcon {...style.TriggerIconStyle}/>}
 				label={label}
