@@ -129,7 +129,7 @@ const style = {
 			color: colors.errorRed,
 			fontWeight: 'bold',
 			fontSize: '10px',
-			paddingTop: '5px'
+			paddingTop: '5px',
 		},
 		ToggleGroup: {
 			flexBasis: 'auto',
@@ -337,6 +337,7 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 		errorText: error ? 'This parameter is required.' : '',
 		floatingLabelFixed: true,
 		title: parameterInfo.description,
+		style: { marginBottom: error ? '15px' : '0px' },
 		...GeneralTheme.TextFieldFocusStyle
 	}
 }
