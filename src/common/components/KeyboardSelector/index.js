@@ -318,15 +318,17 @@ export default class KeyboardSelector extends React.Component {
 	}
 
 	render() {
-
-		let label;
-		if (Array.isArray(this.props.value)) {
-			label = this.props.value.length > 0 ? `[Keys: ${toPrettyName(this.props.value[0])}...]` : 'Key Choices'
+		let { value } = this.props;
+		let label, tip;
+		if (Array.isArray(value)) {
+			label = value.length > 0 ? `[Keys: ${toPrettyName(value[0])} ...]` : 'Key Choices'
+			tip = value.length > 0 ? value.map(v => toPrettyName(v)) : '';
 		} else {
 			if (this.props.value === jsPsych.ALL_KEYS) {
-				label = '[ALL KEYS]';
+				tip = label = '[ALL KEYS]';
 			} else {
 				label = this.props.value ? `[Key: ${toPrettyName(this.props.value)}]` : 'Key Choices';
+				tip = value ? toPrettyName(value) : '';
 			}
 		}
 
@@ -339,7 +341,9 @@ export default class KeyboardSelector extends React.Component {
 		]
 		return (
 			<div>
-				<this.props.Trigger onClick={this.handleOpen} label={label}/>
+				<div title={tip}> 
+					<this.props.Trigger onClick={this.handleOpen} label={label}/>
+				</div>
 				<Dialog
 					modal={true}
 					open={this.state.open}
