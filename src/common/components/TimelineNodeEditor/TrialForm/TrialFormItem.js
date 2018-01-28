@@ -8,8 +8,6 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
-import BoxCheckIcon from 'material-ui/svg-icons/toggle/check-box';
-import BoxUncheckIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
@@ -19,6 +17,7 @@ import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
 import AddMediaIcon from 'material-ui/svg-icons/av/library-add';
 import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
+import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
 import {
   grey300 as evenSubItemBackgroundColor,
   grey100 as oddSubItemBackgroundColor,
@@ -26,6 +25,7 @@ import {
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
 import { FloatingLabelButton } from '../../gadgets';
+import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
 import CodeEditor from '../../CodeEditor';
@@ -214,6 +214,18 @@ const components = {
 				onClick={onClick}
 			/>
 		),
+		KeyboardSelector: ({label="Key Choices", onClick=()=>{}}) => (
+			<FlatButton
+				{...style.TriggerStyle}
+				labelStyle={{
+					textTransform: 'none',
+					...style.TriggerStyle.labelStyle,
+				}}
+				icon={<KeyboardIcon {...style.TriggerIconStyle}/>}
+				label={label}
+				onClick={onClick}
+			/>
+		)
 	},
 	Undefined: ({props={}}) => (
 				<FlatButton
@@ -727,76 +739,16 @@ export default class TrialFormItem extends React.Component {
 		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param));
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
-		let value = parameterValue.value;
-
-		// 2. Parse keys
-		// Can its value potentially be an array? That is, can there be multiple keys
-		let isArray = !!parameterInfo.array;
-		if (isArray && Array.isArray(value)) {
-			let s = "";
-			for (let v of value) {
-				if (v === jsPsych.ALL_KEYS) s += v;
-				else if (v.length > 1) s += `{${v}}`;
-				else s += v.toUpperCase();
-			}
-			value = s;
-		}
-
-		parameterValue.value = value;
-
-		// 3. Set flags
-		// Is its value an Enum?
-		let isAllKey = value === jsPsych.ALL_KEYS;
-		
-		let toggleAllKey = (
-			<IconButton 
-				onClick={() => {
-					if (isAllKey) {
-						this.props.setKey(param, null, true);
-					} else {
-						this.props.setKey(param, jsPsych.ALL_KEYS, true);
-					}
-				}}
-				tooltip="All Keys"
-				onMouseEnter={this.hideTool} onMouseLeave={this.showTool}
-			>
-				{(isAllKey) ? <BoxCheckIcon color={GeneralTheme.colors.primary} /> : <BoxUncheckIcon />}
-			</IconButton>
-		);
-
-		let props = generateFieldProps(parameterValue, parameterInfo, false);
-		value = this.state.useKeyListStr ? this.state.keyListStr : convertNullToEmptyString(props.value);
-		props.value = isAllKey ? '[ALL KEYS]' : value;
-		props.disabled = props.disabled || isAllKey;
-
 		let node = (
-			<div style={{display: 'flex', alignItems: 'baseline'}}>
-				<TextField
-			      id={this.props.id+"-text-field-"+param}
-			      fullWidth={true}
-			      onChange={(e, v) => { this.setKeyListStr(v); }}
-			      maxLength={(isArray) ?  null : "1"}
-			      onFocus={() => {
-			      	this.setKeyListStr(convertNullToEmptyString(value));
-			      	this.setState({
-			      		useKeyListStr: true
-			      	});
-			      }}
-			      onBlur={() => {
-			      	this.props.setKey(param, this.state.keyListStr, false, isArray);
-			      	this.setState({
-			      		useKeyListStr: false
-			      	})
-			      }}
-			      onKeyPress={(e) => {
-			      	if (e.which === 13) {
-			      		document.activeElement.blur();
-			      	}
-			      }}
-			      {...props}
-			   />
-			   {toggleAllKey} 
-			</div> 
+			<KeyboardSelector
+				value={parameterValue.value}
+				onCommit={(value) => { this.props.setKey(param, value); }}
+				parameterName={parameterInfo.pretty_name}
+				Trigger={({label='Key Choices', onClick}) => (
+					components.Triggers.KeyboardSelector({label: label, onClick: onClick})
+				)}
+				multiSelect={parameterInfo.array}
+			/>
 		)
 
 		let args = {
@@ -804,7 +756,8 @@ export default class TrialFormItem extends React.Component {
 			parameterValue: parameterValue,
 			parameterInfo: parameterInfo,
 			node: node,
-			autoConvertToArrayComponent: false
+			autoConvertToArrayComponent: false,
+			forceCustomFloatingLabel: true
 		}
 
 		return this.renderField(args);
@@ -890,7 +843,8 @@ export default class TrialFormItem extends React.Component {
 					submitCallback={(obj) => { this.props.setObject(param, obj); }}
 				/>
 			),
-			forceCustomFloatingLabel: true
+			forceCustomFloatingLabel: true,
+			autoConvertToArrayComponent: false
 		}	
 		return this.renderField(args);
 	}

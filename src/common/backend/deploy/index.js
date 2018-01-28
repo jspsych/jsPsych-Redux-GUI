@@ -19,10 +19,9 @@ const DEPLOY_PATH = 'assets/';
 const welcomeObj = {
   ...jsPsychInitState,
   timeline: [{
-        type: 'html-keyboard-response',
-        stimulus: createComplexDataObject(''),
-        choices: createComplexDataObject(null),
-        prompt: createComplexDataObject('<p>Welcome to jsPysch Experiment Builder!</p>'),
+        type: 'image-keyboard-response',
+        stimulus: createComplexDataObject('./jspsych/jspsych-logo-readme.jpg'),
+        choices: createComplexDataObject(jsPsych.NO_KEYS),
         stimulus_duration: createComplexDataObject(null),
         trial_duration: createComplexDataObject(null),
         response_ends_trial: createComplexDataObject(null),

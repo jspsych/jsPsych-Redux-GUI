@@ -76,6 +76,22 @@ const style = {
 class TimelineNodeOrganizer extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			isSpeedDialOpen: false
+		}
+
+		this.handleToogleSpeedDialOpen = () => {
+			this.setState({
+				isSpeedDialOpen: !this.state.isSpeedDialOpen,
+			});
+		}
+
+		this.handleChangeSpeedDial = ({ isOpen }) => {
+			this.setState({
+				isSpeedDialOpen: isOpen,
+			});
+		}
 	}
 
 	render() {
@@ -91,6 +107,8 @@ class TimelineNodeOrganizer extends React.Component {
 						/>
 					</div>
 					<SpeedDial
+						  isOpen={this.state.isSpeedDialOpen} 
+						  onChange={this.handleChangeSpeedDial}
 						  hasBackdrop={false}
 						  style={{
 						  	zIndex: 15,
@@ -99,8 +117,6 @@ class TimelineNodeOrganizer extends React.Component {
 						  floatingActionButtonProps={{
 						  	...style.SpeedDial.FloatingActionButton
 						  }}
-					      icon={<ContentAdd />}
-					      iconOpen={<NavigationClose />}
 					    >
 						   <BubbleList>
 							     <BubbleListItem
@@ -112,7 +128,7 @@ class TimelineNodeOrganizer extends React.Component {
 								          size={30}
 								        />
 							        }
-							        onClick={this.props.insertTimeline}
+							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.insertTimeline(); }}
 							      />
 							      <BubbleListItem
 							        primaryText="New Trial"
@@ -123,7 +139,7 @@ class TimelineNodeOrganizer extends React.Component {
 								          size={30}
 								        />
 							        }
-							        onClick={this.props.insertTrial}
+							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.insertTrial(); }}
 							      />
 							      <BubbleListItem
 							        primaryText="Delete"
@@ -134,7 +150,7 @@ class TimelineNodeOrganizer extends React.Component {
 								          size={30}
 								        />
 							        }
-							        onClick={this.props.deleteSelected}
+							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.deleteSelected(); }}
 							      />
 							      <BubbleListItem
 							        primaryText="Duplicate"
@@ -145,7 +161,7 @@ class TimelineNodeOrganizer extends React.Component {
 								          size={30}
 								        />
 							        }
-							        onClick={this.props.duplicateNode}
+							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.duplicateNode(); }}
 							      />
 						      </BubbleList>
 					</SpeedDial>

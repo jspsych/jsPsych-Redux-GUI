@@ -89,13 +89,7 @@ export default class TimelineVariableSelector extends React.Component {
 							this.handleClose, 
 							null)
 					}
-					actions={[<FlatButton
-								label="Close"
-								primary={true}
-								labelStyle={{textTransform: "none", }}
-				    			keyboardFocused={true}
-								onClick={this.handleClose}
-							/>]}
+					actions={[]}
 				>	
 					<div style={{display: 'flex'}}>
 			              <p style={{paddingTop: 15, color: (this.props.useFunc) ? 'blue' : 'black'}}>

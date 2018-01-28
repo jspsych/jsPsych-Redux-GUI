@@ -107,11 +107,6 @@ export default class jsPsychInitEditor extends React.Component {
   
   render() {
     const actions = [
-      <FlatButton
-        label="Close"
-        {...style.Actions.Close}
-        onClick={this.handleClose}
-      />,
     ];
 
     return (

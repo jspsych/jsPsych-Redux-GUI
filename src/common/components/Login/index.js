@@ -189,7 +189,6 @@ export default class Login extends React.Component {
 				      		setPassword={setPassword}
 				      		signIn={handleSignIn}
 				      		notifyError={notifyError}
-
 				      	/>
 				      </Tab>
 				      <Tab label={registerDialogStyle.title} 
