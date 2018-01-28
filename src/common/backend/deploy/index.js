@@ -20,7 +20,7 @@ const welcomeObj = {
   ...jsPsychInitState,
   timeline: [{
         type: 'image-keyboard-response',
-        stimulus: createComplexDataObject('./jspsych/jspsych-logo-readme.jpg'),
+        stimulus: createComplexDataObject('https://s3.us-east-2.amazonaws.com/builder.jspsych.org/jsPsych/jspsych-logo-readme.jpg'),
         choices: createComplexDataObject(jsPsych.NO_KEYS),
         stimulus_duration: createComplexDataObject(null),
         trial_duration: createComplexDataObject(null),
