@@ -35,7 +35,7 @@ const colors = {
 const style = {
 	PluginSelectContainer: {
 		display: 'flex',
-		alignItems: 'baseline'
+		alignItems: 'flex-start'
 	},
 	label: {
 		color: colors.labelColor,
@@ -44,7 +44,7 @@ const style = {
 		fontFamily: 'Roboto, sans-serif'
 	},
 	TextFieldStyle: {
-		...GeneralTheme.TextFieldFocusStyle
+		...GeneralTheme.TextFieldFocusStyle()
 	},
 	SelectFieldStyle: {
 		autoWidth: true,

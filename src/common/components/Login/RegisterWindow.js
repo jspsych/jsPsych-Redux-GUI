@@ -14,7 +14,7 @@ const colors = {
 
 const style = {
   TextFieldFocusStyle: {
-    ...GeneralTheme.TextFieldFocusStyle
+    ...GeneralTheme.TextFieldFocusStyle()
   },
   Actions: {
     Create: {

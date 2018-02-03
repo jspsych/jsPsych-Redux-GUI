@@ -7,6 +7,7 @@ const colors = {
 	secondaryDeep: '#FF5722',
 	secondaryLight: '#FFB74D',
 	font: 'white',
+	errorRed: '#F34335'
 };
 
 const Icon = {
@@ -14,14 +15,14 @@ const Icon = {
 	hoverColor: colors.secondary
 };
 
-const TextFieldFocusStyle = {
+const TextFieldFocusStyle = (error=false) => ({
 	floatingLabelFocusStyle: {
-		color: colors.secondary
+		color: error ? colors.errorRed : colors.secondary
 	},
 	underlineFocusStyle: {
-		borderColor: colors.secondary
+		borderColor: error ? colors.errorRed : colors.secondary
 	}
-};
+});
 
 export default {
 	colors: colors,

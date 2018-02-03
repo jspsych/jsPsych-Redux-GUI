@@ -29,7 +29,7 @@ const style = {
 		inputStyle: {
 			textAlign: 'left'
 		},
-		...GeneralTheme.TextFieldFocusStyle
+		...GeneralTheme.TextFieldFocusStyle()
 	},
 	X: {
 		paddingLeft: 8,
