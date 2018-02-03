@@ -75,6 +75,6 @@
     "deploy": "deploy.cmd",
     "test": "jest",
     "test:watch": "npm test -- --watch",
-    "updateJspsych": "updateJspsych.cmd"
+    "updateJspsych": "./library/updateJspsych.cmd"
   }
 }

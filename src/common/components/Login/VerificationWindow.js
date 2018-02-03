@@ -23,7 +23,7 @@ const style = {
     colors: colors.verifyColor,
   },
   TextFieldFocusStyle: {
-    ...GeneralTheme.TextFieldFocusStyle
+    ...GeneralTheme.TextFieldFocusStyle()
   },
   Actions: {
     Wait: {
@@ -172,7 +172,7 @@ export default class VerificationWindow extends React.Component {
           style={{width: 300, margin: 'auto'}}
         >
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle()}
             id="verificationCode" 
             fullWidth={true}
             floatingLabelText="Verification Code" 

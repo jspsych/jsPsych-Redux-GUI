@@ -46,14 +46,21 @@ const colors = {
 	normalToggleColor: '#414141',
 	dividerColor: 'rgb(224, 224, 224)',
 	disabledColor: '#B1B1B1',
-	errorRed: '#F34335'
 };
+
+const ToggleGroupCommonAttrib = {
+	display: 'flex',
+	justifyContent: 'space-evenly',
+	backgroundColor: 'inherit',
+	// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
+	marginLeft: '10px'
+}
 
 const style = {
 	SelectFieldToggleStyle: flag => ({
 		labelStyle: {
 			// color: flag ? colors.primary : colors.secondary
-			color: colors.primaryDeep
+			color: colors.secondary
 		},
 		selectedMenuItemStyle: {
 			// color: flag ? colors.primary : colors.secondary
@@ -85,11 +92,7 @@ const style = {
 		}),
 	},
 	ToggleGroup: {
-		display: 'flex',
-		justifyContent: 'space-evenly',
-		backgroundColor: 'white',
-		// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
-		marginLeft: '10px'
+		...ToggleGroupCommonAttrib,
 	},
 	CustomFloatingLabelField: {
 		root: {
@@ -132,13 +135,9 @@ const style = {
 			paddingTop: '5px',
 		},
 		ToggleGroup: {
+			...ToggleGroupCommonAttrib,
 			flexBasis: 'auto',
 			alignSelf: 'flex-end',
-			display: 'flex',
-			justifyContent: 'space-evenly',
-			backgroundColor: 'white',
-			// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
-			marginLeft: '10px',
 			marginBottom: '10px',
 		}
 	},
@@ -166,6 +165,17 @@ const style = {
 	UndefinedStyle: {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
+	},
+	ComplexField: {
+		expandIcon: {
+			hoverColor: colors.secondary
+		},
+		addChildrenButtonContainer: {
+			float: 'right'
+		},
+		addChildrenButton: {
+			label: "add"
+		}
 	}
 }
 
@@ -266,12 +276,6 @@ const components = {
 
 const hoverColor = GeneralTheme.colors.secondary;
 
-export const labelStyle = {
-	paddingTop: 15,
-	paddingRight: 10,
-	color: 'black'
-}
-
 const processMediaPathTag = (s) => {
 	if (!s) return "";
 	if (Array.isArray(s)) {
@@ -343,7 +347,7 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 		floatingLabelFixed: true,
 		title: parameterInfo.description,
 		style: { marginBottom: error ? '15px' : '0px' },
-		...GeneralTheme.TextFieldFocusStyle
+		...GeneralTheme.TextFieldFocusStyle(error),
 	}
 }
 
@@ -422,120 +426,6 @@ export default class TrialFormItem extends React.Component {
 		paramInfo: "",
 		param: "",
 	}
-
-	/**************************************************************************/
-
-	renderLabel = (param) => {
-
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		return (
-		<p
-			className="Trial-Form-Label-Container"
-		    style={labelStyle}
-		    title={parameterInfo.description}
-		>
-		    {`${parameterInfo.pretty_name}: `}
-		</p>
-		)
-	}
-
-	appendFunctionEditor = (param, alternate=null) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		return (
-				<CodeEditor 
-			    	setParamMode={() => { this.props.setParamMode(param); }}
-					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
-					showEditMode={true}
-					initCode={convertNullToEmptyString(parameterValue.func.code)} 
-					openCallback={this.showFuncEditor}
-					closeCallback={this.hideFuncEditor}
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
-                    }}
-                    title={`${parameterInfo.pretty_name}: `}
-        		/>
-		)
-	}
-
-	appendTimelineVariable = (param, alternate=null) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-
-		return (
-		((this.state.showTool || 
-			this.state.openTimelineVariable || 
-			parameterValue.mode === ParameterMode.USE_TV) &&
-			parameterValue.mode !== ParameterMode.USE_FUNC) ?
-		<TimelineVariableSelector 
-
-			openCallback={this.showTVSelector}
-			closeCallback={this.hideTVSelector}
-			useTV={parameterValue.mode === ParameterMode.USE_TV}
-			title={`${parameterInfo.pretty_name}: `}
-			selectedTV={parameterValue.timelineVariable}
-			submitCallback={(newTV) => {
-				this.props.setTimelineVariable(param, newTV);
-			}}
-			setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
-		/> :
-		null
-		)
-	}
-
-	appendArrayEditor = (param, autoConvertToArrayComponent=true) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let node = null;
-		if (parameterInfo.array && autoConvertToArrayComponent) {
-			node = (
-				<ArrayEditor
-					Trigger={components.Triggers.ArrayEditor}
-					targetArray={parameterValue.value}
-					title={`${parameterInfo.pretty_name}: `}
-					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
-				/>
-			)
-		}
-		return node;
-	}
-
-	renderFieldContent = (param, node, autoConvertToArrayComponent=true) => {
-
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		if (parameterInfo.array && autoConvertToArrayComponent) {
-			node = (
-				<ArrayEditor
-					Trigger={components.Triggers.ArrayEditor}
-					targetArray={parameterValue.value}
-					title={`${parameterInfo.pretty_name}: `}
-					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
-				/>
-			)
-		}
-
-		switch(parameterValue.mode) {
-			case ParameterMode.USE_FUNC:
-				return <MenuItem primaryText="[Custom Code]" style={{paddingTop: 2}} disabled={true} />;
-			case ParameterMode.USE_TV:
-				return <MenuItem
-							primaryText="[Timeline Variable]"
-							style={{paddingTop: 2}} 
-							title={parameterValue.timelineVariable}
-							disabled={true} />;
-			default:
-				return node;
-		}
-	}
-	
-	/**************************************************************************/
 
 	renderToggleFunc = ({param, parameterValue, parameterInfo}) => (
 		<IconButton
@@ -731,17 +621,8 @@ export default class TrialFormItem extends React.Component {
 		return this.renderField(args);
 	}
 
-
-	/*
-	Render Procedure:
-	1. Extract data and information
-	2. Parse keys
-	3. Set flags
-	*/
 	renderKeyboardInput = (param) => {
 
-		// 1. Extract data and information
-		// deep copy as we need to parse key
 		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param));
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
@@ -864,97 +745,99 @@ export default class TrialFormItem extends React.Component {
 		*/
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let node = (
+		let expandToggle = (
 			<IconButton
   				tooltip={(this.state.subFormCollapse) ? "Expand" : "Collapse"}
   				onClick={this.toggleSubFormCollapse}
   			>
-  			{(this.state.subFormCollapse) ? 
-  				<CollapseIcon hoverColor={hoverColor} /> :
-  				<ExpandIcon hoverColor={hoverColor} />
-  			}
+	  			{
+	  				(this.state.subFormCollapse) ? 
+	  					<CollapseIcon {...style.ComplexField.expandIcon} /> :
+	  					<ExpandIcon {...style.ComplexField.expandIcon} />
+	  			}
   			</IconButton>
 		)
 
+		let children = (
+			<div style={{paddingLeft: "20px"}}>
+		    	{
+		    		parameterValue.value.map((p, i) => {
+		    			let items = Object.keys(parameterInfo.nested).map((key, j) => {
+		    				let newParam = deepCopy(param);
+			    			if (typeof newParam !== 'object') {
+			    				newParam = new PathNode(newParam);
+			    			}
+			    			let cur = newParam;
+			    			while (cur.next) cur = cur.next;
+			    			cur.next = new PathNode(key, i);
+			    			return <TrialFormItemContainer 
+			    						key={`${this.props.param}-${key}-${j}`}
+			    						param={newParam}
+			    						paramInfo={this.props.paramInfo}
+			    					/>
+		    			});
+
+		    			let iconStyle = {
+		    				width: 16,
+		    				height: 16
+		    			}
+
+		    			let iconButtonStyle = {
+		    				...iconStyle,
+		    				padding: 0
+		    			}
+
+		   				return (
+		   					<div 
+		   						key={`complex-jsPysch-trial-item-container-${i}`} 
+		   						style={{
+		   							backgroundColor: (i%2 === 1) ? evenSubItemBackgroundColor : oddSubItemBackgroundColor,
+		   						}}
+		   						>
+		   						<div 
+		   							style={{ float: 'right', margin: 0, marginRight: 5, marginTop: 5}}
+		   							key={`complex-jsPysch-trial-item-delete-conainer-${i}`} 
+		   						>
+			   						<IconButton  
+			   							key={`complex-jsPysch-trial-item-delete-${i}`} 
+			   							iconStyle={iconStyle}
+			   							style={iconButtonStyle}
+			   							onClick={() => {this.props.depopulateComplex(param, i)}}
+			   						>
+			   							<DeleteSubItemIcon />
+			   						</IconButton>
+		   						</div>
+		   						{items}
+		   					</div>
+		   				)
+
+		    		})
+		    	}
+		    	<div style={{...style.ComplexField.addChildrenButtonContainer}}>
+			    	<FlatButton
+			    		{...style.ComplexField.addChildrenButton}
+			    		onClick={() => {this.props.populateComplex(param, parameterInfo.nested)}}
+			    	/>
+		    	</div>
+		    </div>
+		)
+
+		let args = {
+			param: param,
+			parameterInfo: parameterInfo,
+			parameterValue: parameterValue,
+			forceCustomFloatingLabel: true,
+			autoConvertToArrayComponent: false,
+			node: expandToggle
+		}
+
+		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
+			useTV = parameterValue.mode === ParameterMode.USE_TV;
 		return (
-			<div style={{width: "100%"}}>
-				<div style={{display: 'flex', width: "100%", position: 'relative'}}>
-		      		{this.renderLabel(param)}
-			      	<div className="Trial-Form-Content-Container" onMouseEnter={this.showTool} onMouseLeave={this.hideTool} >
-			      		{this.renderFieldContent(param, node, false)}
-						{this.appendFunctionEditor(param)}
-						{this.appendTimelineVariable(param)}
-			        </div>
-			    </div>
-			    {(parameterValue.mode === ParameterMode.USE_FUNC ||
-			    	parameterValue.mode === ParameterMode.USE_TV ||
-			    	this.state.subFormCollapse) ?
-			    null :
-			    <div style={{paddingLeft: "35%"}}>
-			    	{
-			    		parameterValue.value.map((p, i) => {
-			    			let items = Object.keys(parameterInfo.nested).map((key, j) => {
-			    				let newParam = deepCopy(param);
-				    			if (typeof newParam !== 'object') {
-				    				newParam = new PathNode(newParam);
-				    			}
-				    			let cur = newParam;
-				    			while (cur.next) cur = cur.next;
-				    			cur.next = new PathNode(key, i);
-				    			return <TrialFormItemContainer 
-				    						key={`${this.props.param}-${key}-${j}`}
-				    						param={newParam}
-				    						paramInfo={this.props.paramInfo}
-				    					/>
-			    			});
-
-			    			let iconStyle = {
-			    				width: 16,
-			    				height: 16
-			    			}
-
-			    			let iconButtonStyle = {
-			    				...iconStyle,
-			    				padding: 0
-			    			}
-
-			   				return (
-			   					<div 
-			   						key={`complex-jsPysch-trial-item-container-${i}`} 
-			   						style={{
-			   							backgroundColor: (i%2 === 1) ? evenSubItemBackgroundColor : oddSubItemBackgroundColor,
-			   						}}
-			   						>
-			   						<div 
-			   							style={{ float: 'right', padding: 0, paddingRight: 5, paddingTop: 5}}
-			   							key={`complex-jsPysch-trial-item-delete-conainer-${i}`} 
-			   						>
-				   						<IconButton  
-				   							key={`complex-jsPysch-trial-item-delete-${i}`} 
-				   							iconStyle={iconStyle}
-				   							style={iconButtonStyle}
-				   							onClick={() => {this.props.depopulateComplex(param, i)}}
-				   						>
-				   							<DeleteSubItemIcon />
-				   						</IconButton>
-			   						</div>
-			   						{items}
-			   					</div>
-			   				)
-
-			    		})
-			    	}
-			    	<div style={{paddingTop: 5, float: 'right'}}>
-				    	<FloatingActionButton 
-				    		mini={true} 
-				    		onClick={() => {this.props.populateComplex(param, parameterInfo.nested)}}
-				    	>
-				    		<ContentAdd />
-				    	</FloatingActionButton>
-			    	</div>
-			    </div>
-				}
-	   		</div>
+			<div> 
+				{this.renderField(args)} 
+				{(this.state.subFormCollapse || useFunc || useTV) ? null : children}
+			</div>
 		)
 	}
 
