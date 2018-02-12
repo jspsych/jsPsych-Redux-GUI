@@ -7,12 +7,6 @@ module.exports = {
   entry: [
     path.resolve(__dirname, '../src/client/index.js'),
   ],
-  resolve: {
-    alias: {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
-    }
-  },
   output: {
     path: path.resolve(__dirname, '../public/static'),
     filename: 'bundle.js',

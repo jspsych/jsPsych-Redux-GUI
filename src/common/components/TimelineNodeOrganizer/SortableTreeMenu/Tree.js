@@ -14,7 +14,7 @@ class Tree extends React.Component {
 			<div className="Sortable-Tree"  >
 				{(collapsed) ?
 					null:
-					(children.map((id) => (
+					(children && children.map((id) => (
 					<TreeNode 
 						id={id}
 						key={id}
