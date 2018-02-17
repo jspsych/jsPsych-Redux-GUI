@@ -18,6 +18,12 @@ import { renderDialogTitle } from '../gadgets';
 
 import { Notify_Type } from '../../reducers/Notification';
 
+import GeneralTheme from '../theme.js';
+
+const colors = {
+	...GeneralTheme.colors
+}
+
 export default class Notification extends React.Component {
 	renderSnackbarIcon = () => {
 		switch(this.props.notifyType) {
@@ -59,7 +65,7 @@ export default class Notification extends React.Component {
 				<Dialog
 					open={dialogOpen}
 					titleStyle={{padding: 0}}
-	          		title={renderDialogTitle(this.renderDialogTitleText(), handleClose, null)}
+	          		title={renderDialogTitle(this.renderDialogTitleText(), handleClose, null, {}, false)}
 	          		onRequestClose={handleClose}
 	          		contentStyle={{minWidth: 450, minHeight: 400,}}
 	          		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}
@@ -68,7 +74,7 @@ export default class Notification extends React.Component {
 	          		actions={[
 	          			<FlatButton
 	          				label="Okay"
-	          				labelStyle={{textTransform: "none", }}
+	          				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
 	          				onClick={handleClose}
 	          				keyboardFocused={true}
 	          			/>

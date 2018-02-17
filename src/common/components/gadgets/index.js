@@ -22,105 +22,28 @@ const colors = {
 };
 
 const style = {
-	FloatingLabelButton: {
-		root: {
-			fontSize: '16px',
-			lineHeight: '24px',
-			width: '100%',
-			height: '72px',
-			display: 'inline-block',
-			position: 'relative',
-			backgroundColor: 'transparent',
-			fontFamily: 'Roboto, sans-serif',
-			cursor: 'auto',
-		},
-		FloatingLabel: {
-			position: 'absolute',
-			lineHeight: '22px',
-			top: '38px',
-			zIndex: '1',
-			transform: 'scale(0.75) translate(0px, -28px)',
-			transformOrigin: 'left top 0px',
-			pointerEvents: 'none',
-			userSelect: 'none',
-			color: 'rgba(0, 0, 0, 0.3)',
-			display: 'inline-block',
-			maxWidth: '100%',
-			marginBottom: '5px',
-			fontWeight: '700',
-		},
-		ButtonGroup: {
-			position: 'absolute',
-			marginTop: '30px',
-			width: '100%',
-			borderBottom: `1px solid ${colors.dividerColor}`
-		},
-		ButtonContainer: {
-			display: 'inline-flex',
-			alignItems: 'center',
-			// width: '100%',
-		},
-		ButtonDescription: {
-			color: colors.primaryDeep,
-			fontSize: '13px',
-			marginRight: '10px',
-			marginBottom: '-2px',
-			pointerEvents: 'none',
-    		userSelect: 'none',
-    		cursor: 'auto'
-		},
-	}
 }
 
-export const renderDialogTitle = (messageNode=null, handleClose=()=>{}, titleColor=dialogTitleColor, style={}) => (
+export const renderDialogTitle = (messageNode = null, 
+	handleClose = () => {}, 
+	titleColor = dialogTitleColor, 
+	style = {},
+	showCloseButton = true
+) => (
 	<div style={{display: 'flex', backgroundColor: titleColor, ...style}}>
-			{messageNode}
-		<IconButton 
+		{messageNode}
+		{ showCloseButton ? 
+			<IconButton 
 				hoveredStyle={{
 					backgroundColor: CloseBackHighlightColor,
 				}}
 				onClick={handleClose}
-			disableTouchRipple={true}
-		>
-		<Close hoverColor={CloseDrawerHoverColor} />
-		</IconButton>
-	</div>
-)
-
-export const FloatingLabelButton = ({
-		labelText,
-		button,
-		description,
-		rootStyle,
-		buttonContainerStyle,
-		labelStyle,
-		descriptionStyle,
-		buttonGroupStyle
-	}) => (
-	<div style={{
-		...style.FloatingLabelButton.root,
-		...rootStyle,
-	}}>
-		<label style={{
-			...style.FloatingLabelButton.FloatingLabel,
-			...labelStyle,
-		}}>
-			{labelText}
-		</label>
-		<div style={{
-			...style.FloatingLabelButton.ButtonGroup,
-			...buttonContainerStyle,
-		}}>
-			<span style={{
-				...style.FloatingLabelButton.ButtonContainer,
-				...buttonGroupStyle,
-			}}>
-				<FlatButton
-					label="Test"
-					style={{...style.FloatingLabelButton.ButtonDescription,}}
-				/>
-				{button}
-			</span>
-		</div>
+				disableTouchRipple={true}
+			>
+				<Close hoverColor={CloseDrawerHoverColor} />
+			</IconButton> :
+			null
+		}
+		
 	</div>
 )

@@ -24,7 +24,6 @@ import {
 } from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
-import { FloatingLabelButton } from '../../gadgets';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
@@ -56,7 +55,7 @@ const ToggleGroupCommonAttrib = {
 	marginLeft: '10px'
 }
 
-const style = {
+export const style = {
 	SelectFieldToggleStyle: flag => ({
 		labelStyle: {
 			// color: flag ? colors.primary : colors.secondary
@@ -152,7 +151,7 @@ const style = {
 		style: {
 			maxWidth: '220px'
 		},
-		labelPosition: 'before'
+		labelPosition: 'before',
 	},
 	TriggerIconStyle: {
 		color: colors.labelColor,
@@ -180,7 +179,7 @@ const style = {
 }
 
 
-const components = {
+export const components = {
 	/*
 	Keep them seperate in case of future changes
 	*/
@@ -274,8 +273,6 @@ const components = {
 	)
 }
 
-const hoverColor = GeneralTheme.colors.secondary;
-
 const processMediaPathTag = (s) => {
 	if (!s) return "";
 	if (Array.isArray(s)) {
@@ -362,13 +359,6 @@ export default class TrialFormItem extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showTool: true,
-			// function editor dialog
-			openFuncEditor: false, 
-			// timeline variable selector dialog
-			openTimelineVariable: false,
-			keyListStr: "",
-			useKeyListStr: false,
 			subFormCollapse: false,
 		}
 
@@ -376,49 +366,6 @@ export default class TrialFormItem extends React.Component {
 			this.setState({
 				subFormCollapse: !this.state.subFormCollapse
 			})
-		}
-
-		this.setKeyListStr = (str) => {
-			this.setState({
-				keyListStr: str
-			});
-		}
-
-		this.showTool = () => {
-			this.setState({
-				showTool: true
-			});
-		}
-
-		this.hideTool = () => {
-			this.setState({
-				// showTool: false
-				showTool: true
-			});
-		}
-
-		this.showFuncEditor = () => {
-			this.setState({
-				openFuncEditor: true
-			});
-		}
-
-		this.hideFuncEditor = () => {
-			this.setState({
-				openFuncEditor: false
-			});
-		}
-
-		this.showTVSelector = () => {
-			this.setState({
-				openTimelineVariable: true
-			});
-		}
-
-		this.hideTVSelector = () => {
-			this.setState({
-				openTimelineVariable: false
-			});
 		}
 	}
 
@@ -467,8 +414,6 @@ export default class TrialFormItem extends React.Component {
 					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
 					initCode={convertNullToEmptyString(parameterValue.func.code)} 
-					openCallback={this.showFuncEditor}
-					closeCallback={this.hideFuncEditor}
                     submitCallback={(newCode) => { 
                       this.props.setFunc(param, newCode);
                     }}
@@ -479,8 +424,6 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<TimelineVariableSelector 
 					Trigger={components.Triggers.TimelineVariableSelector}
-					openCallback={this.showTVSelector}
-					closeCallback={this.hideTVSelector}
 					useTV={parameterValue.mode === ParameterMode.USE_TV}
 					title={`${parameterInfo.pretty_name}: `}
 					selectedTV={parameterValue.timelineVariable}
@@ -616,7 +559,8 @@ export default class TrialFormItem extends React.Component {
 			parameterInfo: parameterInfo,
 			parameterValue: parameterValue,
 			node: <components.Undefined />,
-			forceCustomFloatingLabel: true
+			forceCustomFloatingLabel: true,
+			autoConvertToArrayComponent: false
 		}	
 		return this.renderField(args);
 	}
@@ -709,7 +653,8 @@ export default class TrialFormItem extends React.Component {
 					}}
 				/>
 			),
-			forceCustomFloatingLabel: true
+			forceCustomFloatingLabel: true,
+			autoConvertToArrayComponent: false
 		};
 		return this.renderField(args);
 	}

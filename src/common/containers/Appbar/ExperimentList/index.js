@@ -148,7 +148,8 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 			},
 			"Yes, I want to delete it.",
 			() => {},
-			"No, hold on."
+			"No, hold on.",
+			false
 		);
 	});
 }

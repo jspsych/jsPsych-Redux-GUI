@@ -65,7 +65,7 @@ const style = {
   Actions: {
     Wait: {
       size: 30,
-      color: colors.primary
+      color: colors.primaryDeep
     },
     SaveAs: {
       labelStyle: {
@@ -106,6 +106,7 @@ export default class Appbar extends React.Component {
       proceedWithOperationLabel: "Yes",
       proceed: () => {},
       proceedLabel: "No",
+      showCloseButton: false,
 
       total: 0,
       loaded: [],
@@ -165,7 +166,7 @@ export default class Appbar extends React.Component {
       })
     }
 
-    this.popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
+    this.popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel, showCloseButton=true) => {
       this.setState({
         confirmOpen: true,
         confirmMessage: message,
@@ -173,6 +174,7 @@ export default class Appbar extends React.Component {
         proceedWithOperationLabel: proceedWithOperationLabel,
         proceed: proceed,
         proceedLabel: proceedLabel,
+        showCloseButton: showCloseButton
       })
     }
   }
@@ -282,13 +284,14 @@ export default class Appbar extends React.Component {
               proceedWithOperationLabel={this.state.proceedWithOperationLabel}
               proceed={this.state.proceed}
               proceedLabel={this.state.proceedLabel}
-              />
+              showCloseButton={this.state.showCloseButton}
+            />
 
             <Dialog
               open={this.state.saveAsOpen}
               onRequestClose={this.handleSaveAsClose}
-              titleStyle={{padding: 0}}
-              title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null)}
+              titleStyle={{padding: 12}}
+              title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null, {}, false)}
               contentStyle={{width: 450, height: 300, padding: 0}}
               bodyStyle={{backgroundColor: dialogBodyColor}}
               actions={[

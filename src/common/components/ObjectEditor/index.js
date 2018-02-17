@@ -506,15 +506,11 @@ export default class ObjectEditor extends React.Component {
 		} = this;
 		let { objectValues, objectKeys, open } = this.state;
 		let actions = [
-			<FlatButton
-				label="Cancel"
-				labelStyle={{textTransform: "none", color: GeneralTheme.colors.secondaryDeep}}
-				onClick={handleClose}
-			/>,
 			<FlatButton 
-				label="Finish"
+				label="Save"
 				labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
 				onClick={onSubmit}
+				keyboardFocused
 			/>
 		]
 

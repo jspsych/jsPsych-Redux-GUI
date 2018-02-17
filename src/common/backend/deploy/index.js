@@ -227,9 +227,8 @@ export function generateCode(state, all=false, deploy=false) {
         // generate trial block
       } else {
         if (node.parameters.type) {
-          let parameterInfo = injectJsPsychUniversalPluginParameters(jsPsych.plugins[node.parameters.type].info.parameters);
           let error = [];
-          let trialBlock = generateTrialBlock(state, node, all, deploy, parameterInfo, error);
+          let trialBlock = generateTrialBlock(state, node, all, deploy, node.parameters.type, error);
 
           // when in preview mode, render error message if there is
           if (!deploy && error.length > 0) {
@@ -310,16 +309,17 @@ export const createComplexDataObject = (value=null, func=createFuncObj(), mode=n
   timelineVariable: null,
 })
 */
-function generateTrialBlock(state, trial, all=false, deploy=false, parameterInfo, error) {
+function generateTrialBlock(state, trial, all=false, deploy=false, parameterType, error) {
   let res = {};
   let parameters = trial.parameters;
+  let parameterInfo = parameterType && injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
 
   for (let key of Object.keys(parameters)) {
     // don't render if (parameter_default_value is undefined and its actual value is null/undefined)
     // if (parameterInfo[key].hasOwnProperty('default') && parameterInfo[key].default === undefined) {
     //   console.log(parameters[key])
     // }
-    if (parameterInfo[key] && parameterInfo[key].default === undefined) {
+    if (parameterInfo && parameterInfo[key] && parameterInfo[key].default === undefined) {
       let mode = parameters[key].mode;
       let value = null;
       switch(mode) {
@@ -370,8 +370,8 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
       } else {
         if (desc.parameters.type) {
           // generate trial block
-          let trialBlock = generateTrialBlock(state, desc, all, deploy);
-          if (trialBlock) {
+          let trialBlock = generateTrialBlock(state, desc, all, deploy, desc.parameters.type, error);
+          if (isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);
           }
         }

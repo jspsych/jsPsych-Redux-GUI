@@ -202,7 +202,7 @@ class Keyboard extends React.Component {
 
 		this.selectKey = (key) => {
 			if (this.props.multiSelect) {
-				let temp = this.state.selected.slice() || [];
+				let temp = (Array.isArray(this.state.selected) && this.state.selected.slice()) || [];
 				temp.push(key);
 				this.setState({
 					selected: temp
@@ -321,7 +321,7 @@ export default class KeyboardSelector extends React.Component {
 		let { value } = this.props;
 		let label, tip;
 		if (Array.isArray(value)) {
-			label = value.length > 0 ? `[Keys: ${toPrettyName(value[0])} ...]` : 'Key Choices'
+			label = value.length > 0 ? `[${value.length > 1 ? 'Keys' : 'Key'}: ${toPrettyName(value[0])}${value.length > 1 ? ' ...' : ''}]` : 'Key Choices'
 			tip = value.length > 0 ? value.map(v => toPrettyName(v)) : '';
 		} else {
 			if (this.props.value === jsPsych.ALL_KEYS) {
@@ -337,6 +337,7 @@ export default class KeyboardSelector extends React.Component {
 				label="Apply"
 				labelStyle={{...style.Actions.Apply.label}}
 				onClick={this.onCommit}
+				keyboardFocused
 			/>
 		]
 		return (

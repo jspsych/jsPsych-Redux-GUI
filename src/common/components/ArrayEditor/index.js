@@ -49,12 +49,6 @@ const style = {
 				color: colors.primaryDeep
 			}
 		},
-		Cancel: {
-			labelStyle: {
-				textTransform: "none",
-				color: colors.primaryDeep
-			}
-		}
 	}
 }
 
@@ -368,15 +362,9 @@ export default class ArrayEditor extends React.Component {
 		} = this;
 		let { arrayItems, open } = this.state;
 		let actions = [
-			<FlatButton
-				secondary={true}
-				label="Cancel"
-				{...style.actionButtons.Cancel}
-				onClick={handleClose}
-			/>,
 			<FlatButton 
-				primary={true}
-				label="Finish"
+				label="Save"
+				keyboardFocused
 				{...style.actionButtons.Submit}
 				onClick={onSubmit}
 			/>

@@ -35,6 +35,14 @@ const style = {
   },
   DefaultTrigger: {
     hoverColor: colors.secondary
+  },
+  actionButtons: {
+    Submit: {
+      labelStyle: {
+        textTransform: "none",
+        color: colors.primaryDeep
+      }
+    },
   }
 }
 
@@ -52,14 +60,12 @@ export default class CodeEditor extends React.Component {
         open: true,
         code: this.props.initCode
       });
-      this.props.openCallback();
     }
 
     this.handleClose = () => {
       this.setState({
         open: false,
       });
-      this.props.closeCallback();
     }
 
     this.onUpdate = (newCode) => {
@@ -73,8 +79,6 @@ export default class CodeEditor extends React.Component {
   	initCode: "",
     tooltip: "Insert code",
     title: "Code Editor",
-    openCallback: function() { return; },
-    closeCallback: function() { return; },
     submitCallback: function(newCode) { return; },
     showEditMode: false,
     Trigger: ({onClick}) => (
@@ -92,10 +96,10 @@ export default class CodeEditor extends React.Component {
   	const { buttonIcon, title, submitCallback, closeCallback, Trigger } = this.props;
   	const actions = [
       <FlatButton
-        label="Finish"
-        primary={true}
-        keyboardFocused={true}
+        label="Save"
         onClick={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
+        {...style.actionButtons.Submit}
+        keyboardFocused
       />,
     ];
 

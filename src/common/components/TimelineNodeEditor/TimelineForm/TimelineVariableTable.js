@@ -38,7 +38,8 @@ import {
 import { ParameterMode } from '../../../reducers/Experiment/editor';
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
-import { renderDialogTitle, FloatingLabelButton } from '../../gadgets';
+import { renderDialogTitle } from '../../gadgets';
+import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem.js';
 
 import GeneralTheme from '../../theme.js';
 import { deepCopy } from '../../../utils';
@@ -66,6 +67,13 @@ const style = {
 	undoIconStyle: {
 		hoverColor: colors.secondary
 	},
+	TriggerStyle: {
+		...TrialFormItemStyle.TriggerStyle,
+		fullWidth: true
+	},
+	TriggerIconStyle: {
+		...TrialFormItemStyle.TriggerIconStyle
+	}
 };
 
 const AddRowIcon = (props) => (
@@ -388,11 +396,12 @@ class CodeEditor extends React.Component {
 	      		contentStyle={{minHeight: 500}}
               	titleStyle={{padding: 0}}
 	            title={renderDialogTitle(
-                <Subheader style={{fontSize: 18, maxHeight: 48}}>
-                {title}
-                </Subheader>, 
-                handleClose, 
-                null)}
+	                <Subheader style={{fontSize: 18, maxHeight: 48}}>
+	                	{title}
+	                </Subheader>, 
+	                handleClose, 
+	                null)
+	        	}
 	            actions={actions}
 	            modal={true}
 	            open={open}
@@ -487,32 +496,19 @@ class TimelineVariableTableOpener extends React.Component {
 	render() {
 		let { handleOpen, handleClose, open } = this.props;
 
-		const actions = [
-	      // <FlatButton
-	      //   label="Close"
-	      //   labelStyle={{textTransform: 'none'}}
-	      //   primary={true}
-	      //   onClick={handleClose}
-	      // />,
-	    ];
-
 	    const iconSize = {
 	    	width: 36,
 	    	height: 36
 	    }
-			// <MenuItem
-			// 			primaryText="Timeline Variables"
-			// 			onClick={handleOpen}
-			// 			style={{color: colors.secondary}}
-			// 		/>	
+
 		return (
 			<div>
-				<IconButton
-					tooltip="Edit table"
+				<FlatButton
+					{...style.TriggerStyle}
+					label={"Open Timeline Table"}
 					onClick={handleOpen}
-				>
-					<Launch {...style.triggerIconStyle}/>
-				</IconButton>
+					icon={<Launch {...style.TriggerIconStyle}/>}
+				/>
 				<Dialog
 					open={open}
 		      		contentStyle={{minHeight: 700}}
@@ -522,9 +518,8 @@ class TimelineVariableTableOpener extends React.Component {
 			            	<Subheader style={{maxHeight: 58}}>{this.renderToolbar()}</Subheader>,  
 			            	handleClose,  
 			            	null, 
-			            	{borderTop: `10px solid ${colors.secondary}`}
+			            	{borderTop: `10px solid ${colors.primaryDeep}`}
 		            	)}
-		            actions={actions}
 		            modal={true}
 		            onRequestClose={handleClose}
 		            bodyStyle={{
@@ -735,8 +730,9 @@ export default class TimelineVariableTable extends React.Component {
 
 		return (
 		  <div className="Trial-Form-Item-Container">
-		  	<FloatingLabelButton
-		  		button={
+		  	<components.CustomFloatingLabelField
+		  		label="Timeline Variables"
+		  		node={
 		  			<TimelineVariableTableOpener
 		  	 			open={this.state.open}
 		  	 			history={this.state.history}
@@ -754,9 +750,8 @@ export default class TimelineVariableTable extends React.Component {
 		  	 			numRows={numRows}
 		  	 		/>
 		  		}
-		  		labelText={"Timeline variables"}
-		  		description={"EDIT VARIABLES"}
 		  	/>
+		  	
 	      </div>
 		 )
 	}
