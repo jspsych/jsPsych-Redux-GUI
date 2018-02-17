@@ -73,7 +73,7 @@ const newExperiment = (dispatch, popUpConfirm) => {
 		);
 		if (anyChange) {
 			popUpConfirm(
-				"Do you want to save the changes before creating new experiment?",
+				"Do you want to save the changes before creating a new experiment?",
 				() => {
 					$save(dispatch, getState).then(() => {
 						dispatch(backendActions.newExperimentAction());
@@ -84,7 +84,16 @@ const newExperiment = (dispatch, popUpConfirm) => {
 				"No (Continue without saving)"
 			);
 		} else {
-			dispatch(backendActions.newExperimentAction());
+			popUpConfirm(
+				"Do you want to close the current experiment and open a new one?",
+				() => {
+					dispatch(backendActions.newExperimentAction());
+				},
+				"Yes, close it!",
+				() => {},
+				"No, hold on...",
+				false
+			);
 		}
 	});
 }

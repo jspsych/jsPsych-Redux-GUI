@@ -94,6 +94,7 @@ export default class ExperimentList extends React.Component {
 	    proceedWithOperationLabel: "Yes",
 	    proceed: () => {},
 	    proceedLabel: "No",
+	    showCloseButton: false
 	}
 
 	setSeletected = (id) => {
@@ -115,7 +116,7 @@ export default class ExperimentList extends React.Component {
 		});
 	}
 
-	popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel) => {
+	popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel, showCloseButton=true) => {
 		this.setState({
 			confirmOpen: true,
 			confirmMessage: message,
@@ -123,6 +124,7 @@ export default class ExperimentList extends React.Component {
 			proceedWithOperationLabel: proceedWithOperationLabel,
 			proceed: proceed,
 			proceedLabel: proceedLabel,
+			showCloseButton: showCloseButton
 		});
 	}
 
@@ -285,6 +287,7 @@ export default class ExperimentList extends React.Component {
                 proceedWithOperationLabel={this.state.proceedWithOperationLabel}
                 proceed={this.state.proceed}
                 proceedLabel={this.state.proceedLabel}
+                showCloseButton={this.state.showCloseButton}
                 />
 		</div>
 		)

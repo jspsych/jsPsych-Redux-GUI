@@ -9,6 +9,11 @@ import {
   	yellow600 as warningColor,
 } from 'material-ui/styles/colors';
 import { renderDialogTitle } from '../gadgets';
+import GeneralTheme from '../theme.js';
+
+const colors = {
+	...GeneralTheme.colors
+}
 
 export default class ConfirmationDialog extends React.Component {
 	render() {
@@ -20,7 +25,31 @@ export default class ConfirmationDialog extends React.Component {
 			proceed,
 			proceedLabel,
 			handleClose,
+			showCloseButton
 		} = this.props;
+
+		let actions = [
+			<FlatButton
+  				label={proceedWithOperationLabel}
+  				labelStyle={{textTransform: "none", color: colors.primary }}
+  				onClick={() => { proceedWithOperation(); handleClose(); }}
+  				keyboardFocused={true}
+  			/>,
+  			<FlatButton
+  				label={proceedLabel}
+  				labelStyle={{textTransform: "none", color: colors.secondary }}
+  				onClick={() => { proceed(); handleClose(); }}
+  			/>
+		]
+		if (showCloseButton) {
+			actions.push(
+				<FlatButton
+      				label="Cancel"
+      				labelStyle={{textTransform: "none", }}
+      				onClick={handleClose}
+      			/>
+			)
+		}
 
 		return (
 			<Dialog
@@ -35,34 +64,16 @@ export default class ConfirmationDialog extends React.Component {
 	      				/>
 	      			</Subheader>),
 	      			handleClose,
-	      			null
+	      			null,
+	      			{},
+	      			false
 	      			)}
 	      		onRequestClose={handleClose}
 	      		contentStyle={{minWidth: 450, minHeight: 400,}}
 	      		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}
 	      		modal={true}
 	      		autoScrollBodyContent={true}
-	      		actions={[
-	      			<FlatButton
-	      				label={proceedWithOperationLabel}
-	      				primary={true}
-	      				labelStyle={{textTransform: "none", }}
-	      				onClick={() => { proceedWithOperation(); handleClose(); }}
-	      				keyboardFocused={true}
-	      			/>,
-	      			<FlatButton
-	      				label={proceedLabel}
-	      				secondary={true}
-	      				labelStyle={{textTransform: "none", }}
-	      				onClick={() => { proceed(); handleClose(); }}
-	      			/>,
-	      			<FlatButton
-	      				label="Cancel"
-	      				labelStyle={{textTransform: "none", }}
-	      				onClick={handleClose}
-	      				keyboardFocused={true}
-	      			/>
-	      		]}
+	      		actions={actions}
 			>
 				<p>{message}</p>
 			</Dialog>

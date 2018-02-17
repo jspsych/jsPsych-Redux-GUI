@@ -338,6 +338,7 @@ export default class MediaManager extends React.Component {
 						mode="determinate" 
 						key={"uploading-progress-"+key} 
 						value={this.state.completed[key]} 
+						color={colors.primary}
 					/>
 					</div>
 					<ListItem
@@ -436,9 +437,8 @@ export default class MediaManager extends React.Component {
 	          	actions={[
 	          		<FlatButton 
 	          			label="Download"
-	          			primary={true}
-	          			labelStyle={{textTransform: 'none'}}
-	          			keyboardFocused={true}
+	          			labelStyle={{textTransform: 'none', color: colors.primaryDeep}}
+	          			keyboardFocused
 	          			href={this.state.previewFileUrl}
 	          		/>
 	          	]}

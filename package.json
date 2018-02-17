@@ -64,8 +64,7 @@
     "short-uuid": "^2.3.3"
   },
   "scripts": {
-    "react": "react-scripts start",
-    "webpack": "babel-node ./src/server/dev-server",
+    "dev": "babel-node ./src/server/dev-server",
     "start": "react-scripts start",
     "build": "webpack -p --config config/webpack.config.production.js",
     "eject": "react-scripts eject",

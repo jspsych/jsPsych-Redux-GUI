@@ -40,25 +40,17 @@ export default class TimelineVariableSelector extends React.Component {
 			this.setState({
 				open: true
 			});
-			this.props.openCallback();
 		}
 
 		this.handleClose = () => {
 			this.setState({
 				open: false
 			});
-			this.props.closeCallback();
 		}
 	}
 
 	static defaultProps = {
 		title: "Timeline Variables",
-		openCallback: function() {
-			return;
-		},
-		closeCallback: function() {
-			return;
-		},
 		submitCallback: function(newCode) {
 			return;
 		},
