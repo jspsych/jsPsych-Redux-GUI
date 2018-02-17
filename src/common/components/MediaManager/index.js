@@ -65,6 +65,8 @@ export const MediaManagerMode = {
 	multiSelect: 'multi-Select'
 }
 
+const map2Bool = (files, selected) => files && files.map(f => selected.indexOf(f) > -1);
+
 export default class MediaManager extends React.Component {
 	constructor(props) {
 		super(props);
@@ -77,7 +79,6 @@ export default class MediaManager extends React.Component {
 			completed: {},
 			previewFileUrl: null,
 		};
-
 
 		this.handleEnter = () => {
 			this.setState({
@@ -116,7 +117,7 @@ export default class MediaManager extends React.Component {
 				this.setState({
 					open: true,
 					dropzoneActive: false,
-					selected: this.props.filenames.map((f) => (false))
+					selected: map2Bool(this.props.filenames, this.props.selected)
 				});
 			});
 		};
@@ -136,7 +137,7 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.handleSelect = (index) => {
-			let selected = this.state.selected;
+			let selected = this.state.selected.slice();
 			selected[index] = !selected[index];
 			this.setState({
 				selected: selected,
@@ -165,7 +166,7 @@ export default class MediaManager extends React.Component {
 
 		this.resetSelect = () => {
 			this.setState({
-				selected: (this.props.s3files.Contents) ? this.props.s3files.Contents.map((f) => (false)) : []
+				selected: map2Bool(this.props.filenames, this.props.selected) || []
 			})
 		}
 
@@ -216,12 +217,12 @@ export default class MediaManager extends React.Component {
 				case MediaManagerMode.select:
 				case MediaManagerMode.multiSelect:
 					return [
-					<FlatButton
-						label="Insert"
-						labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
-						onClick={this.insertFile}
-					/>,
-					deleteButton
+						<FlatButton
+							label="Save"
+							labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
+							onClick={this.insertFile}
+						/>,
+						deleteButton
 					];
 				case MediaManagerMode.upload:
 				default:
@@ -260,6 +261,7 @@ export default class MediaManager extends React.Component {
 	static defaultProps = {
 		mode: MediaManagerMode.upload,
 		parameterName: null,
+		selected: [],
 		Trigger_upload: ({onClick}) => (
 			<IconButton
               tooltip="Upload Media"

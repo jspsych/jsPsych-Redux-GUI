@@ -630,15 +630,14 @@ export default class TrialFormItem extends React.Component {
 			val = parameterValue && parameterValue.value;
 
 		let f = s => s && s.replace('<path>', '').replace('</path>', '');
-		let label;
+		let selected, label;
 		if (Array.isArray(val)) {
-			label = val.map(l => f(l));
+			selected = val.map(l => f(l));
 		} else {
-			label = [f(val)];
+			selected = [f(val)];
 		}
-		if (label && label.length > 0) label = `${label[0]} ${label.length > 1 ? ' ...' : ''}`;
+		if (selected && selected.length > 0) label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
 		else label = 'Select Media';
-
 		let args = {
 			param: param,
 			parameterValue: parameterValue,
@@ -647,6 +646,7 @@ export default class TrialFormItem extends React.Component {
 				<MediaManager 
 					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
 					parameterName={param} 
+					selected={selected}
 					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
 					insertCallback={(selected, handleClose) => {
 						this.props.insertFile(
