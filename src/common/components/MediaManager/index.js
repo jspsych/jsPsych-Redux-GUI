@@ -289,7 +289,10 @@ export default class MediaManager extends React.Component {
 			bottom: 0,
 			background: 'rgba(0,0,0,0.5)',
 			textAlign: 'center',
-			color: '#fff'
+			color: '#fff',
+			justifyContent: 'center',
+			display: 'flex',
+			flexDirection: 'center'
 		}
 
 		let mediaList = null;
@@ -386,17 +389,15 @@ export default class MediaManager extends React.Component {
 					onDrop={this.onDrop.bind(this)}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
-					style={{width:"100%", minHeight: 400, position: 'relative', height: "100%"}}
+					style={{width:"100%", minHeight: 400, display: 'flex', height: "100%", flexDirection: 'column'}}
 					>
 					<List>
-					{mediaList}
-					{uploadList}
+						{mediaList}
+						{uploadList}
 					</List>
-					{((!mediaList && !uploadList) || 
-					 (mediaList && uploadList && mediaList.length + uploadList.length === 0)) &&
-					 !this.state.dropzoneActive ?
-						<div style={{width: "100%", height: "100%", textAlign: 'center', position: 'relative'}}>
-							<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+					{!this.state.dropzoneActive ?
+						<div style={{width: "100%", display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center'}}>
+							<p style={{fontSize: 24, color: grey400, alignSelf: 'center'}}>
 								Drag and drop files here to upload!
 							</p>
 						</div> :
@@ -404,7 +405,7 @@ export default class MediaManager extends React.Component {
 					}
 					{this.state.dropzoneActive && 
 					<div style={overlayStyle}>
-						<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+						<p style={{fontSize: 24, color: grey400, alignSelf: 'center'}}>
 								Drop files...
 						</p>
 					</div>}
