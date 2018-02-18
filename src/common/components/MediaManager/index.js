@@ -17,7 +17,7 @@ import {
 	cyan500 as iconColor,
 	grey800 as previewIconColor,
 	grey400,
-	grey300 as SelectedListItemColor,
+	grey400 as SelectedListItemColor,
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
 import Media from 'material-ui/svg-icons/action/shopping-cart';
