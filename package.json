@@ -65,6 +65,7 @@
   },
   "scripts": {
     "dev": "babel-node ./src/server/dev-server",
+    "start": "react-scripts start",
     "build": "webpack -p --config config/webpack.config.production.js",
     "deploy": "deploy.cmd",
     "test": "jest",

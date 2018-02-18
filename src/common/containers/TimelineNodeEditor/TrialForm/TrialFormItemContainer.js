@@ -50,9 +50,9 @@ const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose=(
 	let filePaths = s3files.Contents.filter((item, i) => (selected[i])).map((item) => (item.Key));
 	let prefix = s3files.Prefix;
 
-	if (filePaths.length === 0) {
-		return;
-	}
+	// if (filePaths.length === 0) {
+	// 	return;
+	// }
 	if (!multiSelect) {
 		if (filePaths.length > 1) {
 			notify.notifyWarningByDialog(dispatch, "You can insert only one file here !");
@@ -64,7 +64,8 @@ const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose=(
 	}
 
 	dispatch(editorActions.setPluginParamAction(key, filePaths));
-	notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
+	if (filePaths.length > 0) notify.notifySuccessBySnackbar(dispatch, "Media Inserted !");
+	else notify.notifyWarningBySnackbar(dispatch, "None Selected !")
 	handleClose();
 }
 

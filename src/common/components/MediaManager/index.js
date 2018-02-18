@@ -16,7 +16,8 @@ import {
 	indigo500 as hoverColor,
 	cyan500 as iconColor,
 	grey800 as previewIconColor,
-	grey400
+	grey400,
+	grey400 as SelectedListItemColor,
 } from 'material-ui/styles/colors';
 import Add from 'material-ui/svg-icons/av/library-add';
 import Media from 'material-ui/svg-icons/action/shopping-cart';
@@ -65,6 +66,8 @@ export const MediaManagerMode = {
 	multiSelect: 'multi-Select'
 }
 
+const map2Bool = (files, selected) => files && files.map(f => selected.indexOf(f) > -1);
+
 export default class MediaManager extends React.Component {
 	constructor(props) {
 		super(props);
@@ -77,7 +80,6 @@ export default class MediaManager extends React.Component {
 			completed: {},
 			previewFileUrl: null,
 		};
-
 
 		this.handleEnter = () => {
 			this.setState({
@@ -116,8 +118,9 @@ export default class MediaManager extends React.Component {
 				this.setState({
 					open: true,
 					dropzoneActive: false,
-					selected: this.props.filenames.map((f) => (false))
+					selected: this.props.filenames.map(f => false) 
 				});
+				// map2Bool(this.props.filenames, this.props.selected)
 			});
 		};
 
@@ -136,7 +139,7 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.handleSelect = (index) => {
-			let selected = this.state.selected;
+			let selected = this.state.selected.slice();
 			selected[index] = !selected[index];
 			this.setState({
 				selected: selected,
@@ -165,7 +168,8 @@ export default class MediaManager extends React.Component {
 
 		this.resetSelect = () => {
 			this.setState({
-				selected: (this.props.s3files.Contents) ? this.props.s3files.Contents.map((f) => (false)) : []
+				// selected: map2Bool(this.props.filenames, this.props.selected) || []
+				selected: (this.props.filenames && this.props.filenames.map(f => false)) || []
 			})
 		}
 
@@ -216,12 +220,12 @@ export default class MediaManager extends React.Component {
 				case MediaManagerMode.select:
 				case MediaManagerMode.multiSelect:
 					return [
-					<FlatButton
-						label="Insert"
-						labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
-						onClick={this.insertFile}
-					/>,
-					deleteButton
+						<FlatButton
+							label="Insert"
+							labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
+							onClick={this.insertFile}
+						/>,
+						deleteButton
 					];
 				case MediaManagerMode.upload:
 				default:
@@ -260,6 +264,7 @@ export default class MediaManager extends React.Component {
 	static defaultProps = {
 		mode: MediaManagerMode.upload,
 		parameterName: null,
+		selected: [],
 		Trigger_upload: ({onClick}) => (
 			<IconButton
               tooltip="Upload Media"
@@ -278,8 +283,6 @@ export default class MediaManager extends React.Component {
 		)
 	}
 
-	
-
 	render() {
 		const overlayStyle = {
 			position: 'absolute',
@@ -289,36 +292,50 @@ export default class MediaManager extends React.Component {
 			bottom: 0,
 			background: 'rgba(0,0,0,0.5)',
 			textAlign: 'center',
-			color: '#fff'
+			color: '#fff',
+			justifyContent: 'center',
+			display: 'flex',
+			flexDirection: 'center'
 		}
 
 		let mediaList = null;
 		if (this.props.s3files && this.props.s3files.Contents) {
-			mediaList = this.props.s3files.Contents.map((f, i) =>
-				<div style={{display: 'flex', width: '100%'}} key={`${f.ETag}-container`}>
-					<div style={{flexGrow: 1}} key={`${f.ETag}-item`}>
-						<ListItem
-							key={f.ETag}
-							primaryText={f.Key.replace(this.props.s3files.Prefix, '')}
-							leftIcon={fileIconFromTitle(f.Key)}
-							onClick={() => {this.handleSelect(i)}}
-							rightIcon={
-								this.state.selected[i] ? 
-									<CheckYesIcon color={GeneralTheme.colors.primary}/> : 
-									<CheckNoIcon color={GeneralTheme.colors.primary}/>
-							}
-						/>
+			mediaList = this.props.s3files.Contents.map((f, i) => {
+				let fname = f.Key.replace(this.props.s3files.Prefix, ''),
+					isSelected = this.props.selected.indexOf(fname) > -1;
+				return (
+					<div style={{
+							display: 'flex', 
+							width: '100%',
+						}} key={`${f.ETag}-container`}>
+						<div style={{flexGrow: 1}} key={`${f.ETag}-item`}>
+							<ListItem
+								key={f.ETag}
+								primaryText={fname}
+								style={{
+									backgroundColor: this.state.selected[i] ? SelectedListItemColor : null
+								}}
+								leftIcon={fileIconFromTitle(f.Key, isSelected ? colors.primary : null)}
+								onClick={() => {this.handleSelect(i)}}
+								rightIcon={
+									this.props.mode !== MediaManagerMode.upload &&
+									(isSelected ? 
+										<CheckYesIcon color={GeneralTheme.colors.primary}/> : 
+										<CheckNoIcon color={GeneralTheme.colors.primary}/>)
+								}
+							/>
+						</div>
+						<IconButton
+							key={`${f.ETag}-checker`}
+							style={{flexBasis: '48px'}}
+							onClick={() => { this.openPreviewWindow(f.Key); }}
+							tooltip="Preview Media"
+							>
+							<PreviewIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep} />
+						</IconButton>
 					</div>
-					<IconButton
-						key={`${f.ETag}-checker`}
-						style={{flexBasis: '48px'}}
-						onClick={() => { this.openPreviewWindow(f.Key); }}
-						tooltip="Preview Media"
-						>
-						<PreviewIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep} />
-					</IconButton>
-				</div>
-				)
+				)}
+			)
 		}
 
 		let uploadList = null, completed = Object.keys(this.state.completed);
@@ -386,28 +403,27 @@ export default class MediaManager extends React.Component {
 					onDrop={this.onDrop.bind(this)}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
-					style={{width:"100%", minHeight: 400, position: 'relative', height: "100%"}}
+					style={{width:"100%", minHeight: 400, display: 'flex', height: "100%", flexDirection: 'column'}}
 					>
 					<List>
-					{mediaList}
-					{uploadList}
+						{mediaList}
+						{uploadList}
 					</List>
-					{((!mediaList && !uploadList) || 
-					 (mediaList && uploadList && mediaList.length + uploadList.length === 0)) &&
-					 !this.state.dropzoneActive ?
-						<div style={{width: "100%", height: "100%", textAlign: 'center', position: 'relative'}}>
-							<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+					{!this.state.dropzoneActive && this.props.mode === MediaManagerMode.upload &&
+						<div style={{width: "100%", display: 'flex', flexGrow: 1, flexDirection: 'column', justifyContent: 'center'}}>
+							<p style={{fontSize: 24, color: grey400, alignSelf: 'center'}}>
 								Drag and drop files here to upload!
 							</p>
-						</div> :
-						null
+						</div>
 					}
-					{this.state.dropzoneActive && 
+					{
+					this.state.dropzoneActive && this.props.mode === MediaManagerMode.upload && 
 					<div style={overlayStyle}>
-						<p style={{fontSize: 24, color: grey400, paddingTop: 200}}>
+						<p style={{fontSize: 24, color: grey400, alignSelf: 'center'}}>
 								Drop files...
 						</p>
-					</div>}
+					</div>
+					}
 				</Dropzone>
 	          </Dialog>
 

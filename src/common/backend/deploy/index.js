@@ -370,6 +370,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
       } else {
         if (desc.parameters.type) {
           // generate trial block
+          let error = [];
           let trialBlock = generateTrialBlock(state, desc, all, deploy, desc.parameters.type, error);
           if (isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);

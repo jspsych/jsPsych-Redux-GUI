@@ -4,12 +4,11 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 // import Divider from 'material-ui/Divider';
 // import { ListItem } from 'material-ui/List';
 
 import DeleteSubItemIcon from 'material-ui/svg-icons/navigation/close';
-import ContentAdd from 'material-ui/svg-icons/content/add';
+// import ContentAdd from 'material-ui/svg-icons/content/add';
 import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
@@ -273,19 +272,19 @@ export const components = {
 	)
 }
 
-const processMediaPathTag = (s) => {
-	if (!s) return "";
-	if (Array.isArray(s)) {
-		let res = [];
-		for (let i = 0; i < s.length; i++) {
-			res.push(s[i].replace(/<\/?path>/g, ''));
-			if (i < s.length - 1) res.push(",");
-		}
-		return res.join('');
-	} else {
-		return s.replace(/<\/?path>/g, '');
-	}
-}
+// const processMediaPathTag = (s) => {
+// 	if (!s) return "";
+// 	if (Array.isArray(s)) {
+// 		let res = [];
+// 		for (let i = 0; i < s.length; i++) {
+// 			res.push(s[i].replace(/<\/?path>/g, ''));
+// 			if (i < s.length - 1) res.push(",");
+// 		}
+// 		return res.join('');
+// 	} else {
+// 		return s.replace(/<\/?path>/g, '');
+// 	}
+// }
 
 function PathNode(key, position=-1, next=null) {
 	return {
@@ -433,7 +432,7 @@ export default class TrialFormItem extends React.Component {
 					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 				/>
 			)
-		} else if (parameterInfo.array && autoConvertToArrayComponent) {
+		} else if (!!parameterInfo.array && autoConvertToArrayComponent) {
 			let val = parameterValue.value, label;
 			if (Array.isArray(val)) {
 				label = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
@@ -604,7 +603,7 @@ export default class TrialFormItem extends React.Component {
 			parameterInfo: parameterInfo,
 			node: (
 				<SelectField
-					multiple={paramInfo.array}
+					multiple={!!parameterInfo.array}
 					id={this.props.id+"-select-field-"+param}
 			    	onChange={(event, index, value) => {
 			    		this.props.setText(param, value);
@@ -613,7 +612,7 @@ export default class TrialFormItem extends React.Component {
 			    	{...props}
 			    >
 			    	{
-			    		this.props.paramInfo.options.map((op, i) => (
+			    		parameterInfo.options.map((op, i) => (
 			    			<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
 			    		))
 			    	}
@@ -623,16 +622,22 @@ export default class TrialFormItem extends React.Component {
 		return this.renderField(args);
 	}
 
-	renderMediaSelector = (param, multiSelect) => {
+	renderMediaSelector = (param) => {
 
 		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
-			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
+			multiSelect = !!parameterInfo.array,
+			val = parameterValue && parameterValue.value;
 
-		let regex = /<path>(.*)<\/path>/g;
-		let label = regex.exec(parameterValue.value);
-		if (label && label.length > 0) label = label[1];
+		let f = s => s && s.replace('<path>', '').replace('</path>', '');
+		let selected, label;
+		if (Array.isArray(val)) {
+			selected = val.map(l => f(l));
+		} else {
+			selected = [f(val)];
+		}
+		if (selected && selected.length > 0) label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
 		else label = 'Select Media';
-
 		let args = {
 			param: param,
 			parameterValue: parameterValue,
@@ -641,6 +646,7 @@ export default class TrialFormItem extends React.Component {
 				<MediaManager 
 					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
 					parameterName={param} 
+					selected={selected}
 					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
 					insertCallback={(selected, handleClose) => {
 						this.props.insertFile(
@@ -786,15 +792,13 @@ export default class TrialFormItem extends React.Component {
 		)
 	}
 
-	renderItem = (param=this.props.param) => {
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let paramType = parameterInfo.type;
-		switch(paramType) {
+	renderItem = (param) => {
+		switch(this.props.paramInfo.type) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
 					// check if is array
-					return this.renderMediaSelector(param, !!parameterInfo.array);
+					return this.renderMediaSelector(param);
 				case EnumPluginType.BOOL:
 					return this.renderToggle(param);
 				case EnumPluginType.INT:
@@ -820,7 +824,7 @@ export default class TrialFormItem extends React.Component {
 
 	render() {
 		return (
-			this.renderItem()
+			this.renderItem(this.props.param)
 		)
 	}
 }
