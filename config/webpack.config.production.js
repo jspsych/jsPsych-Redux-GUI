@@ -1,8 +1,10 @@
+var merge = require('webpack-merge');
+var baseConfig = require("./webpack.config.base");
 var path = require('path');
 var webpack = require('webpack');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-module.exports = {
+module.exports = merge(baseConfig, {
   devtool: 'cheap-module-source-map',
   entry: [
     path.resolve(__dirname, '../src/client/index.js'),
@@ -34,26 +36,5 @@ module.exports = {
     }),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-  ],
-  module: {
-    rules: [
-    {
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader']
-    },
-    {
-      test: /\.jsx?$/,
-      loader: 'babel-loader',
-      exclude: /node_modules/,
-      include: path.resolve(__dirname, '../'),
-      query: {
-        presets: ['es2015', 'react', 'stage-0']
-      }
-    }] 
-  },
-  node: {
-    fs: "empty",
-    module: "empty",
-    net: "empty"
-  }
-}
+  ]
+})
