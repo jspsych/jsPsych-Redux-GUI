@@ -634,10 +634,13 @@ export default class TrialFormItem extends React.Component {
 		if (Array.isArray(val)) {
 			selected = val.map(l => f(l));
 		} else {
-			selected = [f(val)];
+			selected = val ? [f(val)] : [];
 		}
-		if (selected && selected.length > 0) label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
-		else label = 'Select Media';
+		if (selected && selected.length > 0) {
+			label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
+		} else {
+			label = 'Select Media';
+		}
 		let args = {
 			param: param,
 			parameterValue: parameterValue,
