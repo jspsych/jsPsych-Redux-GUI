@@ -34,7 +34,7 @@ module.exports = merge(baseConfig, {
       },
       exclude: [/\.min\.js$/gi] // skip pre-minified libs
     }),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    // new webpack.optimize.AggressiveMergingPlugin(),
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ]
 })

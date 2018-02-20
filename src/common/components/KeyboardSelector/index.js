@@ -110,7 +110,8 @@ const keyChoices = [
 ]
 
 const toPrettyName = (key) => {
-	let newKey;
+	if (!key) return '';
+	let newKey = '';
 	switch(key) {
 		case 'uparrow':
 		case 'downarrow':
@@ -150,7 +151,7 @@ class Key extends React.Component {
 				}
 			}
 		} else {
-			isSelected = this.props.selected === this.props.label;
+			isSelected = this.props.selected.toUpperCase() === this.props.label.toUpperCase();
 		}
 
 		return (
@@ -227,7 +228,7 @@ class Keyboard extends React.Component {
 				});
 			} else {
 				this.setState({
-					selected: (this.state.selected === key) ? '' : this.state.selected
+					selected: (this.state.selected.toUpperCase() === key.toUpperCase()) ? '' : this.state.selected.toUpperCase()
 				})
 			}
 		}

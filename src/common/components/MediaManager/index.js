@@ -318,10 +318,11 @@ export default class MediaManager extends React.Component {
 								leftIcon={fileIconFromTitle(f.Key, isSelected ? colors.primary : null)}
 								onClick={() => {this.handleSelect(i)}}
 								rightIcon={
-									this.props.mode !== MediaManagerMode.upload &&
+									this.props.mode !== MediaManagerMode.upload ?
 									(isSelected ? 
 										<CheckYesIcon color={GeneralTheme.colors.primary}/> : 
-										<CheckNoIcon color={GeneralTheme.colors.primary}/>)
+										<CheckNoIcon color={GeneralTheme.colors.primary}/>) :
+									null
 								}
 							/>
 						</div>
