@@ -105,8 +105,9 @@ const saveAsOpen = (dispatch, callback) => {
 			notifyWarningBySnackbar(dispatch, 'You need to sign in before saving your work !');
 			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
 			return;
+		} else {
+			callback();
 		}
-		callback();
 	});
 }
 
@@ -138,14 +139,17 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 		}).then(() => {
 			onFinish();
 		});
-
-
 	});
 }
 
 const diyDeploy = (dispatch, progressHook) => {
 	dispatch((dispatch, getState) => {
-		$diyDeploy(getState(), progressHook);
+		if (!getState().userState.user.identityId) {
+			notifyWarningBySnackbar(dispatch, 'You need to sign in first !');
+			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
+		} else {
+			$diyDeploy(getState(), progressHook);
+		}
 	});
 }
 

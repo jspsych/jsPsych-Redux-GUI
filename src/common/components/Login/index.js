@@ -134,11 +134,11 @@ export default class Login extends React.Component {
           		modal={false}
           		autoScrollBodyContent={true}
 			>
-			<div>
-			{
-				renderContent()
-			}
-			</div>
+				<div>
+				{
+					renderContent()
+				}
+				</div>
 			</Dialog>
 		)
 	}

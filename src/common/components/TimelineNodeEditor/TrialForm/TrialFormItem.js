@@ -566,8 +566,8 @@ export default class TrialFormItem extends React.Component {
 
 	renderKeyboardInput = (param) => {
 
-		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param));
-		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param)),
+		    parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let node = (
 			<KeyboardSelector
@@ -634,10 +634,13 @@ export default class TrialFormItem extends React.Component {
 		if (Array.isArray(val)) {
 			selected = val.map(l => f(l));
 		} else {
-			selected = [f(val)];
+			selected = val ? [f(val)] : [];
 		}
-		if (selected && selected.length > 0) label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
-		else label = 'Select Media';
+		if (selected && selected.length > 0) {
+			label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
+		} else {
+			label = 'Select Media';
+		}
 		let args = {
 			param: param,
 			parameterValue: parameterValue,
@@ -712,7 +715,7 @@ export default class TrialFormItem extends React.Component {
 		let children = (
 			<div style={{paddingLeft: "20px"}}>
 		    	{
-		    		parameterValue.value.map((p, i) => {
+		    		parameterValue.value && parameterValue.value.map((p, i) => {
 		    			let items = Object.keys(parameterInfo.nested).map((key, j) => {
 		    				let newParam = deepCopy(param);
 			    			if (typeof newParam !== 'object') {
@@ -723,7 +726,7 @@ export default class TrialFormItem extends React.Component {
 			    			cur.next = new PathNode(key, i);
 			    			return <TrialFormItemContainer 
 			    						key={`${this.props.param}-${key}-${j}`}
-			    						param={newParam}
+			    						param={cur}
 			    						paramInfo={this.props.paramInfo}
 			    					/>
 		    			});
@@ -793,7 +796,8 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderItem = (param) => {
-		switch(this.props.paramInfo.type) {
+		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		switch(parameterInfo.type) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
