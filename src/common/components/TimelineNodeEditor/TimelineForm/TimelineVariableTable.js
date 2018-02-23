@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import { Menu as ReactDataGridAddonMenu } from 'react-data-grid-addons';
-const { ContextMenu, MenuItem: ContextmenuItem } = ReactDataGridAddonMenu;
 
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
@@ -43,6 +41,7 @@ import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormI
 
 import GeneralTheme from '../../theme.js';
 import { deepCopy } from '../../../utils';
+import deepEqual from 'deep-equal'
 
 const colors = {
 	...GeneralTheme.colors,
@@ -65,6 +64,10 @@ const style = {
 		height: 36
 	},
 	undoIconStyle: {
+		hoverColor: colors.secondary
+	},
+	codeIconStyle: {
+		color: colors.primaryDeep,
 		hoverColor: colors.secondary
 	},
 	TriggerStyle: {
@@ -183,81 +186,6 @@ class HeaderCell extends React.Component {
 	}
 }
 
-class MyContextMenu extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.setEdittingCell = () => {
-			this.props.setEdittingCell({
-				row: this.props.rowIdx,
-				col: this.props.idx
-			})
-		}
-
-		this.onRowDelete = () => {
-			this.props.onRowDelete(this.props.rowIdx);
-		}
-
-		this.onColDelete = () => {
-			this.props.onColDelete(this.props.idx);
-		}
-
-		this.insertRowAbove = () => {
-			this.props.addRow(this.props.rowIdx);
-		}
-
-		this.insertRowBelow = () => {
-			this.props.addRow(this.props.rowIdx + 1);
-		}
-
-		this.addColumn = () => {
-			this.props.addColumn(this.props.idx);
-		}
-	}
-	
-	render() {
-	    return (
-	    	<ContextMenu >
-	    		<ContextmenuItem onClick={this.setEdittingCell}>
-	    			<MenuItem primaryText="Insert code" rightIcon={<CodeButtonIcon color={hoverColor} />} />
-	    		</ContextmenuItem>
-	    		<Divider />
-    			<MenuItem 
-    				primaryText="Insert Row"
-    				focusState="focused"
-    				style={{zIndex: 2000}}
-    				rightIcon={<Add color={addColor} />}
-    				menuItems={[
-    					<ContextmenuItem onClick={this.insertRowAbove}>
-			    			<MenuItem primaryText="Above" />
-						</ContextmenuItem>,
-    					<ContextmenuItem onClick={this.insertRowBelow}>
-			    			<MenuItem primaryText="Below" />
-						</ContextmenuItem>
-    					]}
-    			/>
-    			<ContextmenuItem onClick={this.addColumn}>
-    				<MenuItem primaryText="Insert Column" rightIcon={<Add color={addColor} />} />
-    			</ContextmenuItem>
-	    		<Divider />
-				<MenuItem 
-    				primaryText="Delete"
-    				focusState="focused"
-    				rightIcon={<ArrowDropRight color={deleteColor} />}
-    				menuItems={[
-    					<ContextmenuItem onClick={this.onRowDelete}>
-		    				<MenuItem primaryText="Row" />
-		    			</ContextmenuItem>,
-		    			<ContextmenuItem onClick={this.onColDelete}>
-							<MenuItem primaryText="Column" />
-						</ContextmenuItem>	
-    					]}
-    			/>	
-		   	</ContextMenu>
-	    );
-	  }
-}
-
 class CustomEditor extends React.Component {
 	constructor(props) {
 		super(props);
@@ -327,6 +255,7 @@ class CustomEditor extends React.Component {
 		          		onChange={(e, v) => {
 		          			this.setValue(v);
 		          		}}
+		          		underlineFocusStyle={{borderColor: colors.secondary}}
 		          	/>
 	          	</div>
 	          }
@@ -343,7 +272,7 @@ class GridCell extends React.Component {
 			case ParameterMode.USE_FUNC:
 				return <div 
 							title="[Custom Code]" 
-							style={{color: 'rgba(0, 0, 0, 0.3)', textAlign: 'center'}}
+							style={{color: colors.primaryDeep, textAlign: 'center', cursor: 'none'}}
 						>
 							[Custom Code]
 						</div>;
@@ -385,8 +314,8 @@ class CodeEditor extends React.Component {
 
 		const actions = [
 	      <FlatButton
-	        label="Finish"
-	        primary={true}
+	        label="Save"
+	        style={{color: colors.primaryDeep}}
 	        onClick={() => { setCode(this.state.code); handleClose() }}
 	      />,
 	    ];
@@ -408,7 +337,7 @@ class CodeEditor extends React.Component {
 	            onRequestClose={handleClose}
 	      	>
               <div style={{display: 'flex'}}>
-	              <p style={{paddingTop: 15, color: (useFunc) ? 'blue' : 'black'}}>
+	              <p style={{paddingTop: 15, color: (useFunc) ? colors.secondary : 'black'}}>
 	                Use Custom Code:
 	              </p>
 	              <IconButton
@@ -441,6 +370,12 @@ class TimelineVariableTableOpener extends React.Component {
 			let index = this.props.selectedCell.col !== null ? this.props.selectedCell.col : this.props.numCols - 1;
 			this.props.onColDelete(index);
 			this.props.loseFocusCallback();
+		}
+
+		this.setEdittingCell = () => {
+			if (this.props.selectedCell.row !== null && this.props.selectedCell.col !== null) {
+				this.props.setEdittingCell(this.props.selectedCell);
+			}
 		}
 
 		this.renderToolbar = () => (
@@ -480,6 +415,13 @@ class TimelineVariableTableOpener extends React.Component {
                     </IconButton>
 
                     <ToolbarSeparator />
+
+                    <IconButton 
+                    	tooltip="Insert Code"
+                    	onClick={this.setEdittingCell}
+                    >
+                    	<CodeButtonIcon {...style.codeIconStyle} />
+                    </IconButton>
 
                     <IconButton
                     	tooltip="Undo"
@@ -574,8 +516,21 @@ export default class TimelineVariableTable extends React.Component {
 		}
 
 		this.handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-			this.recordHistory();
-			this.props.updateTimelineVariableRow(fromRow, toRow, updated);
+			let isUpdated = false;
+			for (let i = fromRow; i <= toRow && !isUpdated; i++) {
+				let row = this.props.timeline_variables[i];
+				for (let key of Object.keys(updated)) {
+					if (!deepEqual(row[key], updated[key])) {
+						isUpdated = true;
+						break;
+					}
+				}
+			}
+
+			if (isUpdated) {
+				this.recordHistory();
+				this.props.updateTimelineVariableRow(fromRow, toRow, updated);
+			}
 		}
 
 		this.handleUndo = () => {
@@ -604,7 +559,7 @@ export default class TimelineVariableTable extends React.Component {
 					editable: true,
 					editor: CustomEditor,
 					formatter: GridCell,
-					width: 120,
+					width: 130,
 					headerRenderer: () => (
 						<HeaderCell 
 							recordHistory={this.recordHistory}
@@ -685,24 +640,15 @@ export default class TimelineVariableTable extends React.Component {
 			  <div>
 				<ReactDataGrid
 			        enableCellSelect={true}
-			        contextMenu={
-			        	<MyContextMenu 
-			        		onRowDelete={this.deleteRow} 
-			        		onColDelete={this.deleteColumn} 
-			        		addRow={this.addRow}
-			        		addColumn={this.addColumn}
-			        		setEdittingCell={this.setEdittingCell} 
-			        		loseFocusCallback={this.loseFocus}
-			        	/>
-			        }
 			        columns={columns}
 			        rowGetter={this.rowGetter}
 			        rowsCount={this.props.rows.length}
 			        minHeight={350}
-			        minColumnWidth={120} 
+			        minColumnWidth={130} 
 			        rowHeight={48}
 			        headerRowHeight={48}
 			        onCellSelected={(data) => {
+			        	console.log(data)
 			        	this.setSelectedCell(data.rowIdx, data.idx);
 			        }}
 			        onGridRowsUpdated={this.handleGridRowsUpdated}
@@ -748,6 +694,7 @@ export default class TimelineVariableTable extends React.Component {
 		  	 			selectedCell={this.state.selectedCell}
 		  	 			numCols={numCols}
 		  	 			numRows={numRows}
+		  	 			setEdittingCell={this.setEdittingCell} 
 		  	 		/>
 		  		}
 		  	/>
