@@ -175,6 +175,7 @@ class HeaderCell extends React.Component {
 						style={{width: "100%", outline: 'none', height: 36}}
 						value={this.state.value}
 						onChange={this.setValue}
+						underlineFocusStyle={{borderColor: colors.secondary}}
 					/>
 				</div>:
 				<div 
@@ -648,7 +649,6 @@ export default class TimelineVariableTable extends React.Component {
 			        rowHeight={48}
 			        headerRowHeight={48}
 			        onCellSelected={(data) => {
-			        	console.log(data)
 			        	this.setSelectedCell(data.rowIdx, data.idx);
 			        }}
 			        onGridRowsUpdated={this.handleGridRowsUpdated}
