@@ -10,28 +10,38 @@ Indicate which value (native value, function or timeline variable) should be use
 */
 export const ParameterMode = {
 	USE_FUNC: 'USE_FUNC',
-	USE_TV: "USE_TIMELINE_VARIABLE"
+	USE_TV: "USE_TIMELINE_VARIABLE",
+	USE_VAL: "USE_VALUE"
+}
+
+export const isJspsychValueObjectEmpty = (obj) => {
+	switch (obj.mode) {
+		case ParameterMode.USE_FUNC:
+			return !obj.func.code;
+		case ParameterMode.USE_TV:
+			return !obj.timelineVariable;
+		case ParameterMode.USE_VAL:
+		default:
+			return !obj.value;
+	}
+}
+
+export class JspsychValueObject {
+	constructor({value=null, func=createFuncObj(), mode=ParameterMode.USE_VAL, timelineVariable=null}) {
+		this.value = value;
+		this.func = func;
+		this.mode = mode;
+		this.timelineVariable = timelineVariable;
+		this.isComplexDataObject = true; // for backward compatability
+	}
 }
 
 /*
 Every editor item that is from jsPsych plugin parameter is a composite object defined below
 */
-export const createComplexDataObject = (value=null, func=createFuncObj(), mode=null) => ({
-	isComplexDataObject: true,
-
-	// native js value
-	value: value,
-
-	// function object 
-	// (used to denote that it is a function and func.code stores the stringified function)
-	func: func,
-
-	// ParameterMode
-	mode: mode, 
-
-	// timeline variable (name)
-	timelineVariable: null,
-})
+export const createComplexDataObject = (value=null, func=createFuncObj(), mode=ParameterMode.USE_VAL) => (
+	new JspsychValueObject({value: value, func: func, mode: mode})
+)
 
 /*
 Default timeline node parameter
@@ -178,7 +188,7 @@ export function setPluginParamMode(state, action) {
 
 	// toggle effect
 	if (toggle) {
-		parameter.mode = (mode === parameter.mode) ? null : mode;
+		parameter.mode = (mode === parameter.mode) ? ParameterMode.USE_VAL : mode;
 	} else {
 		parameter.mode = mode;
 	}

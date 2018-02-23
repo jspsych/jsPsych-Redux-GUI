@@ -30,11 +30,16 @@ export initState = {
 
 import { deepCopy } from '../../utils';
 
-export const createFuncObj = (code=null, info=null) => ({
-  isFunc: true,
-  code: code,
-  info: info
-})
+// Note DynamoDB does not store function
+export class StringifiedFunction {
+	constructor({code=null, info=null}) {
+		this.code = code;
+		this.info = info;
+		this.isFunc = true; // for backward compatability
+	}
+}
+
+export const createFuncObj = (code=null, info=null) => (new StringifiedFunction({code: code, info: info}));
 
 const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 

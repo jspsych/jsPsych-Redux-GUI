@@ -11,31 +11,31 @@ import Notification from '../containers/Notification';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
 
-import GeneralTheme from './theme.js';
+import GeneralTheme, { prefixer } from './theme.js';
 
 const colors = GeneralTheme.colors;
 
 const style = {
-	App: {
+	App: prefixer({
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'column',
-	},
-	AppbarContainer: {
+	}),
+	AppbarContainer: prefixer({
 		flexBasis: '56px',
 		maxHeight: '56px',
 		zIndex: 5,
 		boxShadow: '0 2px 5px rgba(0,0,0, .26)',
-	},
-	AppMainContainer: {
+	}),
+	AppMainContainer: prefixer({
 		flexGrow: '1',
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'row',
-	},
-	AppMainPreview: {
+	}),
+	AppMainPreview: prefixer({
 		flexGrow: 1,
 		backgroundColor: colors.background,
 		height: "100%",
@@ -44,7 +44,7 @@ const style = {
 		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'center'
-	}
+	})
 }
 
 const isValidSize = (v) => (v !== null && v !== undefined && v >= 0);
@@ -59,7 +59,7 @@ class App extends React.Component {
 		super(props);
 
 		this.state = {	
-			timelineOrganizerDrawerToggle: false,
+			timelineOrganizerDrawerToggle: true,
 			timelineEditorDrawerToggle: false,
 			zoomScale: 1,
 			zoomWidth: null,

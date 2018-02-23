@@ -27,13 +27,14 @@ import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
 
 import AppbarTheme from './theme.js';
+import { prefixer } from '../theme.js';
 
 const colors = {
   ...AppbarTheme.colors
 }
 
 const style = {
-  Appbar: {
+  Appbar: prefixer({
     width: '100%',
     height: '100%',
     margin: '0 auto',
@@ -41,15 +42,15 @@ const style = {
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: colors.background,
-  },
+  }),
   DrawerToggle: {
     iconColor: AppbarTheme.AppbarIcon,
   },
-  Toolbar: {
+  Toolbar: prefixer({
     display: 'flex',
     flexDirection: 'row',
     flexGrow: 1,
-  },
+  }),
   NameField: {
     inputStyle: {
       color: colors.font
@@ -68,16 +69,16 @@ const style = {
       color: colors.primaryDeep
     },
     SaveAs: {
-      labelStyle: {
+      labelStyle: prefixer({
         textTransform: "none",
         color: colors.primary
-      }
+      })
     },
     Cancel: {
-      labelStyle: {
+      labelStyle: prefixer({
         textTransform: "none",
         color: colors.secondary
-      }
+      })
     },
   },
   TextFieldFocusStyle: {

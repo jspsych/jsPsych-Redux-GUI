@@ -2,8 +2,8 @@
 // var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
-import { initState as jsPsychInitState, jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
-import { createComplexDataObject, ParameterMode } from '../../reducers/Experiment/editor';
+import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
+import { createComplexDataObject, ParameterMode, JspsychValueObject } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
@@ -42,6 +42,13 @@ const undefinedObj = {
         response_ends_trial: createComplexDataObject(null),
     }
   ]
+}
+
+const dataSaveInDIYObj = {
+  type: 'call-function',
+  func: function() {
+    serverComm.save_data(jsPsych.data.get().values());
+  }
 }
 
 const errorMessageObj = (error) => {
@@ -448,10 +455,10 @@ export function stringify(obj, filePath) {
         }
         res.push("]");
         // if it is supposed to be function, call stringifyFunc
-      } else if (obj.isFunc) {
+      } else if (obj instanceof StringifiedFunction || obj.isFunc) { // keep obj.isFunc for backward compatability
         return stringifyFunc(obj.code, obj.info, filePath);
         // if it is a trial item
-      } else if (obj.isComplexDataObject) {
+      } else if (obj instanceof JspsychValueObject || obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
         switch(obj.mode) {
           // if user wants to use function mode
           case ParameterMode.USE_FUNC:
@@ -461,6 +468,7 @@ export function stringify(obj, filePath) {
           case ParameterMode.USE_TV:
             // add jsPsych api call
             return `jsPsych.timelineVariable("${obj.timelineVariable}")`;
+          case ParameterMode.USE_VAL:
           default:
             // recusive call stringify to generate code for obj.value
             return stringify(obj.value, filePath);

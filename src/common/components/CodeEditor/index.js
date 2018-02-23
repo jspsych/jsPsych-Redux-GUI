@@ -8,8 +8,6 @@ import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
 
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
-import Uncheck from 'material-ui/svg-icons/toggle/star-border';
-import Check from 'material-ui/svg-icons/toggle/star';
 // import DialogIcon from 'material-ui/svg-icons/content/create';
 import {
   grey800 as normalColor,
@@ -93,11 +91,11 @@ export default class CodeEditor extends React.Component {
 
   
   render() {
-  	const { buttonIcon, title, submitCallback, closeCallback, Trigger } = this.props;
+  	const { buttonIcon, title, submitCallback, Trigger } = this.props;
   	const actions = [
       <FlatButton
         label="Save"
-        onClick={() => { this.handleClose(); submitCallback(this.state.code); closeCallback(); }}
+        onClick={() => { this.handleClose(); submitCallback(this.state.code); }}
         {...style.actionButtons.Submit}
         keyboardFocused
       />,
@@ -120,19 +118,6 @@ export default class CodeEditor extends React.Component {
 	            open={this.state.open}
 	            onRequestClose={this.handleClose}
 	          >
-            {(this.props.showEditMode) ?
-              <div style={{display: 'flex'}}>
-              <p style={{paddingTop: 15, color: (this.props.useFunc) ? 'blue' : 'black'}}>
-                Use Custom Code:
-              </p>
-              <IconButton
-                onClick={this.props.setParamMode}
-                >
-                {(this.props.useFunc) ? <Check color={checkColor} /> : <Uncheck />}
-                </IconButton>
-              </div>:
-              null
-            }
 	          <CodeMirror value={this.state.code} 
                         onChange={this.onUpdate} 
                         options={{lineNumbers: true}}

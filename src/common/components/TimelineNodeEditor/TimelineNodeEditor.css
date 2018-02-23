@@ -1,89 +1,56 @@
-.TimelineNode-Editor {
-	height: 100%;
-	display: flex;
-	overflow: hidden;
-	flex-direction: row;
-	z-index: 4;
-	box-shadow: 0 2px 5px rgba(0,0,0, .26)
-}
-
-.TimelineNode-Editor-Container {
-	height: 100%;
-	width: 100%;
-	position: relative;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-}
-
-.TimelineNode-Editor-Content {
-	height: 100%;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-}
-
-.TimelineNode-Editor-Header {
-	display: flex;
-	width: 95%;
-}
-
-.TimelineNode-Editor-Sheet {
-	overflow-y: auto;
-	overflow-x: auto;
-	flex-grow: 1;
-}
-
-.TimelineNode-Editor-Dragger {
-	height: 100%;
-	width: 8px;
-	min-width: 8px;
-	flex-basis: 8px;
-	cursor: col-resize;
-	/*border-left: 1px solid #aaa;*/
-}
-
-.TimelineNode-Editor-Close-Handle-Container {
-	display: none;
-    top: 50%;
-    position: fixed;
-}
-
 .TimelineNode-Editor-Dragger:hover .TimelineNode-Editor-Close-Handle-Container{
     display: inline-block;
 }
 
 .Trial-Form-Item-Container {
 	width: 95%;
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
-	align-items: baseline;
+	-webkit-box-align: baseline;
+	    -ms-flex-align: baseline;
+	        align-items: baseline;
 	margin: 0 auto;
 }
 
 .Trial-Form-Item-Field-Container {
-	flex-grow: 1;
-	align-items: baseline;
+	-webkit-box-flex: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+	-webkit-box-align: baseline;
+	    -ms-flex-align: baseline;
+	        align-items: baseline;
 }
 
 .Trial-Form-Item-Tool-Container {
 	float: right;
-	flex-basis: 96px;
-	align-items: baseline;
+	-ms-flex-preferred-size: 96px;
+	    flex-basis: 96px;
+	-webkit-box-align: baseline;
+	    -ms-flex-align: baseline;
+	        align-items: baseline;
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
 }
 
 /* *********************************************** */
 
 .Trial-Form-Label-Container {
-	flex-basis: 25%;
-	word-wrap: break-word;      /* IE 5.5-7 */
-    white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
-    white-space: pre-wrap;      /* current browsers */
+	-ms-flex-preferred-size: 25%;
+	    flex-basis: 25%;
+	word-wrap: break-word;     
+    white-space: -moz-pre-wrap; 
+    white-space: pre-wrap;      
     text-align: left;
 }
 
 
 .Trial-Form-Content-Container {
-	flex-grow: 1;
+	-webkit-box-flex: 1;
+	    -ms-flex-positive: 1;
+	        flex-grow: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
 }

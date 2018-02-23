@@ -17,12 +17,9 @@ import AddMediaIcon from 'material-ui/svg-icons/av/library-add';
 import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
-import {
-  grey300 as evenSubItemBackgroundColor,
-  grey100 as oddSubItemBackgroundColor,
-} from 'material-ui/styles/colors';
 
 import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
+import { isJspsychValueObjectEmpty } from '../../../reducers/Experiment/editor';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
 import { MediaManagerMode } from '../../MediaManager';
@@ -36,7 +33,7 @@ import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/Trial
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
 
-import GeneralTheme from '../../theme.js';
+import GeneralTheme, { prefixer } from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
@@ -44,6 +41,8 @@ const colors = {
 	normalToggleColor: '#414141',
 	dividerColor: 'rgb(224, 224, 224)',
 	disabledColor: '#B1B1B1',
+	evenSubItemBackgroundColor: '#F5F5F5',
+	oddSubItemBackgroundColor: '#E0E0E0'
 };
 
 const ToggleGroupCommonAttrib = {
@@ -52,48 +51,45 @@ const ToggleGroupCommonAttrib = {
 	backgroundColor: 'inherit',
 	// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
 	marginLeft: '10px'
-}
+};
 
 export const style = {
-	SelectFieldToggleStyle: flag => ({
+	SelectFieldToggleStyle: {
 		labelStyle: {
-			// color: flag ? colors.primary : colors.secondary
 			color: colors.secondary
 		},
 		selectedMenuItemStyle: {
-			// color: flag ? colors.primary : colors.secondary
 			color: colors.secondary
 		}
-	}),
+	},
 	SelectFieldStyle: {
 		selectedMenuItemStyle: {
 			color: colors.secondary
 		}
 	},
 	ToggleStyle: {
-		IconButton: toggled => ({
+		IconButton: {
 			disableTouchRipple: true,
 			style: {
 				width: 24,
 				height: 24,
 				padding: 0,
-				// backgroundColor: toggled ? '#C7C7C7' : '',
 			},
 			iconStyle: {
 				width: 16,
 				height: 16
 			}
-		}),
+		},
 		Icon: toggled => ({
 			color: toggled ? 'black' : '#BFBFBF',
 			hoverColor: colors.secondary
 		}),
 	},
-	ToggleGroup: {
+	ToggleGroup: prefixer({
 		...ToggleGroupCommonAttrib,
-	},
+	}),
 	CustomFloatingLabelField: {
-		root: {
+		root: prefixer({
 			backgroundColor: 'transparent',
 			fontFamily: 'Roboto, sans-serif',
 			cursor: 'auto',
@@ -102,51 +98,53 @@ export const style = {
 			flexDirection: 'column',
 			marginTop: '10px',
 			marginBottom: '5px',
-		},
-		FloatingLabel: error => ({
+		}),
+		FloatingLabel: prefixer({
 			zIndex: '1',
 			transform: 'scale(0.95) translate(-1px, -3px)',
 			transformOrigin: 'left top 0px',
 			pointerEvents: 'none',
 			userSelect: 'none',
-			color: error ? colors.errorRed : 'rgba(0, 0, 0, 0.3)',
+			color: 'rgba(0, 0, 0, 0.3)',
 			display: 'inline-block',
 			maxWidth: '100%',
 			fontWeight: '700',
 			fontSize: '13px',
 			margin: 0,
 		}),
-		FieldGroup: {
+		FieldGroup: prefixer({
 			display: 'flex',
 			alignItems: 'center'
-		},
-		ContentGroup: error => ({
+		}),
+		ContentGroup: error => (prefixer({
 			flexGrow: 1,
 			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `none`,
 			// borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
 			paddingBottom: error ? '5px' : '0px',
-		}),
-		ErrorText: {
+		})),
+		ErrorText: prefixer({
 			color: colors.errorRed,
-			fontWeight: 'bold',
-			fontSize: '10px',
+			// fontWeight: 'bold',
+			fontSize: '12px',
 			paddingTop: '5px',
-		},
-		ToggleGroup: {
+			transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+			lineHeight: '12px'
+		}),
+		ToggleGroup: prefixer({
 			...ToggleGroupCommonAttrib,
 			flexBasis: 'auto',
 			alignSelf: 'flex-end',
 			marginBottom: '10px',
-		}
+		})
 	},
 	TriggerStyle: {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
-		labelStyle: {
+		labelStyle: prefixer({
 			color: colors.labelColor,
 			textOverflow: 'ellipsis',
 			whiteSpace: 'nowrap',
-		},
+		}),
 		style: {
 			maxWidth: '220px'
 		},
@@ -168,12 +166,39 @@ export const style = {
 		expandIcon: {
 			hoverColor: colors.secondary
 		},
-		addChildrenButtonContainer: {
+		addChildrenButtonContainer: prefixer({
 			float: 'right'
-		},
-		addChildrenButton: {
+		}),
+		addChildrenButton: prefixer({
 			label: "add"
-		}
+		}),
+		children: {
+				root: {
+					paddingLeft: '20px'
+				},
+				sheet: {
+					root: (even) => ({
+						backgroundColor: even ? colors.evenSubItemBackgroundColor : colors.oddSubItemBackgroundColor
+					}),
+					CloseButtonContainer: {
+						float: 'right',
+						margin: 0,
+						marginRight: 5,
+						marginTop: 5
+					},
+					CLoseButton: {
+						iconStyle: {
+							width: 16,
+		    				height: 16
+						},
+						style: {
+							width: 16,
+							height: 16,
+							padding: 0,
+						}
+					}
+				}
+			}
 	}
 }
 
@@ -250,7 +275,7 @@ export const components = {
 	),
 	CustomFloatingLabelField: ({label, node=null, ToggleFunc=null, ToggleTV=null, error=false, errorText=''}) => (
 		<div style={{...style.CustomFloatingLabelField.root}}>
-			<label style={{...style.CustomFloatingLabelField.FloatingLabel(error)}}>
+			<label style={{...style.CustomFloatingLabelField.FloatingLabel}}>
 				{label}
 			</label>
 			<div style={{...style.CustomFloatingLabelField.FieldGroup}}>
@@ -286,6 +311,12 @@ export const components = {
 // 	}
 // }
 
+
+/* 
+key: string,
+position: int,
+next: PathNode
+*/
 function PathNode(key, position=-1, next=null) {
 	return {
 		key: key,
@@ -294,6 +325,10 @@ function PathNode(key, position=-1, next=null) {
 	};
 }
 
+/* 
+parameterInfo: jsPsych parameter information object (defined in jspsych), 
+path: PathNode (defined above)
+*/
 const locateNestedParameterInfo = (paramInfo, path) => {
 	let parameterInfo = paramInfo;
 
@@ -310,6 +345,9 @@ const locateNestedParameterInfo = (paramInfo, path) => {
 	return parameterInfo
 }
 
+/*
+parameterInfo: jsPsych parameter information object (defined in jspsych)
+*/
 const isParameterRequired = (parameterInfo) => {
 	let isRequired = false;
 	if (parameterInfo.hasOwnProperty('default')) {
@@ -318,11 +356,16 @@ const isParameterRequired = (parameterInfo) => {
 	return isRequired;
 }
 
+/*
+parameterValue: JspsychValueObject (defined in reducers/editor), 
+parameterInfo: jsPsych parameter information object (defined in jspsych), 
+autoConvertToArrayComponent: boolean
+*/
 const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayComponent=true) => {
 	let isRequired = isParameterRequired(parameterInfo);
 	let val = convertNullToEmptyString(parameterValue.value);
 	let disabled = true;
-	let error = isRequired && isValueEmpty(val);  
+	let error = isRequired && isJspsychValueObjectEmpty(parameterValue);  
 
 	switch (parameterValue.mode) {
 		case ParameterMode.USE_FUNC:
@@ -348,11 +391,10 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 }
 
 /*
-props explanations:
-
-param: Field name of a plugin's parameter
-paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
-
+this.props should have: {
+	param: Field name of a plugin's parameter
+	paramInfo: jsPsych.plugins[Plugin Type].info.parameters[Field Name]
+}
 */
 export default class TrialFormItem extends React.Component {
 	constructor(props) {
@@ -376,7 +418,7 @@ export default class TrialFormItem extends React.Component {
 	renderToggleFunc = ({param, parameterValue, parameterInfo}) => (
 		<IconButton
 			onClick={() => { this.props.setParamMode(param); }}
-			{...style.ToggleStyle.IconButton(parameterValue.mode === ParameterMode.USE_FUNC)}
+			{...style.ToggleStyle.IconButton}
 		>
 			<EditCodeIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_FUNC)}/>
 		</IconButton>
@@ -384,7 +426,7 @@ export default class TrialFormItem extends React.Component {
 
 	renderToggleTV = ({param, parameterValue, parameterInfo}) => (
 		<IconButton
-			{...style.ToggleStyle.IconButton(parameterValue.mode === ParameterMode.USE_TV)}
+			{...style.ToggleStyle.IconButton}
 			onClick={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 		>
 			<AddTimelineVarIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_TV)}/>
@@ -403,7 +445,7 @@ export default class TrialFormItem extends React.Component {
 			useTV = parameterValue.mode === ParameterMode.USE_TV,
 			customFloatingLabel = true,
 			isRequired = isParameterRequired(parameterInfo),
-			error = isRequired && isValueEmpty(convertNullToEmptyString(parameterValue.value));  
+			error = isRequired && isJspsychValueObjectEmpty(parameterValue);  
 
 		if (useFunc) {
 			node = (
@@ -540,7 +582,7 @@ export default class TrialFormItem extends React.Component {
 			node: (
 				<SelectField
 		          onChange={(event, index, value) => { this.props.setToggle(param, value)}}
-		          {...style.SelectFieldToggleStyle(props.value)}
+		          {...style.SelectFieldToggleStyle}
 		          {...props}
 		        >
 		          {items}
@@ -612,7 +654,7 @@ export default class TrialFormItem extends React.Component {
 			    	{...props}
 			    >
 			    	{
-			    		parameterInfo.options.map((op, i) => (
+			    		parameterInfo.options && parameterInfo.options.map((op, i) => (
 			    			<MenuItem value={op} primaryText={op} key={op+"-"+i}/>
 			    		))
 			    	}
@@ -630,17 +672,21 @@ export default class TrialFormItem extends React.Component {
 			val = parameterValue && parameterValue.value;
 
 		let f = s => s && s.replace('<path>', '').replace('</path>', '');
+		// selected files, displayed label
 		let selected, label;
 		if (Array.isArray(val)) {
-			selected = val.map(l => f(l));
+			selected = val && val.map(l => f(l));
 		} else {
 			selected = val ? [f(val)] : [];
 		}
 		if (selected && selected.length > 0) {
+			// show ... if more than 1 files
 			label = `${selected[0]} ${selected.length > 1 ? ' ...' : ''}`;
 		} else {
+			// if none, prompt user to select media
 			label = 'Select Media';
 		}
+
 		let args = {
 			param: param,
 			parameterValue: parameterValue,
@@ -713,10 +759,10 @@ export default class TrialFormItem extends React.Component {
 		)
 
 		let children = (
-			<div style={{paddingLeft: "20px"}}>
+			<div style={{...style.ComplexField.children.root}}>
 		    	{
 		    		parameterValue.value && parameterValue.value.map((p, i) => {
-		    			let items = Object.keys(parameterInfo.nested).map((key, j) => {
+		    			let items = Object.keys(parameterInfo.nested) && Object.keys(parameterInfo.nested).map((key, j) => {
 		    				let newParam = deepCopy(param);
 			    			if (typeof newParam !== 'object') {
 			    				newParam = new PathNode(newParam);
@@ -731,32 +777,21 @@ export default class TrialFormItem extends React.Component {
 			    					/>
 		    			});
 
-		    			let iconStyle = {
-		    				width: 16,
-		    				height: 16
-		    			}
-
-		    			let iconButtonStyle = {
-		    				...iconStyle,
-		    				padding: 0
-		    			}
-
 		   				return (
 		   					<div 
 		   						key={`complex-jsPysch-trial-item-container-${i}`} 
 		   						style={{
-		   							backgroundColor: (i%2 === 1) ? evenSubItemBackgroundColor : oddSubItemBackgroundColor,
+		   							...style.ComplexField.children.sheet.root(i%2 === 0),
 		   						}}
 		   						>
 		   						<div 
-		   							style={{ float: 'right', margin: 0, marginRight: 5, marginTop: 5}}
+		   							style={{ ...style.ComplexField.children.sheet.CloseButtonContainer}}
 		   							key={`complex-jsPysch-trial-item-delete-conainer-${i}`} 
 		   						>
 			   						<IconButton  
 			   							key={`complex-jsPysch-trial-item-delete-${i}`} 
-			   							iconStyle={iconStyle}
-			   							style={iconButtonStyle}
 			   							onClick={() => {this.props.depopulateComplex(param, i)}}
+			   							{...style.ComplexField.children.sheet.CLoseButton}
 			   						>
 			   							<DeleteSubItemIcon />
 			   						</IconButton>
@@ -801,7 +836,6 @@ export default class TrialFormItem extends React.Component {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:
 				case EnumPluginType.VIDEO:
-					// check if is array
 					return this.renderMediaSelector(param);
 				case EnumPluginType.BOOL:
 					return this.renderToggle(param);
