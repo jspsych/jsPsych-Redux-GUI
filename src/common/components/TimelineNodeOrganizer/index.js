@@ -18,7 +18,7 @@ import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
 
 import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
-import GeneralTheme from '../theme.js';
+import GeneralTheme, { prefixer } from '../theme.js';
 
 export const TREE_MENU_INDENT = 20;
 
@@ -29,7 +29,7 @@ const colors = GeneralTheme.colors;
 const duration = 400;
 
 const style = {
-	TimelineNodeOrganizer: (open) => ({
+	TimelineNodeOrganizer: (open) => (prefixer({
 		width: (open) ? `${WIDTH}px` : "0px",
 		flexBasis: 'auto',
 		flexShrink: 0,
@@ -41,27 +41,27 @@ const style = {
 		overflow: 'hidden',
 		flexDirection: 'row',
 		backgroundColor: colors.background
-	}),
-	TimelineNodeOrganizerContainer: {
+	})),
+	TimelineNodeOrganizerContainer: prefixer({
 		height: '100%',
 		width: '100%',
 		position: 'relative',
 		flexGrow: '1',
-	},
-	TimelineNodeOrganizerContent: {
+	}),
+	TimelineNodeOrganizerContent: prefixer({
 		height: '100%',
 		width: '100%',
 		display: 'flex',
 		flexDirection: 'column-reverse'
-	},
-	TimelineNodeSheet: {
+	}),
+	TimelineNodeSheet: prefixer({
 		overflow: 'auto',
 		flexGrow: 1,
 		maxWidth: '100%',
 		paddingLeft: '0px',
 		width: '100%',
 		position: 'relative'
-	},
+	}),
 	SpeedDial: {
 		FloatingActionButton: {
 			backgroundColor: colors.primary,

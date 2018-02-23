@@ -113,14 +113,19 @@ export default class MediaManager extends React.Component {
 			})
 		}
 
+		this.initLocalSelected = () => (
+			this.props.mode === MediaManagerMode.upload ?
+			this.props.filenames.map(f => false) :
+			map2Bool(this.props.filenames, this.props.selected)
+		)
+
 		this.handleOpen = () => {
 			this.props.checkBeforeOpen(() => {
 				this.setState({
 					open: true,
 					dropzoneActive: false,
-					selected: this.props.filenames.map(f => false) 
+					selected: this.initLocalSelected()
 				});
-				// map2Bool(this.props.filenames, this.props.selected)
 			});
 		};
 
@@ -168,8 +173,7 @@ export default class MediaManager extends React.Component {
 
 		this.resetSelect = () => {
 			this.setState({
-				// selected: map2Bool(this.props.filenames, this.props.selected) || []
-				selected: (this.props.filenames && this.props.filenames.map(f => false)) || []
+				selected: this.initLocalSelected()
 			})
 		}
 
@@ -225,7 +229,7 @@ export default class MediaManager extends React.Component {
 							labelStyle={{textTransform: "none", color: GeneralTheme.colors.primaryDeep}}
 							onClick={this.insertFile}
 						/>,
-						deleteButton
+						// deleteButton
 					];
 				case MediaManagerMode.upload:
 				default:
@@ -301,8 +305,7 @@ export default class MediaManager extends React.Component {
 		let mediaList = null;
 		if (this.props.s3files && this.props.s3files.Contents) {
 			mediaList = this.props.s3files.Contents.map((f, i) => {
-				let fname = f.Key.replace(this.props.s3files.Prefix, ''),
-					isSelected = this.props.selected.indexOf(fname) > -1;
+				let fname = f.Key.replace(this.props.s3files.Prefix, '');
 				return (
 					<div style={{
 							display: 'flex', 
@@ -313,13 +316,13 @@ export default class MediaManager extends React.Component {
 								key={f.ETag}
 								primaryText={fname}
 								style={{
-									backgroundColor: this.state.selected[i] ? SelectedListItemColor : null
+									backgroundColor: (this.props.mode === MediaManagerMode.upload && this.state.selected[i]) ? SelectedListItemColor : null
 								}}
-								leftIcon={fileIconFromTitle(f.Key, isSelected ? colors.primary : null)}
+								leftIcon={fileIconFromTitle(f.Key, this.state.selected[i] ? colors.primary : null)}
 								onClick={() => {this.handleSelect(i)}}
 								rightIcon={
 									this.props.mode !== MediaManagerMode.upload ?
-									(isSelected ? 
+									(this.state.selected[i] ? 
 										<CheckYesIcon color={GeneralTheme.colors.primary}/> : 
 										<CheckNoIcon color={GeneralTheme.colors.primary}/>) :
 									null

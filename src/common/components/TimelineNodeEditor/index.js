@@ -21,7 +21,7 @@ import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 
 import './TimelineNodeEditor.css';
-import GeneralTheme from '../theme.js';
+import GeneralTheme, { prefixer } from '../theme.js';
 
 export const WIDTH = 335;
 
@@ -33,16 +33,16 @@ const colors = {
 	labelColor: '#B1B1B1'
 };
 const style = {
-	PluginSelectContainer: {
+	PluginSelectContainer: prefixer({
 		display: 'flex',
 		alignItems: 'flex-start'
-	},
-	label: {
+	}),
+	label: prefixer({
 		color: colors.labelColor,
 		marginRight: '15px',
 		fontSize: '14px',
 		fontFamily: 'Roboto, sans-serif'
-	},
+	}),
 	TextFieldStyle: {
 		...GeneralTheme.TextFieldFocusStyle()
 	},
@@ -58,7 +58,69 @@ const style = {
 		underlineFocusStyle: {
 			color: colors.secondary
 		}
-	}
+	},
+	TimelineNodeEditor: open => (prefixer({
+		width: (open) ? `${WIDTH}px` : '0px',
+		flexBasis: 'auto',
+		flexShrink: 0,
+		transition: 'all 0.4s ease',
+		height: '100%',
+		display: 'flex',
+		overflow: 'hidden',
+		flexDirection: 'row',
+		zIndex: '4',
+		boxShadow: '0 2px 5px rgba(0,0,0, .26)'
+	})),
+	TimelineNodeEditorContainer: prefixer({
+		height: '100%',
+		width: '100%',
+		position: 'relative',
+		flexGrow: '1',
+		display: 'flex',
+		flexDirection: 'column',
+	}),
+	TimelineNodeEditorContent: prefixer({
+		height: '100%',
+		width: '100%',
+		display: 'flex',
+		flexDirection: 'column',
+	}),
+	TimelineNodeEditorHeader: isTimeline => (prefixer({
+		flexBasis: 'auto',
+		height: (isTimeline) ? '60px' : '130px',
+		minHeight: (isTimeline) ? '60px' : '130px',
+		alignItems: 'center',
+		display: 'flex',
+		width: '95%',
+	})),
+	TimelineNodeEditorSheet: {
+		root: prefixer({
+			overflowY: 'auto',
+			overflowX: 'auto',
+			flexGrow: '1',
+		}),
+		List: prefixer({
+			padding: 5,
+			paddingTop: 0,
+			width: '95%'
+		})
+	},
+	TimelineNodeEditorDragger: prefixer({
+		height: '100%',
+		width: '8px',
+		minWidth: '8px',
+		flexBasis: '8px',
+		// cursor: 'col-resize',
+	}),
+	TimelineNodeEditorCloseHandleContainer: prefixer({
+		display: 'none',
+	    top: '50%',
+	    position: 'fixed',
+	}),
+	TimelineNodeEditorCloseHandle: prefixer({
+		width: 25,
+		left: -5,
+	})
 }
 
 export default class TimelineNodeEditorDrawer extends React.Component {
@@ -69,17 +131,12 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 	render() {
 		return (
 			<div className="TimelineNode-Editor"
-					style={{
-						width: (this.props.open) ? `${WIDTH}px` : '0px',
-						flexBasis: 'auto',
-						flexShrink: 0,
-						'WebkitTransition': 'all 0.4s ease',
-						'MozTransition': 'all 0.4s ease',
-						transition: 'all 0.4s ease',
-						}}>
+					style={{...style.TimelineNodeEditor(this.props.open),}}>
 				{this.props.open ?
-		  				<div className="TimelineNode-Editor-Dragger">
-			  				<div className="TimelineNode-Editor-Close-Handle-Container">
+		  				<div className="TimelineNode-Editor-Dragger" style={{...style.TimelineNodeEditorDragger}}>
+			  				<div className="TimelineNode-Editor-Close-Handle-Container" 
+			  					 style={{...style.TimelineNodeEditorCloseHandleContainer}}
+			  				>
 			  						<IconButton
 			  							className="TimelineNode-Editor-Close-Handle"
 			  							tooltip="Close"
@@ -90,8 +147,6 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 			  								backgroundColor: CloseBackHighlightColor
 			  							}}
 			  							style={{
-				  							width: 25,
-				  							left: -5,
 			  							}}
 			  							iconStyle={{
 			  								margin: '0px 0px 0px -12px'
@@ -107,17 +162,12 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 				}
 				
 
-				<div className="TimelineNode-Editor-Container">
+				<div className="TimelineNode-Editor-Container" style={{...style.TimelineNodeEditorContainer}}>
 					{(this.props.open) ?
-					<div className="TimelineNode-Editor-Content">
+					<div className="TimelineNode-Editor-Content" style={{...style.TimelineNodeEditorContent}}>
 						<div className="TimelineNode-Editor-Header" 
-							 style={{
-							 	flexBasis: 'auto',
-							 	height: (this.props.isTimeline) ? '60px' : '130px',
-							 	minHeight: (this.props.isTimeline) ? '60px' : '130px',
-							 	alignItems: 'center'
-							 }}
-							 >
+							 style={{...style.TimelineNodeEditorHeader(this.props.isTimeline),}}
+						>
 							<Subheader >
 							{(this.props.previewId) ?
 								<div>
@@ -137,7 +187,7 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 												title={this.props.pluginType}
 												onChange={(event, key) => this.props.changePlugin(PluginList[key])} 
 											>
-												{PluginList.map(
+												{PluginList && PluginList.map(
 													(plugin) => (
 														<MenuItem primaryText={plugin} key={plugin+"-Item-Name"} value={plugin} />
 														)
@@ -154,8 +204,8 @@ export default class TimelineNodeEditorDrawer extends React.Component {
 						</div>
 						<Divider />
 						{(this.props.previewId) ?
-							<div className="TimelineNode-Editor-Sheet">
-								<List style={{padding: 5, paddingTop: 0, width: '95%'}}>
+							<div className="TimelineNode-Editor-Sheet" style={{...style.TimelineNodeEditorSheet.root}}>
+								<List style={{...style.TimelineNodeEditorSheet.List}}>
 									{this.props.isTimeline ?
 										<TimelineForm id={this.props.previewId} /> :
 										<TrialForm id={this.props.previewId} pluginType={this.props.pluginType} />
