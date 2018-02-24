@@ -146,6 +146,7 @@ class ObjectKey extends React.Component {
 							}}
 							onChange={(e, v) => { this.props.setObjectKey(v); }}
 							style={{minWidth: 200, maxWidth: 200}}
+							underlineFocusStyle={{borderColor: colors.secondary}}
 							/>:
 				<MenuItem onClick={this.enterEditMode} primaryText={`"${oldKey}"`}/>
 			)
@@ -220,6 +221,7 @@ class ObjectValue extends React.Component {
 							onChange={(e, v) => { this.props.setObjectValue(v); }}
 							inputStyle={{color: ValueTextColor(value)}}
 							style={{minWidth: 200, maxWidth: 200}}
+							underlineFocusStyle={{borderColor: colors.secondary}}
 							/>:
 				<MenuItem 
 					onClick={this.enterEditMode} 

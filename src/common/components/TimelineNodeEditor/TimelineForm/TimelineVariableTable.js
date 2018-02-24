@@ -239,7 +239,7 @@ class CustomEditor extends React.Component {
 		          		title="[Custom Code]" 
 		          		fullWidth={true}
 		          		style={{paddingLeft: "10%", height: 40,}}
-		          		inputStyle={{color: 'rgba(0, 0, 0, 0.3)', textAlign: 'center', fontSize: 14}}
+		          		inputStyle={{color: colors.primaryDeep, textAlign: 'center', fontSize: 14}}
 		          		id="Timeline-Variable-Table-Editor"
 		          		value="[Custom Code]" 
 		          		underlineShow={false}

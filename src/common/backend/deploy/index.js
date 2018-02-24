@@ -379,7 +379,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
           // generate trial block
           let error = [];
           let trialBlock = generateTrialBlock(state, desc, all, deploy, desc.parameters.type, error);
-          if (isValueEmpty(trialBlock)) {
+          if (!isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);
           }
         }

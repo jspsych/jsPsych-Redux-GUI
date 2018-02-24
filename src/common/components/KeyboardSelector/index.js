@@ -328,7 +328,7 @@ export default class KeyboardSelector extends React.Component {
 			if (this.props.value === jsPsych.ALL_KEYS) {
 				tip = label = '[ALL KEYS]';
 			} else {
-				label = this.props.value ? `[Key: ${toPrettyName(this.props.value)}]` : 'Key Choices';
+				label = this.props.value ? `[Key: ${toPrettyName(this.props.value)}]` : '[NO KEY]';
 				tip = value ? toPrettyName(value) : '';
 			}
 		}
