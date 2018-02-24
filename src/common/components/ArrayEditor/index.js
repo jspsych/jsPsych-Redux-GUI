@@ -168,6 +168,7 @@ class ArrayValue extends React.Component {
 							onChange={(e, v) => { this.props.setArrayItem(v); }}
 							inputStyle={{color: ValueTextColor(value), textOverflow: 'ellipsis'}}
 							style={{minWidth: 200, maxWidth: 200}}
+							underlineFocusStyle={{borderColor: colors.secondary}}
 							/>:
 				<MenuItem 
 					onClick={this.enterEditMode}
