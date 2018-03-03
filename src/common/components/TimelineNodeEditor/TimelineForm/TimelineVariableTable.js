@@ -16,14 +16,19 @@ import Uncheck from 'material-ui/svg-icons/toggle/star-border';
 import Check from 'material-ui/svg-icons/toggle/star';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
-import CheckIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
-import UnCheckIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import CodeButtonIcon from 'material-ui/svg-icons/action/code';
 import Add from 'material-ui/svg-icons/content/add-circle';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import Launch from  'material-ui/svg-icons/action/launch';
 import TableIcon from 'material-ui/svg-icons/action/view-list';
 import UndoIcon from  'material-ui/svg-icons/content/undo';
+import NumberIcon from 'material-ui/svg-icons/image/looks-one';
+import ArrayIcon from 'material-ui/svg-icons/action/view-array';
+import StringIcon from 'material-ui/svg-icons/editor/text-fields';
+import LongStringIcon from 'material-ui/svg-icons/editor/insert-comment';
+import ObjectIcon from 'material-ui/svg-icons/editor/mode-edit';
+import FunctionIcon from 'material-ui/svg-icons/action/code';
+import MediaIcon from 'material-ui/svg-icons/image/photo-library';
 import {
 	cyan500 as hoverColor,
 	yellow500 as checkColor,
@@ -52,6 +57,10 @@ const colors = {
 };
 
 const style = {
+	Icon: {
+		color: colors.primaryDeep,
+		// hoverColor: colors.secondary
+	},
 	TextFieldFocusStyle: {
 		...GeneralTheme.TextFieldFocusStyle()
 	},
@@ -498,6 +507,24 @@ class HeaderCell extends React.Component {
 			this.handleClose();
 		}
 
+		this.renderIcon = () => {
+			switch (this.props.type) {
+				case TimelineVariableInputType.NUMBER:
+					return <NumberIcon {...style.Icon} />;
+				case TimelineVariableInputType.MEDIA:
+					return <MediaIcon {...style.Icon} />;
+				case TimelineVariableInputType.ARRAY:
+					return <ArrayIcon {...style.Icon} />;
+				case TimelineVariableInputType.OBJECT:
+					return <ObjectIcon {...style.Icon} />;
+				case TimelineVariableInputType.TEXT:
+					return <StringIcon {...style.Icon} />;
+				case TimelineVariableInputType.LONG_TEXT:
+					return <LongStringIcon {...style.Icon} />;
+				case TimelineVariableInputType.FUNCTION:
+					return <FunctionIcon {...style.Icon} />;
+			}
+		}
 	}
 
 	static defaultProps = {
@@ -535,7 +562,7 @@ class HeaderCell extends React.Component {
 						alignSelf: 'center'
 					}}
 				>
-					<MenuItem	
+					<ListItem	
 						onClick={this.handleOpen}
 						primaryText={
 							<div 
@@ -545,11 +572,20 @@ class HeaderCell extends React.Component {
 									fontWeight: 'bold',
 									color: colors.primary
 								}}
+								title={`${this.props.variableName}`}
 							>
 							 {this.state.variableName}
 							</div>
 						}
-						rightIcon={<Launch />}
+						rightIconButton={
+							<IconButton 
+								disableTouchRipple
+								onClick={this.handleOpen}
+								tooltip={this.props.type}
+							>
+								{this.renderIcon()}
+							</IconButton>
+						}
 					/>
 				</div>
 				<Dialog
