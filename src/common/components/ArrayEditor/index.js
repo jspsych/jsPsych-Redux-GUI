@@ -26,7 +26,7 @@ import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
 import { stringify } from '../../backend/deploy';
 import { deepCopy } from '../../utils';
-import CodeEditor from '../CodeEditor';
+import CodeEditor, { CodeLanguage } from '../CodeEditor';
 import GeneralTheme from '../theme.js';
 
 const colors = {
@@ -316,6 +316,8 @@ export default class ArrayEditor extends React.Component {
 							submitCallback={(v) => {
 								this.setArrayItem(v, i);
 							}}
+							language={CodeLanguage.html[0]}
+							onlyString={true}
 							key={`array-code-${i}`}
 							tooltip="Edit value"
 							buttonIcon={<StringEditorIcon hoverColor={hoverColor} />}

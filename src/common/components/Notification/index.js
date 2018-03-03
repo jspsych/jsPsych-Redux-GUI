@@ -69,12 +69,6 @@ export default class Notification extends React.Component {
 		let actions;
 		if (notifyType === Notify_Type.confirm) {
 			actions = [
-				<FlatButton
-      				label="No"
-      				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
-      				onClick={handleClose}
-      				keyboardFocused={true}
-      			/>,
       			<FlatButton
       				label="Yes"
       				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
@@ -82,6 +76,12 @@ export default class Notification extends React.Component {
       					proceedCallback();
       					handleClose();
       				}}
+      				keyboardFocused={true}
+      			/>,
+				<FlatButton
+      				label="No"
+      				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
+      				onClick={handleClose}
       				keyboardFocused={true}
       			/>
 			]

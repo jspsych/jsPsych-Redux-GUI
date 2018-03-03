@@ -34,8 +34,10 @@ import { deepCopy } from '../../utils';
 export class StringifiedFunction {
 	constructor({code=null, info=null}) {
 		this.code = code;
-		this.info = info;
-		this.isFunc = true; // for backward compatability
+		// gui info (codeMirror language mode, eval info)
+		this.info = info; 
+		// for backward compatability
+		this.isFunc = true; 
 	}
 }
 

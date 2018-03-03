@@ -93,6 +93,7 @@ export default class jsPsychInitEditor extends React.Component {
         <div style={{position: 'absolute', right: 0}}>
           <CodeEditor 
             initCode={this.props[key].code} 
+            onlyFunction={true}
             submitCallback={(newCode) => { 
               this.props.setJsPsychInit(null, newCode, key);
             }}

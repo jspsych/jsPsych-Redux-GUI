@@ -101,7 +101,7 @@ const style = {
 		height: 60,
 		minHeight: 60,
 		maxHeight: 60
-	}
+	},
 };
 
 const AddRowIcon = (props) => (
@@ -136,6 +136,27 @@ const DeleteColumnIcon = (props) => (
   	</SvgIcon>
 )
 
+
+const matchInputTypeIcon = (type) => {
+	switch (type) {
+		case TimelineVariableInputType.NUMBER:
+			return <NumberIcon {...style.Icon} />;
+		case TimelineVariableInputType.MEDIA:
+			return <MediaIcon {...style.Icon} />;
+		case TimelineVariableInputType.ARRAY:
+			return <ArrayIcon {...style.Icon} />;
+		case TimelineVariableInputType.OBJECT:
+			return <ObjectIcon {...style.Icon} />;
+		case TimelineVariableInputType.TEXT:
+			return <StringIcon {...style.Icon} />;
+		case TimelineVariableInputType.LONG_TEXT:
+			return <LongStringIcon {...style.Icon} />;
+		case TimelineVariableInputType.FUNCTION:
+			return <FunctionIcon {...style.Icon} />;
+		default:
+			return null;
+	}
+}
 
 class CustomEditor extends React.Component {
 	constructor(props) {
@@ -506,25 +527,6 @@ class HeaderCell extends React.Component {
 			this.setType(this.props.type);
 			this.handleClose();
 		}
-
-		this.renderIcon = () => {
-			switch (this.props.type) {
-				case TimelineVariableInputType.NUMBER:
-					return <NumberIcon {...style.Icon} />;
-				case TimelineVariableInputType.MEDIA:
-					return <MediaIcon {...style.Icon} />;
-				case TimelineVariableInputType.ARRAY:
-					return <ArrayIcon {...style.Icon} />;
-				case TimelineVariableInputType.OBJECT:
-					return <ObjectIcon {...style.Icon} />;
-				case TimelineVariableInputType.TEXT:
-					return <StringIcon {...style.Icon} />;
-				case TimelineVariableInputType.LONG_TEXT:
-					return <LongStringIcon {...style.Icon} />;
-				case TimelineVariableInputType.FUNCTION:
-					return <FunctionIcon {...style.Icon} />;
-			}
-		}
 	}
 
 	static defaultProps = {
@@ -583,7 +585,7 @@ class HeaderCell extends React.Component {
 								onClick={this.handleOpen}
 								tooltip={this.props.type}
 							>
-								{this.renderIcon()}
+								{matchInputTypeIcon(this.props.type)}
 							</IconButton>
 						}
 					/>
@@ -626,17 +628,41 @@ class HeaderCell extends React.Component {
 	}
 }
 
+class PopupEditor extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			open: false,
+			valueObject: this.props.valueObject,
+		}
+	}
+
+	render() {
+		return(
+			<div>
+
+				<Dialog>
+
+				</Dialog>
+			</div>
+		)
+	}
+}
+
 class ContentCell extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.renderEditor = () => {
+			
+		}
 	}
 
 	static defaultProps = {
 		// JspsychValueObject
 		valueObject: {},
-		// this.props.inputType mapping from redux
-		// decides the editor here
-		inputType: {},
+		// input type, TimelineVariableInputType ENUM 
+		type: '',
 	}
 
 	render() {
@@ -667,7 +693,7 @@ class GhostCell extends React.Component {
 					maxWidth: 50
 				}}
 			>
-				{this.props.rowNum}
+				{`${this.props.rowNum+1}.`}
 			</div>
 		)
 	}
@@ -744,7 +770,6 @@ class ContentRow extends React.Component {
 			<div
 				style={{
 					display: 'flex',
-
 				}}
 			>
 				<GhostCell rowNum={rowNum}/>
@@ -756,7 +781,9 @@ class ContentRow extends React.Component {
 						return (
 							<ContentCell
 								key={`timeline-variable-cell-${rowNum}-${i}`}
+								columnName={columnName}
 								valueObject={valueObject}
+								type={inputType[columnName]}
 								colNum={i}
 								{...this.props}
 							/>

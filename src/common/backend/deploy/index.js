@@ -502,6 +502,7 @@ media path for all files wrapped in this tag <path></path>
 */
 function stringifyFunc(code, info = null, filePath) {
   let func = code;
+  // console.log(JSON.stringify(func))
   // try {
   //   let tree = esprima.parse(code);
   //   func = escodegen.generate(tree, {
