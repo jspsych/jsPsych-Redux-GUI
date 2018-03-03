@@ -113,11 +113,18 @@ export default class MediaManager extends React.Component {
 			})
 		}
 
-		this.initLocalSelected = () => (
-			this.props.mode === MediaManagerMode.upload ?
-			this.props.filenames.map(f => false) :
-			map2Bool(this.props.filenames, this.props.selected)
-		)
+		this.initLocalSelected = () => {
+			let selected;
+			if (Array.isArray(this.props.selected)) {
+				selected = this.props.selected;
+			} else {
+				selected = [this.props.selected];
+			}
+
+			return this.props.mode === MediaManagerMode.upload ?
+					this.props.filenames.map(f => false) :
+					map2Bool(this.props.filenames, selected)
+		}
 
 		this.handleOpen = () => {
 			this.props.checkBeforeOpen(() => {

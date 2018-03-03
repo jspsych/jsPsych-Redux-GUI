@@ -46,6 +46,14 @@ export function updateTimelineVariableRowAction(fromRow, toRow, updated) {
 	}
 }
 
+export function updateTimelineVariableInputTypeAction(variableName, inputType) {
+	return {
+		type: actionTypes.UPDATE_TIMELINE_VARIABLE_INPUT_TYPE,
+		variableName: variableName,
+		inputType: inputType
+	}
+}
+
 export function updateTimelineVariableCellAction(row, col, toggleUseFunc=false, code="") {
 	return {
 		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL,

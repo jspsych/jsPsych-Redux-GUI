@@ -19,7 +19,7 @@ const initState = {
 
 	message: '',
 	notifyType: null,
-
+	proceedCallback: () => {}
 }
 
 /*
@@ -32,10 +32,11 @@ action = {
 
 */
 function notify(state, action) {
-	let { notifyMethod, notifyType, message } = action;
+	let { notifyMethod, notifyType, message, proceedCallback } = action;
 	let new_state = Object.assign({}, state, {
 		message: message,
 		notifyType: notifyType,
+		proceedCallback: proceedCallback
 	});
 
 	if (notifyMethod === Notify_Method.dialog) {
