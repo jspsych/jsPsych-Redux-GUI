@@ -185,7 +185,7 @@ action = {
 }
 */
 export function setPluginParam(state, action) {
-	let { key: path, value, mode } = action;
+	let { key: path, value, mode, ifEval, language } = action;
 
 	// update state
 	let new_state = Object.assign({}, state);
@@ -198,6 +198,8 @@ export function setPluginParam(state, action) {
 	switch(mode) {
 		case ParameterMode.USE_FUNC:
 			parameter.func = createFuncObj(value);
+			parameter.func.ifEval = !!ifEval;
+			parameter.func.language = language;
 			break;
 		case ParameterMode.USE_TV:
 			// toggle effect

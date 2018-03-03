@@ -12,7 +12,8 @@ require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/htmlmixed/htmlmixed');
 
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
-import LongStringIcon from 'material-ui/svg-icons/editor/insert-comment';
+import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
+import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import {
   grey800 as normalColor,
   yellow500 as checkColor,
@@ -66,23 +67,13 @@ export const CodeLanguage = {
   html: ['htmlmixed', 'HTML/Plain Text']
 }
 
-
-const pattern = /^\s*`(.*?)`\s*$/g;
-const clearMuliLineStringWrapper = (str) => {
-  if (pattern.test(str)) {
-    return pattern.exec(str)[0];
-  } else {
-    return str;
-  }
-}
-
 class MyDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       code: this.props.initCode,
-      language: this.props.language,
-      evalAsFunction: !pattern.test(this.props.initCode)
+      language: this.props.language || CodeLanguage.javascript[0],
+      evalAsFunction: !!this.props.ifEval
     }
 
     this.onUpdate = (newCode) => {
@@ -93,7 +84,8 @@ class MyDialog extends React.Component {
 
     this.setLanguage = (language) => {
       this.setState({
-        language: language
+        language: language,
+        evalAsFunction: language === CodeLanguage.javascript[0]
       })
     }
 
@@ -104,8 +96,7 @@ class MyDialog extends React.Component {
     }
 
     this.onCommit = () => {
-      let code = this.state.code;
-      this.props.submitCallback(code);
+      this.props.submitCallback(this.state.code, this.state.evalAsFunction, this.state.language);
       this.props.handleClose();
     }
   }
@@ -156,8 +147,8 @@ class MyDialog extends React.Component {
                 primaryText={this.state.evalAsFunction ? 'Evaluate' : 'Do Not Evaluate'}
                 rightIcon={
                   this.state.evalAsFunction ?
-                  <EditCodeIcon color={colors.secondaryDeep} /> :
-                  <LongStringIcon color={colors.secondaryDeep}/>
+                  <CheckBoxIcon color={colors.secondaryDeep} /> :
+                  <UnCheckBoxIcon color={colors.secondaryDeep}/>
                 }
                 style={{color:colors.primaryDeep, textDecoration: 'underline'}}
                 onClick={this.handleEvalAsFunction}

@@ -29,13 +29,15 @@ export initState = {
 */
 
 import { deepCopy } from '../../utils';
+import { CodeLanguage } from '../../components/CodeEditor';
 
 // Note DynamoDB does not store function
 export class StringifiedFunction {
-	constructor({code=null, info=null}) {
+	constructor({code=null, ifEval=true, language=CodeLanguage.javascript[0]}) {
 		this.code = code;
 		// gui info (codeMirror language mode, eval info)
-		this.info = info; 
+		this.ifEval = ifEval;
+		this.language = language;
 		// for backward compatability
 		this.isFunc = true; 
 	}

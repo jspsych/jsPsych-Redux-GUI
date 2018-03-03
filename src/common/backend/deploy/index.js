@@ -457,7 +457,7 @@ export function stringify(obj, filePath) {
         res.push("]");
         // if it is supposed to be function, call stringifyFunc
       } else if (obj instanceof StringifiedFunction || obj.isFunc) { // keep obj.isFunc for backward compatability
-        return stringifyFunc(obj.code, obj.info, filePath);
+        return stringifyFunc(obj, filePath);
         // if it is a trial item
       } else if (obj instanceof JspsychValueObject || obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
         switch(obj.mode) {
@@ -500,21 +500,8 @@ This function [uses esprima to parse function code and] resolve
 media path for all files wrapped in this tag <path></path>
 
 */
-function stringifyFunc(code, info = null, filePath) {
-  let func = code;
-  // console.log(JSON.stringify(func))
-  // try {
-  //   let tree = esprima.parse(code);
-  //   func = escodegen.generate(tree, {
-  //     format: {
-  //       compact: true,
-  //       semicolons: true,
-  //       parentheses: false
-  //     }
-  //   });
-  // } catch (e) {
-  //   console.log("Fail to parse inserted code !");
-  // }
-
+function stringifyFunc(obj, filePath) {
+  let func = obj.ifEval ? obj.code : JSON.stringify(obj.code);
+  
   return resolveMediaPath(func, filePath);
 }

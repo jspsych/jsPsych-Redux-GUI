@@ -16,12 +16,15 @@ export function onPluginTypeChange(newPluginVal) {
 	};
 }
 
-export function setPluginParamAction(key, value, mode="") {
+export function setPluginParamAction(key, value, mode="", ifEval, language) {
 	return {
 		type: actionTypes.SET_PLUGIN_PARAMTER,
 		key: key,
 		value: value,
 		mode: mode,
+		// function object
+		ifEval: ifEval,
+		language: language
 	};
 }
 

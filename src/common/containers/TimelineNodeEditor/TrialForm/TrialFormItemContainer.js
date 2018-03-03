@@ -10,11 +10,8 @@ const onChangePluginType = (dispatch, newPluginVal) => {
 	dispatch(editorActions.onPluginTypeChange(newPluginVal));
 }
 
-const setFunc = (dispatch, key, code, funcOnly=false) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC));
-	if (funcOnly) {
-		dispatch(editorActions.setPluginParamModeAction(key, ParameterMode.USE_FUNC, false));
-	}
+const setFunc = (dispatch, key, code, ifEval, language) => {
+	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC, ifEval, language));
 }
 
 const setTimelineVariable = (dispatch, key, tv) => {
@@ -128,7 +125,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
 	setText: (key, newVal) => { setText(dispatch, key, newVal); },
 	setToggle: (key, flag) => { setToggle(dispatch, key, flag); },
 	setNumber: (key, newVal, isFloat) => { setNumber(dispatch, key, newVal, isFloat); },
-	setFunc: (key, code, funcOnly) => { setFunc(dispatch, key, code, funcOnly); },
+	setFunc: (key, code, ifEval, language) => { setFunc(dispatch, key, code, ifEval, language); },
 	setParamMode: (key, mode) => { setParamMode(dispatch, key, mode); },
 	setKey: (key, value) => { setKey(dispatch, key, value); },
 	setTimelineVariable: (key, tv) => { setTimelineVariable(dispatch, key, tv); },

@@ -440,6 +440,7 @@ export default class TrialFormItem extends React.Component {
 		node = null,
 		autoConvertToArrayComponent = true,
 		forceCustomFloatingLabel = false,
+		onlyFunction = false,
 	}) => {
 		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
 			useTV = parameterValue.mode === ParameterMode.USE_TV,
@@ -455,9 +456,12 @@ export default class TrialFormItem extends React.Component {
 					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
 					showEditMode={true}
 					initCode={convertNullToEmptyString(parameterValue.func.code)} 
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
+					ifEval={!!parameterValue.func.ifEval}
+					language={parameterValue.func.language}
+                    submitCallback={(newCode, ifEval, language) => { 
+                      this.props.setFunc(param, newCode, ifEval, language);
                     }}
+                    onlyFunction={onlyFunction}
                     title={`${parameterInfo.pretty_name}: `}
         		/>
 			)
@@ -601,7 +605,8 @@ export default class TrialFormItem extends React.Component {
 			parameterValue: parameterValue,
 			node: <components.Undefined />,
 			forceCustomFloatingLabel: true,
-			autoConvertToArrayComponent: false
+			autoConvertToArrayComponent: false,
+			onlyFunction: true,
 		}	
 		return this.renderField(args);
 	}
