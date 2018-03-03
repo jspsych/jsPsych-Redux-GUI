@@ -599,6 +599,7 @@ class HeaderCell extends React.Component {
 		        		{...GeneralTheme.TextFieldFocusStyle(this.state.error)}
 		        		errorText={this.state.errorText}
 		        		floatingLabelText="Variable Name"
+		        		floatingLabelFixed
 		        		value={this.state.variableName}
 		        		onChange={(event, newVal) => this.setVariableName(newVal)} 
 		        	/>
