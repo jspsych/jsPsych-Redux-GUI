@@ -764,7 +764,7 @@ class ContentRow extends React.Component {
 	}
 
 	render() {
-		let { row, headers, rowNum } = this.props;
+		let { row, headers, rowNum, inputType } = this.props;
 
 		return (
 			<div
