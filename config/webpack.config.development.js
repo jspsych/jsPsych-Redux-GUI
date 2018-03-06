@@ -7,6 +7,7 @@ module.exports = merge(baseConfig, {
   devtool: 'eval',
   entry: [
     'webpack-hot-middleware/client',
+    "babel-polyfill",
     path.resolve(__dirname, '../src/client/index.js')
   ],
   output: {

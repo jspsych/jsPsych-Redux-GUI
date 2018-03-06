@@ -143,7 +143,7 @@ class Key extends React.Component {
 	}
 
 	render() {
-		let isSelected;
+		let isSelected = false;
 		if (Array.isArray(this.props.selected)) {
 			for (let v of this.props.selected) {
 				if (v === this.props.label) {
@@ -151,7 +151,9 @@ class Key extends React.Component {
 				}
 			}
 		} else {
-			isSelected = this.props.selected.toUpperCase() === this.props.label.toUpperCase();
+			if (this.props.selected && this.props.label) {
+				isSelected = this.props.selected.toUpperCase() === this.props.label.toUpperCase();
+			}
 		}
 
 		return (
@@ -197,7 +199,7 @@ class Keyboard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selected: this.props.value === jsPsych.ALL_KEYS ? '' : this.props.value,
+			selected: this.props.value === jsPsych.ALL_KEYS ? '' : (this.props.value ? this.props.value : ''),
 			allKeys: this.props.value === jsPsych.ALL_KEYS
 		}
 
