@@ -25,7 +25,6 @@ import { renderDialogTitle } from '../gadgets';
 import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
 import { stringify } from '../../backend/deploy';
-import { deepCopy } from '../../utils';
 import CodeEditor, { CodeLanguage } from '../CodeEditor';
 import GeneralTheme from '../theme.js';
 
@@ -266,7 +265,7 @@ export default class ArrayEditor extends React.Component {
 			let { arrayItems } = this.state;
 			let a = [];
 			for (let i = 0; i < arrayItems.length; i++) {
-				a.push(deepCopy(arrayItems[i]));
+				a.push(utils.deepCopy(arrayItems[i]));
 				a[i].value = (convert2Null) ? convertToNull(a[i].value) : a[i].value;
 			}
 			return a;

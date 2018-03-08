@@ -7,7 +7,6 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 module.exports = merge(baseConfig, {
   devtool: 'cheap-module-source-map',
   entry: [
-    "babel-polyfill",
     path.resolve(__dirname, '../src/client/index.js'),
   ],
   output: {

@@ -4,17 +4,6 @@ import * as editorActions from '../../../actions/editorActions';
 import { notifyConfirmByDialog, notifyErrorByDialog } from '../../Notification';
 import { GUI_INFO_IGNORE, TV_HEADER_INPUT_TYPE, TV_HEADER_ORDER } from '../../../reducers/Experiment/editor';
 
-const updateTimelineVariableRow = (dispatch, fromRow, toRow, updated) => {
-	dispatch(editorActions.updateTimelineVariableRowAction(fromRow, toRow, updated));
-}
-
-const setParamMode = (dispatch, row, col) => {
-	dispatch(editorActions.updateTimelineVariableCellAction(row, col, true));
-}
-
-const setCode = (dispatch, row, col, code) => {
-	dispatch(editorActions.updateTimelineVariableCellAction(row, col, false, code));
-}
 
 const updateTimelineVariableName = (dispatch, oldName, newName) => {
 	dispatch(editorActions.updateTimelineVariableNameAction(oldName, newName));
@@ -44,6 +33,10 @@ const updateTimelineVariableInputType = (dispatch, name, inputType) => {
 	dispatch(editorActions.updateTimelineVariableInputTypeAction(name, inputType))
 }
 
+const updateCell = (dispatch, colName, rowNum, valueObject) => {
+	dispatch(editorActions.updateCellAction(colName, rowNum, valueObject))
+}
+
 function createDataGridRows(timelineVariable) {
 	return timelineVariable.map((row) => {
 		let strRow = {};
@@ -70,10 +63,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	updateTimelineVariableRow: (fromRow, toRow, updated) => { updateTimelineVariableRow(dispatch, fromRow, toRow, updated); },
 	updateTimelineVariableInputType: (name, inputType) => { updateTimelineVariableInputType(dispatch, name, inputType); },
-	setParamMode: (row, col) => { setParamMode(dispatch, row, col); },
-	setCode: (row, col, code) => { setCode(dispatch, row, col, code); },
+	updateCell: (colName, rowNum, valueObject) => { updateCell(dispatch, colName, rowNum, valueObject); },
 	updateTimelineVariableName: (oldName, newName) => { updateTimelineVariableName(dispatch, oldName, newName); },
 	addRow: (index=-1) => { addRow(dispatch, index); },
 	addColumn: () => { addColumn(dispatch); },

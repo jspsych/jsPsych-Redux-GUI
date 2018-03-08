@@ -42,19 +42,87 @@ import {
 } from 'material-ui/styles/colors';
 
 import { ParameterMode, TimelineVariableInputType, isString, isFunction } from '../../../reducers/Experiment/editor';
-import CodeMirror from 'react-codemirror';
-require('codemirror/lib/codemirror.css');
 import { renderDialogTitle } from '../../gadgets';
+import CodeEditor, { CodeLanguage } from '../../CodeEditor';
 import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem.js';
 
 import GeneralTheme from '../../theme.js';
-import { deepCopy } from '../../../utils';
 import deepEqual from 'deep-equal'
+
+const constants = {
+	GhostCellWidth: 50,
+	CellHeight: 60,
+	CellWidth: 175
+}
 
 const colors = {
 	...GeneralTheme.colors,
 	labelColor: '#B1B1B1'
 };
+
+const cssStyle = {
+	HeaderRow: {
+		root: utils.prefixer({
+			display: 'flex'
+		})
+	},
+	Cell: {
+		root: utils.prefixer({
+			width: constants.CellWidth,
+			maxWidth: constants.CellWidth,
+			minWidth: constants.CellWidth,
+			justifyContent: 'center',
+			display: 'flex',
+			height: constants.CellHeight,
+			minHeight: constants.CellHeight,
+			maxHeight: constants.CellHeight
+		})
+	},
+	GhostCell: {
+		root: utils.prefixer({
+			width: constants.GhostCellWidth,
+			minWidth: constants.GhostCellWidth,
+			maxWidth: constants.GhostCellWidth,
+			justifyContent: 'center',
+			display: 'flex',
+			height: constants.CellHeight,
+			minHeight: constants.CellHeight,
+			maxHeight: constants.CellHeight
+		})
+	},
+	HeaderCell: {
+		Container: utils.prefixer({
+			width: '90%',
+			height: '90%',
+			alignSelf: 'center',
+			overflow: 'hidden',
+		}),
+		Label: utils.prefixer({
+			textOverflow: 'ellipsis',
+			overflow: 'hidden',
+			fontWeight: 'bold',
+			color: colors.primary
+		})
+	},
+	ContentCell: {
+		root: utils.prefixer({
+			display: 'flex',
+		}),
+		Container: utils.prefixer({
+			width: '90%',
+			height: '90%',
+			alignSelf: 'center',
+			overflow: 'hidden'
+		}),
+		Label: utils.prefixer({
+			textOverflow: 'ellipsis',
+			overflow: 'hidden',
+			fontWeight: 'bold',
+			textAlign: 'center',
+			color: colors.primary
+		})
+	}
+}
 
 const style = {
 	Icon: {
@@ -91,16 +159,6 @@ const style = {
 	},
 	TriggerIconStyle: {
 		...TrialFormItemStyle.TriggerIconStyle
-	},
-	cellStyle: {
-		width: 175,
-		maxWidth: 175,
-		minWidth: 175,
-		justifyContent: 'center',
-		display: 'flex',
-		height: 60,
-		minHeight: 60,
-		maxHeight: 60
 	},
 };
 
@@ -155,176 +213,6 @@ const matchInputTypeIcon = (type) => {
 			return <FunctionIcon {...style.Icon} />;
 		default:
 			return null;
-	}
-}
-
-class CustomEditor extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-	  		value: this.props.value
-	  	}
-
-	  	this.getValue = () => ({[this.props.column.key]: this.state.value});
-
-	  	this.getInputNode = () => (this.refs.CustomEditorWrapper);
-
-		this.getStyle = () => ({
-			width: '100%'
-		});
-
-		this.handleOpen = () => {
-			this.setState({
-				open: true
-			})
-		}
-
-		this.handleClose = () => {
-			this.setState({
-				open: false
-			})
-		}
-
-		this.setValue = (v) => {
-			this.setState({
-				value: Object.assign({}, this.state.value, {
-					value: v
-				})
-			});
-		}
-	}
-
-	inheritContainerStyles() {
-		return true;
-	}
-
-	render() {
-	  	let { value } = this.state;
-	    return (
-	      <div>
-	        <div ref="CustomEditorWrapper">
-	          {(value.mode === ParameterMode.USE_FUNC) ?
-	          	<div style={{width: "80%"}}>
-		          	<TextField 
-		          		title="[Custom Code]" 
-		          		fullWidth={true}
-		          		style={{paddingLeft: "10%", height: 40,}}
-		          		inputStyle={{color: colors.primaryDeep, textAlign: 'center', fontSize: 14}}
-		          		id="Timeline-Variable-Table-Editor"
-		          		value="[Custom Code]" 
-		          		underlineShow={false}
-		          		disabled={true}
-		          	/>
-	          	</div> :
-	          	<div style={{width: "80%",}}>
-		          	<TextField 
-		          		title={(value.value === null) ? "" : value.value}
-		          		fullWidth={true}
-		          		style={{paddingLeft: "10%", height: 40}}
-		          		id="Timeline-Variable-Table-Editor"
-		          		value={(value.value === null) ? "" : value.value}
-		          		onChange={(e, v) => {
-		          			this.setValue(v);
-		          		}}
-		          		underlineFocusStyle={{borderColor: colors.secondary}}
-		          	/>
-	          	</div>
-	          }
-	        </div>
-	      </div>
-	    )
-	}
-}
-
-class GridCell extends React.Component {
-	render() {
-		let { value: complextDataObject } = this.props;
-		switch(complextDataObject.mode) {
-			case ParameterMode.USE_FUNC:
-				return <div 
-							title="[Custom Code]" 
-							style={{color: colors.primaryDeep, textAlign: 'center', cursor: 'none'}}
-						>
-							[Custom Code]
-						</div>;
-			default:
-				return <div title={complextDataObject.value}>{complextDataObject.value}</div>;
-		}
-	}
-}
-
-class CodeEditor extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			code: this.props.code,
-		}
-
-		this.onUpdate = (newCode) => {
-			this.setState({
-				code: newCode
-			});
-		}
-	}
-
-	componentDidMount() {
-		this.setState({
-			code: (this.props.code === null) ? "" : this.props.code
-		})
-	}
-
-	render() {
-		let {
-			open,
-			handleClose,
-			setParamMode,
-			useFunc,
-			setCode,
-			title
-		} = this.props;
-
-		const actions = [
-	      <FlatButton
-	        label="Save"
-	        style={{color: colors.primaryDeep}}
-	        onClick={() => { setCode(this.state.code); handleClose() }}
-	      />,
-	    ];
-
-		return (
-			<Dialog
-	      		contentStyle={{minHeight: 500}}
-              	titleStyle={{padding: 0}}
-	            title={renderDialogTitle(
-	                <Subheader style={{fontSize: 18, maxHeight: 48}}>
-	                	{title}
-	                </Subheader>, 
-	                handleClose, 
-	                null)
-	        	}
-	            actions={actions}
-	            modal={true}
-	            open={open}
-	            onRequestClose={handleClose}
-	      	>
-              <div style={{display: 'flex'}}>
-	              <p style={{paddingTop: 15, color: (useFunc) ? colors.secondary : 'black'}}>
-	                Use Custom Code:
-	              </p>
-	              <IconButton
-	                onClick={setParamMode}
-	                >
-	                {(useFunc) ? <Check color={checkColor} /> : <Uncheck />}
-	              </IconButton>
-              </div>
-	          <CodeMirror 
-      			value={this.state.code} 
-                onChange={this.onUpdate} 
-                options={{lineNumbers: true}}
-              />
-	      	</Dialog>
-		)
 	}
 }
 
@@ -456,13 +344,16 @@ class HeaderCell extends React.Component {
 		this.state = {
 			// dialog open
 			open: false, 
-			variableName: this.props.variableName,// this.props.variableName,
+			// header name
+			variableName: this.props.variableName,
+			// this header column input type
 			type: this.props.type
 		}
 
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
+				variableName: this.props.variableName,
 			})
 		}
 
@@ -498,8 +389,10 @@ class HeaderCell extends React.Component {
 				this.props.notifyError(this.state.errorText);
 				return;
 			}
+			let recordHistory = false;
 			if (this.state.variableName !== this.props.variableName) {
 				this.props.updateTimelineVariableName(this.props.variableName, this.state.variableName);
+				this.props.recordHistory();
 			}
 
 			if (this.state.type !== this.props.type) {
@@ -507,15 +400,15 @@ class HeaderCell extends React.Component {
 				let isEitherFunction = isFunction(this.state.type) || isFunction(this.props.type);
 				if (isBothString || isEitherFunction) {
 					this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type);
+					this.props.recordHistory();
 				} else {
 					this.props.notifyConfirm(
 						'Value will be cleared for type coercion. Do you want to continue?',
 						() => { 
 							this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type); 
-							this.handleClose();
+							this.props.recordHistory();
 						}
-					)
-					return;
+					);
 				}
 				
 			}
@@ -555,13 +448,11 @@ class HeaderCell extends React.Component {
 		return (
 			<div style={{
 				border: `1px solid ${colors.primaryDeep}`,
-				...style.cellStyle,
+				...cssStyle.Cell.root,
 			}}>
 				<div
 					style={{
-						width: '90%',
-						height: '90%',
-						alignSelf: 'center'
+						...cssStyle.HeaderCell.Container
 					}}
 				>
 					<ListItem	
@@ -569,10 +460,7 @@ class HeaderCell extends React.Component {
 						primaryText={
 							<div 
 								style={{
-									textOverflow: 'ellipsis',
-									overflow: 'hidden',
-									fontWeight: 'bold',
-									color: colors.primary
+									...cssStyle.HeaderCell.Label
 								}}
 								title={`${this.props.variableName}`}
 							>
@@ -628,33 +516,151 @@ class HeaderCell extends React.Component {
 	}
 }
 
-class PopupEditor extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			open: false,
-			valueObject: this.props.valueObject,
-		}
-	}
-
-	render() {
-		return(
-			<div>
-
-				<Dialog>
-
-				</Dialog>
+const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null}) => (
+	<ListItem	
+		onClick={onClick}
+		primaryText={
+			<div 
+				style={{
+					...cssStyle.ContentCell.Label
+				}}
+				title={`${value}`}
+			>
+			 {label}
 			</div>
-		)
-	}
-}
+		}
+		rightIcon={rightIcon}
+	/>
+)
 
 class ContentCell extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			open: false,
+			valueObject: utils.deepCopy(this.props.valueObject)
+		}
+
+		this.handleOpen = () => {
+			this.setState({
+				open: true,
+				valueObject: utils.deepCopy(this.props.valueObject)
+			});
+		}
+
+		this.handleClose = () => {
+			this.setState({
+				open: false,
+			});
+		}
+
+		this.onCancel = () => {
+			this.setState({
+				valueObject: utils.deepCopy(this.props.valueObject)
+			});
+			this.handleClose();
+		}
+
+		this.setValue = (newVal, callback=()=>{}) => {
+			let clone = utils.deepCopy(this.state.valueObject);
+			clone.value = newVal;
+			this.setState({
+				valueObject: clone
+			}, callback
+			)
+		}
+
+		this.setCode = (code, callback=()=>{}) => {
+			let clone = utils.deepCopy(this.state.valueObject);
+			clone.func.code = code;
+			this.setState({
+				valueObject: clone
+			}, callback
+			)
+		}
+
+		this.onCommit = () => {
+			if (!deepEqual(this.state.valueObject, this.props.valueObject)) {
+				this.props.updateCell(this.props.columnName, this.props.rowNum, this.state.valueObject);
+				this.props.recordHistory();
+			}
+			this.handleClose();
+		}
+
+		this.renderTextFieldDialog = () => {
+			let actions = [
+				<FlatButton
+					label="Cancel"
+					labelStyle={{
+						color: colors.secondaryDeep
+					}}
+					onClick={this.onCancel}
+				/>,
+				<FlatButton
+					label="Save"
+					labelStyle={{
+						color: colors.primaryDeep
+					}}
+					onClick={this.onCommit}
+				/>,
+			]
+
+			let value = this.props.type === TimelineVariableInputType.NUMBER ? 
+						this.props.valueObject.value : 
+						utils.toEmptyString(this.props.valueObject.value),
+				label = this.props.type === TimelineVariableInputType.NUMBER ? value : `"${value}"`,
+				stateValue = utils.toEmptyString(this.state.valueObject.value);
+			return (
+				<div>
+					<ContentCellLabelItem onClick={this.handleOpen} value={value} label={label} />
+					<Dialog 
+					  modal
+			          open={this.state.open}
+			          titleStyle={{padding: 0}}
+			          actions={actions}
+					>
+						<TextField
+			        		id="TV-Table-Variable-Cell"
+			        		floatingLabelText="Value"
+			        		floatingLabelFixed
+			        		{...GeneralTheme.TextFieldFocusStyle(false)}
+			        		value={stateValue}
+			        		onChange={(event, newVal) => this.setValue(newVal)} 
+			        	/>
+					</Dialog>
+				</div>
+			)
+		}
 
 		this.renderEditor = () => {
-			
+			switch(this.props.type) {
+				case TimelineVariableInputType.TEXT:
+				case TimelineVariableInputType.NUMBER:
+					return this.renderTextFieldDialog();
+				case TimelineVariableInputType.LONG_TEXT:
+					let value = utils.toEmptyString(this.props.valueObject.value),
+						label = `"${value}"`;
+					return (
+						<CodeEditor
+							initCode={utils.toEmptyString(this.props.valueObject.value)}
+							submitCallback={(v) => {
+								this.setValue(v, this.onCommit);
+							}}
+							Trigger={
+								({onClick}) => (
+									<ContentCellLabelItem onClick={onClick} value={value} label={label}/>
+								)
+							}
+							language={CodeLanguage.html[0]}
+							onlyString={true}
+							evalAsFunction={false}
+							tooltip="Edit value"
+							buttonIcon={<StringIcon hoverColor={hoverColor} />}
+						/>
+					)
+				default:
+					return null;
+			}
 		}
 	}
 
@@ -663,16 +669,29 @@ class ContentCell extends React.Component {
 		valueObject: {},
 		// input type, TimelineVariableInputType ENUM 
 		type: '',
+		// column name
+		columnName: '',
+		// column number
+		colNum: -1,
+		// row number
+		rowNum: -1,
 	}
 
 	render() {
 		return (
 			<div
 				style={{
-					...style.cellStyle
+					border: `1px solid ${colors.primaryDeep}`,
+					...cssStyle.Cell.root
 				}}
 			>
-				{this.props.valueObject.value && this.props.valueObject.value.toString()}
+				<div
+					style={{
+						...cssStyle.ContentCell.Container
+					}}
+				>
+					{this.renderEditor()}
+				</div>
 			</div>
 		)
 	}
@@ -683,17 +702,26 @@ class GhostCell extends React.Component {
 		super(props);
 	}
 
+	static defaultProps = {
+		// if is ghost (placeholder) cell of header row
+		isHeaderRow: false,
+		rowNum: 0,
+	}
+
 	render() {
+		let { isHeaderRow } = this.props;
+
 		return (
 			<div
 				style={{
-					...style.cellStyle,
-					width: 50,
-					minWidth: 50,
-					maxWidth: 50
+					...cssStyle.GhostCell.root
 				}}
-			>
-				{`${this.props.rowNum+1}.`}
+			>	
+				{	
+					isHeaderRow ?
+					null :
+					`${this.props.rowNum+1}.`
+				}
 			</div>
 		)
 	}
@@ -717,19 +745,10 @@ class HeaderRow extends React.Component {
 		return (
 			<div
 				style={{
-					display: 'flex'
+					...cssStyle.HeaderRow.root
 				}}
 			>
-				<div 
-					style={{
-					...style.cellStyle,
-					width: 50,
-					minWidth: 50,
-					maxWidth: 50
-					}}
-				>
-				 
-				</div>
+				<GhostCell isHeaderRow={true}/>
 				{
 					headers && headers.map((header, i) => {
 						let type = inputType[header];
@@ -753,6 +772,10 @@ class ContentRow extends React.Component {
 		super(props);
 	}
 
+	shouldComponentUpdate() {
+		return true;
+	}
+
 	static defaultProps = {
 		// {} of [{},...,{}]
 		row: {}, 
@@ -769,7 +792,7 @@ class ContentRow extends React.Component {
 		return (
 			<div
 				style={{
-					display: 'flex',
+					...cssStyle.ContentCell.root
 				}}
 			>
 				<GhostCell rowNum={rowNum}/>
@@ -904,7 +927,7 @@ export default class TimelineVariableTable extends React.Component {
 
 		this.recordHistory = () => {
 			let history = this.state.history.slice();
-			history.push(deepCopy(this.props.timeline_variables));
+			history.push(utils.deepCopy(this.props.timeline_variables));
 			this.setState({
 				history: history
 			}) 
@@ -929,6 +952,7 @@ export default class TimelineVariableTable extends React.Component {
 		  				open={this.state.open}
 		  				handleOpen={this.handleOpen}
 		  				handleClose={this.handleClose}
+		  				recordHistory={this.recordHistory}
 		  				{...this.props}
 		  			/>
 		  		}

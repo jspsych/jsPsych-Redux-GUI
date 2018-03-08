@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import TrialFormItem from '../../../components/TimelineNodeEditor/TrialForm/TrialFormItem';
 import * as editorActions from '../../../actions/editorActions';
-import { convertEmptyStringToNull } from '../../../utils';
 import { ParameterMode, locateNestedParameterValue, createComplexDataObject } from '../../../reducers/Experiment/editor';
 import { MediaPathTag } from '../../../backend/deploy';
 import * as notify from '../../Notification';
@@ -11,11 +10,11 @@ const onChangePluginType = (dispatch, newPluginVal) => {
 }
 
 const setFunc = (dispatch, key, code, ifEval, language) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(code), ParameterMode.USE_FUNC, ifEval, language));
+	dispatch(editorActions.setPluginParamAction(key, utils.toNull(code), ParameterMode.USE_FUNC, ifEval, language));
 }
 
 const setTimelineVariable = (dispatch, key, tv) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(tv), ParameterMode.USE_TV));
+	dispatch(editorActions.setPluginParamAction(key, utils.toNull(tv), ParameterMode.USE_TV));
 }
 
 const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {
@@ -23,7 +22,7 @@ const setParamMode = (dispatch, key, mode=ParameterMode.USE_FUNC) => {
 }
 
 const setText = (dispatch, key, value) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	dispatch(editorActions.setPluginParamAction(key, utils.toNull(value)));
 }
 
 const setObject = (dispatch, key, obj) => {
@@ -31,7 +30,7 @@ const setObject = (dispatch, key, obj) => {
 }
 
 const setKey = (dispatch, key, value) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	dispatch(editorActions.setPluginParamAction(key, utils.toNull(value)));
 }
 
 const setToggle = (dispatch, key, flag) => {
@@ -40,7 +39,7 @@ const setToggle = (dispatch, key, flag) => {
 
 function isNumeric(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 const setNumber = (dispatch, key, value, isFloat) => {
-	dispatch(editorActions.setPluginParamAction(key, convertEmptyStringToNull(value)));
+	dispatch(editorActions.setPluginParamAction(key, utils.toNull(value)));
 }
 
 const insertFile = (dispatch, key, s3files, multiSelect, selected, handleClose=()=>{}) => {

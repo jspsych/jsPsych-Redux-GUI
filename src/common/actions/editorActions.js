@@ -40,12 +40,12 @@ export function setPluginParamModeAction(key, mode, toggle=true) {
 
 
 /* ********************** Timeline form ********************** */
-export function updateTimelineVariableRowAction(fromRow, toRow, updated) {
+export function updateCellAction(colName, rowNum, valueObject) {
 	return {
-		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_ROW,
-		fromRow: fromRow,
-		toRow: toRow,
-		updated: updated
+		type: actionTypes.UPDATE_TIMELINE_VARIABLE_CELL,
+		colName: colName,
+		rowNum: rowNum,
+		valueObject: valueObject
 	}
 }
 
@@ -54,16 +54,6 @@ export function updateTimelineVariableInputTypeAction(variableName, inputType) {
 		type: actionTypes.UPDATE_TIMELINE_VARIABLE_INPUT_TYPE,
 		variableName: variableName,
 		inputType: inputType
-	}
-}
-
-export function updateTimelineVariableCellAction(row, col, toggleUseFunc=false, code="") {
-	return {
-		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL,
-		row: row,
-		col: col,
-		toggleUseFunc: toggleUseFunc,
-		code: code
 	}
 }
 

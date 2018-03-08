@@ -22,7 +22,6 @@ import {
 	notifySuccessBySnackbar,
 	// notifyWarningBySnackbar
 } from '../../Notification';
-import { getUUID } from '../../../utils';
 
 const $pullExperiment = (dispatch, getState, selected) => {
 	// fetch experiment
@@ -173,7 +172,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				throw Errors.internetError;
 			}
 			let now = Date.now();
-			let newId = getUUID();
+			let newId = utils.getUUID();
 			// assign new id, date
 			let experimentState = Object.assign({}, data.Item.fetch, {
 				experimentId: newId,

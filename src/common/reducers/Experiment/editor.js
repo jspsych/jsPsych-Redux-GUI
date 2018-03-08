@@ -1,4 +1,3 @@
-import { deepCopy, convertEmptyStringToNull, injectJsPsychUniversalPluginParameters } from '../../utils';
 import { createFuncObj } from './jsPsychInit';
 
 var jsPsych = window.jsPsych || require('./tests/jsPsych.js').jsPsych;
@@ -32,7 +31,6 @@ export class JspsychValueObject {
 		this.func = func;
 		this.mode = mode;
 		this.timelineVariable = timelineVariable;
-		this.isComplexDataObject = true; // for backward compatability
 	}
 }
 
@@ -132,7 +130,7 @@ export function setName(state, action) {
 	if (!node) return state;
 
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[node.id] = node;
 
 	node.name = action.name;
@@ -189,7 +187,7 @@ export function setPluginParam(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	let node = deepCopy(new_state[new_state.previewId]);
+	let node = utils.deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 
 	// handle Complex type jsPsych plugin parameter
@@ -221,7 +219,7 @@ export function setPluginParamMode(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	let node = deepCopy(new_state[new_state.previewId]);
+	let node = utils.deepCopy(new_state[new_state.previewId]);
 	new_state[node.id] = node;
 
 	let parameter = locateNestedParameterValue(node.parameters, path);
@@ -267,7 +265,7 @@ export function changePlugin(state, action) {
 	if (node.parameters.type === action.newPluginVal) return new_state;
 
 	// add universal plugin parameters
-	let params = injectJsPsychUniversalPluginParameters(jsPsych.plugins[action.newPluginVal].info.parameters);
+	let params = utils.injectJsPsychUniversalPluginParameters(jsPsych.plugins[action.newPluginVal].info.parameters);
 	// names of parameters
 	let paramKeys = Object.keys(params);
 	// new npde.parameters object
@@ -292,7 +290,7 @@ export function changePlugin(state, action) {
 		if (paramInfo.type === EnumPluginType.COMPLEX) {
 			defaultValue = [];
 		} else {
-			defaultValue = convertEmptyStringToNull(paramInfo.default);
+			defaultValue = utils.toNull(paramInfo.default);
 		}
 
 		// ***** Current converting is all shallow *****
@@ -313,7 +311,7 @@ export function changePlugin(state, action) {
 	}
 
 	// update trial node
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	node.parameters = paramsObject;
 	new_state[state.previewId] = node;
 
@@ -331,7 +329,7 @@ export function setSamplingMethod(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.sample['type'] = action.newVal;
@@ -350,7 +348,7 @@ export function setSampleSize(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.sample['size'] = action.newVal;
@@ -368,7 +366,7 @@ export function setRandomize(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.randomize_order = action.value;
@@ -387,7 +385,7 @@ export function setRepetitions(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.repetitions = action.newVal;
@@ -399,7 +397,7 @@ export function setLoopFunction(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.loop_function.code = action.newVal;
@@ -411,7 +409,7 @@ export function setConditionFunction(state, action) {
 	let node = state[state.previewId];
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.conditional_function.code = action.newVal;
@@ -419,31 +417,6 @@ export function setConditionFunction(state, action) {
 	return new_state;
 }
 
-/*
-Set timeline variable by updating whole row (data handled by react-data-grid),
-action = {
-	fromRow: number,
-	toRow: number,
-	updated: new value
-}
-*/
-export function updateTimelineVariableRow(state, action) {
-	let { fromRow, toRow, updated } = action;
-	let node = state[state.previewId];
-
-	// update state
-	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
-	new_state[state.previewId] = node;
-
-	for (let i = fromRow; i <= toRow; i++) {
-		for (let key of Object.keys(updated)) {
-			node.parameters.timeline_variables[i][key] = (updated[key] === "") ? null : updated[key];
-		}
-	}
-
-	return new_state;
-}
 
 /*
 Set timeline variable cell code,
@@ -455,28 +428,20 @@ action = {
 }
 */
 export function updateTimelineVariableCell(state, action) {
-	let { row, col, toggleUseFunc, code } = action;
+	let { colName, rowNum, valueObject } = action;
 	let node = state[state.previewId];
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// find editting cell
 	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
-		let chosenCol = Object.keys(node.parameters.timeline_variables[0])[col];
-		let chosenCell = node.parameters.timeline_variables[row][chosenCol];
-
-		// only set mode
-		if (toggleUseFunc) {
-			chosenCell.mode = (chosenCell.mode === ParameterMode.USE_FUNC) ? null : ParameterMode.USE_FUNC;
-		} else {
-			chosenCell.func.code = code;
-		}
+		node.parameters.timeline_variables[rowNum][colName] = valueObject;
 	}
 
-	return new_state
+	return new_state;
 }
 
 /*
@@ -496,7 +461,7 @@ export function updateTimelineVariableName(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// change column name
@@ -549,7 +514,7 @@ export function updateTimelineVariableInputType(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 	let oldType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName];
 	node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName] = inputType;
@@ -581,7 +546,11 @@ export function updateTimelineVariableInputType(state, action) {
 						row[variableName].value = "";
 				}
 				break;
+			// function
 			default:
+				for (let row of node.parameters.timeline_variables) {
+						row[variableName].mode = ParameterMode.USE_FUNC;
+				}
 				break;
 		}
 	}
@@ -603,7 +572,7 @@ export function addTimelineVariableRow(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// add row
@@ -634,7 +603,7 @@ export function addTimelineVariableColumn(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// add column
@@ -668,7 +637,7 @@ export function deleteTimelineVariableRow(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// delete row
@@ -699,7 +668,7 @@ export function deleteTimelineVariableColumn(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	// delete column
@@ -736,7 +705,7 @@ export function setTimelineVariable(state, action) {
 
 	// update state
 	let new_state = Object.assign({}, state);
-	node = deepCopy(node);
+	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
 	node.parameters.timeline_variables = table;

@@ -1,8 +1,25 @@
+import Prefixer from 'inline-style-prefixer';
 var short = require('short-uuid');
+const _prefixer = new Prefixer()
 
+export const prefixer = (style={}, multiple=false) => {
+	if (!multiple) return _prefixer.prefix(style);
+	let res = {};
+	for (let key of Object.keys(style)) {
+		res[key] = _prefixer.prefix(style[key]);
+	}
+	return res;
+}
+
+if (!Array.prototype.move) {
+  Array.prototype.move = function(from,to){
+    this.splice(to,0,this.splice(from,1)[0]);
+    return this;
+  };
+}
 
 /*
-Simple deepCopy,
+Simple utils.deepCopy,
 Target can be
 object
 boolean
@@ -43,9 +60,11 @@ export function deepCopy(target) {
 	}
 }
 
-export const convertEmptyStringToNull = (s) => ((s === '') ? null : s);
+export const toNull = (s) => ((s === '') ? null : s);
 
-export const convertNullToEmptyString = (s) => ((s === null) ? '' : s);
+export const toEmptyString = (s) => ((s === null) ? '' : s);
+
+export const toEmptyArray = (s) => (!s ? [] : s);
 
 export function getUUID() {
 	var translator = short();
@@ -53,7 +72,6 @@ export function getUUID() {
 	let res = translator.new();
 	return res;
 }
-
 
 export function isValueEmpty(val) {
 	return val === '' || val === null || val === undefined || (Array.isArray(val) && val.length === 0) ||

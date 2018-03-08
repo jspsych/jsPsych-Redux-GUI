@@ -28,7 +28,6 @@ export initState = {
 
 */
 
-import { deepCopy } from '../../utils';
 import { CodeLanguage } from '../../components/CodeEditor';
 
 // Note DynamoDB does not store function
@@ -38,8 +37,6 @@ export class StringifiedFunction {
 		// gui info (codeMirror language mode, eval info)
 		this.ifEval = ifEval;
 		this.language = language;
-		// for backward compatability
-		this.isFunc = true; 
 	}
 }
 
@@ -99,7 +96,7 @@ export function setJspyschInit(state, action) {
 	const { key, value } = action;
 	let new_state = Object.assign({}, state);
 
-	let jsPsychInit = deepCopy(new_state.jsPsychInit);
+	let jsPsychInit = utils.deepCopy(new_state.jsPsychInit);
 	new_state.jsPsychInit = jsPsychInit;
 	
 	switch(key) {

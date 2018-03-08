@@ -26,7 +26,6 @@ import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import { stringify } from '../../backend/deploy';
-import { deepCopy } from '../../utils';
 import GeneralTheme from '../theme.js';
 
 const colors = {
@@ -394,7 +393,7 @@ export default class ObjectEditor extends React.Component {
 			let { objectKeys, objectValues } = this.state;
 			let resObj = {};
 			for (let i = 0; i < objectKeys.length; i++) {
-				resObj[objectKeys[i]] = deepCopy(objectValues[i]);
+				resObj[objectKeys[i]] = utils.deepCopy(objectValues[i]);
 				resObj[objectKeys[i]].value = (convert2Null) ? convertToNull(resObj[objectKeys[i]].value) : resObj[objectKeys[i]].value;
 			}
 			return resObj;
