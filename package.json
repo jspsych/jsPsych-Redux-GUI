@@ -32,8 +32,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.31.0",
-    "aws-sdk": "^2.188.0",
-    "aws-serverless-express": "^3.0.2",
+    "aws-sdk": "^2.206.0",
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.0",
     "copy-to-clipboard": "^3.0.6",
