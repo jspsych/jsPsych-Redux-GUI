@@ -67,13 +67,27 @@ export const CodeLanguage = {
   html: ['htmlmixed', 'HTML/Plain Text']
 }
 
-class MyDialog extends React.Component {
+export default class CodeEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: this.props.initCode,
-      language: this.props.language || CodeLanguage.javascript[0],
-      evalAsFunction: !!this.props.ifEval
+      open: false,
+    }
+
+    this.handleOpen = () => {
+      this.setState({
+        open: true,
+        // init values
+        code: utils.toEmptyString(this.props.value),
+        language: this.props.language || CodeLanguage.javascript[0],
+        evalAsFunction: !!this.props.ifEval
+      });
+    }
+
+    this.handleClose = () => {
+      this.setState({
+        open: false,
+      });
     }
 
     this.onUpdate = (newCode) => {
@@ -96,13 +110,31 @@ class MyDialog extends React.Component {
     }
 
     this.onCommit = () => {
-      this.props.submitCallback(this.state.code, this.state.evalAsFunction, this.state.language);
-      this.props.handleClose();
+      this.props.onCommit(utils.toNull(this.state.code), this.state.evalAsFunction, this.state.language);
+      this.handleClose();
     }
   }
 
+  static defaultProps = { 
+  	value: "",
+    language: CodeLanguage.javascript[0],
+    tooltip: "Insert code",
+    title: "Code Editor",
+    onCommit: function(newCode) { return; },
+    Trigger: ({onClick, tooltip}) => (
+      <IconButton
+        onClick={onClick}
+        tooltip={tooltip}
+      >
+        <EditCodeIcon {...style.DefaultTrigger}/>
+      </IconButton>
+    ),
+  };
+
+  
   render() {
-    const { title, handleClose, open, } = this.props;
+  	const { buttonIcon, title, onCommit, Trigger } = this.props;
+
     const actions = [
       <FlatButton
         label="Save"
@@ -117,19 +149,22 @@ class MyDialog extends React.Component {
 
     let disabled = this.props.onlyString || this.props.onlyFunction;
 
-    return (
-      <Dialog
+    // add this.state.open ? tag : null to trigger reset (because we don't have control to CodeMirror)
+  	return (
+  		<div>
+        <Trigger onClick={this.handleOpen} tooltip={this.props.tooltip}/>
+        <Dialog
           contentStyle={{minHeight: 500}}
           titleStyle={{padding: 0}}
           title={renderDialogTitle(
             <Subheader style={{fontSize: 18, maxHeight: 48}}>
             {title}
             </Subheader>, 
-            handleClose, 
+            this.handleClose, 
             null)}
           actions={actions}
           modal={true}
-          open={open}
+          open={this.state.open}
         >
           <div style={{...style.toolbar}}>
             <SelectField
@@ -164,64 +199,7 @@ class MyDialog extends React.Component {
               mode: this.state.language
             }}
           />
-    </Dialog>
-    )
-  }
-}
-
-export default class CodeEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-    }
-
-    this.handleOpen = () => {
-      this.setState({
-        open: true
-      });
-    }
-
-    this.handleClose = () => {
-      this.setState({
-        open: false,
-      });
-    }
-  }
-
-  static defaultProps = { 
-  	initCode: "",
-    language: CodeLanguage.javascript[0],
-    tooltip: "Insert code",
-    title: "Code Editor",
-    submitCallback: function(newCode) { return; },
-    showEditMode: false,
-    Trigger: ({onClick, tooltip}) => (
-      <IconButton
-        onClick={onClick}
-        tooltip={tooltip}
-      >
-        <EditCodeIcon {...style.DefaultTrigger}/>
-      </IconButton>
-    ),
-  };
-
-  
-  render() {
-  	const { buttonIcon, title, submitCallback, Trigger } = this.props;
-
-    // add this.state.open ? tag : null to trigger reset (because we don't have control to CodeMirror)
-  	return (
-  		<div>
-        <Trigger onClick={this.handleOpen} tooltip={this.props.tooltip}/>
-        {this.state.open ?
-  	  		<MyDialog
-            open={this.state.open}
-            handleClose={this.handleClose}
-            {...this.props}
-          /> :
-          null
-        }
+      </Dialog>
 	    </div>
   	)
   }

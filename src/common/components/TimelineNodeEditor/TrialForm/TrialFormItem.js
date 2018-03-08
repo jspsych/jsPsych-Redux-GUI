@@ -451,13 +451,10 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<CodeEditor 
 					Trigger={components.Triggers.CodeEditor}
-			    	setParamMode={() => { this.props.setParamMode(param); }}
-					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
-					showEditMode={true}
-					initCode={utils.toEmptyString(parameterValue.func.code)} 
+					value={utils.toEmptyString(parameterValue.func.code)} 
 					ifEval={!!parameterValue.func.ifEval}
 					language={parameterValue.func.language}
-                    submitCallback={(newCode, ifEval, language) => { 
+                    onCommit={(newCode, ifEval, language) => { 
                       this.props.setFunc(param, newCode, ifEval, language);
                     }}
                     onlyFunction={onlyFunction}
@@ -468,13 +465,11 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<TimelineVariableSelector 
 					Trigger={components.Triggers.TimelineVariableSelector}
-					useTV={parameterValue.mode === ParameterMode.USE_TV}
 					title={`${parameterInfo.pretty_name}: `}
-					selectedTV={parameterValue.timelineVariable}
-					submitCallback={(newTV) => {
+					value={parameterValue.timelineVariable}
+					onCommit={(newTV) => {
 						this.props.setTimelineVariable(param, newTV);
 					}}
-					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 				/>
 			)
 		} else if (!!parameterInfo.array && autoConvertToArrayComponent) {
@@ -487,10 +482,10 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<ArrayEditor
 					Trigger={({onClick}) => (components.Triggers.ArrayEditor({label: label, onClick: onClick}))}
-					targetArray={val}
+					value={val}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					onCommit={(obj) => { this.props.setObject(param, obj); }}
 				/>
 			)
 		} else {
@@ -728,10 +723,10 @@ export default class TrialFormItem extends React.Component {
 			node: (
 				<ObjectEditor
 					Trigger={components.Triggers.ObjectEditor}
-					targetObj={parameterValue.value}
+					value={parameterValue.value}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					onCommit={(obj) => { this.props.setObject(param, obj); }}
 				/>
 			),
 			forceCustomFloatingLabel: true,

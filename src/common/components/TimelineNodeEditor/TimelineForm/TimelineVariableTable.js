@@ -72,6 +72,7 @@ const cssStyle = {
 			maxWidth: constants.CellWidth,
 			minWidth: constants.CellWidth,
 			justifyContent: 'center',
+			alignItems: 'center',
 			display: 'flex',
 			height: constants.CellHeight,
 			minHeight: constants.CellHeight,
@@ -94,14 +95,14 @@ const cssStyle = {
 		Container: utils.prefixer({
 			width: '90%',
 			height: '90%',
-			alignSelf: 'center',
-			overflow: 'hidden',
 		}),
 		Label: utils.prefixer({
 			textOverflow: 'ellipsis',
 			overflow: 'hidden',
 			fontWeight: 'bold',
-			color: colors.primary
+			whiteSpace: 'nowrap',
+			color: colors.primary,
+			maxHeight: 48,
 		})
 	},
 	ContentCell: {
@@ -111,15 +112,15 @@ const cssStyle = {
 		Container: utils.prefixer({
 			width: '90%',
 			height: '90%',
-			alignSelf: 'center',
-			overflow: 'hidden'
 		}),
 		Label: utils.prefixer({
 			textOverflow: 'ellipsis',
 			overflow: 'hidden',
 			fontWeight: 'bold',
 			textAlign: 'center',
-			color: colors.primary
+			whiteSpace: 'nowrap',
+			color: colors.primary,
+			maxHeight: 48,
 		})
 	}
 }
@@ -456,6 +457,7 @@ class HeaderCell extends React.Component {
 					}}
 				>
 					<ListItem	
+						containerElement="div"
 						onClick={this.handleOpen}
 						primaryText={
 							<div 
@@ -518,6 +520,7 @@ class HeaderCell extends React.Component {
 
 const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null}) => (
 	<ListItem	
+		containerElement="div"
 		onClick={onClick}
 		primaryText={
 			<div 
@@ -544,6 +547,7 @@ class ContentCell extends React.Component {
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
+				// init
 				valueObject: utils.deepCopy(this.props.valueObject)
 			});
 		}
@@ -552,13 +556,6 @@ class ContentCell extends React.Component {
 			this.setState({
 				open: false,
 			});
-		}
-
-		this.onCancel = () => {
-			this.setState({
-				valueObject: utils.deepCopy(this.props.valueObject)
-			});
-			this.handleClose();
 		}
 
 		this.setValue = (newVal, callback=()=>{}) => {
@@ -594,7 +591,7 @@ class ContentCell extends React.Component {
 					labelStyle={{
 						color: colors.secondaryDeep
 					}}
-					onClick={this.onCancel}
+					onClick={this.handleClose}
 				/>,
 				<FlatButton
 					label="Save"
@@ -642,8 +639,8 @@ class ContentCell extends React.Component {
 						label = `"${value}"`;
 					return (
 						<CodeEditor
-							initCode={utils.toEmptyString(this.props.valueObject.value)}
-							submitCallback={(v) => {
+							value={utils.toEmptyString(this.props.valueObject.value)}
+							onCommit={(v) => {
 								this.setValue(v, this.onCommit);
 							}}
 							Trigger={

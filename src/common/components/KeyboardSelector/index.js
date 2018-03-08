@@ -308,8 +308,11 @@ export default class KeyboardSelector extends React.Component {
 	}
 
 	static defaultProps = {
+		// can select multiple keys
 		multiSelect: false,
+		// value, can be string (single select) or array (mulitple select)
 		value: '',
+		// Trigger to activate editor
 		Trigger: ({onClick}) => (
 			<IconButton
 				onClick={onClick}
@@ -317,7 +320,9 @@ export default class KeyboardSelector extends React.Component {
 			>
 				<KeyboardIcon {...style.DefaultTrigger} />
 			</IconButton>
-		)
+		),
+		// commit callback
+		onCommit: () => {},
 	}
 
 	render() {
@@ -362,7 +367,7 @@ export default class KeyboardSelector extends React.Component {
 	              	}
 					{...style.Dialog}
 				>	
-					<Keyboard {...this.props} ref={el => { this.Keyboard = el}}/>
+					<Keyboard {...this.props} ref={el => { this.Keyboard = el }}/>
 				</Dialog>
 			</div>
 		)

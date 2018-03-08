@@ -92,9 +92,9 @@ export default class jsPsychInitEditor extends React.Component {
         <div style={{padding: 15, color: 'black'}}>{key}</div>
         <div style={{position: 'absolute', right: 0}}>
           <CodeEditor 
-            initCode={this.props[key].code} 
+            value={this.props[key].code} 
             onlyFunction={true}
-            submitCallback={(newCode) => { 
+            onCommit={(newCode) => { 
               this.props.setJsPsychInit(null, newCode, key);
             }}
             title={key+": "}

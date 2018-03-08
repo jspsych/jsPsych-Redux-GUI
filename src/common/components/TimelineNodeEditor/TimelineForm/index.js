@@ -92,9 +92,9 @@ class TimelineForm extends React.Component {
 							<CodeEditor
 								Trigger={components.Triggers.CodeEditor}
             					onlyFunction={true}
-								initCode={this.props.loopFunction.code}
+								value={this.props.loopFunction.code}
 								title="Loop function"
-								submitCallback={this.props.setLoopFunction}
+								onCommit={this.props.setLoopFunction}
 							/>
 						}
 					/>
@@ -106,9 +106,9 @@ class TimelineForm extends React.Component {
 							<CodeEditor
 								Trigger={components.Triggers.CodeEditor}
             					onlyFunction={true}
-								initCode={this.props.conditionalFunction.code}
+								value={this.props.conditionalFunction.code}
 								title="Condition function"
-								submitCallback={this.props.setConditionFunction}
+								onCommit={this.props.setConditionFunction}
 							/>
 						}
 					/>
