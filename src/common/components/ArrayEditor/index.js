@@ -25,8 +25,7 @@ import { renderDialogTitle } from '../gadgets';
 import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
 import { stringify } from '../../backend/deploy';
-import { deepCopy } from '../../utils';
-import CodeEditor from '../CodeEditor';
+import CodeEditor, { CodeLanguage } from '../CodeEditor';
 import GeneralTheme from '../theme.js';
 
 const colors = {
@@ -194,14 +193,14 @@ export default class ArrayEditor extends React.Component {
 			arrayItems: [],
 		}
 
-		this.unzip = (targetArray) => {
+		this.unzip = (value) => {
 			this.setState({
-				arrayItems: targetArray || [],
+				arrayItems: value || [],
 			})
 		}
 
 		this.handleOpen = () => {
-			this.unzip(this.props.targetArray);
+			this.unzip(this.props.value);
 			this.setState({
 				open: true
 			});
@@ -266,7 +265,7 @@ export default class ArrayEditor extends React.Component {
 			let { arrayItems } = this.state;
 			let a = [];
 			for (let i = 0; i < arrayItems.length; i++) {
-				a.push(deepCopy(arrayItems[i]));
+				a.push(utils.deepCopy(arrayItems[i]));
 				a[i].value = (convert2Null) ? convertToNull(a[i].value) : a[i].value;
 			}
 			return a;
@@ -293,8 +292,8 @@ export default class ArrayEditor extends React.Component {
 			}
 		}
 
-		this.onSubmit = () => {
-			this.props.submitCallback(this.generateArray(true));
+		this.onCommit = () => {
+			this.props.onCommit(this.generateArray(true));
 			this.handleClose();
 		}
 
@@ -312,10 +311,12 @@ export default class ArrayEditor extends React.Component {
 					/>
 					<div style={{right: 0}} key={`array-code-container-${i}`}>
 						<CodeEditor
-							initCode={(typeof value.value === 'string') ? value.value : JSON.stringify(value.value)}
-							submitCallback={(v) => {
+							value={(typeof value.value === 'string') ? value.value : JSON.stringify(value.value)}
+							onCommit={(v) => {
 								this.setArrayItem(v, i);
 							}}
+							language={CodeLanguage.html[0]}
+							onlyString={true}
 							key={`array-code-${i}`}
 							tooltip="Edit value"
 							buttonIcon={<StringEditorIcon hoverColor={hoverColor} />}
@@ -337,10 +338,10 @@ export default class ArrayEditor extends React.Component {
 	}
 
 	static defaultProps = {
-		targetArray: [],
+		value: [],
 		title: "",
-		keyName: "",
-		submitCallback: (p) => {},
+		keyName: "Data",
+		onCommit: (p) => {},
 		Trigger: ({onClick}) => (
 			<IconButton
 				onClick={onClick}
@@ -357,7 +358,7 @@ export default class ArrayEditor extends React.Component {
 			handleClose,
 			renderRow,
 			addArrayItem,
-			onSubmit,
+			onCommit,
 			copyArray,
 			paste,
 		} = this;
@@ -367,8 +368,14 @@ export default class ArrayEditor extends React.Component {
 				label="Save"
 				keyboardFocused
 				{...style.actionButtons.Submit}
-				onClick={onSubmit}
-			/>
+				onClick={onCommit}
+			/>,
+			// <FlatButton 
+			// 	label="Cancel"
+			// 	keyboardFocused
+			// 	{...style.actionButtons.Submit}
+			// 	onClick={this.handleClose}
+			// />
 		]
 
 		return (

@@ -104,6 +104,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	updateFileList: () => { updateFileList(dispatch); },
 	deleteFiles: (filePaths) => { deleteFiles(dispatch, filePaths); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
+	notifySuccessBySnackbar: (msg) => { notify.notifySuccessBySnackbar(dispatch, msg); },
+	notifyWarningByDialog: (msg) => { notify.notifyWarningByDialog(dispatch, msg); },
+	notifyWarningBySnackbar: (msg) => { notify.notifyWarningBySnackbar(dispatch, msg); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(MediaManager);

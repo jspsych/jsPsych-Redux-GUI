@@ -1,18 +1,9 @@
 import { connect } from 'react-redux';
 import TimelineVariableTable from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
 import * as editorActions from '../../../actions/editorActions';
+import { notifyConfirmByDialog, notifyErrorByDialog, notifyWarningBySnackbar } from '../../Notification';
+import { GUI_INFO_IGNORE, TV_HEADER_INPUT_TYPE, TV_HEADER_ORDER } from '../../../reducers/Experiment/editor';
 
-const updateTimelineVariableRow = (dispatch, fromRow, toRow, updated) => {
-	dispatch(editorActions.updateTimelineVariableRowAction(fromRow, toRow, updated));
-}
-
-const setParamMode = (dispatch, row, col) => {
-	dispatch(editorActions.updateTimelineVariableCellAction(row, col, true));
-}
-
-const setCode = (dispatch, row, col, code) => {
-	dispatch(editorActions.updateTimelineVariableCellAction(row, col, false, code));
-}
 
 const updateTimelineVariableName = (dispatch, oldName, newName) => {
 	dispatch(editorActions.updateTimelineVariableNameAction(oldName, newName));
@@ -38,6 +29,14 @@ const setTable = (dispatch, table) => {
 	dispatch(editorActions.setTimelineVariableAction(table));
 }
 
+const updateTimelineVariableInputType = (dispatch, name, inputType, typeCoercion) => {
+	dispatch(editorActions.updateTimelineVariableInputTypeAction(name, inputType, typeCoercion))
+}
+
+const updateCell = (dispatch, colName, rowNum, valueObject) => {
+	dispatch(editorActions.updateCellAction(colName, rowNum, valueObject))
+}
+
 function createDataGridRows(timelineVariable) {
 	return timelineVariable.map((row) => {
 		let strRow = {};
@@ -50,25 +49,31 @@ function createDataGridRows(timelineVariable) {
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
-	
 	let timeline = experimentState[experimentState.previewId];
 	return {
 		id: timeline.id,
 		rows: createDataGridRows(timeline.parameters.timeline_variables),
-		timeline_variables: timeline.parameters.timeline_variables
+		// the table
+		table: timeline.parameters.timeline_variables || [],
+		timeline_variables: timeline.parameters.timeline_variables || [],
+		// input type of each header
+		inputType: timeline.parameters[GUI_INFO_IGNORE] && timeline.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE],
+		headers: timeline.parameters[GUI_INFO_IGNORE] && timeline.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER]
 	}
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	updateTimelineVariableRow: (fromRow, toRow, updated) => { updateTimelineVariableRow(dispatch, fromRow, toRow, updated); },
-	setParamMode: (row, col) => { setParamMode(dispatch, row, col); },
-	setCode: (row, col, code) => { setCode(dispatch, row, col, code); },
+	updateTimelineVariableInputType: (name, inputType, typeCoercion) => { updateTimelineVariableInputType(dispatch, name, inputType, typeCoercion); },
+	updateCell: (colName, rowNum, valueObject) => { updateCell(dispatch, colName, rowNum, valueObject); },
 	updateTimelineVariableName: (oldName, newName) => { updateTimelineVariableName(dispatch, oldName, newName); },
 	addRow: (index=-1) => { addRow(dispatch, index); },
 	addColumn: () => { addColumn(dispatch); },
 	deleteRow: (index) => { deleteRow(dispatch, index); },
 	deleteColumn: (index) => { deleteColumn(dispatch, index); },
-	setTable: (table) => { setTable(dispatch, table); }
+	setTable: (table) => { setTable(dispatch, table); },
+	notifyConfirm: (message, proceedCallback) => { notifyConfirmByDialog(dispatch, message, proceedCallback); },
+	notifyError: (message) => { notifyErrorByDialog(dispatch, message); },
+	notifyWarningBySnackbar: (message) => { notifyWarningBySnackbar(dispatch, message); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineVariableTable);

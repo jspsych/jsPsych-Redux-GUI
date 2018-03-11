@@ -18,7 +18,6 @@ import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
 import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
 
-import { convertNullToEmptyString, deepCopy, isValueEmpty } from '../../../utils';
 import { isJspsychValueObjectEmpty } from '../../../reducers/Experiment/editor';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
@@ -363,7 +362,7 @@ autoConvertToArrayComponent: boolean
 */
 const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayComponent=true) => {
 	let isRequired = isParameterRequired(parameterInfo);
-	let val = convertNullToEmptyString(parameterValue.value);
+	let val = utils.toEmptyString(parameterValue.value);
 	let disabled = true;
 	let error = isRequired && isJspsychValueObjectEmpty(parameterValue);  
 
@@ -440,6 +439,7 @@ export default class TrialFormItem extends React.Component {
 		node = null,
 		autoConvertToArrayComponent = true,
 		forceCustomFloatingLabel = false,
+		onlyFunction = false,
 	}) => {
 		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
 			useTV = parameterValue.mode === ParameterMode.USE_TV,
@@ -451,13 +451,13 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<CodeEditor 
 					Trigger={components.Triggers.CodeEditor}
-			    	setParamMode={() => { this.props.setParamMode(param); }}
-					useFunc={parameterValue.mode === ParameterMode.USE_FUNC}
-					showEditMode={true}
-					initCode={convertNullToEmptyString(parameterValue.func.code)} 
-                    submitCallback={(newCode) => { 
-                      this.props.setFunc(param, newCode);
+					value={utils.toEmptyString(parameterValue.func.code)} 
+					ifEval={!!parameterValue.func.ifEval}
+					language={parameterValue.func.language}
+                    onCommit={(newCode, ifEval, language) => { 
+                      this.props.setFunc(param, newCode, ifEval, language);
                     }}
+                    onlyFunction={onlyFunction}
                     title={`${parameterInfo.pretty_name}: `}
         		/>
 			)
@@ -465,17 +465,15 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<TimelineVariableSelector 
 					Trigger={components.Triggers.TimelineVariableSelector}
-					useTV={parameterValue.mode === ParameterMode.USE_TV}
 					title={`${parameterInfo.pretty_name}: `}
-					selectedTV={parameterValue.timelineVariable}
-					submitCallback={(newTV) => {
+					value={parameterValue.timelineVariable}
+					onCommit={(newTV) => {
 						this.props.setTimelineVariable(param, newTV);
 					}}
-					setParamMode={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
 				/>
 			)
 		} else if (!!parameterInfo.array && autoConvertToArrayComponent) {
-			let val = parameterValue.value, label;
+			let val = utils.toEmptyArray(parameterValue.value), label;
 			if (Array.isArray(val)) {
 				label = val.length > 1 ? `${val.length} Array Items` : `${val.length} Array Item`;
 			} else {
@@ -484,10 +482,10 @@ export default class TrialFormItem extends React.Component {
 			node = (
 				<ArrayEditor
 					Trigger={({onClick}) => (components.Triggers.ArrayEditor({label: label, onClick: onClick}))}
-					targetArray={parameterValue.value}
+					value={val}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					onCommit={(obj) => { this.props.setObject(param, obj); }}
 				/>
 			)
 		} else {
@@ -601,14 +599,15 @@ export default class TrialFormItem extends React.Component {
 			parameterValue: parameterValue,
 			node: <components.Undefined />,
 			forceCustomFloatingLabel: true,
-			autoConvertToArrayComponent: false
+			autoConvertToArrayComponent: false,
+			onlyFunction: true,
 		}	
 		return this.renderField(args);
 	}
 
 	renderKeyboardInput = (param) => {
 
-		let parameterValue = deepCopy(locateNestedParameterValue(this.props.parameters, param)),
+		let parameterValue = utils.deepCopy(locateNestedParameterValue(this.props.parameters, param)),
 		    parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let node = (
@@ -697,13 +696,10 @@ export default class TrialFormItem extends React.Component {
 					parameterName={param} 
 					selected={selected}
 					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-					insertCallback={(selected, handleClose) => {
+					onCommit={(value) => {
 						this.props.insertFile(
 							param,
-							this.props.s3files,
-							multiSelect,
-							selected,
-							handleClose,
+							value
 						);
 					}}
 				/>
@@ -724,10 +720,10 @@ export default class TrialFormItem extends React.Component {
 			node: (
 				<ObjectEditor
 					Trigger={components.Triggers.ObjectEditor}
-					targetObj={parameterValue.value}
+					value={parameterValue.value}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
-					submitCallback={(obj) => { this.props.setObject(param, obj); }}
+					onCommit={(obj) => { this.props.setObject(param, obj); }}
 				/>
 			),
 			forceCustomFloatingLabel: true,
@@ -761,9 +757,9 @@ export default class TrialFormItem extends React.Component {
 		let children = (
 			<div style={{...style.ComplexField.children.root}}>
 		    	{
-		    		parameterValue.value && parameterValue.value.map((p, i) => {
+		    		Array.isArray(parameterValue.value) && parameterValue.value.map((p, i) => {
 		    			let items = Object.keys(parameterInfo.nested) && Object.keys(parameterInfo.nested).map((key, j) => {
-		    				let newParam = deepCopy(param);
+		    				let newParam = utils.deepCopy(param);
 			    			if (typeof newParam !== 'object') {
 			    				newParam = new PathNode(newParam);
 			    			}

@@ -81,17 +81,13 @@ export default class TimelineVariableSelector extends React.Component {
 
 	static defaultProps = {
 		title: "Timeline Variables",
-		submitCallback: function(newCode) {
-			return;
-		},
-		setParamMode: function() {
-			return;
-		},
+		onCommit: () => {},
 		Trigger: ({onClick}) => (
 			<IconButton onClick={onClick} tooltip="Insert timeline variable">
 				<AddTimelineVarIcon {...style.TriggerIcon}/>
 			</IconButton>
-		)
+		),
+		value: ''
 	}
 
 	render() {
@@ -105,11 +101,9 @@ export default class TimelineVariableSelector extends React.Component {
 						<ListItem 
 							primaryText={!v ? "null" : v} 
 							key={"TimelineVariableSelector-"+v}
-							onClick={() => {
-								this.props.submitCallback(v);
-							}}
+							onClick={() => { this.props.onCommit(v); }}
 							rightIcon={
-								v === this.props.selectedTV ? <CheckYesIcon color={colors.checkColor}/> : <CheckNoIcon color={colors.checkColor}/>
+								v === this.props.value ? <CheckYesIcon color={colors.checkColor}/> : <CheckNoIcon color={colors.checkColor}/>
 							}
 						/>
 					))

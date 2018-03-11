@@ -16,12 +16,15 @@ export function onPluginTypeChange(newPluginVal) {
 	};
 }
 
-export function setPluginParamAction(key, value, mode="") {
+export function setPluginParamAction(key, value, mode="", ifEval, language) {
 	return {
 		type: actionTypes.SET_PLUGIN_PARAMTER,
 		key: key,
 		value: value,
 		mode: mode,
+		// function object
+		ifEval: ifEval,
+		language: language
 	};
 }
 
@@ -37,22 +40,21 @@ export function setPluginParamModeAction(key, mode, toggle=true) {
 
 
 /* ********************** Timeline form ********************** */
-export function updateTimelineVariableRowAction(fromRow, toRow, updated) {
+export function updateCellAction(colName, rowNum, valueObject) {
 	return {
-		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_ROW,
-		fromRow: fromRow,
-		toRow: toRow,
-		updated: updated
+		type: actionTypes.UPDATE_TIMELINE_VARIABLE_CELL,
+		colName: colName,
+		rowNum: rowNum,
+		valueObject: valueObject
 	}
 }
 
-export function updateTimelineVariableCellAction(row, col, toggleUseFunc=false, code="") {
+export function updateTimelineVariableInputTypeAction(variableName, inputType, typeCoercion) {
 	return {
-		type: actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_CELL,
-		row: row,
-		col: col,
-		toggleUseFunc: toggleUseFunc,
-		code: code
+		type: actionTypes.UPDATE_TIMELINE_VARIABLE_INPUT_TYPE,
+		variableName: variableName,
+		inputType: inputType, 
+		typeCoercion: typeCoercion
 	}
 }
 

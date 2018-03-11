@@ -1,8 +1,6 @@
 import { connect } from 'react-redux';
 import TimelineVariableSelector from '../../../components/TimelineNodeEditor/TrialForm/TimelineVariableSelector';
 // import * as editorActions from '../../../actions/editorActions';
-// import { convertEmptyStringToNull } from '../../../utils';
-
 
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;

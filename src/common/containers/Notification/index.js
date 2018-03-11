@@ -38,6 +38,14 @@ export const notifyWarningByDialog = (dispatch, message) => {
 				message));
 }
 
+export const notifyConfirmByDialog = (dispatch, message, proceedCallback=()=>{}) => {
+	dispatch(notificationActions.notifyAction(
+				Notify_Method.dialog,
+				Notify_Type.confirm,
+				message,
+				proceedCallback));
+}
+
 const handleClose = (dispatch) => {
 	dispatch(notificationActions.notificationCloseAction());
 }
@@ -49,7 +57,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	handleClose: () => { handleClose(dispatch); }
+	handleClose: () => { handleClose(dispatch); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notification);
