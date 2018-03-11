@@ -677,7 +677,8 @@ class ContentCell extends React.Component {
 			<div
 				style={{
 					border: `${borderWeight}px solid ${borderColor}`,
-					...cssStyle.Cell.root
+					...cssStyle.Cell.root,
+					cursor: 'crosshair'
 				}}				
 				onClick={() => { 
 						if (isSelected) {
@@ -715,14 +716,18 @@ class GhostCell extends React.Component {
 	}
 
 	render() {
-		let { isHeaderRow } = this.props;
+		let { isHeaderRow, isDragging } = this.props;
 
 		return (
 			<div
 				style={{
+					...cssStyle.GhostCell.root,
 					border: `1px solid ${colors.primaryDeep}`,
-					...cssStyle.GhostCell.root
+					...utils.prefixer({
+						cursor: isHeaderRow ? 'auto' : 'pointer'
+					})
 				}}
+				title={this.props.title}
 			>	
 				{	
 					isHeaderRow ?
@@ -882,7 +887,7 @@ class ContentRow extends React.Component {
 					width: headers.length * constants.CellWidth + constants.GhostCellWidth
 				}}
 			>
-				{connectDragSource(<div><GhostCell rowNum={rowNum}/></div>)}
+				{connectDragSource(<div><GhostCell rowNum={rowNum} isDragging={isDragging}/></div>)}
 				{
 					headers && headers.map((cell, i) => {
 						let columnName = headers[i],
