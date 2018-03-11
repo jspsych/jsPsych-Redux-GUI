@@ -1,26 +1,20 @@
 import React from 'react';
+import { findDOMNode } from 'react-dom'
 
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import {Menu, MenuItem} from 'material-ui/Menu';
+import { MenuItem } from 'material-ui/Menu';
 import Subheader from 'material-ui/Subheader';
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
-import Popover from 'material-ui/Popover/Popover';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import SvgIcon from 'material-ui/SvgIcon';
 
-import Uncheck from 'material-ui/svg-icons/toggle/star-border';
-import Check from 'material-ui/svg-icons/toggle/star';
 import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
 import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
-import CodeButtonIcon from 'material-ui/svg-icons/action/code';
-import Add from 'material-ui/svg-icons/content/add-circle';
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import Launch from  'material-ui/svg-icons/action/launch';
-import TableIcon from 'material-ui/svg-icons/action/view-list';
 import UndoIcon from  'material-ui/svg-icons/content/undo';
 import NumberIcon from 'material-ui/svg-icons/image/looks-one';
 import ArrayIcon from 'material-ui/svg-icons/action/view-array';
@@ -29,17 +23,6 @@ import LongStringIcon from 'material-ui/svg-icons/editor/insert-comment';
 import ObjectIcon from 'material-ui/svg-icons/editor/mode-edit';
 import FunctionIcon from 'material-ui/svg-icons/action/code';
 import MediaIcon from 'material-ui/svg-icons/image/photo-library';
-import {
-	cyan500 as hoverColor,
-	yellow500 as checkColor,
-	pink500 as deleteColor,
-	indigo500 as addColor,
-	green500 as checkRadioColor,
-	cyan500 as tableAddColor,
-	pink500 as tableDelColor,
-	indigo500 as tableAddHoverColor,
-	orange500 as tableDelHoverColor
-} from 'material-ui/styles/colors';
 
 import { ParameterMode, TimelineVariableInputType, isString, isFunction } from '../../../reducers/Experiment/editor';
 import { renderDialogTitle } from '../../gadgets';
@@ -51,12 +34,18 @@ import { MediaManagerMode } from '../../MediaManager';
 import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem.js';
 
 import GeneralTheme from '../../theme.js';
-import deepEqual from 'deep-equal'
+import deepEqual from 'deep-equal';
+import flow from 'lodash/flow';
+import { DropTarget, DragSource } from 'react-dnd';
 
+/*************** Constants and Helper ***************/
 const constants = {
 	GhostCellWidth: 50,
 	CellHeight: 60,
-	CellWidth: 175
+	CellWidth: 175,
+	DND: {
+		contentRow: 'Timeline-Variable-Table-Content-Row-Item'
+	}
 }
 
 const colors = {
@@ -126,8 +115,9 @@ const cssStyle = {
 		})
 	},
 	ContentCell: {
-		root: utils.prefixer({
+		row: utils.prefixer({
 			display: 'flex',
+			flexBasis: 'auto'
 		}),
 		Container: utils.prefixer({
 			width: '90%',
@@ -145,6 +135,7 @@ const cssStyle = {
 	}
 }
 
+// material-ui style
 const style = {
 	Icon: {
 		color: colors.primaryDeep,
@@ -188,38 +179,37 @@ const style = {
 	}
 };
 
-const AddRowIcon = (props) => (
-	<SvgIcon {...props}>
-		<path d="M14.651 5.521V3.23H1.42v5.238h5.072c-.108.42-.172.858-.172 1.312 0 .037.005.073.005.11H0V1.809h16.072v5.254a5.284 5.284 0 0 0-1.421-1.542z"/>
-		<path d="M11.7 14.263a4.378 4.378 0 0 0 4.372-4.373A4.377 4.377 0 0 0 11.7 5.517 4.377 4.377 0 0 0 7.327 9.89a4.379 4.379 0 0 0 4.373 4.373zm0-1.188a3.19 3.19 0 0 1-3.185-3.186A3.19 3.19 0 0 1 11.7 6.703a3.19 3.19 0 0 1 3.186 3.186 3.189 3.189 0 0 1-3.186 3.186z"/>
-		<path d="M9.806 10.44V9.299h1.332V7.995h1.142v1.304h1.315v1.141H12.28v1.344h-1.142V10.44z"/>
-	</SvgIcon>
-)
-
-const DeleteRowIcon = (props) => (
-	<SvgIcon {...props}>
-		<path d="M0 1.732v7.732h6.053c0-.035-.004-.07-.004-.104 0-.434.061-.854.165-1.255H1.36V3.092h12.662v2.192c.546.396 1.01.897 1.359 1.477V1.732H0z"/>
-    	<path d="M11.196 5.28c-2.307 0-4.183 1.877-4.183 4.184 0 2.308 1.876 4.185 4.183 4.185 2.309 0 4.185-1.877 4.185-4.185 0-2.307-1.876-4.184-4.185-4.184zm0 7.233c-1.679 0-3.047-1.367-3.047-3.049 0-1.68 1.368-3.049 3.047-3.049 1.684 0 3.05 1.369 3.05 3.049 0 1.682-1.366 3.049-3.05 3.049z"/>
-    	<path d="M9.312 8.759h3.844v1.104H9.312z"/>
-	</SvgIcon>
-)
-
-const AddColumnIcon = (props) => (
-	<SvgIcon {...props}>
-		<path d="M6.237 16.546H3.649V1.604h5.916v5.728a5.92 5.92 0 0 1 1.479-.194c.042 0 .083.006.125.006V0H2.044v18.15h5.934a5.98 5.98 0 0 1-1.741-1.604z"/>
-		<path d="M11.169 8.275c-2.723 0-4.938 2.215-4.938 4.938s2.215 4.938 4.938 4.938 4.938-2.215 4.938-4.938-2.215-4.938-4.938-4.938zm0 8.535a3.601 3.601 0 0 1-3.598-3.598c0-1.983 1.614-3.597 3.598-3.597s3.597 1.613 3.597 3.597a3.6 3.6 0 0 1-3.597 3.598z"/>
-		<path d="M11.792 11.073h-1.29v1.505H9.03v1.29h1.472v1.484h1.29v-1.484h1.517v-1.29h-1.517z"/>
-	</SvgIcon>
-)
-
-const DeleteColumnIcon = (props) => (
-	<SvgIcon {...props}>
-  		<path d="M6.237 16.546H3.649V1.604h5.916v5.728c.474-.122.968-.194 1.479-.194.042 0 .083.006.125.006V0H2.044v18.15h5.934c-.683-.414-1.274-.96-1.741-1.604z"/>
-  		<path d="M11.169 8.275c-2.723 0-4.938 2.215-4.938 4.938s2.215 4.938 4.938 4.938 4.938-2.215 4.938-4.938-2.215-4.938-4.938-4.938zm0 8.535c-1.983 0-3.598-1.612-3.598-3.598 0-1.983 1.614-3.597 3.598-3.597s3.597 1.613 3.597 3.597c0 1.986-1.613 3.598-3.597 3.598z"/>
-  		<path d="M9.312 12.759h3.844v1.104H9.312z"/>
-  	</SvgIcon>
-)
-
+// Custom SVG Icon
+const mySvgIcons = {
+	AddRowIcon: (props) => (
+		<SvgIcon {...props}>
+			<path d="M14.651 5.521V3.23H1.42v5.238h5.072c-.108.42-.172.858-.172 1.312 0 .037.005.073.005.11H0V1.809h16.072v5.254a5.284 5.284 0 0 0-1.421-1.542z"/>
+			<path d="M11.7 14.263a4.378 4.378 0 0 0 4.372-4.373A4.377 4.377 0 0 0 11.7 5.517 4.377 4.377 0 0 0 7.327 9.89a4.379 4.379 0 0 0 4.373 4.373zm0-1.188a3.19 3.19 0 0 1-3.185-3.186A3.19 3.19 0 0 1 11.7 6.703a3.19 3.19 0 0 1 3.186 3.186 3.189 3.189 0 0 1-3.186 3.186z"/>
+			<path d="M9.806 10.44V9.299h1.332V7.995h1.142v1.304h1.315v1.141H12.28v1.344h-1.142V10.44z"/>
+		</SvgIcon>
+	),
+	DeleteRowIcon: (props) => (
+		<SvgIcon {...props}>
+			<path d="M0 1.732v7.732h6.053c0-.035-.004-.07-.004-.104 0-.434.061-.854.165-1.255H1.36V3.092h12.662v2.192c.546.396 1.01.897 1.359 1.477V1.732H0z"/>
+	    	<path d="M11.196 5.28c-2.307 0-4.183 1.877-4.183 4.184 0 2.308 1.876 4.185 4.183 4.185 2.309 0 4.185-1.877 4.185-4.185 0-2.307-1.876-4.184-4.185-4.184zm0 7.233c-1.679 0-3.047-1.367-3.047-3.049 0-1.68 1.368-3.049 3.047-3.049 1.684 0 3.05 1.369 3.05 3.049 0 1.682-1.366 3.049-3.05 3.049z"/>
+	    	<path d="M9.312 8.759h3.844v1.104H9.312z"/>
+		</SvgIcon>
+	),
+	AddColumnIcon: (props) => (
+		<SvgIcon {...props}>
+			<path d="M6.237 16.546H3.649V1.604h5.916v5.728a5.92 5.92 0 0 1 1.479-.194c.042 0 .083.006.125.006V0H2.044v18.15h5.934a5.98 5.98 0 0 1-1.741-1.604z"/>
+			<path d="M11.169 8.275c-2.723 0-4.938 2.215-4.938 4.938s2.215 4.938 4.938 4.938 4.938-2.215 4.938-4.938-2.215-4.938-4.938-4.938zm0 8.535a3.601 3.601 0 0 1-3.598-3.598c0-1.983 1.614-3.597 3.598-3.597s3.597 1.613 3.597 3.597a3.6 3.6 0 0 1-3.597 3.598z"/>
+			<path d="M11.792 11.073h-1.29v1.505H9.03v1.29h1.472v1.484h1.29v-1.484h1.517v-1.29h-1.517z"/>
+		</SvgIcon>
+	),
+	DeleteColumnIcon: (props) => (
+		<SvgIcon {...props}>
+	  		<path d="M6.237 16.546H3.649V1.604h5.916v5.728c.474-.122.968-.194 1.479-.194.042 0 .083.006.125.006V0H2.044v18.15h5.934c-.683-.414-1.274-.96-1.741-1.604z"/>
+	  		<path d="M11.169 8.275c-2.723 0-4.938 2.215-4.938 4.938s2.215 4.938 4.938 4.938 4.938-2.215 4.938-4.938-2.215-4.938-4.938-4.938zm0 8.535c-1.983 0-3.598-1.612-3.598-3.598 0-1.983 1.614-3.597 3.598-3.597s3.597 1.613 3.597 3.597c0 1.986-1.613 3.598-3.597 3.598z"/>
+	  		<path d="M9.312 12.759h3.844v1.104H9.312z"/>
+	  	</SvgIcon>
+	)
+}
 
 const matchInputTypeIcon = (type) => {
 	switch (type) {
@@ -242,6 +232,27 @@ const matchInputTypeIcon = (type) => {
 	}
 }
 
+const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null, labelStyle={}}) => (
+	<ListItem	
+		containerElement="div"
+		onClick={onClick}
+		primaryText={
+			<div 
+				style={{
+					...cssStyle.ContentCell.Label,
+					...labelStyle
+				}}
+				title={`${value}`}
+			>
+			 {label}
+			</div>
+		}
+		rightIcon={rightIcon}
+	/>
+)
+/*************** Constants and Helper functions and components ***************/
+
+/*************** Header Cell ***************/
 class HeaderCell extends React.Component {
 	constructor(props) {
 		super(props);
@@ -423,26 +434,9 @@ class HeaderCell extends React.Component {
 		)
 	}
 }
+/*************** Header Cell ***************/
 
-const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null, labelStyle={}}) => (
-	<ListItem	
-		containerElement="div"
-		onClick={onClick}
-		primaryText={
-			<div 
-				style={{
-					...cssStyle.ContentCell.Label,
-					...labelStyle
-				}}
-				title={`${value}`}
-			>
-			 {label}
-			</div>
-		}
-		rightIcon={rightIcon}
-	/>
-)
-
+/*************** Content Cell ***************/
 class ContentCell extends React.Component {
 	constructor(props) {
 		super(props);
@@ -706,7 +700,9 @@ class ContentCell extends React.Component {
 		)
 	}
 }
+/*************** Content Cell ***************/
 
+/*************** Placeholder Cell and Drag and Drop Handler ***************/
 class GhostCell extends React.Component {
 	constructor(props) {
 		super(props);
@@ -737,7 +733,9 @@ class GhostCell extends React.Component {
 		)
 	}
 }
+/*************** Placeholder Cell and Drag and Drop Handler ***************/
 
+/*************** Header Row ***************/
 class HeaderRow extends React.Component {
 	constructor(props) {
 		super(props);
@@ -777,14 +775,79 @@ class HeaderRow extends React.Component {
 		)
 	}
 }
+/*************** Header Row ***************/
+
+/*************** Content Row ***************/
+const contentRowItemDnD = {
+	ITEM_TYPE: constants.DND.contentRow,
+
+	itemSource: {
+		beginDrag(props) {
+			return {
+				rowId: props.rowId,
+				rowNum: props.rowNum
+			};
+		},
+
+		isDragging(props, monitor) {
+			return props.rowId === monitor.getItem().rowId;
+		}
+	},
+
+	itemTarget: {
+		// better this way since we always want hover (for preview effects)
+		canDrop() {
+			return false;
+		},
+
+	  	hover(props, monitor, component) {
+		  	const {rowId: draggedId, rowNum: dragIndex } = monitor.getItem()
+		    const {rowId: overId, rowNum: hoverIndex } = props;
+
+		    if (dragIndex === hoverIndex) return;
+		    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+
+			// Get vertical middle
+			const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+			// Determine mouse position
+			const clientOffset = monitor.getClientOffset();
+
+			// Get pixels to the top
+			const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+			// Only perform the move when the mouse has crossed half of the items height
+			// When dragging downwards, only move when the cursor is below 50%
+			// When dragging upwards, only move when the cursor is above 50%
+
+			// Dragging downwards
+			if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+
+			// Dragging upwards
+			if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+
+			props.moveTo(dragIndex, hoverIndex);
+			monitor.getItem().rowNum = hoverIndex;
+		}
+	},
+
+	sourceCollector: (connect, monitor) => ({
+		connectDragSource: connect.dragSource(),
+		connectDragPreview: connect.dragPreview(),
+		isDragging: monitor.isDragging(),
+	}),
+
+	targetCollector: (connect, monitor) => ({
+		connectDropTarget: connect.dropTarget(),
+		isOverCurrent: monitor.isOver({
+			shallow: true
+		}),
+	})
+}
 
 class ContentRow extends React.Component {
 	constructor(props) {
 		super(props);
-	}
-
-	shouldComponentUpdate() {
-		return true;
 	}
 
 	static defaultProps = {
@@ -798,17 +861,28 @@ class ContentRow extends React.Component {
 	}
 
 	render() {
-		let { row, headers, rowNum, inputType } = this.props;
+		let {
+			row,
+			headers,
+			rowNum,
+			inputType,
+			connectDropTarget,
+			connectDragPreview,
+			connectDragSource,
+			isDragging
+		} = this.props;
 
 		let isSelected;
 
-		return (
+		return connectDragPreview(connectDropTarget(
 			<div
 				style={{
-					...cssStyle.ContentCell.root
+					...cssStyle.ContentCell.row,
+					border: isDragging ? `2px dotted ${colors.secondary}` : 'none',
+					width: headers.length * constants.CellWidth + constants.GhostCellWidth
 				}}
 			>
-				<GhostCell rowNum={rowNum}/>
+				{connectDragSource(<div><GhostCell rowNum={rowNum}/></div>)}
 				{
 					headers && headers.map((cell, i) => {
 						let columnName = headers[i],
@@ -827,10 +901,24 @@ class ContentRow extends React.Component {
 					})
 				}
 			</div>
-		)
+		))
 	}
 }
+ContentRow = flow(
+	DragSource(
+		contentRowItemDnD.ITEM_TYPE,
+		contentRowItemDnD.itemSource,
+		contentRowItemDnD.sourceCollector
+	),
+	DropTarget(
+		contentRowItemDnD.ITEM_TYPE,
+		contentRowItemDnD.itemTarget,
+		contentRowItemDnD.targetCollector
+	)
+)(ContentRow);
+/*************** Content Row ***************/
 
+/*************** Main part: Table Sheet ***************/
 class MySheet extends React.Component {
 	constructor(props) {
 		super(props);
@@ -844,7 +932,7 @@ class MySheet extends React.Component {
 	}
 
 	render() {
-		let { table, headers } = this.props;
+		let { table, headers, rowIds } = this.props;
 
 		return (
 			<div 
@@ -857,6 +945,7 @@ class MySheet extends React.Component {
 					table && table.map((row, i) => (
 						<ContentRow 
 							key={`timeline-variable-row-${i}`}
+							rowId={rowIds[i]}
 							{...this.props}
 							headers={headers} 
 							row={table[i]}
@@ -868,7 +957,12 @@ class MySheet extends React.Component {
 		)
 	}
 }
+MySheet = utils.withDnDContext(MySheet);
+/*************** Main part: Table Sheet ***************/
 
+
+
+/*************** Table Dialog and Trigger ***************/
 class TimelineVariableTableOpener extends React.Component {
 	constructor(props) {
 		super(props);
@@ -879,6 +973,7 @@ class TimelineVariableTableOpener extends React.Component {
 				return;
 			} else {
 				this.props.deleteRow(this.props.selectedRow);
+				this.props.recordHistory();
 			}
 		}
 
@@ -888,7 +983,18 @@ class TimelineVariableTableOpener extends React.Component {
 				return;
 			} else {
 				this.props.deleteColumn(this.props.selectedCol);
+				this.props.recordHistory();
 			}
+		}
+
+		this.onRowAdd = () => {
+			this.props.addRow();
+			this.props.recordHistory();
+		}
+
+		this.onColumnAdd = () => {
+			this.props.addColumn();
+			this.props.recordHistory();
 		}
 
 		this.renderToolbar = () => (
@@ -896,27 +1002,27 @@ class TimelineVariableTableOpener extends React.Component {
                   <ToolbarGroup firstChild={true}>
                     <IconButton
                     	tooltip="Insert Row"
-                    	onClick={this.props.addRow}
+                    	onClick={this.onRowAdd}
 	                   	iconStyle={{...style.iconSize}}
 	                >
-	                    <AddRowIcon {...style.addIconStyle}/>
+	                    <mySvgIcons.AddRowIcon {...style.addIconStyle}/>
                     </IconButton>
                     <IconButton
                     	tooltip="Delete Row"
                     	onClick={this.onRowDelete}
 	                   	iconStyle={{...style.iconSize}}
 	                >
-	                    <DeleteRowIcon {...style.deleteIconStyle}/>
+	                    <mySvgIcons.DeleteRowIcon {...style.deleteIconStyle}/>
                     </IconButton>		
      
                     <ToolbarSeparator />
 
                 	<IconButton
                     	tooltip="Insert Column"
-                    	onClick={this.props.addColumn}
+                    	onClick={this.onColumnAdd}
                     	iconStyle={{...style.iconSize}}
                     >
-                    	<AddColumnIcon {...style.addIconStyle}/>
+                    	<mySvgIcons.AddColumnIcon {...style.addIconStyle}/>
                     </IconButton>
 
                     <IconButton
@@ -924,7 +1030,7 @@ class TimelineVariableTableOpener extends React.Component {
                     	onClick={this.onColDelete}
                     	iconStyle={{...style.iconSize}}
                     >
-                    	<DeleteColumnIcon {...style.deleteIconStyle}/>
+                    	<mySvgIcons.DeleteColumnIcon {...style.deleteIconStyle}/>
                     </IconButton>
 
                     <ToolbarSeparator />
@@ -981,7 +1087,9 @@ class TimelineVariableTableOpener extends React.Component {
 		)
 	}
 }
+/*************** Table Dialog and Trigger ***************/
 
+/*************** Table Wrapper ***************/
 export default class TimelineVariableTable extends React.Component {
 	constructor(props) {
 		super(props);
@@ -1009,12 +1117,11 @@ export default class TimelineVariableTable extends React.Component {
 
 		this.recordHistory = () => {
 			let history = this.state.history.slice();
-			history.push(utils.deepCopy(this.props.timeline_variables));
+			history.push(utils.deepCopy(this.props.parameters));
 			this.setState({
 				history: history
 			}) 
 		}
-
 
 		this.handleUndo = () => {
 			if (this.state.history.length > 0) {
@@ -1034,6 +1141,11 @@ export default class TimelineVariableTable extends React.Component {
 				selectedRow: null,
 				selectedCol: null,
 			})
+		}
+
+		this.moveTo = (sourceIndex, targetIndex) => {
+			this.props.moveTo(sourceIndex, targetIndex);
+			this.onCellDeselect();
 		}
 	}
 	
@@ -1056,6 +1168,7 @@ export default class TimelineVariableTable extends React.Component {
 						selectedRow={this.state.selectedRow}
 						selectedCol={this.state.selectedCol}
 		  				{...this.props}
+		  				moveTo={this.moveTo}
 		  			/>
 		  		}
 		  	/>
@@ -1063,3 +1176,4 @@ export default class TimelineVariableTable extends React.Component {
 		 )
 	}
 }
+/*************** Table Wrapper ***************/

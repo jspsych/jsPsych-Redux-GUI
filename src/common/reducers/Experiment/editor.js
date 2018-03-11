@@ -78,9 +78,13 @@ timeline_variables should have the following data structure:
 	}, // row 2
 ]
 */
-export const GUI_INFO_IGNORE = '$GUI_INFO_IGNORE';
-export const TV_HEADER_INPUT_TYPE = '$inputType';
-export const TV_HEADER_ORDER = '$headers';
+
+export const GuiIgonoredInfoEnum = {
+	root: '$GUI_INFO_IGNORE', // GUI_INFO_IGNORE
+	TVHeaderInputType: '$inputType',
+	TVHeaderOrder: '$headers',
+	TVRowIds: "$rowId",
+}
 
 export const DEFAULT_TIMELINE_PARAM = (function() { 
 	let obj = {
@@ -98,13 +102,16 @@ export const DEFAULT_TIMELINE_PARAM = (function() {
 	}
 
 	// info to be ignored when generating code
-	obj[GUI_INFO_IGNORE] = {};
-	obj[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE] = {
+	obj[GuiIgonoredInfoEnum.root] = {};
+	obj[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType] = {
 		"V0": TimelineVariableInputType.TEXT,
 	};
-	obj[GUI_INFO_IGNORE][TV_HEADER_ORDER] = [
+	obj[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder] = [
 		"V0",
-	]
+	];
+	obj[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVRowIds] = [
+		utils.getUUID()
+	];
 	return obj;
 })();
 
@@ -466,15 +473,15 @@ export function updateTimelineVariableName(state, action) {
 	// change column name
 	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
 		let timeline_variables = node.parameters.timeline_variables;
-		let inputType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE];
-		let headers = node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER];
+		let inputType = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType];
+		let headers = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder];
 
 		// update GUI_IGNORE_INFO, header order
 		let new_headers = [];
 		for (let h of headers) {
 			new_headers.push(h === oldName ? newName : h);
 		}
-		node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER] = new_headers;
+		node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder] = new_headers;
 
 		// update GUI_IGNORE_INFO, input type
 		inputType[newName] = inputType[oldName];
@@ -515,8 +522,8 @@ export function updateTimelineVariableInputType(state, action) {
 	let new_state = Object.assign({}, state);
 	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
-	let oldType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName];
-	node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName] = inputType;
+	let oldType = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType][variableName];
+	node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType][variableName] = inputType;
 
 	if (typeCoercion) {
 		switch(inputType) {
@@ -578,7 +585,7 @@ export function addTimelineVariableRow(state, action) {
 		let row = {};
 		
 		for (let v of variables) {
-			let initVal = null, inputType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][v];
+			let initVal = null, inputType = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType][v];
 			switch (inputType) {
 				case TimelineVariableInputType.NUMBER:
 					initVal = 0;
@@ -600,11 +607,33 @@ export function addTimelineVariableRow(state, action) {
 		}
 
 		timeline_variables.push(row);
+		node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVRowIds].push(utils.getUUID());
 	}
 
 	return new_state;
 }
 
+/*
+Add timeline variable col,
+action = {
+	sourceIndex: number,
+	targetIndex: number
+}
+*/
+export function moveRowTo(state, action) {
+	let { sourceIndex, targetIndex } = action;
+	let node = state[state.previewId];
+
+	// update state
+	let new_state = Object.assign({}, state);
+	node = utils.deepCopy(node);
+	new_state[state.previewId] = node;
+
+	node.parameters.timeline_variables.move(sourceIndex, targetIndex);
+	node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVRowIds].move(sourceIndex, targetIndex);
+
+	return new_state;
+}
 
 /*
 Add timeline variable col,
@@ -630,8 +659,8 @@ export function addTimelineVariableColumn(state, action) {
 		}
 
 		// update header_order, input type (extra info)
-		node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER].push(name);
-		node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][name] = TimelineVariableInputType.TEXT;
+		node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder].push(name);
+		node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType][name] = TimelineVariableInputType.TEXT;
 	}
 	
 	return new_state;
@@ -662,6 +691,7 @@ export function deleteTimelineVariableRow(state, action) {
 
 	// delete row
 	node.parameters.timeline_variables.splice(index, 1);
+	node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVRowIds].splice(index, 1);
 
 	return new_state;
 }
@@ -685,13 +715,13 @@ export function deleteTimelineVariableColumn(state, action) {
 	// delete column
 	if (node.parameters.timeline_variables.length > 0) { // no need to check actually
 		let timeline_variables = node.parameters.timeline_variables;
-		let variables = node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER];
+		let variables = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder];
 		let target = variables[index];
 
 		// delete header_order, input type (extra info)
-		delete node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][target];
-		let new_headers = node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER].filter((n) => (n !== target));
-		node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER] = new_headers;
+		delete node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType][target];
+		let new_headers = node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder].filter((n) => (n !== target));
+		node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder] = new_headers;
 
 		// delete content
 		for (let row of timeline_variables) {
@@ -702,8 +732,8 @@ export function deleteTimelineVariableColumn(state, action) {
 		if (Object.keys(row).length === 0 && row.constructor === Object) {
 			row["V0"] = createComplexDataObject(null);
 			node.parameters.timeline_variables = [row];
-			node.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER] = ["V0"];
-			node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE].V0 = TimelineVariableInputType.TEXT;
+			node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder] = ["V0"];
+			node.parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType].V0 = TimelineVariableInputType.TEXT;
 		}
 	}
 
@@ -719,6 +749,6 @@ export function setTimelineVariable(state, action) {
 	node = utils.deepCopy(node);
 	new_state[state.previewId] = node;
 
-	node.parameters.timeline_variables = table;
+	node.parameters = table;
 	return new_state;
 }

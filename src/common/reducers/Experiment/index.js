@@ -114,6 +114,8 @@ export default function experimentReducer(state=initState, action) {
 			return editor.updateTimelineVariableCell(state, action);
 		case actionTypes.UPDATE_TIMELINE_VARIABLE_TABLE_HEADER:
 			return editor.updateTimelineVariableName(state, action);
+		case actionTypes.MOVE_TIMELINE_VARIABLE_ROW_TO:
+			return editor.moveRowTo(state, action);
 		case actionTypes.ADD_TIMELINE_VARIABLE_ROW:
 			return editor.addTimelineVariableRow(state, action);
 		case actionTypes.ADD_TIMELINE_VARIABLE_COLUMN:

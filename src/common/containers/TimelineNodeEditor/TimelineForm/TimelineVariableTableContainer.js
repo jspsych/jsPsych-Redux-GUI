@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import TimelineVariableTable from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
 import * as editorActions from '../../../actions/editorActions';
 import { notifyConfirmByDialog, notifyErrorByDialog, notifyWarningBySnackbar } from '../../Notification';
-import { GUI_INFO_IGNORE, TV_HEADER_INPUT_TYPE, TV_HEADER_ORDER } from '../../../reducers/Experiment/editor';
+import { GuiIgonoredInfoEnum } from '../../../reducers/Experiment/editor';
 
 
 const updateTimelineVariableName = (dispatch, oldName, newName) => {
@@ -37,28 +37,24 @@ const updateCell = (dispatch, colName, rowNum, valueObject) => {
 	dispatch(editorActions.updateCellAction(colName, rowNum, valueObject))
 }
 
-function createDataGridRows(timelineVariable) {
-	return timelineVariable.map((row) => {
-		let strRow = {};
-		for (let key of Object.keys(row)) {
-			strRow[key] = (row[key] === null) ? "" : row[key];
-		}
-		return strRow;
-	})
+const moveTo = (dispatch, sourceIndex, targetIndex) => {
+	dispatch(editorActions.moveRowToAction(sourceIndex, targetIndex))
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let experimentState = state.experimentState;
-	let timeline = experimentState[experimentState.previewId];
+	let experimentState = state.experimentState,
+		timeline = experimentState[experimentState.previewId],
+		parameters = timeline.parameters;
 	return {
 		id: timeline.id,
-		rows: createDataGridRows(timeline.parameters.timeline_variables),
+		// the whole gui info
+		parameters: parameters,
 		// the table
 		table: timeline.parameters.timeline_variables || [],
-		timeline_variables: timeline.parameters.timeline_variables || [],
 		// input type of each header
-		inputType: timeline.parameters[GUI_INFO_IGNORE] && timeline.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE],
-		headers: timeline.parameters[GUI_INFO_IGNORE] && timeline.parameters[GUI_INFO_IGNORE][TV_HEADER_ORDER]
+		inputType: parameters[GuiIgonoredInfoEnum.root] && parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderInputType],
+		headers: parameters[GuiIgonoredInfoEnum.root] && parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVHeaderOrder],
+		rowIds: parameters[GuiIgonoredInfoEnum.root] && parameters[GuiIgonoredInfoEnum.root][GuiIgonoredInfoEnum.TVRowIds],
 	}
 };
 
@@ -73,7 +69,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	setTable: (table) => { setTable(dispatch, table); },
 	notifyConfirm: (message, proceedCallback) => { notifyConfirmByDialog(dispatch, message, proceedCallback); },
 	notifyError: (message) => { notifyErrorByDialog(dispatch, message); },
-	notifyWarningBySnackbar: (message) => { notifyWarningBySnackbar(dispatch, message); }
+	notifyWarningBySnackbar: (message) => { notifyWarningBySnackbar(dispatch, message); },
+	moveTo: (sourceIndex, targetIndex) => { moveTo(dispatch, sourceIndex, targetIndex); },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineVariableTable);
