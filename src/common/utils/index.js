@@ -1,4 +1,6 @@
 import Prefixer from 'inline-style-prefixer';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 var short = require('short-uuid');
 const _prefixer = new Prefixer()
 
@@ -81,3 +83,5 @@ export function isValueEmpty(val) {
 export function injectJsPsychUniversalPluginParameters(obj={}) {
 	return Object.assign(obj, window.jsPsych.plugins.universalPluginParameters);
 }
+
+export const withDnDContext = DragDropContext(HTML5Backend);

@@ -100,6 +100,14 @@ export function setTimelineVariableAction(table) {
 	}
 }
 
+export function moveRowToAction(sourceIndex, targetIndex) {
+	return {
+		type: actionTypes.MOVE_TIMELINE_VARIABLE_ROW_TO,
+		sourceIndex: sourceIndex,
+		targetIndex: targetIndex
+	}
+}
+
 export function setSamplingMethodAction(key, newVal) {
 	return {
 		type: actionTypes.SET_SAMPLING_METHOD,

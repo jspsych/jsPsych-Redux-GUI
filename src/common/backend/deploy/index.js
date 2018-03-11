@@ -3,7 +3,7 @@
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
-import { createComplexDataObject, ParameterMode, JspsychValueObject, GUI_INFO_IGNORE } from '../../reducers/Experiment/editor';
+import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
@@ -360,7 +360,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   let res = {
     ...node.parameters
   }
-  delete res[GUI_INFO_IGNORE];
+  delete res[GuiIgonoredInfoEnum.root];
   let timeline = [];
   let desc, include;
   for (let descId of node.childrenById) {
