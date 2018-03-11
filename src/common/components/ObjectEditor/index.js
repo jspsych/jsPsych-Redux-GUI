@@ -26,7 +26,6 @@ import copy from 'copy-to-clipboard';
 import { ParameterMode, createComplexDataObject } from '../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import { stringify } from '../../backend/deploy';
-import { deepCopy } from '../../utils';
 import GeneralTheme from '../theme.js';
 
 const colors = {
@@ -251,9 +250,9 @@ export default class ObjectEditor extends React.Component {
 			valid: true,
 		}
 
-		this.unzip = (targetObj) => {
-			let objectKeys = Object.keys(targetObj);
-			let objectValues = objectKeys.map((key) => (targetObj[key]));
+		this.unzip = (value) => {
+			let objectKeys = Object.keys(value);
+			let objectValues = objectKeys.map((key) => (value[key]));
 			this.setState({
 				objectKeys: objectKeys,
 				objectValues: objectValues,
@@ -262,7 +261,7 @@ export default class ObjectEditor extends React.Component {
 		}
 
 		this.handleOpen = () => {
-			this.unzip(this.props.targetObj);
+			this.unzip(this.props.value);
 			this.setState({
 				open: true
 			});
@@ -273,6 +272,7 @@ export default class ObjectEditor extends React.Component {
 				open: false,
 			});
 		}
+
 
 		/*
 		param:
@@ -394,7 +394,7 @@ export default class ObjectEditor extends React.Component {
 			let { objectKeys, objectValues } = this.state;
 			let resObj = {};
 			for (let i = 0; i < objectKeys.length; i++) {
-				resObj[objectKeys[i]] = deepCopy(objectValues[i]);
+				resObj[objectKeys[i]] = utils.deepCopy(objectValues[i]);
 				resObj[objectKeys[i]].value = (convert2Null) ? convertToNull(resObj[objectKeys[i]].value) : resObj[objectKeys[i]].value;
 			}
 			return resObj;
@@ -432,7 +432,7 @@ export default class ObjectEditor extends React.Component {
 				this.props.notifyError("Object is not valid !");
 				return;
 			}
-			this.props.submitCallback(this.generateObj(true));
+			this.props.onCommit(this.generateObj(true));
 			this.handleClose();
 		}
 
@@ -461,10 +461,9 @@ export default class ObjectEditor extends React.Component {
 					<div style={{right: 0}} key={`object-timeline-variable-container-${i}`}>
 						<TimelineVariableSelector 
 							key={`object-timeline-variable-${i}`}
-							setParamMode={() => { this.setObjectValueMode(i); }}
-							submitCallback={(v) => { this.setObjectTimelineVariable(v, i); }}
+							onCommit={(v) => { this.setObjectTimelineVariable(v, i); }}
 							useTV={this.state.objectValues[i].mode === ParameterMode.USE_TV}
-							selectedTV={this.state.objectValues[i].timelineVariable}
+							value={this.state.objectValues[i].timelineVariable}
 						/>
 					</div>
 					<div style={{right: 0}} key={`object-delete-container-${i}`}>
@@ -482,10 +481,10 @@ export default class ObjectEditor extends React.Component {
 	}
 
 	static defaultProps = {
-		targetObj: {},
+		value: {},
 		title: "",
-		keyName: "",
-		submitCallback: (p) => {},
+		keyName: "Data",
+		onCommit: (p) => {},
 		Trigger: ({onClick}) => (
 			<IconButton
 				onClick={onClick}

@@ -3,7 +3,7 @@
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
-import { createComplexDataObject, ParameterMode, JspsychValueObject } from '../../reducers/Experiment/editor';
+import { createComplexDataObject, ParameterMode, JspsychValueObject, GUI_INFO_IGNORE } from '../../reducers/Experiment/editor';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
@@ -228,7 +228,7 @@ export function generateCode(state, all=false, deploy=false) {
     if (include) {
       // generate timeline block
       if (isTimeline(node)) {
-        if (node.childrenById.length > 0) {
+        if (node.childrenById.length > 0 || deploy) {
           blocks.push(generateTimelineBlock(state, node, all, deploy));
         }
         // generate trial block
@@ -360,6 +360,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   let res = {
     ...node.parameters
   }
+  delete res[GUI_INFO_IGNORE];
   let timeline = [];
   let desc, include;
   for (let descId of node.childrenById) {
@@ -388,6 +389,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   }
 
   res.timeline = timeline;
+  console.log(res)
   return res;
 }
 
@@ -455,10 +457,10 @@ export function stringify(obj, filePath) {
         }
         res.push("]");
         // if it is supposed to be function, call stringifyFunc
-      } else if (obj instanceof StringifiedFunction || obj.isFunc) { // keep obj.isFunc for backward compatability
-        return stringifyFunc(obj.code, obj.info, filePath);
+      } else if (obj.isFunc) { // keep obj.isFunc for backward compatability
+        return stringifyFunc(obj, filePath);
         // if it is a trial item
-      } else if (obj instanceof JspsychValueObject || obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
+      } else if (obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
         switch(obj.mode) {
           // if user wants to use function mode
           case ParameterMode.USE_FUNC:
@@ -499,20 +501,8 @@ This function [uses esprima to parse function code and] resolve
 media path for all files wrapped in this tag <path></path>
 
 */
-function stringifyFunc(code, info = null, filePath) {
-  let func = code;
-  // try {
-  //   let tree = esprima.parse(code);
-  //   func = escodegen.generate(tree, {
-  //     format: {
-  //       compact: true,
-  //       semicolons: true,
-  //       parentheses: false
-  //     }
-  //   });
-  // } catch (e) {
-  //   console.log("Fail to parse inserted code !");
-  // }
-
+function stringifyFunc(obj, filePath) {
+  let func = obj.ifEval ? obj.code : JSON.stringify(obj.code);
+  
   return resolveMediaPath(func, filePath);
 }

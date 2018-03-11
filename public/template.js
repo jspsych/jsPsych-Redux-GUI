@@ -11,7 +11,6 @@ export default function(preloadedState) {
 	    <link rel="stylesheet" href="./style.css">
 	    <link href="./jsPsych/jspsych.css" rel="stylesheet" type="text/css"></link>
 	    <script type="text/javascript" src="./jsPsych/jspsych.min.js"></script>
-	    <script type="text/javascript" src="./polyfill.js"></script>
 	  </head>
 	  <body class='canvas'>
 	    <div id="container" ></div>

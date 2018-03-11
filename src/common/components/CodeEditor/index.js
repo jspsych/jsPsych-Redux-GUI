@@ -3,16 +3,20 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
+import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
 
 import CodeMirror from 'react-codemirror';
 require('codemirror/lib/codemirror.css');
+require('codemirror/mode/javascript/javascript');
+require('codemirror/mode/htmlmixed/htmlmixed');
 
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
-// import DialogIcon from 'material-ui/svg-icons/content/create';
+import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
+import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import {
   grey800 as normalColor,
   yellow500 as checkColor,
-  // blue500 as titleIconColor,
 } from 'material-ui/styles/colors';
 import { renderDialogTitle } from '../gadgets';
 import GeneralTheme from '../theme.js';
@@ -41,7 +45,26 @@ const style = {
         color: colors.primaryDeep
       }
     },
-  }
+  },
+  SelectFieldStyle: {
+    selectedMenuItemStyle: {
+      color: colors.secondary
+    },
+    style: {
+      width: 180,
+    }
+  },
+  toolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline'
+  },
+}
+
+export const CodeLanguage = {
+  // text: [null, 'Plain Text'],
+  javascript: ['javascript', 'Javascript'],
+  html: ['htmlmixed', 'HTML/Plain Text']
 }
 
 export default class CodeEditor extends React.Component {
@@ -49,14 +72,15 @@ export default class CodeEditor extends React.Component {
     super(props);
     this.state = {
       open: false,
-      code: ""
     }
-
 
     this.handleOpen = () => {
       this.setState({
         open: true,
-        code: this.props.initCode
+        // init values
+        code: utils.toEmptyString(this.props.value),
+        language: this.props.language || CodeLanguage.javascript[0],
+        evalAsFunction: !!this.props.ifEval
       });
     }
 
@@ -71,58 +95,112 @@ export default class CodeEditor extends React.Component {
         code: newCode
       });
     }
+
+    this.setLanguage = (language) => {
+      this.setState({
+        language: language,
+        evalAsFunction: language === CodeLanguage.javascript[0]
+      })
+    }
+
+    this.handleEvalAsFunction = () => {
+      this.setState({
+        evalAsFunction: !this.state.evalAsFunction
+      })
+    }
+
+    this.onCommit = () => {
+      this.props.onCommit(utils.toNull(this.state.code), this.state.evalAsFunction, this.state.language);
+      this.handleClose();
+    }
   }
 
   static defaultProps = { 
-  	initCode: "",
+  	value: "",
+    language: CodeLanguage.javascript[0],
     tooltip: "Insert code",
     title: "Code Editor",
-    submitCallback: function(newCode) { return; },
-    showEditMode: false,
-    Trigger: ({onClick}) => (
+    onCommit: function(newCode) { return; },
+    Trigger: ({onClick, tooltip}) => (
       <IconButton
         onClick={onClick}
-        title="Click to edit"
+        tooltip={tooltip}
       >
         <EditCodeIcon {...style.DefaultTrigger}/>
       </IconButton>
-    )
+    ),
   };
 
   
   render() {
-  	const { buttonIcon, title, submitCallback, Trigger } = this.props;
-  	const actions = [
+  	const { buttonIcon, title, onCommit, Trigger } = this.props;
+
+    const actions = [
       <FlatButton
         label="Save"
-        onClick={() => { this.handleClose(); submitCallback(this.state.code); }}
+        onClick={this.onCommit}
         {...style.actionButtons.Submit}
-        keyboardFocused
       />,
     ];
 
+    const items = Object.values(CodeLanguage).map((mode, i) => (
+      <MenuItem key={`code-mode-${i}`} primaryText={mode[1]} value={mode[0]} />
+    ))
+
+    let disabled = this.props.onlyString || this.props.onlyFunction;
+
+    // add this.state.open ? tag : null to trigger reset (because we don't have control to CodeMirror)
   	return (
   		<div>
-        <Trigger onClick={this.handleOpen} />
-	  		<Dialog
-	            contentStyle={{minHeight: 500}}
-              titleStyle={{padding: 0}}
-	            title={renderDialogTitle(
-                <Subheader style={{fontSize: 18, maxHeight: 48}}>
-                {title}
-                </Subheader>, 
-                this.handleClose, 
-                null)}
-	            actions={actions}
-	            modal={true}
-	            open={this.state.open}
-	            onRequestClose={this.handleClose}
-	          >
-	          <CodeMirror value={this.state.code} 
-                        onChange={this.onUpdate} 
-                        options={{lineNumbers: true}}
-            />
-	      </Dialog>
+        <Trigger onClick={this.handleOpen} tooltip={this.props.tooltip}/>
+        <Dialog
+          contentStyle={{minHeight: 500}}
+          titleStyle={{padding: 0}}
+          title={renderDialogTitle(
+            <Subheader style={{fontSize: 18, maxHeight: 48}}>
+            {title}
+            </Subheader>, 
+            this.handleClose, 
+            null)}
+          actions={actions}
+          modal={true}
+          open={this.state.open}
+        >
+          <div style={{...style.toolbar}}>
+            <SelectField
+                disabled={disabled}
+                onChange={(event, index, value) => { this.setLanguage(value)}}
+                {...style.SelectFieldStyle}
+                floatingLabelFixed
+                floatingLabelText="Language"
+                value={this.state.language}
+            >
+                {items}
+            </SelectField>
+            {!disabled ? 
+              <MenuItem
+                primaryText={this.state.evalAsFunction ? 'Evaluate' : 'Do Not Evaluate'}
+                rightIcon={
+                  this.state.evalAsFunction ?
+                  <CheckBoxIcon color={colors.secondaryDeep} /> :
+                  <UnCheckBoxIcon color={colors.secondaryDeep}/>
+                }
+                style={{color:colors.primaryDeep, textDecoration: 'underline'}}
+                onClick={this.handleEvalAsFunction}
+              /> :
+              null
+            }
+          </div>
+          <CodeMirror 
+            autoFocus
+            value={this.state.code} 
+            onChange={this.onUpdate} 
+            options={{
+              lineNumbers: true,
+              mode: this.state.language
+            }}
+          />
+      </Dialog>
 	    </div>
   	)
   }

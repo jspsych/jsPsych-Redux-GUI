@@ -143,7 +143,7 @@ class Key extends React.Component {
 	}
 
 	render() {
-		let isSelected;
+		let isSelected = false;
 		if (Array.isArray(this.props.selected)) {
 			for (let v of this.props.selected) {
 				if (v === this.props.label) {
@@ -151,7 +151,9 @@ class Key extends React.Component {
 				}
 			}
 		} else {
-			isSelected = this.props.selected.toUpperCase() === this.props.label.toUpperCase();
+			if (this.props.selected && this.props.label) {
+				isSelected = this.props.selected.toUpperCase() === this.props.label.toUpperCase();
+			}
 		}
 
 		return (
@@ -197,7 +199,7 @@ class Keyboard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selected: this.props.value === jsPsych.ALL_KEYS ? '' : this.props.value,
+			selected: this.props.value === jsPsych.ALL_KEYS ? '' : (this.props.value ? this.props.value : ''),
 			allKeys: this.props.value === jsPsych.ALL_KEYS
 		}
 
@@ -306,8 +308,11 @@ export default class KeyboardSelector extends React.Component {
 	}
 
 	static defaultProps = {
+		// can select multiple keys
 		multiSelect: false,
+		// value, can be string (single select) or array (mulitple select)
 		value: '',
+		// Trigger to activate editor
 		Trigger: ({onClick}) => (
 			<IconButton
 				onClick={onClick}
@@ -315,7 +320,9 @@ export default class KeyboardSelector extends React.Component {
 			>
 				<KeyboardIcon {...style.DefaultTrigger} />
 			</IconButton>
-		)
+		),
+		// commit callback
+		onCommit: () => {},
 	}
 
 	render() {
@@ -360,7 +367,7 @@ export default class KeyboardSelector extends React.Component {
 	              	}
 					{...style.Dialog}
 				>	
-					<Keyboard {...this.props} ref={el => { this.Keyboard = el}}/>
+					<Keyboard {...this.props} ref={el => { this.Keyboard = el }}/>
 				</Dialog>
 			</div>
 		)

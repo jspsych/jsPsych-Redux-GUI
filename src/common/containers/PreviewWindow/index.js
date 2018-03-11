@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PreviewWindow from '../../components/PreviewWindow';
 import { generateCode } from '../../backend/deploy';
 import { isTimeline, isTrial } from '../../reducers/Experiment/utils';
-import { deepCopy } from '../../utils';
 
 let code = "";
 
@@ -22,7 +21,7 @@ const hotUpdate = (dispatch, load) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-	let obj = Object.assign({}, deepCopy(state.experimentState), { experimentName: null }); //ignore experiment name change
+	let obj = Object.assign({}, utils.deepCopy(state.experimentState), { experimentName: null }); //ignore experiment name change
 	for (let key of Object.keys(obj)) {
 		if (obj[key] && (isTimeline(obj[key]) || isTrial(obj[key]))) {
 			obj[key] = Object.assign({}, obj[key], { name: null }); //ignore name change

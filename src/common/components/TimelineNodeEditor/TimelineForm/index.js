@@ -4,7 +4,6 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 
 import { components } from '../TrialForm/TrialFormItem.js';
-import { convertNullToEmptyString } from '../../../utils';
 import TimelineVariableTable from '../../../containers/TimelineNodeEditor/TimelineForm/TimelineVariableTableContainer';
 import CodeEditor from '../../CodeEditor';
 import GeneralTheme from '../../theme.js';
@@ -70,7 +69,7 @@ class TimelineForm extends React.Component {
 			  	<div className="Trial-Form-Item-Container">
 			  		<TextField
 						id="Timeline_SampleSize_Input"
-						value={convertNullToEmptyString(this.props.samplingSize)}
+						value={utils.toEmptyString(this.props.samplingSize)}
 						onChange={(event, newVal) => this.props.setSampleSize(newVal)} 
 						floatingLabelText="Sample size"
 						{...style.NumberFieldStyle}
@@ -92,9 +91,10 @@ class TimelineForm extends React.Component {
 						node={
 							<CodeEditor
 								Trigger={components.Triggers.CodeEditor}
-								initCode={this.props.loopFunction.code}
+            					onlyFunction={true}
+								value={this.props.loopFunction.code}
 								title="Loop function"
-								submitCallback={this.props.setLoopFunction}
+								onCommit={this.props.setLoopFunction}
 							/>
 						}
 					/>
@@ -105,9 +105,10 @@ class TimelineForm extends React.Component {
 						node={
 							<CodeEditor
 								Trigger={components.Triggers.CodeEditor}
-								initCode={this.props.conditionalFunction.code}
+            					onlyFunction={true}
+								value={this.props.conditionalFunction.code}
 								title="Condition function"
-								submitCallback={this.props.setConditionFunction}
+								onCommit={this.props.setConditionFunction}
 							/>
 						}
 					/>

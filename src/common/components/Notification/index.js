@@ -25,6 +25,10 @@ const colors = {
 }
 
 export default class Notification extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
 	renderSnackbarIcon = () => {
 		switch(this.props.notifyType) {
 			case Notify_Type.success:
@@ -42,6 +46,7 @@ export default class Notification extends React.Component {
 		switch(this.props.notifyType) {
 			case Notify_Type.success:
 				return (<Subheader style={{fontSize: 24, color: successColor}}>Done!</Subheader>);
+			case Notify_Type.confirm:
 			case Notify_Type.warning:
 				return (<Subheader style={{fontSize: 24, color: warningColor}}>Warning!</Subheader>);
 			case Notify_Type.error:
@@ -56,14 +61,46 @@ export default class Notification extends React.Component {
 			dialogOpen,
 			snackbarOpen,
 			message,
-			handleClose
+			handleClose,
+			notifyType,
+			proceedCallback
 		} = this.props;
 
+		let actions;
+		if (notifyType === Notify_Type.confirm) {
+			actions = [
+      			<FlatButton
+      				label="Yes"
+      				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
+      				onClick={() => {
+      					proceedCallback();
+      					handleClose();
+      				}}
+      				keyboardFocused={true}
+      			/>,
+				<FlatButton
+      				label="No"
+      				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
+      				onClick={handleClose}
+      				keyboardFocused={true}
+      			/>
+			]
+		} else {
+			actions = [
+      			<FlatButton
+      				label="Okay"
+      				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
+      				onClick={handleClose}
+      				keyboardFocused={true}
+      			/>
+      		]
+		}
 
 		return (
 			<div>
 				<Dialog
 					open={dialogOpen}
+					style={{zIndex: 9999999}}
 					titleStyle={{padding: 0}}
 	          		title={renderDialogTitle(this.renderDialogTitleText(), handleClose, null, {}, false)}
 	          		onRequestClose={handleClose}
@@ -71,14 +108,7 @@ export default class Notification extends React.Component {
 	          		bodyStyle={{backgroundColor: dialogBodyColor, paddingTop: 0}}
 	          		modal={true}
 	          		autoScrollBodyContent={true}
-	          		actions={[
-	          			<FlatButton
-	          				label="Okay"
-	          				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
-	          				onClick={handleClose}
-	          				keyboardFocused={true}
-	          			/>
-	          		]}
+	          		actions={actions}
 				>
 					<p>{message}</p>
 				</Dialog>

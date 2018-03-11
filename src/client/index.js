@@ -12,7 +12,6 @@ import { getUserInfoFromCognito, fetchCredential } from '../common/backend/cogni
 
 var deepEqual = require('deep-equal');
 
-
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('load', () => {

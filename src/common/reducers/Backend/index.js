@@ -8,7 +8,6 @@ login information from local storage.
 */
 
 import * as actionTypes from '../../constants/ActionTypes';
-import { deepCopy, getUUID } from '../../utils';
 import { signInOut } from '../User';
 import { initState as experimentInitState } from '../Experiment';
  
@@ -26,13 +25,13 @@ For user state:
 
 */
 function registerNewExperiment(state, forceNewId=false) {
-	state.userState.experiments = deepCopy(state.userState.experiments);
+	state.userState.experiments = utils.deepCopy(state.userState.experiments);
 	state.experimentState = Object.assign({}, state.experimentState);
 	let { userState, experimentState } = state;
 	// assign id
 	// set owner
 	if (!experimentState.experimentId || forceNewId) {
-		experimentState.experimentId = getUUID();
+		experimentState.experimentId = utils.getUUID();
 		experimentState.owner = Object.assign({}, userState.user);
 
 		let now = Date.now();
@@ -85,7 +84,7 @@ function signUpPush(state, action) {
 	// yes
 	if (action.anyChange) {
 		registerNewExperiment(new_state);
-		new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+		new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 	}
 
 	return new_state;
@@ -119,7 +118,7 @@ function signInPull(state, action) {
 	if (experimentData) {
 		experimentData = experimentData.Item.fetch;
 		new_state.experimentState = experimentData;
-		new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+		new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 	}
 
 	return new_state;
@@ -144,7 +143,7 @@ function clickSavePush(state, action) {
 	if (experimentState.experimentId) {
 		// make copy
 		new_state.userState = Object.assign({}, userState, {
-			experiments: deepCopy(userState.experiments),
+			experiments: utils.deepCopy(userState.experiments),
 		});
 
 		// update last edit date
@@ -165,7 +164,7 @@ function clickSavePush(state, action) {
 	} else {
 		registerNewExperiment(new_state);
 	}
-	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 	
 	return new_state;
 }
@@ -186,7 +185,7 @@ function pullExperiment(state, action) {
 		experimentState: experimentState
 	})
 
-	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 
 	return new_state;
 }
@@ -241,7 +240,7 @@ function newExperiment(state, action) {
 	});
 
 	// registerNewExperiment(new_state);
-	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 	
 	return new_state;
 }
@@ -254,7 +253,7 @@ function saveAs(state, action) {
 	});
 
 	registerNewExperiment(new_state, true);
-	new_state.userState.lastModifiedExperimentState = deepCopy(new_state.experimentState);
+	new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
 
 	return new_state;
 }

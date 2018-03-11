@@ -1,11 +1,12 @@
 import * as actionTypes from '../constants/ActionTypes';
 
-export function notifyAction(notifyMethod, notifyType, message) {
+export function notifyAction(notifyMethod, notifyType, message, proceedCallback=()=>{}) {
 	return {
 		type: actionTypes.NOTIFICATION,
 		notifyMethod: notifyMethod,
 		notifyType: notifyType,
-		message: message
+		message: message, 
+		proceedCallback: proceedCallback
 	};
 }
 
