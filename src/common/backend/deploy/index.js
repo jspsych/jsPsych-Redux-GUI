@@ -228,7 +228,7 @@ export function generateCode(state, all=false, deploy=false) {
     if (include) {
       // generate timeline block
       if (isTimeline(node)) {
-        if (node.childrenById.length > 0) {
+        if (node.childrenById.length > 0 || deploy) {
           blocks.push(generateTimelineBlock(state, node, all, deploy));
         }
         // generate trial block
@@ -389,6 +389,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   }
 
   res.timeline = timeline;
+  console.log(res)
   return res;
 }
 
@@ -456,10 +457,10 @@ export function stringify(obj, filePath) {
         }
         res.push("]");
         // if it is supposed to be function, call stringifyFunc
-      } else if (obj instanceof StringifiedFunction || obj.isFunc) { // keep obj.isFunc for backward compatability
+      } else if (obj.isFunc) { // keep obj.isFunc for backward compatability
         return stringifyFunc(obj, filePath);
         // if it is a trial item
-      } else if (obj instanceof JspsychValueObject || obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
+      } else if (obj.isComplexDataObject) { // keep obj.isComplexDataObject for backward compatability
         switch(obj.mode) {
           // if user wants to use function mode
           case ParameterMode.USE_FUNC:

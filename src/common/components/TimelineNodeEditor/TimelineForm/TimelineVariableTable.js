@@ -44,6 +44,10 @@ import {
 import { ParameterMode, TimelineVariableInputType, isString, isFunction } from '../../../reducers/Experiment/editor';
 import { renderDialogTitle } from '../../gadgets';
 import CodeEditor, { CodeLanguage } from '../../CodeEditor';
+import ArrayEditor from '../../../containers/ArrayEditor';
+import ObjectEditor from '../../../containers/ObjectEditor';
+import MediaManager from '../../../containers/MediaManager';
+import { MediaManagerMode } from '../../MediaManager';
 import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem.js';
 
 import GeneralTheme from '../../theme.js';
@@ -57,10 +61,25 @@ const constants = {
 
 const colors = {
 	...GeneralTheme.colors,
-	labelColor: '#B1B1B1'
+	labelColor: '#B1B1B1',
+	functionColor: '#708',
+	arrayColor: GeneralTheme.colors.secondaryDeep,
+	objectColor: '#00BCD4',
+	mediaColor: '#2196F3'
 };
 
 const cssStyle = {
+	MySheet: {
+		root: utils.prefixer({
+			width: 720,
+			maxWidth: 720,
+			minWidth: 720,
+			height: 300,
+			maxHeight: 300,
+			minHeight: 300,
+			overflow: 'auto'
+		})
+	},
 	HeaderRow: {
 		root: utils.prefixer({
 			display: 'flex'
@@ -85,6 +104,7 @@ const cssStyle = {
 			minWidth: constants.GhostCellWidth,
 			maxWidth: constants.GhostCellWidth,
 			justifyContent: 'center',
+			alignItems: 'center',
 			display: 'flex',
 			height: constants.CellHeight,
 			minHeight: constants.CellHeight,
@@ -161,6 +181,11 @@ const style = {
 	TriggerIconStyle: {
 		...TrialFormItemStyle.TriggerIconStyle
 	},
+	ContentCellTextFieldFocus: {
+		underlineFocusStyle: {
+			borderColor: colors.primaryDeep
+		}
+	}
 };
 
 const AddRowIcon = (props) => (
@@ -217,127 +242,6 @@ const matchInputTypeIcon = (type) => {
 	}
 }
 
-class TimelineVariableTableOpener extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.onRowDelete = () => {
-			let index = this.props.selectedCell.row !== null ? this.props.selectedCell.row : this.props.numRows - 1;
-			this.props.onRowDelete(index);
-			this.props.loseFocusCallback();
-		}
-
-		this.onColDelete = () => {
-			let index = this.props.selectedCell.col !== null ? this.props.selectedCell.col : this.props.numCols - 1;
-			this.props.onColDelete(index);
-			this.props.loseFocusCallback();
-		}
-
-		this.setEdittingCell = () => {
-			if (this.props.selectedCell.row !== null && this.props.selectedCell.col !== null) {
-				this.props.setEdittingCell(this.props.selectedCell);
-			}
-		}
-
-		this.renderToolbar = () => (
-			<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
-                  <ToolbarGroup firstChild={true}>
-                    <IconButton
-                    	tooltip="Insert Row"
-                    	onClick={this.props.addRow}
-	                   	iconStyle={{...style.iconSize}}
-	                >
-	                    <AddRowIcon {...style.addIconStyle}/>
-                    </IconButton>
-                    <IconButton
-                    	tooltip="Delete Row"
-                    	onClick={this.onRowDelete}
-	                   	iconStyle={{...style.iconSize}}
-	                >
-	                    <DeleteRowIcon {...style.deleteIconStyle}/>
-                    </IconButton>		
-     
-                    <ToolbarSeparator />
-
-                	<IconButton
-                    	tooltip="Insert Column"
-                    	onClick={this.props.addColumn}
-                    	iconStyle={{...style.iconSize}}
-                    >
-                    	<AddColumnIcon {...style.addIconStyle}/>
-                    </IconButton>
-
-                    <IconButton
-                    	tooltip="Delete Column"
-                    	onClick={this.onColDelete}
-                    	iconStyle={{...style.iconSize}}
-                    >
-                    	<DeleteColumnIcon {...style.deleteIconStyle}/>
-                    </IconButton>
-
-                    <ToolbarSeparator />
-
-                    <IconButton 
-                    	tooltip="Insert Code"
-                    	onClick={this.setEdittingCell}
-                    >
-                    	<CodeButtonIcon {...style.codeIconStyle} />
-                    </IconButton>
-
-                    <IconButton
-                    	tooltip="Undo"
-                    	disabled={this.props.history.length === 0}
-                    	onClick={this.props.handleUndo}
-                    >
-                    	<UndoIcon {...style.undoIconStyle}/>
-                    </IconButton>
-                  </ToolbarGroup>
-  			</Toolbar>
-		)
-	}
-	
-	render() {
-		let { handleOpen, handleClose, open } = this.props;
-
-	    const iconSize = {
-	    	width: 36,
-	    	height: 36
-	    }
-
-		return (
-			<div>
-				<FlatButton
-					{...style.TriggerStyle}
-					label={"Open Timeline Table"}
-					onClick={handleOpen}
-					icon={<Launch {...style.TriggerIconStyle}/>}
-				/>
-				<Dialog
-					open={open}
-		      		contentStyle={{minHeight: 700}}
-	              	titleStyle={{padding: 0}}
-	              	style={{zIndex: 1000}}
-		            title={renderDialogTitle(
-			            	<Subheader style={{maxHeight: 58}}>{this.renderToolbar()}</Subheader>,  
-			            	handleClose,  
-			            	null, 
-			            	{borderTop: `10px solid ${colors.primaryDeep}`}
-		            	)}
-		            modal={true}
-		            onRequestClose={handleClose}
-		            bodyStyle={{
-					  	paddingTop: '25px', 
-					  	paddingBottom: '50px', 
-					  	borderTop: '1px solid #aaa'
-				}}
-		      	>
-		      		{this.props.spreadSheet}
-		      	</Dialog>
-	      	</div>
-		)
-	}
-}
-
 class HeaderCell extends React.Component {
 	constructor(props) {
 		super(props);
@@ -356,6 +260,7 @@ class HeaderCell extends React.Component {
 				open: true,
 				variableName: this.props.variableName,
 			})
+
 		}
 
 		this.handleClose = () => {
@@ -398,15 +303,15 @@ class HeaderCell extends React.Component {
 
 			if (this.state.type !== this.props.type) {
 				let isBothString = isString(this.state.type) && isString(this.props.type);
-				let isEitherFunction = isFunction(this.state.type) || isFunction(this.props.type);
-				if (isBothString || isEitherFunction) {
-					this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type);
+				let isTargetFunction = isFunction(this.state.type);
+				if (isBothString || isTargetFunction) {
+					this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type, false);
 					this.props.recordHistory();
 				} else {
 					this.props.notifyConfirm(
 						'Value will be cleared for type coercion. Do you want to continue?',
 						() => { 
-							this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type); 
+							this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type, true); 
 							this.props.recordHistory();
 						}
 					);
@@ -487,6 +392,7 @@ class HeaderCell extends React.Component {
 		          actions={actions}
 		        >	
 		        	<TextField
+		        		autoFocus
 		        		id="TV-Table-Variable-Name_Field"
 		        		{...GeneralTheme.TextFieldFocusStyle(this.state.error)}
 		        		errorText={this.state.errorText}
@@ -518,14 +424,15 @@ class HeaderCell extends React.Component {
 	}
 }
 
-const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null}) => (
+const ContentCellLabelItem = ({onClick=()=>{}, value='', label='', rightIcon=null, labelStyle={}}) => (
 	<ListItem	
 		containerElement="div"
 		onClick={onClick}
 		primaryText={
 			<div 
 				style={{
-					...cssStyle.ContentCell.Label
+					...cssStyle.ContentCell.Label,
+					...labelStyle
 				}}
 				title={`${value}`}
 			>
@@ -540,27 +447,32 @@ class ContentCell extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			open: false,
+			edit: false,
 			valueObject: utils.deepCopy(this.props.valueObject)
 		}
 
-		this.handleOpen = () => {
+		this.handleEdit = () => {
 			this.setState({
-				open: true,
+				edit: true,
 				// init
 				valueObject: utils.deepCopy(this.props.valueObject)
 			});
 		}
 
-		this.handleClose = () => {
+		this.handleCloseEdit = () => {
 			this.setState({
-				open: false,
+				edit: false,
 			});
+			this.onCommit();
 		}
 
-		this.setValue = (newVal, callback=()=>{}) => {
+		this.setValue = (newVal, callback=()=>{}, isNormalValue=true) => {
 			let clone = utils.deepCopy(this.state.valueObject);
-			clone.value = newVal;
+			if (isNormalValue) {
+				clone.value = newVal;
+			} else {
+				clone.func.code = newVal;
+			}
 			this.setState({
 				valueObject: clone
 			}, callback
@@ -581,7 +493,14 @@ class ContentCell extends React.Component {
 				this.props.updateCell(this.props.columnName, this.props.rowNum, this.state.valueObject);
 				this.props.recordHistory();
 			}
-			this.handleClose();
+		}
+
+		this.isSelected = () => {
+			return this.props.selectedRow === this.props.rowNum && this.props.selectedCol === this.props.colNum;
+		}
+
+		this.onCellSelect = () => {
+			this.props.onCellSelect({row: this.props.rowNum, col: this.props.colNum})
 		}
 
 		this.renderTextFieldDialog = () => {
@@ -601,58 +520,138 @@ class ContentCell extends React.Component {
 					onClick={this.onCommit}
 				/>,
 			]
-
-			let value = this.props.type === TimelineVariableInputType.NUMBER ? 
+			let isNumber = this.props.type === TimelineVariableInputType.NUMBER,
+				value = isNumber ? 
 						this.props.valueObject.value : 
 						utils.toEmptyString(this.props.valueObject.value),
-				label = this.props.type === TimelineVariableInputType.NUMBER ? value : `"${value}"`,
+				label = isNumber ? value : `"${value}"`,
 				stateValue = utils.toEmptyString(this.state.valueObject.value);
 			return (
-				<div>
-					<ContentCellLabelItem onClick={this.handleOpen} value={value} label={label} />
-					<Dialog 
-					  modal
-			          open={this.state.open}
-			          titleStyle={{padding: 0}}
-			          actions={actions}
-					>
+					!this.state.edit ?
+					<ContentCellLabelItem onClick={this.handleEdit} value={value} label={label} /> :
+					<div style={{width: '100%', height: '100%'}}>
 						<TextField
+							autoFocus
+							fullWidth
+							type={isNumber ? 'number' : 'text'}
 			        		id="TV-Table-Variable-Cell"
-			        		floatingLabelText="Value"
-			        		floatingLabelFixed
-			        		{...GeneralTheme.TextFieldFocusStyle(false)}
+			        		{...style.ContentCellTextFieldFocus}
 			        		value={stateValue}
 			        		onChange={(event, newVal) => this.setValue(newVal)} 
+			        		onBlur={this.handleCloseEdit}
+			        		onKeyPress={(e) => {
+			        			if (e.which === 13) {
+			        				this.handleCloseEdit();
+			        			}
+			        		}}
 			        	/>
-					</Dialog>
-				</div>
+		        	</div>
 			)
 		}
 
 		this.renderEditor = () => {
+			let value, label;
 			switch(this.props.type) {
 				case TimelineVariableInputType.TEXT:
 				case TimelineVariableInputType.NUMBER:
 					return this.renderTextFieldDialog();
 				case TimelineVariableInputType.LONG_TEXT:
-					let value = utils.toEmptyString(this.props.valueObject.value),
-						label = `"${value}"`;
+				case TimelineVariableInputType.FUNCTION:
+					let isString = this.props.type === TimelineVariableInputType.LONG_TEXT;
+				    value = utils.toEmptyString(isString ? this.props.valueObject.value : this.props.valueObject.func.code),
+					label = isString ? `"${value}"` : (value || 'void');
 					return (
 						<CodeEditor
-							value={utils.toEmptyString(this.props.valueObject.value)}
+							value={value}
+							onCommit={(v) => {
+								this.setValue(v, this.onCommit, isString);
+							}}
+							Trigger={
+								({onClick}) => (
+									<ContentCellLabelItem 
+										onClick={onClick}
+										value={value} 
+										label={label}
+										labelStyle={isString ? {} : { color: colors.functionColor, textDecoration: 'underline' }}
+									/>
+								)
+							}
+							language={isString ? CodeLanguage.html[0] : CodeLanguage.javascript[0]}
+							onlyString={isString}
+							onlyFunction={!isString}
+							evalAsFunction={!isString}
+							tooltip="Edit value"
+						/>
+					)
+				case TimelineVariableInputType.ARRAY:
+					// must be array
+					value = this.props.valueObject.value;
+					let len = value.length;
+					label = len < 2 ? `[0 item]` : `[${len} items]`;
+					
+					return (
+						<ArrayEditor
+							value={value}
 							onCommit={(v) => {
 								this.setValue(v, this.onCommit);
 							}}
 							Trigger={
 								({onClick}) => (
-									<ContentCellLabelItem onClick={onClick} value={value} label={label}/>
+									<ContentCellLabelItem
+										onClick={onClick}
+										value={value}
+										label={label}
+										labelStyle={{color: colors.arrayColor, textDecoration: 'underline'}}
+									/>
 								)
 							}
-							language={CodeLanguage.html[0]}
-							onlyString={true}
-							evalAsFunction={false}
-							tooltip="Edit value"
-							buttonIcon={<StringIcon hoverColor={hoverColor} />}
+						/>
+					);
+				case TimelineVariableInputType.OBJECT:
+					value = this.props.valueObject.value;
+					label = "[Data Object]";
+					return (
+						<ObjectEditor
+							value={value}
+							onCommit={(v) => {
+								this.setValue(v, this.onCommit);
+							}}
+							Trigger={
+								({onClick}) => (
+									<ContentCellLabelItem
+										onClick={onClick}
+										value={value}
+										label={label}
+										labelStyle={{color: colors.objectColor, textDecoration: 'underline'}}
+									/>
+								)
+							}
+						/>
+					);
+				case TimelineVariableInputType.MEDIA:
+					value = this.props.valueObject.value;
+					if (value.length > 0) {
+						label = value[0].replace('<path>', '').replace('</path>', '');
+					} else {
+						label = "[No File]"
+					}
+					return (
+						<MediaManager
+							selected={value}
+							onCommit={(v) => {
+								this.setValue(v, this.onCommit);
+							}}
+							mode={MediaManagerMode.select}
+							Trigger_insert={
+								({onClick}) => (
+									<ContentCellLabelItem
+										onClick={onClick}
+										value={value}
+										label={label}
+										labelStyle={{color: colors.mediaColor, textDecoration: 'underline'}}
+									/>
+								)
+							}
 						/>
 					)
 				default:
@@ -675,17 +674,31 @@ class ContentCell extends React.Component {
 	}
 
 	render() {
+		let { rowNum, colNum, onCellSelect, selectedRow, selectedCol, onCellDeselect } = this.props;
+		let isSelected = selectedRow === rowNum && selectedCol === colNum,
+			borderColor = isSelected ? colors.secondary : colors.primaryDeep,
+			borderWeight = isSelected ? 2 : 1;
+
 		return (
 			<div
 				style={{
-					border: `1px solid ${colors.primaryDeep}`,
+					border: `${borderWeight}px solid ${borderColor}`,
 					...cssStyle.Cell.root
-				}}
+				}}				
+				onClick={() => { 
+						if (isSelected) {
+							onCellDeselect();
+						} else {
+							this.onCellSelect(); 
+						}
+					}
+				}
 			>
 				<div
 					style={{
 						...cssStyle.ContentCell.Container
 					}}
+					onBlur={onCellDeselect}
 				>
 					{this.renderEditor()}
 				</div>
@@ -711,6 +724,7 @@ class GhostCell extends React.Component {
 		return (
 			<div
 				style={{
+					border: `1px solid ${colors.primaryDeep}`,
 					...cssStyle.GhostCell.root
 				}}
 			>	
@@ -786,6 +800,8 @@ class ContentRow extends React.Component {
 	render() {
 		let { row, headers, rowNum, inputType } = this.props;
 
+		let isSelected;
+
 		return (
 			<div
 				style={{
@@ -815,7 +831,7 @@ class ContentRow extends React.Component {
 	}
 }
 
-class MyTable extends React.Component {
+class MySheet extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -833,13 +849,7 @@ class MyTable extends React.Component {
 		return (
 			<div 
 				style={{
-					width: 720,
-					maxWidth: 720,
-					minWidth: 720,
-					height: 300,
-					maxHeight: 300,
-					minHeight: 300,
-					overflow: 'auto'
+					...cssStyle.MySheet.root
 				}}
 			>
 				<HeaderRow headers={headers} {...this.props}/>
@@ -859,9 +869,76 @@ class MyTable extends React.Component {
 	}
 }
 
-class TestOpener extends React.Component {
+class TimelineVariableTableOpener extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.onRowDelete = () => {
+			if (this.props.selectedRow === null) {
+				this.props.notifyWarningBySnackbar('Select a row first !')
+				return;
+			} else {
+				this.props.deleteRow(this.props.selectedRow);
+			}
+		}
+
+		this.onColDelete = () => {
+			if (this.props.selectedCol === null) {
+				this.props.notifyWarningBySnackbar('Select a column first !')
+				return;
+			} else {
+				this.props.deleteColumn(this.props.selectedCol);
+			}
+		}
+
+		this.renderToolbar = () => (
+			<Toolbar className="Appbar-tools" style={{backgroundColor: 'white', flexGrow: '1'}}>
+                  <ToolbarGroup firstChild={true}>
+                    <IconButton
+                    	tooltip="Insert Row"
+                    	onClick={this.props.addRow}
+	                   	iconStyle={{...style.iconSize}}
+	                >
+	                    <AddRowIcon {...style.addIconStyle}/>
+                    </IconButton>
+                    <IconButton
+                    	tooltip="Delete Row"
+                    	onClick={this.onRowDelete}
+	                   	iconStyle={{...style.iconSize}}
+	                >
+	                    <DeleteRowIcon {...style.deleteIconStyle}/>
+                    </IconButton>		
+     
+                    <ToolbarSeparator />
+
+                	<IconButton
+                    	tooltip="Insert Column"
+                    	onClick={this.props.addColumn}
+                    	iconStyle={{...style.iconSize}}
+                    >
+                    	<AddColumnIcon {...style.addIconStyle}/>
+                    </IconButton>
+
+                    <IconButton
+                    	tooltip="Delete Column"
+                    	onClick={this.onColDelete}
+                    	iconStyle={{...style.iconSize}}
+                    >
+                    	<DeleteColumnIcon {...style.deleteIconStyle}/>
+                    </IconButton>
+
+                    <ToolbarSeparator />
+
+                    <IconButton
+                    	tooltip="Undo"
+                    	disabled={this.props.history.length === 0}
+                    	onClick={this.props.handleUndo}
+                    >
+                    	<UndoIcon {...style.undoIconStyle}/>
+                    </IconButton>
+                  </ToolbarGroup>
+  			</Toolbar>
+		)
 	}
 
 	static defaultProps = {
@@ -874,24 +951,33 @@ class TestOpener extends React.Component {
 	render() {
 		return (
 			<div>
-				<IconButton
+				<FlatButton
+					{...style.TriggerStyle}
+					label={"Open Timeline Table"}
 					onClick={this.props.handleOpen}
-				>
-					<Launch />
-				</IconButton>
+					icon={<Launch {...style.TriggerIconStyle}/>}
+				/>
 				<Dialog
-					titleStyle={{padding: 0}}
-					modal={true}
 					open={this.props.open}
-					title={renderDialogTitle(
-			            	<Subheader></Subheader>,  
+		      		contentStyle={{minHeight: 700}}
+	              	titleStyle={{padding: 0}}
+	              	style={{zIndex: 1000}}
+		            title={renderDialogTitle(
+			            	<Subheader style={{maxHeight: 58}}>{this.renderToolbar()}</Subheader>,  
 			            	this.props.handleClose,  
 			            	null, 
-		            )}
-				>	
-					<MyTable {...this.props}/>
-				</Dialog>
-				</div>
+			            	{borderTop: `10px solid ${colors.primaryDeep}`}
+		            	)}
+		            modal={true}
+		            bodyStyle={{
+					  	paddingTop: '25px', 
+					  	paddingBottom: '50px', 
+					  	borderTop: '1px solid #aaa'
+				}}
+		      	>
+		      		<MySheet {...this.props} />
+		      	</Dialog>
+			</div>
 		)
 	}
 }
@@ -903,9 +989,8 @@ export default class TimelineVariableTable extends React.Component {
 		this.state = {
 			open: false,
 			history: [],
-			openSheetEditor: false,
-			edittingCell: null,
-			selectedCell: { row: null, col: null },
+			selectedRow: null,
+			selectedCol: null,
 		}
 
 		this.handleOpen = () => {
@@ -936,6 +1021,20 @@ export default class TimelineVariableTable extends React.Component {
 				this.props.setTable(this.state.history.pop());
 			}
 		}
+
+		this.onCellSelect = ({row, col}) => {
+			this.setState({
+				selectedRow: row,
+				selectedCol: col,
+			})
+		}
+
+		this.onCellDeselect = () => {
+			this.setState({
+				selectedRow: null,
+				selectedCol: null,
+			})
+		}
 	}
 	
 
@@ -945,11 +1044,17 @@ export default class TimelineVariableTable extends React.Component {
 		  	<components.CustomFloatingLabelField
 		  		label="Timeline Variables"
 		  		node={
-		  			<TestOpener
+		  			<TimelineVariableTableOpener
 		  				open={this.state.open}
 		  				handleOpen={this.handleOpen}
 		  				handleClose={this.handleClose}
+		  				handleUndo={this.handleUndo}
 		  				recordHistory={this.recordHistory}
+		  				history={this.state.history}
+						onCellSelect={this.onCellSelect}
+						onCellDeselect={this.onCellDeselect}
+						selectedRow={this.state.selectedRow}
+						selectedCol={this.state.selectedCol}
 		  				{...this.props}
 		  			/>
 		  		}

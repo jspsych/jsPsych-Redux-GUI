@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import TimelineVariableTable from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
 import * as editorActions from '../../../actions/editorActions';
-import { notifyConfirmByDialog, notifyErrorByDialog } from '../../Notification';
+import { notifyConfirmByDialog, notifyErrorByDialog, notifyWarningBySnackbar } from '../../Notification';
 import { GUI_INFO_IGNORE, TV_HEADER_INPUT_TYPE, TV_HEADER_ORDER } from '../../../reducers/Experiment/editor';
 
 
@@ -29,8 +29,8 @@ const setTable = (dispatch, table) => {
 	dispatch(editorActions.setTimelineVariableAction(table));
 }
 
-const updateTimelineVariableInputType = (dispatch, name, inputType) => {
-	dispatch(editorActions.updateTimelineVariableInputTypeAction(name, inputType))
+const updateTimelineVariableInputType = (dispatch, name, inputType, typeCoercion) => {
+	dispatch(editorActions.updateTimelineVariableInputTypeAction(name, inputType, typeCoercion))
 }
 
 const updateCell = (dispatch, colName, rowNum, valueObject) => {
@@ -63,7 +63,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	updateTimelineVariableInputType: (name, inputType) => { updateTimelineVariableInputType(dispatch, name, inputType); },
+	updateTimelineVariableInputType: (name, inputType, typeCoercion) => { updateTimelineVariableInputType(dispatch, name, inputType, typeCoercion); },
 	updateCell: (colName, rowNum, valueObject) => { updateCell(dispatch, colName, rowNum, valueObject); },
 	updateTimelineVariableName: (oldName, newName) => { updateTimelineVariableName(dispatch, oldName, newName); },
 	addRow: (index=-1) => { addRow(dispatch, index); },
@@ -73,6 +73,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	setTable: (table) => { setTable(dispatch, table); },
 	notifyConfirm: (message, proceedCallback) => { notifyConfirmByDialog(dispatch, message, proceedCallback); },
 	notifyError: (message) => { notifyErrorByDialog(dispatch, message); },
+	notifyWarningBySnackbar: (message) => { notifyWarningBySnackbar(dispatch, message); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineVariableTable);

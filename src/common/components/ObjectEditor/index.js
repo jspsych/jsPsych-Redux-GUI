@@ -483,7 +483,7 @@ export default class ObjectEditor extends React.Component {
 	static defaultProps = {
 		value: {},
 		title: "",
-		keyName: "",
+		keyName: "Data",
 		onCommit: (p) => {},
 		Trigger: ({onClick}) => (
 			<IconButton

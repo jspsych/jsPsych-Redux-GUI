@@ -34,6 +34,7 @@ import PreviewIcon from 'material-ui/svg-icons/image/remove-red-eye'
 import { renderDialogTitle } from '../gadgets';
 import Notification from '../../containers/Notification';
 import { getSignedUrl } from '../../backend/s3';
+import { MediaPathTag } from '../../backend/deploy';
 
 import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
 import GeneralTheme from '../theme.js';
@@ -174,8 +175,24 @@ export default class MediaManager extends React.Component {
 		}
 
 		this.insertFile = () => {
-			this.props.insertCallback(this.state.selected, this.handleClose);
+			let value = [];
+			for (let i = 0; i < this.state.selected.length; i++) {
+				if (this.state.selected[i]) {
+					value.push(MediaPathTag(this.props.filenames[i]));
+				}
+			}
+			if (value.length > 1 && this.props.mode !== MediaManagerMode.multiSelect) {
+				this.props.notifyWarningByDialog("You can insert only one file here !");
+				return;
+			}
+			this.props.onCommit(value);
+			if (value.length > 0) {
+				this.props.notifySuccessBySnackbar("Media Inserted !");
+			} else {
+				this.props.notifyWarningBySnackbar("None Selected !");
+			}
 			this.resetSelect();
+			this.handleClose();
 		}
 
 		this.resetSelect = () => {
@@ -276,6 +293,7 @@ export default class MediaManager extends React.Component {
 		mode: MediaManagerMode.upload,
 		parameterName: null,
 		selected: [],
+		onCommit: (value) => {},
 		Trigger_upload: ({onClick}) => (
 			<IconButton
               tooltip="Upload Media"

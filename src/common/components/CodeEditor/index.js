@@ -192,6 +192,7 @@ export default class CodeEditor extends React.Component {
             }
           </div>
           <CodeMirror 
+            autoFocus
             value={this.state.code} 
             onChange={this.onUpdate} 
             options={{

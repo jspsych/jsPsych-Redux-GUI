@@ -31,6 +31,8 @@ export class JspsychValueObject {
 		this.func = func;
 		this.mode = mode;
 		this.timelineVariable = timelineVariable;
+		// keep this, as Object.assign does not maintain instanceof result
+		this.isComplexDataObject = true;
 	}
 }
 
@@ -509,7 +511,7 @@ action = {
 }
 */
 export function updateTimelineVariableInputType(state, action) {
-	let { variableName, inputType } = action;
+	let { variableName, inputType, typeCoercion } = action;
 	let node = state[state.previewId];
 
 	// update state
@@ -519,10 +521,7 @@ export function updateTimelineVariableInputType(state, action) {
 	let oldType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName];
 	node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][variableName] = inputType;
 
-	// type coercion
-	let areBothString = isString(oldType) && isString(inputType);
-	let isEitherFunction = isFunction(oldType) || isFunction(inputType);
-	if (!areBothString && !isEitherFunction) {
+	if (typeCoercion) {
 		switch(inputType) {
 			case TimelineVariableInputType.NUMBER:
 				for (let row of node.parameters.timeline_variables) {
@@ -580,13 +579,30 @@ export function addTimelineVariableRow(state, action) {
 		let timeline_variables = node.parameters.timeline_variables;
 		let variables = Object.keys(node.parameters.timeline_variables[0]);
 		let row = {};
+		
 		for (let v of variables) {
-			row[v] = createComplexDataObject(null);
+			let initVal = null, inputType = node.parameters[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE][v];
+			switch (inputType) {
+				case TimelineVariableInputType.NUMBER:
+					initVal = 0;
+					break;
+				case TimelineVariableInputType.MEDIA:
+				case TimelineVariableInputType.ARRAY:
+					initVal = [];
+					break;
+				case TimelineVariableInputType.OBJECT:
+					initVal = new Object();
+					break;
+				default:
+					break;
+			}
+			row[v] = createComplexDataObject(initVal);
+			if (inputType === TimelineVariableInputType.FUNCTION) {
+				row[v].mode = ParameterMode.USE_FUNC;
+			}
 		}
+
 		timeline_variables.push(row);
-		if (index > -1) {
-			timeline_variables.move(timeline_variables.length-1, index);
-		}
 	}
 
 	return new_state;

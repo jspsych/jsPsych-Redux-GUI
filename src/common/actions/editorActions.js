@@ -49,11 +49,12 @@ export function updateCellAction(colName, rowNum, valueObject) {
 	}
 }
 
-export function updateTimelineVariableInputTypeAction(variableName, inputType) {
+export function updateTimelineVariableInputTypeAction(variableName, inputType, typeCoercion) {
 	return {
 		type: actionTypes.UPDATE_TIMELINE_VARIABLE_INPUT_TYPE,
 		variableName: variableName,
-		inputType: inputType
+		inputType: inputType, 
+		typeCoercion: typeCoercion
 	}
 }
 

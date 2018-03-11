@@ -37,6 +37,7 @@ export class StringifiedFunction {
 		// gui info (codeMirror language mode, eval info)
 		this.ifEval = ifEval;
 		this.language = language;
+		this.isFunc = true;
 	}
 }
 

@@ -696,13 +696,10 @@ export default class TrialFormItem extends React.Component {
 					parameterName={param} 
 					selected={selected}
 					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
-					insertCallback={(selected, handleClose) => {
+					onCommit={(value) => {
 						this.props.insertFile(
 							param,
-							this.props.s3files,
-							multiSelect,
-							selected,
-							handleClose,
+							value
 						);
 					}}
 				/>
