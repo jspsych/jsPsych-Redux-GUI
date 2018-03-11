@@ -389,7 +389,6 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   }
 
   res.timeline = timeline;
-  console.log(res)
   return res;
 }
 

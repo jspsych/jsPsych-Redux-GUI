@@ -336,6 +336,7 @@ export default class ObjectEditor extends React.Component {
 		this.setObjectTimelineVariable = (v, i) => {
 			let newObjectValues = this.state.objectValues.slice();
 			newObjectValues[i].timelineVariable = v;
+			newObjectValues[i].mode = ParameterMode.USE_TV;
 			this.setState({
 				objectValues: newObjectValues
 			})
@@ -462,7 +463,6 @@ export default class ObjectEditor extends React.Component {
 						<TimelineVariableSelector 
 							key={`object-timeline-variable-${i}`}
 							onCommit={(v) => { this.setObjectTimelineVariable(v, i); }}
-							useTV={this.state.objectValues[i].mode === ParameterMode.USE_TV}
 							value={this.state.objectValues[i].timelineVariable}
 						/>
 					</div>
