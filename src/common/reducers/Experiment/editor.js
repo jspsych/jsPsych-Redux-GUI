@@ -85,8 +85,7 @@ export const TV_HEADER_ORDER = '$headers';
 export const DEFAULT_TIMELINE_PARAM = (function() { 
 	let obj = {
 		timeline_variables: [{
-			"V0": createComplexDataObject(null),
-			"V1": createComplexDataObject(null)
+			"V0": createComplexDataObject(null)
 		}],
 		randomize_order: true,
 		repetitions: null,
@@ -102,11 +101,9 @@ export const DEFAULT_TIMELINE_PARAM = (function() {
 	obj[GUI_INFO_IGNORE] = {};
 	obj[GUI_INFO_IGNORE][TV_HEADER_INPUT_TYPE] = {
 		"V0": TimelineVariableInputType.TEXT,
-		"V1": TimelineVariableInputType.LONG_TEXT
 	};
 	obj[GUI_INFO_IGNORE][TV_HEADER_ORDER] = [
 		"V0",
-		"V1"
 	]
 	return obj;
 })();
@@ -566,7 +563,7 @@ action = {
 }
 */
 export function addTimelineVariableRow(state, action) {
-	let { index } = action;
+	// let { index } = action;
 	let node = state[state.previewId];
 
 	// update state
@@ -652,21 +649,19 @@ export function deleteTimelineVariableRow(state, action) {
 	let node = state[state.previewId];
 
 	// update state
-	let new_state = Object.assign({}, state);
+	let new_state;
+	// always preserve one row
+	if (node.parameters.timeline_variables.length === 1) {
+		new_state = addTimelineVariableRow(state);
+		node = new_state[new_state.previewId];
+	} else {
+		new_state = Object.assign({}, state);
+	}
 	node = utils.deepCopy(node);
-	new_state[state.previewId] = node;
+	new_state[new_state.previewId] = node;
 
 	// delete row
-	// always preserve one row
-	if (node.parameters.timeline_variables.length === 1) { 
-		let row = node.parameters.timeline_variables[0];
-		for (let v of Object.keys(row)) {
-			row[v] = createComplexDataObject(null);
-		}
-	} else {
-		node.parameters.timeline_variables.splice(index, 1);
-	}
-	
+	node.parameters.timeline_variables.splice(index, 1);
 
 	return new_state;
 }
