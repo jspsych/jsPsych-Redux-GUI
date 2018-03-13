@@ -1,8 +1,11 @@
+/**
+ *@file This file describes the reducers for editting the parameters of the timeline nodes from jsPsych (timeline, trial)
+ *@author Junyan Qi <juqi@vassar.edu>
+*/
 import { createFuncObj } from './jsPsychInit';
 
 var jsPsych = window.jsPsych || require('./tests/jsPsych.js').jsPsych;
 var EnumPluginType = jsPsych.plugins.parameterType;
-
 
 /*
 Indicate which value (native value, function or timeline variable) should be used

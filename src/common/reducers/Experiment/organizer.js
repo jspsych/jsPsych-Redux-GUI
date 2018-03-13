@@ -1,61 +1,12 @@
-/*
-This file is the reducers for timelineNode class from jsPsych (timeline, trial)
-
-A timeline state = {
-	id: string,
-	type: string,
-	name: string,
-	// if its parent is mainTimeline, null
-	parent: string,
-	childrenById: array,
-	collapsed: boolean,
-	enabled: boolean,
-	// jsPsych timeline properties
-	parameters: object,
-}
-
-A trial state = {
-	id: string,
-	type: string,
-	name: string,
-	// if its parent is mainTimeline, null
-	parent: string,
-	enabled: boolean,
-	// specific parameters decided by which plugin user chooses
-	parameters: object,
-}
-
-
-Main Reducer Function List:
-addTrial
-addTimeline
-insertNodeAfterTrial
-
-moveInto
-moveTo
-
-duplicateTrial
-duplicateTimeline
-
-deleteTrial
-deleteTimeline
-
-setToggleCollectively
-setCollapsed
-onToggle
-
-onPreview
+/**
+ *@file This file describes the reducers for timelineNode class from jsPsych (timeline, trial)
+ *@author Junyan Qi <juqi@vassar.edu>
 */
-
-
-
-import * as utils from './utils';
-import { deepCopy } from '../../utils';
+import * as experimentUtils from './utils';
 import { DEFAULT_TIMELINE_PARAM, DEFAULT_TRIAL_PARAM } from './editor'
 
 const DEFAULT_TIMELINE_NAME = 'Untitled Timeline';
 const DEFAULT_TRIAL_NAME = 'Untitled Trial';
-
 
 /**************************  Helper functions  ********************************/
 
@@ -94,18 +45,26 @@ const getDefaultTrialName = (n=null) => {
 	// return DEFAULT_TRIAL_NAME + " " + n;
 };
 
+/**
+ *@namespace Timeline
+ *@property {string} id - The id of this node
+ *@property {string} parent - Its parent node's id
+ *@property {string} name - Node's name
+ *@property {boolean} enabled - Is the node enabled
+ *@property {Object} parameters - {@link jsPsychTimelineParameters}
+*/
 export function createTimeline(id,
 	parent=null,
 	name=getDefaultTimelineName(),
 	childrenById=[],
 	collapsed=true,
 	enabled=true,
-	parameters=deepCopy(DEFAULT_TIMELINE_PARAM)
+	parameters=utils.deepCopy(DEFAULT_TIMELINE_PARAM)
 	) {
 
 	return {
 		id: id,
-		type: utils.TIMELINE_TYPE,
+		type: experimentUtils.TIMELINE_TYPE,
 		name: name,
 		parent: parent,
 		childrenById: childrenById,
@@ -115,31 +74,40 @@ export function createTimeline(id,
 	};
 }
 
-
+/**
+ *@namespace Trial
+ *@property {string} id - The id of this node
+ *@property {string} parent - Its parent node's id
+ *@property {string} name - Node's name
+ *@property {boolean} enabled - Is the node enabled
+ *@property {Object} parameters - {@link jsPsychTrialParameters}
+*/
 export function createTrial(id,
 	parent=null,
 	name=getDefaultTrialName(),
 	enabled=true,
-	parameters=deepCopy(DEFAULT_TRIAL_PARAM)) {
+	parameters=utils.deepCopy(DEFAULT_TRIAL_PARAM)) {
 
 	return {
 		id: id,
-		type: utils.TRIAL_TYPE,
+		type: experimentUtils.TRIAL_TYPE,
 		name: name,
 		parent: parent,
 		enabled: enabled,
 		parameters: parameters,
 	};
 }
-/*
-action = {
-	id: id,
-	parent: string,
-}
-*/
 
 const isEnabled = (parent, isEnabled) => (parent ? parent.enabled && isEnabled : isEnabled);
 
+/**@function(state, action)
+ * @name addTimeline
+ * @description Add a timeline node to a parent node (Timeline node or the mainTimeline array)
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.parent - Refers to id of the timeline node that will contain the newly added timeline node. If value is null, then the new node is added to the mainTimline/
+ * @returns {Object} Returns a completely new Experiment State object
+*/
 export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
@@ -148,7 +116,7 @@ export function addTimeline(state, action) {
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
-		parent = deepCopy(parent);
+		parent = utils.deepCopy(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
 		parent.collapsed = false;
@@ -166,11 +134,13 @@ export function addTimeline(state, action) {
 	return new_state;
 }
 
-/*
-action = {
-	id: string,
-	parent: string,
-}
+/**@function(state, action)
+ * @name addTrial
+ * @description Add a trial node to a parent node (Timeline node or the mainTimeline array)
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.parent - Refers to id of the timeline node that will contain the newly added timeline node. If value is null, then the new node is added to the mainTimline/
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
@@ -180,7 +150,7 @@ export function addTrial(state, action) {
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
-		parent = deepCopy(parent);
+		parent = utils.deepCopy(parent);
 		new_state[parent.id] = parent;
 		parent.childrenById.push(id);
 		parent.collapsed = false;
@@ -191,12 +161,21 @@ export function addTrial(state, action) {
 	}
 
 	let trial = createTrial(id, action.parent, getDefaultTrialName(n));
+	// check if the trial is enabled
 	trial.enabled = isEnabled(parent, trial.enabled);
 
 	new_state[id] = trial;
 	return new_state;
 }
 
+/**@function(state, action)
+ * @name insertNodeAfterTrial
+ * @description Add a node after targeted node
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.targetId - Refers to id of the node to be inserted after
+ * @returns {Object} Returns a completely new Experiment State object
+*/
 export function insertNodeAfterTrial(state, action) {
 	let targetParent = state[action.targetId].parent;
 	let new_state;
@@ -222,12 +201,20 @@ export function insertNodeAfterTrial(state, action) {
 	return new_state;
 }
 
+/**@function(state, action)
+ * @private
+ * @name deleteTimelineHelper
+ * @description Hepler function that deals with deleting a timeline from the experiment
+ * @param {object} state - The Experiment State Object 
+ * @param {string} id - The id of the node to be deleted
+ * @returns {Object} Returns a modified Experiment State object
+*/
 function deleteTimelineHelper(state, id) {
 	let timeline = getNodeById(state, id);
 
 	// delete its children
 	timeline.childrenById.map((childId) => {
-		if (utils.isTimeline(state[childId])) {
+		if (experimentUtils.isTimeline(state[childId])) {
 			state = deleteTimelineHelper(state, childId);
 		} else {
 			state = deleteTrialHelper(state, childId)
@@ -241,7 +228,7 @@ function deleteTimelineHelper(state, id) {
 		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
 	} else {
 		parent =  getNodeById(state, parent)
-		parent = deepCopy(parent);
+		parent = utils.deepCopy(parent);
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
@@ -251,17 +238,26 @@ function deleteTimelineHelper(state, id) {
 	return state;
 }
 
-/*
-action = {
-	id: string
-}
+/**@function(state, action)
+ * @name deleteTimeline
+ * @description Delete a timeline node from the experiment 
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be deleted
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function deleteTimeline(state, action) {
-	let new_state = Object.assign({}, state);
-
-	return deleteTimelineHelper(new_state, action.id);
+	return deleteTimelineHelper(utils.deepCopy(state), action.id);
 }
 
+/**@function(state, action)
+ * @private
+ * @name deleteTrialHelper
+ * @description Hepler function that deals with deleting a trial from the experiment
+ * @param {object} state - The Experiment State Object 
+ * @param {string} id - The id of the node to be deleted
+ * @returns {Object} Returns a modified Experiment State object
+*/
 function deleteTrialHelper(state, id) {
 	let trial = getNodeById(state, id);
 	let parent = trial.parent;
@@ -270,7 +266,7 @@ function deleteTrialHelper(state, id) {
 		state.mainTimeline = state.mainTimeline.filter((item) => (item !== id));
 	} else {
 		parent = getNodeById(state, parent);
-		parent = deepCopy(parent);
+		parent = utils.deepCopy(parent);
 		state[parent.id] = parent;
 		parent.childrenById = parent.childrenById.filter((item) => (item !== id));
 	}
@@ -281,23 +277,32 @@ function deleteTrialHelper(state, id) {
 	return state;
 }
 
-/*
-action = {
-	id: string
-}
+/**@function(state, action)
+ * @name deleteTrial
+ * @description Delete a trial node from the experiment 
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be deleted
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function deleteTrial(state, action) {
-	let new_state = Object.assign({}, state);
-
-	return deleteTrialHelper(new_state, action.id);
+	return deleteTrialHelper(utils.deepCopy(state), action.id);
 }
 
+/**@function(state, action)
+ * @private
+ * @name duplicateTimelineHelper
+ * @description Hepler function that deals with duplicating a timeline from the experiment
+ * @param {string} dupId - The id of the new node
+ * @param {stinrg} targetId - The id of the node to be copied
+ * @returns {Object} Returns a modified Experiment State object
+*/
 function duplicateTimelineHelper(state, dupId, targetId) {
 
 	// find target
 	let target = state[targetId];
 	// deep copy it but with different id
-	let dup = deepCopy(target);
+	let dup = utils.deepCopy(target);
 	dup.id = dupId;
 
 	// clear dup children array
@@ -312,13 +317,13 @@ function duplicateTimelineHelper(state, dupId, targetId) {
 		dupTarget = state[dupTargetId];
 		// if this descendant is a timeline, call duplicate recusively to
 		// reach all nodes
-		if (utils.isTimeline(dupTarget)) {
+		if (experimentUtils.isTimeline(dupTarget)) {
 			newId = standardizeTimelineId(state.timelineCount++);
 			dupChild = duplicateTimelineHelper(state, newId, dupTargetId);
 		// if this descendant is a trial, simply duplicated it
 		} else {
 			newId = standardizeTrialId(state.trialCount++);
-			dupChild = deepCopy(dupTarget);
+			dupChild = utils.deepCopy(dupTarget);
 		}
 
 		// add dup child to dup and state
@@ -332,11 +337,13 @@ function duplicateTimelineHelper(state, dupId, targetId) {
 	return dup;
 }
 
-/*
-action = {
-	dupId: id, // assigned id
-	targetId: id, // target to be copyed
-}
+/**@function(state, action)
+ * @name duplicateTimeline
+ * @description Duplicate a timeline node from the experiment 
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.targetId - The id of the node to be duplicated
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function duplicateTimeline(state, action) {
 	const { targetId } = action;
@@ -356,7 +363,7 @@ export function duplicateTimeline(state, action) {
 		new_state.mainTimeline = new_state.mainTimeline.slice();
 		arr = new_state.mainTimeline;
 	} else {
-		parent = deepCopy(new_state[parent]);
+		parent = utils.deepCopy(new_state[parent]);
 		new_state[parent.id] = parent;
 		arr = parent.childrenById;
 	}
@@ -365,11 +372,13 @@ export function duplicateTimeline(state, action) {
 	return new_state;
 }
 
-/*
-action = {
-	dupId: id, // assigned id
-	targetId: id, // target to be copyed
-}
+/**@function(state, action)
+ * @name duplicateTrial
+ * @description Duplicate a trial node from the experiment 
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.targetId - The id of the node to be duplicated
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function duplicateTrial(state, action) {
 	const { targetId } = action;
@@ -380,7 +389,7 @@ export function duplicateTrial(state, action) {
 	// duplicate
 	let new_state = Object.assign({}, state);
 	let dupId = standardizeTrialId(new_state.trialCount++);
-	let dup = deepCopy(target);
+	let dup = utils.deepCopy(target);
 	// get its own id
 	dup.id = dupId;
 	new_state[dupId] = dup;
@@ -391,7 +400,7 @@ export function duplicateTrial(state, action) {
 		new_state.mainTimeline = new_state.mainTimeline.slice();
 		arr = new_state.mainTimeline;
 	} else {
-		parent = deepCopy(new_state[parent]);
+		parent = utils.deepCopy(new_state[parent]);
 		new_state[parent.id] = parent;
 		arr = parent.childrenById;
 	}
@@ -400,8 +409,13 @@ export function duplicateTrial(state, action) {
 	return new_state;
 }
 
-/*
-See if source is an ancestor of target
+/**@function(state, action)
+ * @private
+ * @name isAncestor
+ * @description Check if one node is another node's ancestor
+ * @param {string} sourceId
+ * @param {stinrg} targetId
+ * @returns {boolean}
 */
 function isAncestor(state, sourceId, targetId) {
 	let target = getNodeById(state, targetId);
@@ -415,13 +429,19 @@ function isAncestor(state, sourceId, targetId) {
 	return false;
 }
 
-/*
-Move source to a wanted position in the tree.
-Either right at or one slot behind the original node at that pos.
-action = {
-	sourceId: id, // source
-	targetId: id, // target
-}
+
+/**@function(state, action)
+ * @name moveTo
+ * @description Move the node to be the child or sibiling of another node
+ * Can't move if
+ * 1. it is moving to itself
+ * 2. self or target is null
+ * 3. ancestor to descendant
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.sourceId - The id of the node to be moved
+ * @param {string} action.targetId - The target node's id to which the source node is moving
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function moveTo(state, action) {
 	// can't move if
@@ -451,7 +471,7 @@ export function moveTo(state, action) {
 			new_state.mainTimeline = new_state.mainTimeline.slice();
 			arr = new_state.mainTimeline;
 		} else {
-			let parent = deepCopy(new_state[source.parent]);
+			let parent = utils.deepCopy(new_state[source.parent]);
 			new_state[parent.id] = parent;
 			arr = parent.childrenById;
 		}
@@ -467,7 +487,7 @@ export function moveTo(state, action) {
 		if (sourceParent === null) {
 			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== source.id));
 		} else {
-			sourceParent = deepCopy(new_state[sourceParent]);
+			sourceParent = utils.deepCopy(new_state[sourceParent]);
 			new_state[sourceParent.id] = sourceParent;
 			sourceParent.childrenById = sourceParent.childrenById.filter((id) => (id !== source.id));
 		}
@@ -479,7 +499,7 @@ export function moveTo(state, action) {
 			new_state.mainTimeline = new_state.mainTimeline.slice();
 			arr = new_state.mainTimeline;
 		} else {
-			targetParent = deepCopy(new_state[targetParent]);
+			targetParent = utils.deepCopy(new_state[targetParent]);
 			new_state[targetParent.id] = targetParent;
 			arr = targetParent.childrenById;
 		}
@@ -499,13 +519,13 @@ export function moveTo(state, action) {
 	return new_state;
 }
 
-/*
-If node right above source node can take children,
-move source into that node.
-New parent automatically expands.
-action = {
-	id: id, // source
-}
+/**@function(state, action)
+ * @name moveInto
+ * @description Find a potential parent node and move the node as its child. More specifically, if node right above source node can take children, move the source into that node. (The new parent will automatically expand)
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be moved
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function moveInto(state, action) {
 	let node = state[action.id];
@@ -523,13 +543,12 @@ export function moveInto(state, action) {
 	// 1. source is not the first child of its parent
 	// 2. the node above source is a timeline
 	let hasParentCandidate =  index > 0 &&
-		utils.isTimeline(state[parentChildren[index-1]]);
-
+		experimentUtils.isTimeline(state[parentChildren[index-1]]);
 
 	if (hasParentCandidate) {
 		// deep copies
 		let new_state = Object.assign({}, state);
-		node = deepCopy(node);
+		node = utils.deepCopy(node);
 		new_state[node.id] = node;
 
 		// delete source from old parent
@@ -538,14 +557,14 @@ export function moveInto(state, action) {
 			parentCandidateId = new_state.mainTimeline[new_state.mainTimeline.indexOf(node.id)-1];
 			new_state.mainTimeline = new_state.mainTimeline.filter((id) => (id !== node.id));
 		} else {
-			parent = deepCopy(new_state[parent]);
+			parent = utils.deepCopy(new_state[parent]);
 			new_state[parent.id] = parent;
 			parentCandidateId = parent.childrenById[parent.childrenById.indexOf(node.id)-1];
 			parent.childrenById = parent.childrenById.filter((id) => (id !== node.id));
 		}
 
 		// deep copy new parent
-		let parentCandidate = deepCopy(new_state[parentCandidateId]);
+		let parentCandidate = utils.deepCopy(new_state[parentCandidateId]);
 		new_state[parentCandidateId] = parentCandidate;
 
 		// insert source into new parent, new parent automatically expands
@@ -559,16 +578,16 @@ export function moveInto(state, action) {
 	} else {
 		return state;
 	}
-
-
 }
 
-/*
-Move node by keyboard input.
-action = {
-	id: id, // source
-	key: number, // denote arrow keys
-}
+/**@function(state, action)
+ * @name moveByKeyboard
+ * @description Move the node by keyboard input (arrows)
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be moved
+ * @param {number} action.key - Event key
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function moveByKeyboard(state, action) {
 	const { id, key } = action;
@@ -626,12 +645,14 @@ export function moveByKeyboard(state, action) {
 	return moveTo(state, { sourceId: id, targetId: targetId, isLast: isLast });
 }
 
-/*
-action = {
-	id: selected id,
-	previewAll: bool, // indicate if all items on timeline shall be played
-}
-
+/**@function(state, action)
+ * @name onPreview
+ * @description Preview the selected node
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be previewed
+ * @param {boolean} action.previewAll - Indicates if all items on timeline shall be played
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function onPreview(state, action) {
 	let { id } = action;
@@ -643,16 +664,16 @@ export function onPreview(state, action) {
 	return new_state;
 }
 
-/*
-action = {
-	id: id, // target
-
-	 // if is bool, meaning we set enabled to a specific value
-	spec: bool or null,
-}
+/**@function(state, action)
+ * @private
+ * @name onToggleHelper
+ * @description Recursive hepler function that deals with toggling (enable or disable) a node (and its descendants if it has any)
+ * @param {Object} state - The experiment state object
+ * @param {string} id - The id of the node to be enabled or disabled
+ * @param {stinrg} spec - The value that user sets to indicate if the node should be toggled
 */
 function onToggleHelper(state, id, spec=null) {
-	let node = deepCopy(state[id]);
+	let node = utils.deepCopy(state[id]);
 	state[node.id] = node;
 	if (spec === null) {
 		node.enabled = !node.enabled;
@@ -662,13 +683,37 @@ function onToggleHelper(state, id, spec=null) {
 
 	// recusive call to set all descendants of timeline
 	// to have the same enabled attrib
-	if (utils.isTimeline(node)) {
+	if (experimentUtils.isTimeline(node)) {
 		for (let cid of node.childrenById) {
 			onToggleHelper(state, cid, node.enabled)
 		}
 	}
 }
 
+/**@function(state, action)
+ * @private
+ * @name enableTrackBack
+ * @description Recursive hepler function that deals with toggling (enable or disable) a node (and its ancestors if it has any)
+ * @param {Object} state - The experiment state object
+ * @param {string} parent - The toggled id's parent's id
+*/
+function enableTrackBack(state, parent) {
+	if (parent && !state[parent].enabled) {
+		parent = utils.deepCopy(state[parent]);
+		state[parent.id] = parent;
+		parent.enabled = true;
+		enableTrackBack(state, parent.parent);
+	}
+}
+
+/**@function(state, action)
+ * @name onToggle
+ * @description Enable or disable a node (and its possible descendants and ancestors)
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be toggled
+ * @returns {Object} Returns a completely new Experiment State object
+*/
 export function onToggle(state, action) {
 	let new_state = Object.assign({}, state);
 
@@ -678,50 +723,20 @@ export function onToggle(state, action) {
 	return new_state;
 }
 
-// When enable one only, enable its ancestors too
-function enableTrackBack(state, parent) {
-	if (parent && !state[parent].enabled) {
-		parent = deepCopy(state[parent]);
-		state[parent.id] = parent;
-		parent.enabled = true;
-		enableTrackBack(state, parent.parent);
-	}
-}
-
-
-/*
-action = {
-	flag: bool, // whether enable or not
-	spec: id, // toggle one only option
-}
+/**@function(state, action)
+ * @name setCollapsed
+ * @description GUI setting. Collapse a tree node
+ * @param {object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {string} action.id - The id of the node to be collapsed
+ * @returns {Object} Returns a completely new Experiment State object
 */
-export function setToggleCollectively(state, action) {
-	const { flag, spec } = action;
-	let new_state = Object.assign({}, state);
-
-	for (let id of new_state.mainTimeline) {
-		if (id === spec) {
-			continue;
-		}
-		onToggleHelper(new_state, id, flag);
-	}
-
-	if (spec) {
-		onToggleHelper(new_state, spec, true);
-		let specNode = new_state[spec];
-		enableTrackBack(new_state, specNode.parent);
-	}
-
-	return new_state;
-}
-
-
 export function setCollapsed(state, action) {
 	let timeline = state[action.id];
 
 	let new_state = Object.assign({}, state);
 
-	timeline = deepCopy(timeline);
+	timeline = utils.deepCopy(timeline);
  	timeline.collapsed = !timeline.collapsed;
 
 	new_state[timeline.id] = timeline;
