@@ -8,23 +8,24 @@ import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
 
 /**
- *@typeof {(string|object)} guiStringValue - When the input value is empty string, it should be converted to null for AWS.DynamoDB storage purpose. 
+ * @typeof {(string|number|object)} guiValue - A native javascript value. 
+ * It is important that if the input value is empty string, it should be converted to null for AWS.DynamoDB storage purpose. 
 */
 
 /**
  * Experiment State Template
  * @namespace ExperimentState
- * @property {guiStringValue} experimentName=null - Experiment Name
- * @property {guiStringValue} experimentId=null - Experiment's identifier in DynamoDB, should be generated as a UUID by uuid()
+ * @property {guiValue} experimentName=null - Experiment Name
+ * @property {guiValue} experimentId=null - Experiment's identifier in DynamoDB, should be generated as a UUID by uuid()
  * @property {Object} owner - Experiment Owner's information { username: string, identityId: id}
- * @property {guiStringValue} owner.username=null - Experiment Owner's username
- * @property {guiStringValue} owner.identityId=null - Experiment Owner's identityId (see docs for AWS.Cognito)
+ * @property {guiValue} owner.username=null - Experiment Owner's username
+ * @property {guiValue} owner.identityId=null - Experiment Owner's identityId (see docs for AWS.Cognito)
  * @property {boolean} private - True if the experiment is private
  * @property {Object} experimentDetails - Experiment Detail Information
  * @property {object} experimentDetails.createdDate - The date the experiment is created
  * @property {object} experimentDetails.lastEditDate - The date that the last edit happens to the experiment
- * @property {guiStringValue} experimentDetails.description=null - User defined experiment Description
- * @property {guiStringValue} previewId=null - The id of the node that is getting previewed
+ * @property {guiValue} experimentDetails.description=null - User defined experiment Description
+ * @property {guiValue} previewId=null - The id of the node that is getting previewed
  * @property {number} timelineCount=0 - The inner tracker for timeline node
  * @property {number} trialCount=0 - The inner tracker for trial node
  * @property {Array.<string>} mainTimeline=[] - The main jsPsych timeline, should hold the id of nodes
@@ -63,8 +64,8 @@ export const initState = {
  * @description Set experiment's name 
  * @param {Object} state - The Experiment State Object 
  * @param {Object} action - Describes the action user invokes
- * @param {string} action.name - The experiment's user defined name
- * @returns {Object} Returns a completely new Experiment State object
+ * @param {guiValue} action.name - The experiment's user defined name
+ * @returns {object} Returns a completely new Experiment State object
 */
 const setExperimentName = (state, action) => {
 	return Object.assign({}, state, {
@@ -76,8 +77,8 @@ const setExperimentName = (state, action) => {
  * @name experimentReducer
  * @description The root reducer for the whole experiment state
  * @param {object} state - The Experiment State Object 
- * @param {Object} action - Describes the action user invokes
- * @returns {Object} Returns a completely new Experiment State object
+ * @param {object} action - Describes the action user invokes
+ * @returns {object} Returns a completely new Experiment State object
 */
 export default function experimentReducer(state=initState, action) {
 	switch(action.type) {

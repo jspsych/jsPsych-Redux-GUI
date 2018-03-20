@@ -6,7 +6,8 @@ import { CodeLanguage } from '../../components/CodeEditor';
 
 /**
  * @typeof {Object} StringifiedFunction
- * @classdesc Class representing a stringified function. This is created and used like an objecy because AWS.DynamoDB does not take functions.
+ * @classdesc Class representing a stringified function. This is created and used like an objecy 
+ * because AWS.DynamoDB does not take functions.
  * The class is merely just for more maintainable code purpose.
  * @class
  * @public
@@ -14,10 +15,10 @@ import { CodeLanguage } from '../../components/CodeEditor';
 export class StringifiedFunction {
 	/**
      * Create a stringified function
-     * @param {(string|null)} code - The code from user input
+     * @param {guiValue} code - The code from user input
      * @param {boolean} ifEval - If the code should be evaluated when generating the deployment code
-     * @param {enum} language - Tells the GUI (react-codemirror) which language mode should it use
-     * @property {boolean} isFunc -
+     * @param {CodeLanguageEnum} language - Tells the GUI (react-codemirror) which language mode should it use
+     * @property {boolean} isFunc - Distinguish this object from other object, since AWS.DynamoDB does not store classes
      */
 	constructor({code=null, ifEval=true, language=CodeLanguage.javascript[0]}) {
 		this.code = code;
@@ -28,12 +29,20 @@ export class StringifiedFunction {
 	}
 }
 
+/**
+ * @funcion createFuncObj
+ * @desc Create a jsPsychValueObject
+ * @param {guiValue} value=null
+ * @param {StringifiedFunction} func=createFuncObject()
+ * @param {ParameterModeEnum} mode=ParameterMode.USE_VAL
+ * @returns {jsPsychValueObject}
+*/
 export const createFuncObj = (code=null, info=null) => (new StringifiedFunction({code: code, info: info}));
 
 const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 
 /**
- * @enum
+ * @enum {string}
  * @constant
  * @default
 */
@@ -43,7 +52,7 @@ export const jsPsych_Display_Element = "jsPsych-Window";
  * jsPyschInit State Template
  * @namespace jsPyschInitState
  * @description Default state for jsPsych initial and lanch setting. 
- * @property {guiStringValue} display_element=jsPsych_Display_Element - 
+ * @property {guiValue} display_element=jsPsych_Display_Element - 
  * The id of the document element that the experiment should be displaed in. See {@link http://www.jspsych.org/}
  * @property {number} default_iti=0 - See {@link http://www.jspsych.org/}
  * @property {StringifiedFunction} on_finish - See {@link http://www.jspsych.org/}
@@ -107,12 +116,12 @@ export const settingType = {
 }
 
 /**@function(state, action)
- * @name experimentReducer
- * @description The root reducer for the whole experiment state
- * @param {object} state - The Experiment State Object 
+ * @name setJspyschInit
+ * @description The root reducer for the whole jsPsychInit state
+ * @param {object} state - The jsPsychInit state Object 
  * @param {Object} action - Describes the action user invokes
  * @param {SettingTypeEnum} action.key - Describes which value to be set
- * @param {(guiStringValue|number|boolean|Array) action.value - Holds the user input value
+ * @param {(guiValue|number|boolean|Array) action.value - Holds the user input value
  * @returns {Object} Returns a completely new Experiment State object
 */
 export function setJspyschInit(state, action) {

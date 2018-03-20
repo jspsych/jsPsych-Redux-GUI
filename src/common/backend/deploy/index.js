@@ -1,5 +1,3 @@
-// var esprima = require("esprima");
-// var escodegen = require("escodegen");
 var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
@@ -34,7 +32,7 @@ const undefinedObj = {
   timeline: [
     {
       type: 'html-keyboard-response',
-        stimulus: createComplexDataObject(''),
+        stimulus: createComplexDataObject(null),
         choices: createComplexDataObject(null),
         prompt: createComplexDataObject('<p>No trial is defined or selected!</p>'),
         stimulus_duration: createComplexDataObject(null),
@@ -235,7 +233,14 @@ export function generateCode(state, all=false, deploy=false) {
       } else {
         if (node.parameters.type) {
           let error = [];
-          let trialBlock = generateTrialBlock(state, node, all, deploy, node.parameters.type, error);
+          let trialBlock = generateTrialBlock({
+            state: state,
+            trial: node,
+            all: all,
+            deploy: deploy,
+            parameterType: node.parameters.type,
+            error: error
+          });
 
           // when in preview mode, render error message if there is
           if (!deploy && error.length > 0) {
@@ -316,12 +321,13 @@ export const createComplexDataObject = (value=null, func=createFuncObj(), mode=n
   timelineVariable: null,
 })
 */
-function generateTrialBlock(state, trial, all=false, deploy=false, parameterType, error) {
+function generateTrialBlock({state, trial, all=false, deploy=false, parameterType, error}) {
   let res = {};
   let parameters = trial.parameters;
   let parameterInfo = parameterType && injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
 
   for (let key of Object.keys(parameters)) {
+    // NOTE: this function currently does not fully operate on nested options
     // don't render if (parameter_default_value is undefined and its actual value is null/undefined)
     // if (parameterInfo[key].hasOwnProperty('default') && parameterInfo[key].default === undefined) {
     //   console.log(parameters[key])
@@ -379,7 +385,14 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
         if (desc.parameters.type) {
           // generate trial block
           let error = [];
-          let trialBlock = generateTrialBlock(state, desc, all, deploy, desc.parameters.type, error);
+          let trialBlock = generateTrialBlock({
+            state: state,
+            trial: desc,
+            all: all,
+            deploy: deploy,
+            parameterType: desc.parameters.type,
+            error: error
+          });
           if (!isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);
           }
