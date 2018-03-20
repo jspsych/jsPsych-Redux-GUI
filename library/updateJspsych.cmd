@@ -1,5 +1,5 @@
-@echo git submodule update
-@git submodule update
+@echo git submodule update jsPsych
+@git submodule update jsPsych
 @echo.
 @echo Finish fetching jsPsych...
 @echo.
