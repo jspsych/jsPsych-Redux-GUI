@@ -21,7 +21,7 @@ import {
 
 
 const changeExperimentName = (dispatch, text) => {
-	text = utils.toNull(text);
+	text = utils.toNull(text.trim());
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 

@@ -12,8 +12,8 @@ import {List, ListItem} from 'material-ui/List';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import SvgIcon from 'material-ui/SvgIcon';
 
-import CheckBoxIcon from 'material-ui/svg-icons/toggle/check-box';
-import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
+import CheckBoxIcon from 'material-ui/svg-icons/toggle/radio-button-checked';
+import UnCheckBoxIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 import Launch from  'material-ui/svg-icons/action/launch';
 import UndoIcon from  'material-ui/svg-icons/content/undo';
 import NumberIcon from 'material-ui/svg-icons/image/looks-one';

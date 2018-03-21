@@ -1,27 +1,27 @@
 import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
-import * as backendActions from '../../../actions/backendActions';
-import ExperimentList from '../../../components/Appbar/ExperimentList';
-import * as Errors from '../../../constants/Errors' ;
-import { $save } from '../index';
+import * as backendActions from '../../../../actions/backendActions';
+import ExperimentList from '../../../../components/Appbar/UserMenu/ExperimentList';
+import * as Errors from '../../../../constants/Errors' ;
+import { $save } from '../../index';
 import {
 	fetchExperimentById,
 	pushUserData,
 	deleteExperiment as $deleteExperiment,
 	pushExperimentData,
 	// pushState
-} from '../../../backend/dynamoDB';
+} from '../../../../backend/dynamoDB';
 import {
 	deleteFiles,
 	copyParam,
 	copyFiles,
 	listBucketContents
-} from '../../../backend/s3';
+} from '../../../../backend/s3';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
 	// notifyWarningBySnackbar
-} from '../../Notification';
+} from '../../../Notification';
 
 const $pullExperiment = (dispatch, getState, selected) => {
 	// fetch experiment

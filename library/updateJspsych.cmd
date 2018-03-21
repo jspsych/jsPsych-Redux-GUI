@@ -1,5 +1,5 @@
-@echo git submodule update jsPsych
-@git submodule update jsPsych
+@echo git submodule update --init --force --remote
+@git submodule update --init --force --remote
 @echo.
 @echo Finish fetching jsPsych...
 @echo.
