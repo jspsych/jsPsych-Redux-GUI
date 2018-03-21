@@ -19,7 +19,7 @@ const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
 const updateFileList = (dispatch, feedback = null) => {
 	dispatch((dispatch, getState) => {
 		if (!getState().experimentState.experimentId) return;
-		$listBucketContents(`${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`).then((data) => {
+		$listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
 			dispatch(editorActions.updateMediaAction(data));
 			pushExperimentData(getState().experimentState).then(() => {
 				if (feedback) {

@@ -120,7 +120,7 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 		) : [];
 		// s3 duplicate
 		copyFiles({params: params}).then(() => {
-			listBucketContents(`${getState().userState.user.identityId}/${experimentState.experimentId}/`).then((data) => {
+			listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
 				dispatch(editorActions.updateMediaAction(data));
 				pushState(getState()).then(() => {
 					notifySuccessBySnackbar(dispatch, "Saved !");

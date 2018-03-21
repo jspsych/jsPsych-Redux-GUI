@@ -189,7 +189,9 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 			// duplicate s3 files
 			copyFiles({params: params}).then(() => {
 				// fetch new media
-				listBucketContents(`${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`).then((data) => {
+				listBucketContents(
+					{Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}
+					).then((data) => {
 					// update media property
 					experimentState.media = data;
 					// process state: register this duplicated experiment under user
