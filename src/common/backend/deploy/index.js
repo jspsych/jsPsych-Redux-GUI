@@ -166,6 +166,7 @@ export function cloudDeploy(state) {
   let param = generateUploadParam({
     Key: [experimentId, indexPage.name].join(Delimiter),
     Body: indexPage,
+    ContentType: 'text/html'
   });
   uploadFile({param: param, bucket: Cloud_Bucket});
 
