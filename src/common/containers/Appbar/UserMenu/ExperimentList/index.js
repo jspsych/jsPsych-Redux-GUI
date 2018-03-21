@@ -13,7 +13,7 @@ import {
 } from '../../../../backend/dynamoDB';
 import {
 	deleteFiles,
-	copyParam,
+	generateCopyParam,
 	copyFiles,
 	listBucketContents
 } from '../../../../backend/s3';
@@ -184,12 +184,12 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 
 			// duplicate resources saved on s3
 			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
-				(copyParam(f.Key, f.Key.replace(data.Item.fetch.experimentId, newId)))
+				(generateCopyParam({source: f.Key, target: f.Key.replace(data.Item.fetch.experimentId, newId)}))
 			) : [];
 			// duplicate s3 files
-			copyFiles(params).then(() => {
+			copyFiles({params: params}).then(() => {
 				// fetch new media
-				listBucketContents(newId).then((data) => {
+				listBucketContents(`${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`).then((data) => {
 					// update media property
 					experimentState.media = data;
 					// process state: register this duplicated experiment under user

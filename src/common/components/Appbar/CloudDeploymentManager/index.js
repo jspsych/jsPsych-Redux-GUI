@@ -5,7 +5,7 @@ import Subheader from 'material-ui/Subheader';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 
-import CloudIcon from 'material-ui/svg-icons/file/cloud-upload';
+import CloudIcon from 'material-ui/svg-icons/file/cloud-queue';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
@@ -42,6 +42,7 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				open: true
 			})
+			this.props.cloudDeploy()
 		}
 
 		this.handleClose = () => {
