@@ -51,6 +51,7 @@ export const SET_TIMELINE_VARIABLE = "SET_TIMELINE_VARIABLE";
 // User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
+export const SET_OSFTOKEN = "SET_OSFTOKEN";
 
 // Backend Actions
 export const SIGN_UP_PUSH = "SIGN_UP_PUSH";
@@ -65,3 +66,6 @@ export const DUPLICATE_EXPERIMENT = "DUPLICATE_EXPERIMENT";
 // Notification Actions
 export const NOTIFICATION = "NOTIFICATION";
 export const NOTIFICATION_CLOSE = "NOTIFICATION_CLOSE";
+
+// Cloud
+export const SET_OSF_PARENT = "SET_OSF_PARENT"

@@ -1,9 +1,10 @@
 import AWS from '../aws';
 
-const Bucket_Name = "jspsych-builder";
-const Website_Bucket = "builder.jspsych.org";
-const Api_Version = "2006-03-01";
-const Delimiter = "/";
+export const Bucket_Name = "jspsych-builder";
+export const Website_Bucket = "builder.jspsych.org";
+export const Cloud_Bucket = "experiments.jspsych.org";
+export const Api_Version = "2006-03-01";
+export const Delimiter = "/";
 
 /*
 Connect to S3
@@ -20,42 +21,52 @@ function connectS3(bucket=Bucket_Name) {
 /*
 Returns a promise of S3 API call "putObject"
 */
-function uploadFile(param, progressHook) {
-  return connectS3().putObject({
-    ...param
-  }).on('httpUploadProgress', function(evt) {
-    progressHook(parseInt((evt.loaded * 100) / evt.total, 10));
-  }).promise();
+export function uploadFile({
+  param,
+  progressHook = null,
+  bucket = Bucket_Name
+}) {
+  if (!progressHook) {
+    return connectS3(bucket).putObject({
+      ...param
+    }).promise();
+  } else {
+    return connectS3(bucket).putObject({
+      ...param
+    }).on('httpUploadProgress', function(evt) {
+      progressHook(parseInt((evt.loaded * 100) / evt.total, 10));
+    }).promise();
+  }
 }
 
 /*
 Returns require param for S3 API call "putObject"
 
-file --> should have file.name property
+file --> should have file.name property (file object)
 */
-function uploadParam(file, experimentId) {
-  let path = [AWS.config.credentials.identityId, 
-              experimentId, 
-              file.name];
+export function generateUploadParam({Key, Body, ...params}) {
   return {
-    // path
-    Key: path.join(Delimiter),
+    // specified s3 path of to-be-stored file
+    Key: Key,
     // file content
-    Body: file
+    Body: Body,
+    ...params
   };
 }
 
 /*
 Upload a list of files.
 
-files --> array of files with file.name property
-experimentId --> id of the experiment
 progressHook --> callback that shows user uploading progress
 */
-export function uploadFiles(files, experimentId, progressHook){
-  return Promise.all(files.map((file) => (
-    uploadFile(uploadParam(file, experimentId), (p) => { progressHook(file.name, p) })
-    )));
+export function uploadFiles({params, progressHook=null, bucket=Bucket_Name}){
+  return Promise.all(params.map((param) => {
+    return uploadFile({
+      param: param, 
+      progressHook: progressHook ? (p) => { progressHook(param.Body.name, p) } : progressHook, 
+      bucket: bucket
+    })
+    }));
 }
 
 /*
@@ -82,10 +93,10 @@ export function deleteFiles(filePaths) {
 /*
 List bucket contents, the fetched value should be experimentState.media
 */
-export function listBucketContents(experimentId){
-  return connectS3().listObjectsV2({
+export function listBucketContents({Prefix, Delimiter = Delimiter, bucket = Bucket_Name}){
+  return connectS3(bucket).listObjectsV2({
       Delimiter: Delimiter,
-      Prefix: AWS.config.credentials.identityId + Delimiter + experimentId + Delimiter
+      Prefix: Prefix
     }).promise();
 }
 
@@ -133,25 +144,33 @@ export function getFiles(keys, callback, progressHook) {
 /*
 Returns param for S3 API call "copyObject"
 */
-export function copyParam(source, target) {
+export function generateCopyParam({
+  source,
+  target,
+  sourceBucket = Bucket_Name,
+  targetBucket = Bucket_Name,
+  ...params
+}) {
   return {
-    CopySource: Bucket_Name + "/" + source,
-    Key: target
+    Bucket: targetBucket,
+    CopySource: `${sourceBucket}/${source}`,
+    Key: target,
+    ...params
   };
 }
 
 /*
 Copy S3 file
 */
-export function copyFile(param) {
-  return connectS3().copyObject(param).promise();
+export function copyFile({param, bucket=Bucket_Name}) {
+  return connectS3(bucket).copyObject(param).promise();
 }
 
 /*
 Copy S3 files
 */
-export function copyFiles(params) {
-  return Promise.all(params.map((param) => (copyFile(param))));
+export function copyFiles({params, bucket=Bucket_Name}) {
+  return Promise.all(params.map((param) => (copyFile({param: param, bucket: bucket}))));
 }
 
 

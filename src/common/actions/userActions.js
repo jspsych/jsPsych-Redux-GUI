@@ -21,3 +21,10 @@ export function signOutAction() {
 		signIn: false,
 	};
 }
+
+export function setOsfTokenAction(osfToken) {
+	return {
+		type: actionTypes.SET_OSFTOKEN,
+		osfToken: osfToken
+	}
+}

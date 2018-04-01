@@ -111,9 +111,9 @@ function signInPull(state, action) {
 	let { userData, experimentData } = action;
 	if (userData) {
 		userData = userData.Item.fetch;
-		new_state.userState = Object.assign({}, new_state.userState);
-		new_state.userState.lastModifiedExperimentId = userData.lastModifiedExperimentId;
-		new_state.userState.experiments = userData.experiments;
+		new_state.userState = Object.assign({}, new_state.userState, {
+			...userData
+		});
 	}
 	if (experimentData) {
 		experimentData = experimentData.Item.fetch;

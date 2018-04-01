@@ -15,7 +15,7 @@ import { pushState } from '../../backend/dynamoDB';
 import { diyDeploy as $diyDeploy } from '../../backend/deploy';
 import {
 	listBucketContents,
-	copyParam,
+	generateCopyParam,
 	copyFiles,
 } from '../../backend/s3';
 
@@ -116,11 +116,11 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 		onStart();
 		let experimentState = getState().experimentState;
 		let params = (experimentState.media.Contents) ? experimentState.media.Contents.map((f) =>
-			(copyParam(f.Key, f.Key.replace(oldExperimentId, experimentState.experimentId)))
+			(generateCopyParam({source: f.Key, target: f.Key.replace(oldExperimentId, experimentState.experimentId)}))
 		) : [];
 		// s3 duplicate
-		copyFiles(params).then(() => {
-			listBucketContents(experimentState.experimentId).then((data) => {
+		copyFiles({params: params}).then(() => {
+			listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
 				dispatch(editorActions.updateMediaAction(data));
 				pushState(getState()).then(() => {
 					notifySuccessBySnackbar(dispatch, "Saved !");

@@ -2,9 +2,26 @@ var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
+import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
-import { getSignedUrl, getFiles, getJsPsychLib } from '../s3';
+import {
+  getSignedUrl,
+  getFiles,
+  getJsPsychLib,
+  generateUploadParam,
+  uploadFile,
+  generateCopyParam,
+  copyFiles,
+  Cloud_Bucket,
+  Bucket_Name as User_Bucket,
+  Website_Bucket,
+  Delimiter,
+  listBucketContents
+} from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
+
+const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/DynamoDBTutorial/";
+const SaveDataToOSF_Function_Name = "saveDataToOSF";
 
 const jsPsych = window.jsPsych;
 
@@ -13,6 +30,8 @@ const Deploy_Folder = 'assets';
 const jsPysch_Folder = 'jsPsych';
 
 const DEPLOY_PATH = 'assets/';
+
+const jsPsych_PATH = 'jsPsych/';
 
 const welcomeObj = {
   ...jsPsychInitState,
@@ -42,12 +61,27 @@ const undefinedObj = {
   ]
 }
 
-const dataSaveInDIYObj = {
-  type: 'call-function',
-  func: function() {
-    serverComm.save_data(jsPsych.data.get().values());
-  }
+const generateDataSaveInCloudTrial = () => {
+  let param = {
+    type: 'call-function',
+    func: createComplexDataObject(null)
+  };
+  param.func.func.code = `
+    function() {
+      ${SaveDataToOSF_Function_Name}(jsPsych.data.get().csv());
+    }
+  `
+  param.func.mode = ParameterMode.USE_FUNC;
+
+  let res = createTrial('SaveDataTrial',
+      null,
+      "Save Data To OSF",
+      true,
+      param
+    );
+  return res;
 }
+
 
 const errorMessageObj = (error) => {
   let message = '';
@@ -98,36 +132,20 @@ export function diyDeploy(state, progressHook) {
 
   /* ************ Step 1 ************ */
   // Extract deploy information
-  let deployInfo = {
-    experimentName: experimentState.experimentName,
-    // search for used media
-    /*
-    media = {
-      s3-address-of-file: filename
-    }
-    */
-    media: {},
-    code: generateCode(experimentState, true, true),
-  }
-  // Extract used plugins and media
-  extractDeployInfomation(experimentState, deployInfo, experimentState.media.Prefix);
+  let deployInfo = extractDeployInfomation(experimentState);
+
   /* ************ Step 2 ************ */
   let filePaths = Object.keys(deployInfo.media);
-  let total = 0;
-  // Get total size of files that need to be downloaded
-  if (experimentState.media.Contents) {
-    for (let f of experimentState.media.Contents) {
-      if (filePaths.indexOf(f.Key) > -1) {
-        total += f.Size;
-      }
-    }
-  }
   // initialize progress
-  progressHook(filePaths.map((d) => (0)), total);
+  progressHook(filePaths.map((d) => (0)), deployInfo.downloadSize);
 
   /* ************ Step 2 && 3 ************ */
+  // generate error log
+  if (deployInfo.errorLog !== '') {
+    zip.file("error log.txt", deployInfo.errorLog)
+  }
   // generate index.html, append it in zip file
-  zip.file("index.html", generatePage(deployInfo));
+  zip.file("index.html", generatePage({deployInfo: deployInfo}));
   // create assets folder
   var assets = zip.folder(Deploy_Folder);
   var jsPsych = zip.folder(jsPysch_Folder);
@@ -136,7 +154,7 @@ export function diyDeploy(state, progressHook) {
   return getFiles(filePaths, (key, data) => {
     assets.file(deployInfo.media[key], data);
   }, (loaded) => {
-    progressHook(loaded, total);
+    progressHook(loaded, deployInfo.downloadSize);
   }).then(() => {
     // download jspysch library
     getJsPsychLib((key, data) => {
@@ -157,6 +175,120 @@ export function diyDeploy(state, progressHook) {
   })
 }
 
+export function cloudDeploy({
+  state
+}) {
+  var experimentState = utils.deepCopy(state.experimentState);
+  let saveTrial = generateDataSaveInCloudTrial();
+  experimentState[saveTrial.id] = saveTrial;
+  experimentState.mainTimeline.push(saveTrial.id);
+
+  var experimentId = experimentState.experimentId,
+      deployInfo = extractDeployInfomation(experimentState),
+      filePaths = Object.keys(deployInfo.media);
+
+  var indexPage = new File([generatePage({
+    deployInfo: deployInfo,
+    cloudMode: true,
+    userId: state.userState.user.identityId,
+    osfFolderId: experimentState.osfParentNode
+  })], "index.html");
+  var param = generateUploadParam({
+    Key: [experimentId, indexPage.name].join(Delimiter),
+    Body: indexPage,
+    ContentType: 'text/html'
+  });
+
+  function uploadCode() {
+    return uploadFile({
+      param: param,
+      bucket: Cloud_Bucket
+    });
+  }
+  
+  function uploadAsset() {
+    return listBucketContents({
+      Prefix: `${experimentId}/${Deploy_Folder}/`,
+      bucket: Cloud_Bucket
+    }).then((data) => {
+      let exists = data.Contents.map(item => {
+        let keys = item.Key.split(Delimiter);
+        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(Delimiter);
+      })
+      filePaths = filePaths.filter(f => exists.indexOf(f) < 0);
+      return filePaths.map((f) => {
+        return generateCopyParam({
+          source: f,
+          target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
+          targetBucket: Cloud_Bucket
+        })
+      });
+    }).then((params) => {
+      return copyFiles({
+        params: params
+      });
+    });
+  }
+
+  function uploadLib() {
+    // `${experimentId}/${jsPysch_Folder}/`
+    return listBucketContents({
+      Prefix: `${jsPysch_Folder}/`,
+      bucket: Website_Bucket
+    }).then((data) => {
+      let jsPsychParams = data.Contents.map((f) => (
+        generateCopyParam({
+          source: f.Key,
+          target: `${experimentId}/${f.Key}`,
+          targetBucket: Cloud_Bucket,
+          sourceBucket: Website_Bucket,
+        })
+      ));
+      return jsPsychParams;
+    }).then((params) => {
+      return copyFiles({params: params});
+    })
+  }
+
+  return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
+}
+
+function extractDeployInfomation(experimentState) {
+  let deployInfo = {
+    experimentName: experimentState.experimentName,
+    // search for used media
+    /*
+    media = {
+      s3-address-of-file: filename
+    }
+    */
+    media: {},
+    code: generateCode(experimentState, true, true),
+    errorLog: '',
+    downloadSize: 0
+  }
+  extractDeployInfomationHelper(experimentState, deployInfo, experimentState.media.Prefix);
+  let resources = Array.isArray(experimentState.media.Contents) ? experimentState.media.Contents.map(f => [f.Key, f.Size]) : [];
+  for (let f of Object.keys(deployInfo.media)) {
+    let found = false, size = 0;
+    for (let r of resources) {
+      if (r[0] === f) {
+        found = true;
+        size = r[1];
+        break;
+      }
+    }
+    if (found) {
+      deployInfo.downloadSize += size;
+    } else {
+      deployInfo.errorLog += `"${deployInfo.media[f]}" is not found!\r\n`
+      delete deployInfo.media[f];
+    }
+  }
+  
+  return deployInfo;
+}
+
 /*
 Walk through experimentState to extract used media, that is, populate deployInfo.plugin and deployInfo.media  O(n)
 It populates deployInfo.media so that it is ready for using s3 getObject API.
@@ -171,22 +303,18 @@ deployInfo, defined above in diyDeploy
 prefix, experimentState.media.Prefix
 */
 
-function extractDeployInfomation(obj, deployInfo, prefix) {
+function extractDeployInfomationHelper(obj, deployInfo, prefix) {
   if (!obj) return;
   switch (typeof obj) {
     case 'object':
       if (Array.isArray(obj)) {
-        for (let o of obj) extractDeployInfomation(o, deployInfo, prefix);
+        for (let o of obj) extractDeployInfomationHelper(o, deployInfo, prefix);
       } else {
-        for (let key of Object.keys(obj)) extractDeployInfomation(obj[key], deployInfo, prefix);
+        for (let key of Object.keys(obj)) extractDeployInfomationHelper(obj[key], deployInfo, prefix);
       }
       break;
     case 'string':
       let matches = obj.match(/<path>(.*?)<\/path>/g);
-      /*
-      NEED TO CHECK IF THE FILE IS ACTULLAY IN S3!!
-
-      */
       if (matches) {
         // populate deployInfo.media
         for (let m of matches) {
@@ -410,7 +538,26 @@ Generate index.html
 
 deployInfo is defined in function deploy
 */
-function generatePage(deployInfo) {
+export function generatePage({
+  deployInfo,
+  cloudMode = false,
+  userId = '',
+  osfFolderId = '',
+  customCode=''
+}) {
+  let OsfPostHelper = `
+    function ${SaveDataToOSF_Function_Name}(data) {
+        let postData = {
+          userId: "${userId}",
+          osfFolderId: "${osfFolderId}",
+          experimentData: data
+        };
+        let request = new XMLHttpRequest();
+        request.open("POST", "${SaveDataAPI}", true);
+        request.send(JSON.stringify(postData));
+    }
+  `
+
   return `
   <!doctype html>
   <html lang="en">
@@ -424,6 +571,8 @@ function generatePage(deployInfo) {
     <body id="${jsPsych_Display_Element}" class="${jsPsych_Display_Element}">
     </body>
     <script>
+      ${customCode}
+      ${cloudMode ? OsfPostHelper : ''}
       ${deployInfo.code}
     </script>
   </html>

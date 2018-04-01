@@ -8,12 +8,13 @@ import Divider from 'material-ui/Divider';
 
 import SignInIcon from 'material-ui/svg-icons/action/input';
 import SignUpIcon from 'material-ui/svg-icons/social/person-add';
-import Profile from 'material-ui/svg-icons/social/person';
+import ProfileIcon from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 
 import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/UserMenu/ExperimentList';
+import Profile from '../../../containers/Appbar/UserMenu/Profile';
 
 import AppbarTheme from '../theme.js';
 
@@ -90,9 +91,9 @@ export default class UserMenu extends React.Component {
         return (
           <Menu>
               <MenuItem
-                leftIcon={<Profile {...style.Icon}/>}
+                leftIcon={<ProfileIcon {...style.Icon}/>}
                 primaryText={"Your profile"}
-                onClick={() => { this.handleRequestClose(); }} />
+                onClick={() => { this.Profile.handleOpen(); this.handleRequestClose(); }} />
               <MenuItem
                 primaryText={"Your experiments"}
                 leftIcon={<ExperimentIcon {...style.Icon} />}
@@ -134,6 +135,9 @@ export default class UserMenu extends React.Component {
         />
       </div>
        <Login />
+       <Profile
+        onRef={ref => (this.Profile = ref)}
+       />
        <ExperimentList 
         open={this.state.experimentListOpen} 
         handleOpen={this.openExperimentList}

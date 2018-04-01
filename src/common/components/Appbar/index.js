@@ -13,7 +13,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; /
 import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
-import DIYDeploy from 'material-ui/svg-icons/file/file-download';
+import DIYDeploy from 'material-ui/svg-icons/content/archive';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
@@ -86,9 +86,9 @@ const style = {
       })
     },
   },
-  TextFieldFocusStyle: {
-    ...AppbarTheme.TextFieldFocusStyle
-  }
+  TextFieldFocusStyle: (error) => ({
+    ...AppbarTheme.TextFieldFocusStyle(error)
+  })
 }
 
 
@@ -332,7 +332,7 @@ export default class Appbar extends React.Component {
                }}
             >
               <TextField
-                {...style.TextFieldFocusStyle}
+                {...style.TextFieldFocusStyle(this.state.saveAsNameError !== '')}
                 id="Save-as-new-experiment-name"
                 floatingLabelFixed={true}
                 floatingLabelText="New experiment name"
