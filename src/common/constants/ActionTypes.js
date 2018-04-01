@@ -8,7 +8,6 @@ export const MOVE_INTO = "MOVE_INTO";
 export const MOVE_BY_KEYBOARD = "MOVE_BY_KEYBOARD";
 export const ON_PREVIEW = "ON_PREVIEW";
 export const ON_TOGGLE = "ON_TOGGLE";
-export const SET_TOGGLE_COLLECTIVELY = "SET_TOGGLE_COLLECTIVELY";
 export const SET_COLLAPSED = "SET_COLLAPSED";
 export const INSERT_NODE_AFTER_TRIAL = "INSERT_NODE_AFTER_TRIAL";
 export const DUPLICATE_TIMELINE = "DUPLICATE_TIMELINE";
@@ -52,6 +51,7 @@ export const SET_TIMELINE_VARIABLE = "SET_TIMELINE_VARIABLE";
 // User Actions
 export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
+export const SET_OSFTOKEN = "SET_OSFTOKEN";
 
 // Backend Actions
 export const SIGN_UP_PUSH = "SIGN_UP_PUSH";
@@ -66,3 +66,6 @@ export const DUPLICATE_EXPERIMENT = "DUPLICATE_EXPERIMENT";
 // Notification Actions
 export const NOTIFICATION = "NOTIFICATION";
 export const NOTIFICATION_CLOSE = "NOTIFICATION_CLOSE";
+
+// Cloud
+export const SET_OSF_PARENT = "SET_OSF_PARENT"

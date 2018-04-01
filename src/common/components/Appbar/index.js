@@ -13,15 +13,13 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar'; /
 import Save from 'material-ui/svg-icons/content/save';
 import New from 'material-ui/svg-icons/action/note-add';
 import SaveAs from 'material-ui/svg-icons/content/content-copy';
-import DIYDeploy from 'material-ui/svg-icons/action/work';
+import DIYDeploy from 'material-ui/svg-icons/content/archive';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
-import {
-  grey100 as dialogBodyColor
-} from 'material-ui/styles/colors';
 
 import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/MediaManager';
+import CloudDeploymentManager from '../../containers/Appbar/CloudDeploymentManager';
 
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
@@ -30,7 +28,8 @@ import AppbarTheme from './theme.js';
 import { prefixer } from '../theme.js';
 
 const colors = {
-  ...AppbarTheme.colors
+  ...AppbarTheme.colors,
+  dialogBodyColor: '#F5F5F5'
 }
 
 const style = {
@@ -50,6 +49,12 @@ const style = {
     display: 'flex',
     flexDirection: 'row',
     flexGrow: 1,
+  }),
+  ToolbarSeparator: prefixer({
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    marginLeft: '0px',
+    width: '1.5px'
   }),
   NameField: {
     inputStyle: {
@@ -81,9 +86,9 @@ const style = {
       })
     },
   },
-  TextFieldFocusStyle: {
-    ...AppbarTheme.TextFieldFocusStyle
-  }
+  TextFieldFocusStyle: (error) => ({
+    ...AppbarTheme.TextFieldFocusStyle(error)
+  })
 }
 
 
@@ -223,12 +228,19 @@ export default class Appbar extends React.Component {
     const toolbar = (
       <div className="Appbar-tools" style={style.Toolbar}>
           <InitEditor />
+
+          <MediaManager />
+
+          <ToolbarSeparator style={{...style.ToolbarSeparator}}/>
+
           <IconButton 
             tooltip="New Experiment"
             onClick={() => { this.props.newExperiment(this.popUpConfirm); }}
             > 
             <New {...style.icon} />
           </IconButton>
+
+
           {(this.state.performing === Actions.save) ?
             <CircularProgress {...style.Actions.Wait}/> :
             <IconButton 
@@ -251,7 +263,9 @@ export default class Appbar extends React.Component {
               <SaveAs {...style.icon} />
             </IconButton>
           }
-          <MediaManager />
+
+          <ToolbarSeparator style={{...style.ToolbarSeparator}}/>
+
           {isBundling ?
             <div style={{display:'flex', paddingLeft: 10}}>
               <div style={{paddingTop: 10}}>
@@ -268,6 +282,8 @@ export default class Appbar extends React.Component {
             <DIYDeploy {...style.icon} />
           </IconButton>
           }
+
+          <CloudDeploymentManager />
       </div>
     )
 
@@ -294,7 +310,7 @@ export default class Appbar extends React.Component {
               titleStyle={{padding: 12}}
               title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null, {}, false)}
               contentStyle={{width: 450, height: 300, padding: 0}}
-              bodyStyle={{backgroundColor: dialogBodyColor}}
+              bodyStyle={{backgroundColor: colors.dialogBodyColor}}
               actions={[
                 <FlatButton
                   {...style.Actions.SaveAs}
@@ -316,7 +332,7 @@ export default class Appbar extends React.Component {
                }}
             >
               <TextField
-                {...style.TextFieldFocusStyle}
+                {...style.TextFieldFocusStyle(this.state.saveAsNameError !== '')}
                 id="Save-as-new-experiment-name"
                 floatingLabelFixed={true}
                 floatingLabelText="New experiment name"

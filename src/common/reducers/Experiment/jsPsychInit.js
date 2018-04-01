@@ -1,37 +1,25 @@
-/*
-This file handles operations on setting jsPsych.init
-
-Note that timeline is defined as mainTimeline in ./TimelineNode/index,
-
-export initState = {
-	display_element: undefined,
-	default_iti: 0,
-
-	// **** All functions will be store as string *****
-	on_finish: defaultFunction,
-	on_trial_start: defaultFunction, 
-	on_trial_finish: defaultFunction,
-	on_data_update: defaultFunction,
-	on_interaction_data_update: defaultFunction,
-	exclusions: {
-		min_width: 0,
-		min_height: 0,
-		audio: false,
-	},
-	show_progress_bar: false,
-	auto_update_progress_bar: false,
-	show_preload_progress_bar: false,
-	preload_audio: [],
-	preload_images: [],
-	max_load_time: 60000,
-}
-
+/**
+ *@file This file describes the reducers for initial and launch settings for jsPsych
+ *@author Junyan Qi <juqi@vassar.edu>
 */
-
 import { CodeLanguage } from '../../components/CodeEditor';
 
-// Note DynamoDB does not store function
+/**
+ * @typeof {Object} StringifiedFunction
+ * @classdesc Class representing a stringified function. This is created and used like an objecy 
+ * because AWS.DynamoDB does not take functions.
+ * The class is merely just for more maintainable code purpose.
+ * @class
+ * @public
+*/
 export class StringifiedFunction {
+	/**
+     * Create a stringified function
+     * @param {guiValue} code - The code from user input
+     * @param {boolean} ifEval - If the code should be evaluated when generating the deployment code
+     * @param {CodeLanguageEnum} language - Tells the GUI (react-codemirror) which language mode should it use
+     * @property {boolean} isFunc - Distinguish this object from other object, since AWS.DynamoDB does not store classes
+     */
 	constructor({code=null, ifEval=true, language=CodeLanguage.javascript[0]}) {
 		this.code = code;
 		// gui info (codeMirror language mode, eval info)
@@ -41,12 +29,48 @@ export class StringifiedFunction {
 	}
 }
 
+/**
+ * @funcion createFuncObj
+ * @desc Create a jsPsychValueObject
+ * @param {guiValue} value=null
+ * @param {StringifiedFunction} func=createFuncObject()
+ * @param {ParameterModeEnum} mode=ParameterMode.USE_VAL
+ * @returns {jsPsychValueObject}
+*/
 export const createFuncObj = (code=null, info=null) => (new StringifiedFunction({code: code, info: info}));
 
 const defaultFunction = (name) =>  ("function " + name +"(data) {\n\treturn undefined;\n}");
 
+/**
+ * @enum {string}
+ * @constant
+ * @default
+*/
 export const jsPsych_Display_Element = "jsPsych-Window";
 
+/**
+ * jsPyschInit State Template
+ * @namespace jsPyschInitState
+ * @description Default state for jsPsych initial and lanch setting. 
+ * @property {guiValue} display_element=jsPsych_Display_Element - 
+ * The id of the document element that the experiment should be displaed in. See {@link http://www.jspsych.org/}
+ * @property {number} default_iti=0 - See {@link http://www.jspsych.org/}
+ * @property {StringifiedFunction} on_finish - See {@link http://www.jspsych.org/}
+ * @property {StringifiedFunction} on_trial_start - See {@link http://www.jspsych.org/}
+ * @property {StringifiedFunction} on_trial_finish - See {@link http://www.jspsych.org/}
+ * @property {StringifiedFunction} on_data_update - See {@link http://www.jspsych.org/}
+ * @property {StringifiedFunction} on_interaction_data_update - See {@link http://www.jspsych.org/}
+ * @property {object} exclusions - See {@link http://www.jspsych.org/}
+ * @property {number} exclusions.min_width=0 - See {@link http://www.jspsych.org/}
+ * @property {number} exclusions.min_height=0 - See {@link http://www.jspsych.org/}
+ * @property {boolean} exclusions.audio=false - See {@link http://www.jspsych.org/}
+ * @property {boolean} show_progress_bar=false - See {@link http://www.jspsych.org/}
+ * @property {boolean} show_update_progress_bar=true - See {@link http://www.jspsych.org/}
+ * @property {boolean} show_preload_progress_bar=true - See {@link http://www.jspsych.org/}
+ * @property {Array} preload_audio=[] - See {@link http://www.jspsych.org/}
+ * @property {Array} preload_images=[] - See {@link http://www.jspsych.org/}
+ * @property {number} max_load_time=60000 - See {@link http://www.jspsych.org/}
+*/
 export const initState = {
 	display_element: jsPsych_Display_Element,
 	default_iti: 0,
@@ -68,6 +92,11 @@ export const initState = {
 	max_load_time: 60000,
 }
 
+/**
+ * @typeof {string} SettingTypeEnum
+ * @readonly
+ * @enum {SettingTypeEnum}
+*/
 export const settingType = {
 	default_iti: "default_iti",
 	on_finish: "on_finish",
@@ -86,12 +115,14 @@ export const settingType = {
 	max_load_time: "max_load_time",
 }
 
-/*
-action = {
-	key: number,
-	value: value
-}
-
+/**@function(state, action)
+ * @name setJspyschInit
+ * @description The root reducer for the whole jsPsychInit state
+ * @param {object} state - The jsPsychInit state Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {SettingTypeEnum} action.key - Describes which value to be set
+ * @param {(guiValue|number|boolean|Array) action.value - Holds the user input value
+ * @returns {Object} Returns a completely new Experiment State object
 */
 export function setJspyschInit(state, action) {
 	const { key, value } = action;

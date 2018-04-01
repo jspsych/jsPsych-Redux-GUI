@@ -20,7 +20,6 @@ deleteTrial
 deleteTimeline
 
 // Toggle actions
-setToggleCollectively
 setCollapsed
 onToggle
 
@@ -474,7 +473,6 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
 		s1 = reducer(s1, Actions.addTrialAction(null));
-		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false));
 		expect(s1).toEqual(expect_toggle3);
 	})
 
@@ -485,7 +483,6 @@ describe('Timeline Node Reducers for Toggle actions', () => {
 		s1 = reducer(s1, Actions.addTimelineAction(standardizeTimelineId(0)));
 		s1 = reducer(s1, Actions.addTrialAction(standardizeTimelineId(1)));
 		s1 = reducer(s1, Actions.addTrialAction(null));
-		s1 = reducer(s1, Actions.setToggleCollectivelyAction(false, standardizeTimelineId(1)));
 		expect(s1).toEqual(expect_toggle4);
 	})
 

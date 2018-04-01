@@ -66,15 +66,6 @@ export function onToggleAction(id) {
 	};
 }
 
-
-export function setToggleCollectivelyAction(flag, spec=null) {
-	return {
-		type: actionTypes.SET_TOGGLE_COLLECTIVELY,
-		flag: flag,
-		spec: spec,
-	};
-}
-
 export function setCollapsed(id, toggle=true) {
 	return {
 		type: actionTypes.SET_COLLAPSED,

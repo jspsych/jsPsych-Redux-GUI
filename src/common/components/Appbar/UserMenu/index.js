@@ -8,12 +8,13 @@ import Divider from 'material-ui/Divider';
 
 import SignInIcon from 'material-ui/svg-icons/action/input';
 import SignUpIcon from 'material-ui/svg-icons/social/person-add';
-import Profile from 'material-ui/svg-icons/social/person';
+import ProfileIcon from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 
 import Login from '../../../containers/Login';
-import ExperimentList from '../../../containers/Appbar/ExperimentList';
+import ExperimentList from '../../../containers/Appbar/UserMenu/ExperimentList';
+import Profile from '../../../containers/Appbar/UserMenu/Profile';
 
 import AppbarTheme from '../theme.js';
 
@@ -22,19 +23,19 @@ const colors = {
 }
 
 const style = {
-  icon: {
+  Icon: {
     hoverColor: colors.secondaryLight,
     color: colors.secondary,
   },
-  avatar: {
+  Avatar: utils.prefixer({
     backgroundColor: 'white',
     color: colors.primary
-  },
-  username: login => ({
+  }),
+  Username: login => (utils.prefixer({
     color: colors.font,
     fontWeight: login ? 'bold' : 'normal',
     textDecoration: login ? 'underline' : 'none'
-  })
+  }))
 }
 
 export default class UserMenu extends React.Component {
@@ -76,12 +77,12 @@ export default class UserMenu extends React.Component {
         return (
           <Menu>
               <MenuItem
-                leftIcon={<SignInIcon {...style.icon}/>}
+                leftIcon={<SignInIcon {...style.Icon}/>}
                 primaryText={"Sign In"}
                 onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
               <Divider />
               <MenuItem
-                leftIcon={<SignUpIcon {...style.icon}/>}
+                leftIcon={<SignUpIcon {...style.Icon}/>}
                 primaryText={"Create Account"}
                 onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
           </Menu>
@@ -90,17 +91,17 @@ export default class UserMenu extends React.Component {
         return (
           <Menu>
               <MenuItem
-                leftIcon={<Profile {...style.icon}/>}
+                leftIcon={<ProfileIcon {...style.Icon}/>}
                 primaryText={"Your profile"}
-                onClick={() => { this.handleRequestClose(); }} />
+                onClick={() => { this.Profile.handleOpen(); this.handleRequestClose(); }} />
               <MenuItem
                 primaryText={"Your experiments"}
-                leftIcon={<ExperimentIcon {...style.icon} />}
+                leftIcon={<ExperimentIcon {...style.Icon} />}
                 onClick={() => { this.openExperimentList(); this.handleRequestClose(); }} />
               <Divider />
               <MenuItem
                 primaryText={"Sign out"}
-                leftIcon={<SignOut {...style.icon} />}
+                leftIcon={<SignOut {...style.Icon} />}
                 onClick={() => { this.props.handleSignOut(); this.handleRequestClose(); }} />
           </Menu>
         )
@@ -112,7 +113,7 @@ export default class UserMenu extends React.Component {
               null:
               <Avatar 
                 size={size} 
-                {...style.avatar}
+                {...style.Avatar}
               >
                 {this.props.username.charAt(0)}
               </Avatar>)
@@ -129,11 +130,14 @@ export default class UserMenu extends React.Component {
         <ListItem 
           primaryText={buttonLabel} 
           onClick={this.handleTouchTap} 
-          style={{...style.username(login)}}
+          style={{...style.Username(login)}}
           leftAvatar={this.renderUserPic(login)}
         />
       </div>
        <Login />
+       <Profile
+        onRef={ref => (this.Profile = ref)}
+       />
        <ExperimentList 
         open={this.state.experimentListOpen} 
         handleOpen={this.openExperimentList}
