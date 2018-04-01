@@ -12,3 +12,10 @@ export function setJspyschInitAction(key, value) {
 		value: value,
 	};
 }
+
+export function setOsfParentNodeAction(value) {
+	return {
+		type: actionTypes.SET_OSF_PARENT,
+		value: value
+	}
+}

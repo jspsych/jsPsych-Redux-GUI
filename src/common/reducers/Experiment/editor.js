@@ -1,18 +1,37 @@
+/**
+ *@file This file describes the reducers for editting the parameters of the timeline nodes from jsPsych (timeline, trial)
+ *@author Junyan Qi <juqi@vassar.edu>
+*/
 import { createFuncObj } from './jsPsychInit';
 
 var jsPsych = window.jsPsych || require('./tests/jsPsych.js').jsPsych;
 var EnumPluginType = jsPsych.plugins.parameterType;
 
-
 /*
-Indicate which value (native value, function or timeline variable) should be used
+
+*/
+/**
+ * @typeof {string} ParameterModeEnum
+ * @description Indicate which value (native value, function or timeline variable) should be used
+ * @readonly
+ * @enum {string}
 */
 export const ParameterMode = {
+	/** The value that indicates deployment function should interpret the value as function when generating the code */
 	USE_FUNC: 'USE_FUNC',
+	/** The value that indicates deployment function should interpret the value as timeline variable when generating the code */
 	USE_TV: "USE_TIMELINE_VARIABLE",
+	/** The value that indicates deployment function should interpret the value as native javascript value when generating the code */
 	USE_VAL: "USE_VALUE"
 }
 
+/**
+ * @function isJspsychValueObjectEmpty
+ * @param {JspsychValueObject} obj
+ * @desc Should originally be a method of the JspsychValueObject class that determines if the object is truly empty. But since
+ * AWS.DynamoDB does not store functions, this method is taken out separatly.
+ * @returns {boolean}
+*/
 export const isJspsychValueObjectEmpty = (obj) => {
 	switch (obj.mode) {
 		case ParameterMode.USE_FUNC:
@@ -25,7 +44,22 @@ export const isJspsychValueObjectEmpty = (obj) => {
 	}
 }
 
+/**
+ * @typeof {Object} JspsychValueObject
+ * @classdesc Class representing a composite value object that holds different kinds of user chosen value source that will
+ * be used in generating deployment code
+ * @class
+ * @public
+*/
 export class JspsychValueObject {
+	/**
+     * Create a jsPsychValueObject
+     * @param {guiValue} value - The slot that holds native javascript value that user inputs
+     * @param {StringifiedFunction} func - The slot that holds user inputs that may or may not be evaluated as experssions/functions
+     * @param {guiValue} timelineVariable - The slot that holds the name of timeline variable that will be used
+     * @param {ParameterModeEnum} mode - Tells the deployment function which value should it use
+     * @property {boolean} isComplexDataObject - Distinguish itself from other object, since AWS.DynamoDB does not take classes
+     */
 	constructor({value=null, func=createFuncObj(), mode=ParameterMode.USE_VAL, timelineVariable=null}) {
 		this.value = value;
 		this.func = func;
@@ -36,13 +70,24 @@ export class JspsychValueObject {
 	}
 }
 
-/*
-Every editor item that is from jsPsych plugin parameter is a composite object defined below
+/**
+ * @funcion createComplexDataObject
+ * @desc Create a jsPsychValueObject
+ * @param {guiValue} value=null
+ * @param {StringifiedFunction} func=createFuncObject()
+ * @param {ParameterModeEnum} mode=ParameterMode.USE_VAL
+ * @returns {jsPsychValueObject}
 */
 export const createComplexDataObject = (value=null, func=createFuncObj(), mode=ParameterMode.USE_VAL) => (
 	new JspsychValueObject({value: value, func: func, mode: mode})
 )
 
+/**
+ * @typeof {string} GuiIgnoredInforEnum
+ * @readonly
+ * @enum {string}
+ * @description The object that holds enumerators for information that will not be evaluated when generating deployment code
+*/
 export const TimelineVariableInputType = {
 	// string
 	TEXT: 'String',
@@ -59,33 +104,37 @@ export const isString = (type) => (type === TimelineVariableInputType.TEXT || ty
 
 export const isFunction = (type) => (type === TimelineVariableInputType.FUNCTION);
 
-/*
-Default timeline node parameter
-
-According to jsPysch
-timeline_variables should have the following data structure:
-
-[
-	{		
-		// displayed as column header col=0     // displayed as (row=1, col=0)
-		"Timline Variable 1":                   "TV 1 value", 
-		// displayed as column header col=1     // displayed as (row=1, col=1)
-		"Timline Variable 2": "TV 2 value", 
-	},  // row 1
-	{
-		"Timline Variable 1 (displayed as column header col=0)": "TV 1 value (displayed as (row=2, col=0))", 
-		"Timline Variable 2 (displayed as column header col=1)": "TV 2 value (displayed as (row=2, col=1))", 
-	}, // row 2
-]
+/**
+ * @typeof {object} GuiIgnoredInforEnum
+ * @readonly
+ * @enum {string}
+ * @description The object that holds enumerators for information that will not be evaluated when generating deployment code
 */
-
 export const GuiIgonoredInfoEnum = {
+	/** The key name to the should-be-ignored gui information object in the parameter */
 	root: '$GUI_INFO_IGNORE', // GUI_INFO_IGNORE
+	/** The key name to value that represents the user chosen input type for the timeline variables */
 	TVHeaderInputType: '$inputType',
+	/** The key name to the array that represents the static order headers (reliable table column order) */
 	TVHeaderOrder: '$headers',
+	/** The key name to the array that holds row ids (for drag and drop) */
 	TVRowIds: "$rowId",
 }
 
+
+/** 
+ * typeof {object} defaultTimelineParameters
+ * @desc the paramters of a timeline node, which are the options in jsPsych timeline
+ * @property {Array.<object>} timeline_variables=[{"V0":createComplexDataObject(null) }] - The array that holds the timeline variable table. Here is an example:
+ * [
+ *  {"Column 1": value1, "Column 2": value2}, // row 1
+ *  {"Column 1": value1, "Column 2": value2} // row 2
+ * ]
+ * See {@link http://www.jspsych.org/}
+ * @property {boolean} randomize_order=true - See {@link http://www.jspsych.org/}
+ * @property {guiValue} repetitions=null - See {@link http://www.jspsych.org/}
+ * @property 
+*/
 export const DEFAULT_TIMELINE_PARAM = (function() { 
 	let obj = {
 		timeline_variables: [{
@@ -115,24 +164,30 @@ export const DEFAULT_TIMELINE_PARAM = (function() {
 	return obj;
 })();
 
-
-/*
-Default trial node parameter
+/** 
+ * typeof {object} defaultTrialParameters
+ * @desc the paramters of a trial node, which are the options in jsPsych plugin
+ * See {@link http://www.jspsych.org/}
+ * @property {guiValue} type=null - Tells the plugin being used. 
+ * @property {guiValue} options - The options of the used plugin. See {@link http://www.jspsych.org/}
 */
 export const DEFAULT_TRIAL_PARAM = {
 	type: null,
 	//rest is according to corresponding parameters in jsPsych plugin
 };
 
-/*
-Set node name
-
-action = {
-	name: new node name
-}
+/**@function(state, action)
+ * @name setName
+ * @description Set timeline/trial node's name 
+ * @param {object} state - The Experiment State Object 
+ * @param {object} action - Describes the action user invokes
+ * @param {guiValue} action.name - The node's user defined name
+ * @param {guiValue} action.previewId - The id of the node that is being previewed
+ * @returns {object} Returns a completely new Experiment State object
 */
 export function setName(state, action) {
 	let node = state[state.previewId];
+	// just check for safety
 	if (!node) return state;
 
 	let new_state = Object.assign({}, state);
@@ -144,13 +199,11 @@ export function setName(state, action) {
 	return new_state;
 }
 
-/*
-path = string or 
-	{
-		next: object,
-		position: number, // index
-		key: string,
-	}
+/**
+ * typeof {(object|string)} ParamPathNode
+ * @property {ParamPathNode} next
+ * @property {number} position - index
+ * @property {string} key
 */
 export function locateNestedParameterValue(parameters, path) {
 	let parameterValue = parameters;

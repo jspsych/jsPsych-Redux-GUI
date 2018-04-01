@@ -1,27 +1,27 @@
 import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
-import * as backendActions from '../../../actions/backendActions';
-import ExperimentList from '../../../components/Appbar/ExperimentList';
-import * as Errors from '../../../constants/Errors' ;
-import { $save } from '../index';
+import * as backendActions from '../../../../actions/backendActions';
+import ExperimentList from '../../../../components/Appbar/UserMenu/ExperimentList';
+import * as Errors from '../../../../constants/Errors' ;
+import { $save } from '../../index';
 import {
 	fetchExperimentById,
 	pushUserData,
 	deleteExperiment as $deleteExperiment,
 	pushExperimentData,
 	// pushState
-} from '../../../backend/dynamoDB';
+} from '../../../../backend/dynamoDB';
 import {
 	deleteFiles,
-	copyParam,
+	generateCopyParam,
 	copyFiles,
 	listBucketContents
-} from '../../../backend/s3';
+} from '../../../../backend/s3';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
 	// notifyWarningBySnackbar
-} from '../../Notification';
+} from '../../../Notification';
 
 const $pullExperiment = (dispatch, getState, selected) => {
 	// fetch experiment
@@ -184,12 +184,14 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 
 			// duplicate resources saved on s3
 			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
-				(copyParam(f.Key, f.Key.replace(data.Item.fetch.experimentId, newId)))
+				(generateCopyParam({source: f.Key, target: f.Key.replace(data.Item.fetch.experimentId, newId)}))
 			) : [];
 			// duplicate s3 files
-			copyFiles(params).then(() => {
+			copyFiles({params: params}).then(() => {
 				// fetch new media
-				listBucketContents(newId).then((data) => {
+				listBucketContents(
+					{Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}
+					).then((data) => {
 					// update media property
 					experimentState.media = data;
 					// process state: register this duplicated experiment under user

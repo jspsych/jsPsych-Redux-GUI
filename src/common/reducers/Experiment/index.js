@@ -1,56 +1,97 @@
+/**
+ *@file This file describes the state template and root reducer for Experiment State.
+ *@author Junyan Qi <juqi@vassar.edu>
+*/
 import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
 
+/**
+ * @typeof {(string|number|object)} guiValue - A native javascript value. 
+ * It is important that if the input value is empty string, it should be converted to null for AWS.DynamoDB storage purpose. 
+*/
+
+/**
+ * Experiment State Template
+ * @namespace ExperimentState
+ * @property {guiValue} experimentName=null - Experiment Name
+ * @property {guiValue} experimentId=null - Experiment's identifier in DynamoDB, should be generated as a UUID by uuid()
+ * @property {Object} owner - Experiment Owner's information { username: string, identityId: id}
+ * @property {guiValue} owner.username=null - Experiment Owner's username
+ * @property {guiValue} owner.identityId=null - Experiment Owner's identityId (see docs for AWS.Cognito)
+ * @property {boolean} private - True if the experiment is private
+ * @property {Object} experimentDetails - Experiment Detail Information
+ * @property {object} experimentDetails.createdDate - The date the experiment is created
+ * @property {object} experimentDetails.lastEditDate - The date that the last edit happens to the experiment
+ * @property {guiValue} experimentDetails.description=null - User defined experiment Description
+ * @property {guiValue} previewId=null - The id of the node that is getting previewed
+ * @property {number} timelineCount=0 - The inner tracker for timeline node
+ * @property {number} trialCount=0 - The inner tracker for trial node
+ * @property {Array.<string>} mainTimeline=[] - The main jsPsych timeline, should hold the id of nodes
+ * @property {Object} jsPsychInit - The object that sets jsPsych (initialization/launch) options
+ * @property {Object} media={} - An AWS.S3 object, get by API call: listObjects()
+ * @property {Object} [timelineNode-{id}] - {@link TimelineNode}
+ * @property {Object} [trialNode-{id}] - {@link TrialNode}
+ * @property {guiValue} osfToken=null - OSF Auth Token
+ * @property {boolean} isCloudDeployed - Is the experiment online?
+ * @description State template for Experiment state. 
+ * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
+*/
 export const initState = {
-	// ********** experiment info
 	experimentName: "Untitled Experiment",
-	// key in db
 	experimentId: null,
 
-	// owner info
-	/*{
-		username: string,
-		identityId: id
-	}*/ 
 	owner: null,
+ 	private: true,
 
-	// is private?
-	private: true,
-
-	// experiment details
 	experimentDetails: {
 		createdDate: null,
 		lastEditDate: null,
 		description: null,
 	},
 
-	// ********** experiment contents
-	// id of which is being previewed/editted
+	/********** experiment contents **********/
 	previewId: null,
-
-	// id counts
 	timelineCount: 0,
 	trialCount: 0,
-
-	// the main timeline. array of ids
 	mainTimeline: [],
-
-	// init properties
 	jsPsychInit: jsPsychInit.initState,
 
-	// media, should be s3 object, get by API call: listObjectsV2
 	media: {},
+
+	// cloud deployment info
+	osfParentNode: null,
+	isCloudDeployed: false,
 }
 
-
+/**@function(state, action)
+ * @name setExperimentName
+ * @description Set experiment's name 
+ * @param {Object} state - The Experiment State Object 
+ * @param {Object} action - Describes the action user invokes
+ * @param {guiValue} action.name - The experiment's user defined name
+ * @returns {object} Returns a completely new Experiment State object
+*/
 const setExperimentName = (state, action) => {
 	return Object.assign({}, state, {
 		experimentName: action.name
 	})
 }
 
+function setOsfParentNode(state, action) {
+	return Object.assign({}, state, {
+		osfParentNode: action.value
+	})
+}
+
+/**@function(state, action)
+ * @name experimentReducer
+ * @description The root reducer for the whole experiment state
+ * @param {object} state - The Experiment State Object 
+ * @param {object} action - Describes the action user invokes
+ * @returns {object} Returns a completely new Experiment State object
+*/
 export default function experimentReducer(state=initState, action) {
 	switch(action.type) {
 		// organizer starts
@@ -78,10 +119,12 @@ export default function experimentReducer(state=initState, action) {
 			return organizer.onPreview(state, action);
 		case actionTypes.ON_TOGGLE:
 			return organizer.onToggle(state, action);
-		case actionTypes.SET_TOGGLE_COLLECTIVELY:
-			return organizer.setToggleCollectively(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
+
+		// cloud
+		case actionTypes.SET_OSF_PARENT:
+			return setOsfParentNode(state, action);
 
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:

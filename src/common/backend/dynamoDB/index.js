@@ -32,6 +32,7 @@ ExperimentState on dynamoDB will look like
 */
 
 import { cognitoConfig } from '../../../../config/aws-config-cognito.js';
+import { GUI_IGNORE as UserState_Ignored_Keys } from '../../reducers/User';
 import AWS from '../aws';
 
 const API_VERSION = '2012-08-10';
@@ -118,12 +119,15 @@ function putItemToExperimentTable(data) {
 
 
 function extractUserData(userState) {
+	let data = Object.assign({}, userState);
+	for (let key of UserState_Ignored_Keys) {
+		delete data[key];
+	}
 	return {
 		userId: userState.user.identityId,
 		username: userState.user.username,
 		fetch: {
-			lastModifiedExperimentId: userState.lastModifiedExperimentId,
-			experiments: userState.experiments,
+			...data
 		}
 	};
 }

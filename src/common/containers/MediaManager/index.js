@@ -7,7 +7,9 @@ import * as notify from '../Notification';
 import {
 	uploadFiles as $uploadFiles,
 	deleteFiles as $deleteFiles,
-	listBucketContents as $listBucketContents
+	listBucketContents as $listBucketContents,
+	Delimiter,
+	generateUploadParam
 } from '../../backend/s3';
 import { pushExperimentData } from '../../backend/dynamoDB';
 
@@ -17,9 +19,8 @@ const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
 const updateFileList = (dispatch, feedback = null) => {
 	dispatch((dispatch, getState) => {
 		if (!getState().experimentState.experimentId) return;
-		$listBucketContents(getState().experimentState.experimentId).then((data) => {
+		$listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
 			dispatch(editorActions.updateMediaAction(data));
-
 			pushExperimentData(getState().experimentState).then(() => {
 				if (feedback) {
 					notify.notifySuccessBySnackbar(dispatch, feedback);
@@ -42,7 +43,17 @@ const uploadFiles = (dispatch, files, setState, progressHook) => {
 		}
 	}
 	dispatch((dispatch, getState) => {
-		$uploadFiles(files, getState().experimentState.experimentId, progressHook).then(() => {
+		let params = files.map(f => generateUploadParam({
+			Body: f, 
+			Key: [getState().userState.user.identityId,
+				getState().experimentState.experimentId,
+				f.name
+			].join(Delimiter)
+		}));
+		$uploadFiles({
+			params: params,
+			progressHook: progressHook
+		}).then(() => {
 			// update list
 			updateFileList(dispatch, "Uploaded !");
 		}, (err) => {

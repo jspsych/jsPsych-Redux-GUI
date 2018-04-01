@@ -26,12 +26,12 @@ const colors = {
 }
 
 const style = {
-  icon: AppbarTheme.AppbarIcon,
+  Icon: AppbarTheme.AppbarIcon,
   TitleIcon: {
     color: colors.primaryDeep
   },
   TextFieldFocusStyle: {
-    ...AppbarTheme.TextFieldFocusStyle
+    ...AppbarTheme.TextFieldFocusStyle()
   },
   Actions: {
     Close: {
@@ -116,7 +116,7 @@ export default class jsPsychInitEditor extends React.Component {
               tooltip="Init Properties Setting"
               onClick={this.handleOpen}
           >
-              <InitSettingIcon {...style.icon}/>
+              <InitSettingIcon {...style.Icon}/>
           </IconButton>
           <Dialog
             contentStyle={{minHeight: 500}}
