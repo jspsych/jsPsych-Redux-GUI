@@ -2,6 +2,7 @@ var JSZip = require('jszip');
 var FileSaver = require('filesaver.js-npm');
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
+import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
 import {
   getSignedUrl,
@@ -18,6 +19,9 @@ import {
   listBucketContents
 } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
+
+const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/DynamoDBTutorial/";
+const SaveDataToOSF_Function_Name = "saveDataToOSF";
 
 const jsPsych = window.jsPsych;
 
@@ -57,12 +61,27 @@ const undefinedObj = {
   ]
 }
 
-const dataSaveInDIYObj = {
-  type: 'call-function',
-  func: function() {
-    serverComm.save_data(jsPsych.data.get().values());
-  }
+const generateDataSaveInCloudTrial = () => {
+  let param = {
+    type: 'call-function',
+    func: createComplexDataObject(null)
+  };
+  param.func.func.code = `
+    function() {
+      ${SaveDataToOSF_Function_Name}(jsPsych.data.get().csv());
+    }
+  `
+  param.func.mode = ParameterMode.USE_FUNC;
+
+  let res = createTrial('SaveDataTrial',
+      null,
+      "Save Data To OSF",
+      true,
+      param
+    );
+  return res;
 }
+
 
 const errorMessageObj = (error) => {
   let message = '';
@@ -126,7 +145,7 @@ export function diyDeploy(state, progressHook) {
     zip.file("error log.txt", deployInfo.errorLog)
   }
   // generate index.html, append it in zip file
-  zip.file("index.html", generatePage(deployInfo));
+  zip.file("index.html", generatePage({deployInfo: deployInfo}));
   // create assets folder
   var assets = zip.folder(Deploy_Folder);
   var jsPsych = zip.folder(jsPysch_Folder);
@@ -156,43 +175,82 @@ export function diyDeploy(state, progressHook) {
   })
 }
 
-export function cloudDeploy(state) {
-  let experimentState = state.experimentState,
-      experimentId = experimentState.experimentId,
+export function cloudDeploy({
+  state
+}) {
+  var experimentState = utils.deepCopy(state.experimentState);
+  let saveTrial = generateDataSaveInCloudTrial();
+  experimentState[saveTrial.id] = saveTrial;
+  experimentState.mainTimeline.push(saveTrial.id);
+
+  var experimentId = experimentState.experimentId,
       deployInfo = extractDeployInfomation(experimentState),
       filePaths = Object.keys(deployInfo.media);
 
-  let indexPage = new File([generatePage(deployInfo)], "index.html");
-  let param = generateUploadParam({
+  var indexPage = new File([generatePage({
+    deployInfo: deployInfo,
+    cloudMode: true,
+    userId: state.userState.user.identityId,
+    osfFolderId: experimentState.osfParentNode
+  })], "index.html");
+  var param = generateUploadParam({
     Key: [experimentId, indexPage.name].join(Delimiter),
     Body: indexPage,
     ContentType: 'text/html'
   });
-  uploadFile({param: param, bucket: Cloud_Bucket});
 
-
-  let assetParams = filePaths.map((f) => (generateCopyParam({
-    source: f,
-    target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
-    targetBucket: Cloud_Bucket
-  })));
-  copyFiles({params: assetParams});
-
-  // `${experimentId}/${jsPysch_Folder}/`
-  listBucketContents({
-    Prefix: `${jsPysch_Folder}/`,
-    bucket: Website_Bucket
-  }).then((data) => {
-    let jsPsychParams = data.Contents.map((f) => (
-      generateCopyParam({
-        source: f.Key,
-        target: `${experimentId}/${f.Key}`,
-        targetBucket: Cloud_Bucket,
-        sourceBucket: Website_Bucket,
+  function uploadCode() {
+    return uploadFile({
+      param: param,
+      bucket: Cloud_Bucket
+    });
+  }
+  
+  function uploadAsset() {
+    return listBucketContents({
+      Prefix: `${experimentId}/${Deploy_Folder}/`,
+      bucket: Cloud_Bucket
+    }).then((data) => {
+      let exists = data.Contents.map(item => {
+        let keys = item.Key.split(Delimiter);
+        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(Delimiter);
       })
-    ));
-    copyFiles({params: jsPsychParams});
-  })
+      filePaths = filePaths.filter(f => exists.indexOf(f) < 0);
+      return filePaths.map((f) => {
+        return generateCopyParam({
+          source: f,
+          target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
+          targetBucket: Cloud_Bucket
+        })
+      });
+    }).then((params) => {
+      return copyFiles({
+        params: params
+      });
+    });
+  }
+
+  function uploadLib() {
+    // `${experimentId}/${jsPysch_Folder}/`
+    return listBucketContents({
+      Prefix: `${jsPysch_Folder}/`,
+      bucket: Website_Bucket
+    }).then((data) => {
+      let jsPsychParams = data.Contents.map((f) => (
+        generateCopyParam({
+          source: f.Key,
+          target: `${experimentId}/${f.Key}`,
+          targetBucket: Cloud_Bucket,
+          sourceBucket: Website_Bucket,
+        })
+      ));
+      return jsPsychParams;
+    }).then((params) => {
+      return copyFiles({params: params});
+    })
+  }
+
+  return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
 }
 
 function extractDeployInfomation(experimentState) {
@@ -480,7 +538,26 @@ Generate index.html
 
 deployInfo is defined in function deploy
 */
-export function generatePage(deployInfo) {
+export function generatePage({
+  deployInfo,
+  cloudMode = false,
+  userId = '',
+  osfFolderId = '',
+  customCode=''
+}) {
+  let OsfPostHelper = `
+    function ${SaveDataToOSF_Function_Name}(data) {
+        let postData = {
+          userId: "${userId}",
+          osfFolderId: "${osfFolderId}",
+          experimentData: data
+        };
+        let request = new XMLHttpRequest();
+        request.open("POST", "${SaveDataAPI}", true);
+        request.send(JSON.stringify(postData));
+    }
+  `
+
   return `
   <!doctype html>
   <html lang="en">
@@ -494,6 +571,8 @@ export function generatePage(deployInfo) {
     <body id="${jsPsych_Display_Element}" class="${jsPsych_Display_Element}">
     </body>
     <script>
+      ${customCode}
+      ${cloudMode ? OsfPostHelper : ''}
       ${deployInfo.code}
     </script>
   </html>

@@ -6,11 +6,16 @@ import {
 } from '../../../../backend/dynamoDB';
 import {
 	notifyErrorByDialog,
-	notifySuccessBySnackbar
+	notifySuccessBySnackbar,
+	notifyWarningBySnackbar
 } from '../../../Notification';
 
 const setOsfToken = (dispatch, osfToken) => {
 	dispatch((dispatch, getState) => {
+		// if (osfToken === getState().userState.osfToken) {
+		// 	notifyWarningBySnackbar(dispatch, "Nothing has changed !");
+		// 	return;
+		// }
 		dispatch(userActions.setOsfTokenAction(osfToken ? osfToken : null));
 		pushUserData(getState().userState).then(() => {
 			notifySuccessBySnackbar(dispatch, "Token Updated !");
@@ -23,6 +28,7 @@ const setOsfToken = (dispatch, osfToken) => {
 const mapStateToProps = (state, ownProps) => {
 	return {
 		osfToken: state.userState.osfToken ? state.userState.osfToken : '',
+		username: state.userState.user.username,
 	};
 };
 

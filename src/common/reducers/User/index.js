@@ -2,6 +2,8 @@ import { logout, getLoginSessionFromCognito, getUserInfoFromCognito } from '../.
 import { initState as experimentInitState } from '../Experiment';
 import * as actionTypes from '../../constants/ActionTypes';
 
+export const GUI_IGNORE = ['loginSession', 'windowOpen', 'loginMode', 'lastModifiedExperimentState'];
+
 export const LoginModes = {
 	signIn: 0,
 	register: 1,
@@ -14,7 +16,6 @@ export const initState = {
 		username: null,
 		identityId: null,
 	},
-	loginSession: null,
 
 	// osfToken
 	osfToken: null,
@@ -40,6 +41,7 @@ export const initState = {
 	experiments: [],
 
 	// gui
+	loginSession: null,
 	windowOpen: false,
 	loginMode: LoginModes.signIn,
 	lastModifiedExperimentState: experimentInitState,
@@ -60,11 +62,7 @@ function setOsfToken(state, action) {
 	})
 }
 
-/*
 
-
-
-*/
 export function signInOut(state, action) {
 	let { signIn } = action;
 

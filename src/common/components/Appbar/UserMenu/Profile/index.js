@@ -15,6 +15,9 @@ import AppbarTheme from '../../theme.js';
 
 const colors = {
   ...AppbarTheme.colors,
+  checkGreen: '#4CAF50',
+  cancelRed: '#F44336',
+  titleColor: '#3F51B5'
 }
 
 const style = {
@@ -69,7 +72,7 @@ export default class Profile extends React.Component {
 		}
 
 		this.confirmTokenEdit = () => {
-			this.props.setOsfToken(this.state.osfToken);
+			this.props.setOsfToken(this.state.osfToken.trim());
 			this.finishEditToken();
 		}
 	}
@@ -83,46 +86,71 @@ export default class Profile extends React.Component {
 	}
 
 	render() {
+		let osfTokenString = this.props.osfToken ? this.props.osfToken : '';
+
 		return (
 		<div>
 			<Dialog
 				open={this.state.open}
 				titleStyle={{padding: 0,}}
-				title={renderDialogTitle(<Subheader></Subheader>, this.handleClose, null)}
-				modal={true}
+				title={renderDialogTitle(<Subheader style={{fontSize: 20, color: colors.titleColor}}>
+					User Profile
+					</Subheader>, 
+					this.handleClose, 
+					null)
+				}
+				modal
 			>
-				<Paper>
-					<div style={{display: 'flex', alignItems: 'baseline' }}>
-						<TextField
-							{...style.TextFieldFocusStyle()}
-							fullWidth
-							value={this.state.osfToken}
-							onChange={this.updateToken}
-							disabled={!this.state.editToken}
-							floatingLabelFixed
-							floatingLabelText="OSF Auth Token"
-							hintText="Your personal OSF access token with WRITE access."
-						/>
-						{this.state.editToken ? 
-							<div style={{display: 'flex'}}>
-								<IconButton
-									onClick={this.confirmTokenEdit}
-								>
-									<ConfirmIcon />
-								</IconButton>
-								<IconButton
-									onClick={this.cancelTokenEdit}
-								>
-									<CancelIcon />
-								</IconButton>
-							</div> :
-							<IconButton
-								onClick={this.startEditToken}
-							>
-								<EditIcon />
-							</IconButton>
-						}
+				<Paper style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
+					<div style={{display: 'flex', justifyContent: 'center'}}>
+						<div style={{width: '90%', display: 'flex', alignItems: 'baseline',}}>
+							<TextField
+								fullWidth
+								{...style.TextFieldFocusStyle()}
+								value={this.props.username}
+								disabled
+								floatingLabelFixed
+								floatingLabelText="Username"
+								inputStyle={{color: 'black'}}
+							/>
+						</div>
 					</div>
+					<Divider />
+					<div style={{display: 'flex', justifyContent: 'center'}}>
+						<div style={{width: '90%', display: 'flex', alignItems: 'baseline',}}>
+							<TextField
+								{...style.TextFieldFocusStyle()}
+								fullWidth
+								value={this.state.osfToken}
+								onChange={this.updateToken}
+								disabled={!this.state.editToken}
+								floatingLabelFixed
+								floatingLabelText="OSF Auth Token"
+								hintText="Your personal OSF access token with WRITE access."
+							/>
+							{this.state.editToken ? 
+								<div style={{display: 'flex'}}>
+									<IconButton
+										disabled={this.state.osfToken.trim() === osfTokenString}
+										onClick={this.confirmTokenEdit}
+									>
+										<ConfirmIcon color={colors.checkGreen}/>
+									</IconButton>
+									<IconButton
+										onClick={this.cancelTokenEdit}
+									>
+										<CancelIcon color={colors.cancelRed}/>
+									</IconButton>
+								</div> :
+								<IconButton
+									onClick={this.startEditToken}
+								>
+									<EditIcon hoverColor={colors.secondary}/>
+								</IconButton>
+							}
+						</div>
+					</div>
+					<Divider />
 				</Paper>
 			</Dialog>
 		</div>
