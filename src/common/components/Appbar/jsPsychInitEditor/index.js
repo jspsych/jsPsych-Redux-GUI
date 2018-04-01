@@ -31,7 +31,7 @@ const style = {
     color: colors.primaryDeep
   },
   TextFieldFocusStyle: {
-    ...AppbarTheme.TextFieldFocusStyle
+    ...AppbarTheme.TextFieldFocusStyle()
   },
   Actions: {
     Close: {

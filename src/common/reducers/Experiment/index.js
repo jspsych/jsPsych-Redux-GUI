@@ -33,6 +33,8 @@ import * as editor from './editor';
  * @property {Object} media={} - An AWS.S3 object, get by API call: listObjects()
  * @property {Object} [timelineNode-{id}] - {@link TimelineNode}
  * @property {Object} [trialNode-{id}] - {@link TrialNode}
+ * @property {guiValue} osfToken=null - OSF Auth Token
+ * @property {boolean} isCloudDeployed - Is the experiment online?
  * @description State template for Experiment state. 
  * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
 */
@@ -57,6 +59,10 @@ export const initState = {
 	jsPsychInit: jsPsychInit.initState,
 
 	media: {},
+
+	// cloud deployment info
+	osfParentNode: null,
+	isCloudDeployed: false,
 }
 
 /**@function(state, action)

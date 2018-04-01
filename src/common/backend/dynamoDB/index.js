@@ -124,6 +124,7 @@ function extractUserData(userState) {
 		fetch: {
 			lastModifiedExperimentId: userState.lastModifiedExperimentId,
 			experiments: userState.experiments,
+			osfToken: userState.osfToken
 		}
 	};
 }

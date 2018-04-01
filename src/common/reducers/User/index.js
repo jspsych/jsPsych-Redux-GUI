@@ -16,6 +16,9 @@ export const initState = {
 	},
 	loginSession: null,
 
+	// osfToken
+	osfToken: null,
+
 	// last
 	lastModifiedExperimentId: null,
 
@@ -51,6 +54,12 @@ function setLoginWindow(state, action) {
 	})
 }
 
+function setOsfToken(state, action) {
+	return Object.assign({}, state, {
+		osfToken: action.osfToken
+	})
+}
+
 /*
 
 
@@ -58,6 +67,7 @@ function setLoginWindow(state, action) {
 */
 export function signInOut(state, action) {
 	let { signIn } = action;
+
 	let new_state = Object.assign({}, state);
 	if (signIn) {
 		new_state.windowOpen = false;
@@ -78,6 +88,8 @@ export default function userReducer(state = initState, action) {
 			return setLoginWindow(state, action);
 		case actionTypes.SIGN_IN_OUT:
 			return signInOut(state, action);
+		case actionTypes.SET_OSFTOKEN:
+			return setOsfToken(state, action);
 		default:
 			return state;
 	}
