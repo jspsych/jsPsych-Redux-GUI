@@ -61,8 +61,7 @@ export const initState = {
 	media: {},
 
 	// cloud deployment info
-	osfParentNode: null,
-	isCloudDeployed: false,
+	osfParentNode: null
 }
 
 /**@function(state, action)

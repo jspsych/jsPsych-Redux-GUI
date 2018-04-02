@@ -11,9 +11,12 @@ import FlatButton from 'material-ui/FlatButton';
 import { Card, CardHeader, CardText} from 'material-ui/Card';
 
 import CloudIcon from 'material-ui/svg-icons/file/cloud-queue';
+import CloudTitleIcon from 'material-ui/svg-icons/file/cloud';
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import ConfirmIcon from 'material-ui/svg-icons/navigation/check';
 import CancelIcon from 'material-ui/svg-icons/navigation/close';
+import InfoIcon from 'material-ui/svg-icons/action/info-outline';
+import SettingIcon from 'material-ui/svg-icons/action/settings';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
@@ -24,7 +27,13 @@ const colors = {
   ...AppbarTheme.colors,
   checkGreen: '#4CAF50',
   cancelRed: '#F44336',
-  titleColor: '#3F51B5'
+  titleColor: '9B9B9B',
+  titleIconColor: '#3F51B5',
+  onlineBlue: '#03A9F4',
+  offlineGrey: '#757575',
+  defaultFontColor: '#424242',
+  infoBlue: '#03A9F4',
+  settingGrey: '#9E9E9E'
 }
 
 const cssStyle = {
@@ -33,7 +42,7 @@ const cssStyle = {
 			padding: 0
 		}),
 		Body: utils.prefixer({
-
+			paddingTop: 20
 		})
 	}
 }
@@ -55,13 +64,19 @@ export default class CloudDeploymentManager extends React.Component {
 		this.state = {
 			open: false,
 			editParentNode: false,
-			deploying: false
+			deploying: false,
+			isOnline: false
 		}
 
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
 				osfParentNode: this.props.osfParentNode
+			})
+			this.props.checkIfOnline((hasContent) => {
+				this.setState({
+					isOnline: hasContent
+				})
 			})
 		}
 
@@ -70,6 +85,7 @@ export default class CloudDeploymentManager extends React.Component {
 				open: false,
 			});
 			this.cancelParentNodeEdit();
+			this.setDeloyingStatus(false);
 		}
 
 		this.updateParentNode = (e, value) => {
@@ -98,29 +114,23 @@ export default class CloudDeploymentManager extends React.Component {
 			});
 		}
 
-		this.startDeploying = () => {
+		this.setDeloyingStatus = (flag) => {
 			this.setState({
-				deploying: true
-			});
-		}
-
-		this.finishDeploying = () => {
-			this.setState({
-				deploying: false
-			});
+				deploying: flag
+			})
 		}
 	}
 
 	render() {
-
-
 		let actions = [
 			!this.state.deploying ? 
 			<FlatButton
-				label="Deploy"
-				onClick={() => { this.props.cloudDeploy(this.startDeploying, this.finishDeploying) }}
+				label={this.state.isOnline ? "Update" : "Deploy"}
+				style={{color: colors.primaryDeep}}
+				onClick={() => { this.props.cloudDeploy(this.setDeloyingStatus) }}
 			/>:
-			<CircularProgress {...style.Actions.Wait}/>
+			<CircularProgress {...style.Actions.Wait}/>,
+
 		]
 
 		return(
@@ -138,8 +148,15 @@ export default class CloudDeploymentManager extends React.Component {
 					titleStyle={{...cssStyle.Dialog.Title}}
 					bodyStyle={{...cssStyle.Dialog.Body}}
 					title={renderDialogTitle(
-						<Subheader style={{fontSize: 20, color: colors.titleColor}}>
-							Cloud Deployment
+						<Subheader>
+							<div style={{display: 'flex', maxHeight: 48}}>
+								<div style={{paddingTop: 8, paddingRight: 10, maxHeight: 48}}>
+									<CloudTitleIcon color={colors.titleIconColor}/>
+								</div>
+								<div style={{fontSize: 20, maxHeight: 48}}>
+			      					{"Cloud Deployment"}
+			      				</div>
+		      				</div>
 						</Subheader>, 
 						this.handleClose, 
 						null
@@ -147,19 +164,51 @@ export default class CloudDeploymentManager extends React.Component {
 					actions={actions}
 				>
 					<Paper style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
-						<MenuItem
-							href={`http://${this.props.experimentUrl}`}
-							target="_blank"
-							primaryText={`${this.props.experimentUrl}`}
-				    	/>
-						<Divider />
-						<Card>
+						<Card initiallyExpanded>
 						    <CardHeader
-						      title="Cloud Deployment Settings"
+						      title="Details"
 						      actAsExpander={true}
+						      avatar={
+						      	<InfoIcon color={colors.infoBlue}/>
+						      }
 						      showExpandableButton={true}
 						    />
-						    <CardText expandable={true}>
+						    <CardText expandable={true} style={{paddingTop: 0}}>
+								<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Experiment Status:`}
+							    	/>
+									<MenuItem
+										disabled
+										style={{color: this.state.isOnline ? colors.onlineBlue : colors.offlineGrey }}
+										primaryText={`${this.state.isOnline ? 'Online' : 'Offline'}`}
+							    	/>
+						    	</div>
+						    	<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Experiment URL:`}
+							    	/>
+									<MenuItem
+										disabled={!this.state.isOnline}
+										href={`http://${this.props.experimentUrl}`}
+										target="_blank"
+										primaryText={`${this.state.isOnline ? this.props.experimentUrl : 'The experiment is currently offline.'}`}
+							    	/>
+						    	</div>
+						    </CardText>
+						</Card>						
+						<Card>
+						    <CardHeader
+						      title="Settings"
+						      actAsExpander={true}
+						      avatar={
+						      	<SettingIcon color={colors.settingGrey}/>
+						      }
+						      showExpandableButton={true}
+						    />
+						    <CardText expandable={true} style={{paddingTop: 0}}>
 								<div style={{display: 'flex', justifyContent: 'center'}}>
 									<div style={{width: '90%', display: 'flex', alignItems: 'baseline',}}>
 										<TextField
