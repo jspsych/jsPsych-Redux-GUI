@@ -20,7 +20,7 @@ import {
 } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
 
-const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/DynamoDBTutorial/";
+const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
 
 const jsPsych = window.jsPsych;
