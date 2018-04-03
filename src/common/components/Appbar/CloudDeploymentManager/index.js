@@ -8,6 +8,7 @@ import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
+import SelectField from 'material-ui/SelectField';
 import { Card, CardHeader, CardText} from 'material-ui/Card';
 
 import CloudIcon from 'material-ui/svg-icons/file/cloud-queue';
@@ -29,11 +30,12 @@ const colors = {
   cancelRed: '#F44336',
   titleColor: '9B9B9B',
   titleIconColor: '#3F51B5',
-  onlineBlue: '#03A9F4',
-  offlineGrey: '#757575',
+  onlineColor: '#03A9F4',
+  offlineColor: '#757575',
   defaultFontColor: '#424242',
-  infoBlue: '#03A9F4',
-  settingGrey: '#795548'
+  infoColor: '#03A9F4',
+  settingIconColor: '#795548',
+  deleteColor: 'red'
 }
 
 const cssStyle = {
@@ -56,6 +58,11 @@ const style = {
 			color: colors.primaryDeep
 		}
 	},
+	SelectFieldStyle: {
+		selectedMenuItemStyle: {
+			color: colors.secondary
+		}
+	},
 }
 
 export default class CloudDeploymentManager extends React.Component {
@@ -65,18 +72,23 @@ export default class CloudDeploymentManager extends React.Component {
 			open: false,
 			editParentNode: false,
 			deploying: false,
-			isOnline: false
+			deleting: false,
+			isOnline: false,
+			confirmOpen: false
 		}
 
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
-				osfParentNode: this.props.osfParentNode
+				osfParentNode: this.props.osfParentNode,
+				insertAfter: this.props.cloudSaveDataAfter
 			})
-			this.props.checkIfOnline((hasContent) => {
-				this.setState({
-					isOnline: hasContent
-				})
+			this.props.checkIfOnline(this.setOnlineStatus);
+		}
+
+		this.setOnlineStatus = (hasContent) => {
+			this.setState({
+				isOnline: hasContent
 			})
 		}
 
@@ -119,18 +131,55 @@ export default class CloudDeploymentManager extends React.Component {
 				deploying: flag
 			})
 		}
+
+		this.setDeletingStatus = (flag) => {
+			this.setState({
+				deleting: flag
+			})
+		}
+
+		this.setInsertAfter = (i) => {
+			this.setState({
+				insertAfter: i
+			})
+			this.props.setCloudSaveDataAfter(i);
+		}
+
+		this.handleConfirmClose = () => {
+			this.setState({
+				confirmOpen: false
+			})
+		}
+
+		this.handleConfirmOpen = () => {
+			this.setState({
+				confirmOpen: true
+			})
+		}
 	}
 
 	render() {
 		let actions = [
+			!this.state.deleting ? 
+			<FlatButton
+				label={"Delete"}
+				style={{color: colors.deleteColor}}
+				onClick={this.handleConfirmOpen}
+			/>:
+			<CircularProgress {...style.Actions.Wait}/>,
 			!this.state.deploying ? 
 			<FlatButton
 				label={this.state.isOnline ? "Update" : "Deploy"}
 				style={{color: colors.primaryDeep}}
-				onClick={() => { this.props.cloudDeploy(this.setDeloyingStatus) }}
+				onClick={() => { 
+					this.props.cloudDeploy(
+						this.state.insertAfter, 
+						this.setDeloyingStatus, 
+						() => { this.props.checkIfOnline(this.setOnlineStatus) }
+					)
+				}}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
-
 		]
 
 		return(
@@ -163,13 +212,13 @@ export default class CloudDeploymentManager extends React.Component {
 					)}
 					actions={actions}
 				>
-					<Paper style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
+					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto'}}>
 						<Card initiallyExpanded>
 						    <CardHeader
 						      title="Details"
 						      actAsExpander={true}
 						      avatar={
-						      	<InfoIcon color={colors.infoBlue}/>
+						      	<InfoIcon color={colors.infoColor}/>
 						      }
 						      showExpandableButton={true}
 						    />
@@ -182,7 +231,7 @@ export default class CloudDeploymentManager extends React.Component {
 							    	/>
 									<MenuItem
 										disabled
-										style={{color: this.state.isOnline ? colors.onlineBlue : colors.offlineGrey }}
+										style={{color: this.state.isOnline ? colors.onlineColor : colors.offlineColor }}
 										primaryText={`${this.state.isOnline ? 'Online' : 'Offline'}`}
 							    	/>
 						    	</div>
@@ -197,7 +246,7 @@ export default class CloudDeploymentManager extends React.Component {
 										href={`http://${this.props.experimentUrl}`}
 										target="_blank"
 										title={this.state.isOnline ? "Go to your experiment" : ""}
-										style={{color: this.state.isOnline ? colors.defaultFontColor : colors.offlineGrey }}
+										style={{color: this.state.isOnline ? colors.defaultFontColor : colors.offlineColor }}
 										primaryText={`${this.state.isOnline ? this.props.experimentUrl : 'The experiment is currently offline.'}`}
 							    	/>
 						    	</div>
@@ -208,13 +257,13 @@ export default class CloudDeploymentManager extends React.Component {
 						      title="Settings"
 						      actAsExpander={true}
 						      avatar={
-						      	<SettingIcon color={colors.settingGrey}/>
+						      	<SettingIcon color={colors.settingIconColor}/>
 						      }
 						      showExpandableButton={true}
 						    />
 						    <CardText expandable={true} style={{paddingTop: 0}}>
 								<div style={{display: 'flex', justifyContent: 'center'}}>
-									<div style={{width: '90%', display: 'flex', alignItems: 'baseline',}}>
+									<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
 										<TextField
 											{...style.TextFieldFocusStyle()}
 											fullWidth
@@ -246,11 +295,43 @@ export default class CloudDeploymentManager extends React.Component {
 										}
 									</div>
 								</div>
+								<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Save Data After:`}
+							    	/>
+							    	<SelectField
+							    	  disabled={!this.state.isOnline}
+							          onChange={(event, index, value) => { this.setInsertAfter(value); }}
+							          {...style.SelectFieldStyle}
+							          value={this.state.insertAfter}
+							        >
+							          {
+							          	this.props.indexedNodeNames.map((n, i) => (
+							          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
+							          	)
+							          }
+							        </SelectField>
+						    	</div>
 						    </CardText>
 						</Card>
 						
 					</Paper>
 				</Dialog>
+
+				<ConfirmationDialog
+	                open={this.state.confirmOpen}
+	                message={"Are you sure that you want this experiment offline?"}
+	                handleClose={this.handleConfirmClose}
+	                proceedWithOperation={() => { 
+	                	this.props.cloudDelete(this.setDeletingStatus, () => { this.props.checkIfOnline(this.setOnlineStatus) }); 
+	                	this.handleConfirmClose(); 
+	                }}
+	                proceedWithOperationLabel={"Yes, I want it offline."}
+	                proceed={this.handleConfirmClose}
+	                proceedLabel={"No, hold on..."}
+	                showCloseButton={false}
+	            />
 			</div>
 		);
 	}

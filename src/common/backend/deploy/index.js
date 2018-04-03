@@ -176,12 +176,13 @@ export function diyDeploy(state, progressHook) {
 }
 
 export function cloudDeploy({
-  state
+  state,
+  insertAfter
 }) {
   var experimentState = utils.deepCopy(state.experimentState);
   let saveTrial = generateDataSaveInCloudTrial();
   experimentState[saveTrial.id] = saveTrial;
-  experimentState.mainTimeline.push(saveTrial.id);
+  experimentState.mainTimeline.splice(insertAfter+1, 0, saveTrial.id);
 
   var experimentId = experimentState.experimentId,
       deployInfo = extractDeployInfomation(experimentState),
