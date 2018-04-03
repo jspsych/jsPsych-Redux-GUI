@@ -56,8 +56,7 @@
     "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
-    "short-uuid": "^2.3.3",
-    "shortid": "^2.2.8"
+    "short-uuid": "^2.3.3"
   },
   "scripts": {
     "dev": "babel-node ./src/server/dev-server",
