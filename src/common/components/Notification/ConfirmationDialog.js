@@ -33,12 +33,12 @@ export default class ConfirmationDialog extends React.Component {
   				label={proceedWithOperationLabel}
   				labelStyle={{textTransform: "none", color: colors.primary }}
   				onClick={() => { proceedWithOperation(); handleClose(); }}
-  				keyboardFocused={true}
   			/>,
   			<FlatButton
   				label={proceedLabel}
   				labelStyle={{textTransform: "none", color: colors.secondary }}
   				onClick={() => { proceed(); handleClose(); }}
+  				keyboardFocused={true}
   			/>
 		]
 		if (showCloseButton) {

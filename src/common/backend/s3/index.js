@@ -186,3 +186,8 @@ export function getJsPsychLib(callback) {
     });
   }));
 }
+
+
+export function deleteObject(param) {
+  return connectS3().deleteObject({...param}).promise();
+}
