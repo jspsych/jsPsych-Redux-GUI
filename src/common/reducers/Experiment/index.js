@@ -34,7 +34,7 @@ import * as editor from './editor';
  * @property {Object} [timelineNode-{id}] - {@link TimelineNode}
  * @property {Object} [trialNode-{id}] - {@link TrialNode}
  * @property {guiValue} osfToken=null - OSF Auth Token
- * @property {boolean} isCloudDeployed - Is the experiment online?
+ * @property {number} cloudSaveDataAfter - Save data after trial/timeline at this index
  * @description State template for Experiment state. 
  * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
 */
@@ -61,7 +61,8 @@ export const initState = {
 	media: {},
 
 	// cloud deployment info
-	osfParentNode: null
+	osfParentNode: null,
+	cloudSaveDataAfter: 0
 }
 
 /**@function(state, action)
@@ -81,6 +82,12 @@ const setExperimentName = (state, action) => {
 function setOsfParentNode(state, action) {
 	return Object.assign({}, state, {
 		osfParentNode: action.value
+	})
+}
+
+function setCloudSaveDataAfter(state, action) {
+	return Object.assign({}, state, {
+		cloudSaveDataAfter: action.index
 	})
 }
 
@@ -124,6 +131,8 @@ export default function experimentReducer(state=initState, action) {
 		// cloud
 		case actionTypes.SET_OSF_PARENT:
 			return setOsfParentNode(state, action);
+		case actionTypes.SET_CLOUD_SAVE_DATA_AFTER:
+			return setCloudSaveDataAfter(state, action);
 
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:

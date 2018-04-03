@@ -19,3 +19,10 @@ export function setOsfParentNodeAction(value) {
 		value: value
 	}
 }
+
+export function setCloudSaveDataAfterAction(index) {
+	return {
+		type: actionTypes.SET_CLOUD_SAVE_DATA_AFTER,
+		index: index
+	}
+}

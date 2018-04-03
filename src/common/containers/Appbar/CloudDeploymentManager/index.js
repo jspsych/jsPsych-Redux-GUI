@@ -4,7 +4,7 @@ import * as experimentActions from '../../../actions/experimentSettingActions';
 import CloudDeploymentManager from '../../../components/Appbar/CloudDeploymentManager';
 
 import { cloudDeploy as $cloudDeploy } from '../../../backend/deploy';
-import { listBucketContents, Cloud_Bucket } from '../../../backend/s3';
+import { listBucketContents, Cloud_Bucket, deleteObject } from '../../../backend/s3';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
@@ -14,18 +14,47 @@ import {
 	checkBeforeOpen
 } from '../../MediaManager';
 
-const cloudDeploy = (dispatch, setDeloyingStatus) => {
+const cloudDeploy = (dispatch, insertAfter, setDeloyingStatus, checkIfOnline) => {
 	dispatch((dispatch, getState) => {
 		setDeloyingStatus(true);
 		$cloudDeploy({
-			state: getState()
+			state: getState(),
+			insertAfter: insertAfter
 		}).then(() => {
 			setDeloyingStatus(false);
 			notifySuccessBySnackbar(dispatch, "Experiment Deployed !");
+			checkIfOnline();
 		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
+			checkIfOnline();
 		});
 	})
+}
+
+const cloudDelete = (dispatch, setDeletingStatus, checkIfOnline) => {
+	dispatch((dispatch, getState) => {
+		listBucketContents({
+			bucket: Cloud_Bucket,
+			Prefix: getState().experimentState.experimentId
+		}).then((data) => {
+			return Promise.all(data.Contents.map(item => deleteObject({
+				Bucket: Cloud_Bucket,
+				Key: item.Key
+			})));
+		}).then(() => {
+			setDeletingStatus(false);
+			notifyWarningBySnackbar(dispatch, "Experiment Offline !");
+			checkIfOnline();
+		}).catch(e => {
+			notifyErrorByDialog(dispatch, e.message);
+			checkIfOnline();
+		});
+	})
+
+}
+
+const setCloudSaveDataAfter = (dispatch, index) => {
+	dispatch(experimentActions.setCloudSaveDataAfterAction(index));
 }
 
 const setOsfParentNode = (dispatch, value) => {
@@ -48,13 +77,17 @@ const mapStateToProps = (state, ownProps) => {
 		experimentUrl: `experiments.jspsych.org/${experimentState.experimentId}`,
 		osfParentNode: experimentState.osfParentNode,
 		checkIfOnline: (callback) => { checkIfOnline(experimentState.experimentId, callback); },
+		indexedNodeNames: experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`),
+		cloudSaveDataAfter: experimentState.cloudSaveDataAfter
 	};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	cloudDeploy: (setDeloyingStatus) => { cloudDeploy(dispatch, setDeloyingStatus); },
+	cloudDeploy: (insertAfter, setDeloyingStatus, checkIfOnline) => { cloudDeploy(dispatch, insertAfter, setDeloyingStatus, checkIfOnline); },
 	setOsfParentNode: (value) => { setOsfParentNode(dispatch, value); },
-	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); }
+	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
+	setCloudSaveDataAfter: (index) => { setCloudSaveDataAfter(dispatch, index); },
+	cloudDelete: (setDeletingStatus, checkIfOnline) => { cloudDelete(dispatch, setDeletingStatus, checkIfOnline); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
