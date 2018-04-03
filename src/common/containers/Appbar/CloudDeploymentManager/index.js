@@ -63,7 +63,7 @@ const setOsfParentNode = (dispatch, value) => {
 	// 	dispatch(experimentActions.setOsfParentNodeAction(value ? value : null));
 	// 	$save(dispatch, getState);
 	// })
-	dispatch(experimentActions.setOsfParentNodeAction(value ? value : null));
+	dispatch(experimentActions.setOsfParentNodeAction(value ? value.trim() : null));
 }
 
 const checkIfOnline = (experimentId, callback) => {
