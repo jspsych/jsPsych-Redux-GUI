@@ -19,6 +19,7 @@ import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import SettingIcon from 'material-ui/svg-icons/action/settings';
 import AlertIcon from 'material-ui/svg-icons/alert/error';
+import CreateIcon from 'material-ui/svg-icons/content/add';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
@@ -77,6 +78,13 @@ export default class CloudDeploymentManager extends React.Component {
 			deleting: false,
 			isOnline: false,
 			confirmOpen: false
+		}
+
+		this.update = () => {
+			this.setState({
+				osfParentNode: this.props.osfParentNode,
+				insertAfter: this.props.cloudSaveDataAfter
+			})
 		}
 
 		this.handleOpen = () => {
@@ -157,6 +165,16 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				confirmOpen: true
 			})
+		}
+	}
+
+	shouldComponentUpdate() {
+		return true;
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.osfParentNode !== this.props.osfParentNode) {
+			this.update();
 		}
 	}
 
@@ -316,6 +334,13 @@ export default class CloudDeploymentManager extends React.Component {
 												<EditIcon hoverColor={colors.secondary}/>
 											</IconButton>
 										}
+										<IconButton
+											disabled={this.props.osfTokenError}
+											tooltip={this.props.osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
+											onClick={this.props.createProject}
+										>
+											<CreateIcon />
+										</IconButton> 
 									</div>
 								</div>
 								<div style={{display: 'flex'}}>

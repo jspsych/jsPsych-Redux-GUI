@@ -11,9 +11,69 @@ import {
 	notifySuccessBySnackbar,
 	notifyWarningBySnackbar
 } from '../../Notification';
-import {
-	$save
-} from '../index.js';
+
+const https = require('https');
+
+function createNodeAtOSF({
+	token,
+	experimentName,
+	experimentId
+}) {
+	return new Promise((resolve, reject) => {
+		let body = JSON.stringify({
+				"data": {
+					"type": "nodes",
+					"attributes": {
+						"title": `jsPsych-${experimentName}`,
+						"category": "data",
+						"public": true,
+						"description": `This is the data storage for jsPsych-${experimentName}. The experiment id is: ${experimentId}.`,
+					}
+				}
+			}),
+			postOptions = {
+				hostname: "api.osf.io",
+				path: `/v2/nodes/`,
+				method: "POST",
+				headers: {
+					"Content-Type": "application/vnd.api+json",
+					"Content-Length": Buffer.byteLength(body),
+					"Authorization": `Bearer ${token}`
+				}
+			};
+
+		const req = https.request(postOptions, (res) => {
+			res.on('data', (d) => {
+				resolve(JSON.parse(d.toString('utf8')));
+			});
+		})
+
+		req.on('error', (e) => {
+			reject(e);
+		});
+
+		req.write(body);
+		req.end();
+	})
+}
+
+const createProject = (dispatch) => {
+	dispatch((dispatch, getState) => {
+		let experimentState = getState().experimentState,
+			osfToken = getState().userState.osfToken;
+		createNodeAtOSF({
+			token: osfToken,
+			experimentName: experimentState.experimentName,
+			experimentId: experimentState.experimentId
+		}).then((res) => {
+			let id = res.data.id;
+			dispatch(experimentActions.setOsfParentNodeAction(id));
+			notifySuccessBySnackbar(dispatch, "Storage Place Created !");
+		}).catch((e) => {
+			notifyErrorByDialog(dispatch, e.message);
+		})
+	})
+}
 
 const cloudDeploy = (dispatch, insertAfter, setDeloyingStatus, checkIfOnline) => {
 	dispatch((dispatch, getState) => {
@@ -59,10 +119,6 @@ const setCloudSaveDataAfter = (dispatch, index) => {
 }
 
 const setOsfParentNode = (dispatch, value) => {
-	// dispatch((dispatch, getState) => {
-	// 	dispatch(experimentActions.setOsfParentNodeAction(value ? value : null));
-	// 	$save(dispatch, getState);
-	// })
 	dispatch(experimentActions.setOsfParentNodeAction(value ? value.trim() : null));
 }
 
@@ -107,7 +163,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	setOsfParentNode: (value) => { setOsfParentNode(dispatch, value); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	setCloudSaveDataAfter: (index) => { setCloudSaveDataAfter(dispatch, index); },
-	cloudDelete: (setDeletingStatus, checkIfOnline) => { cloudDelete(dispatch, setDeletingStatus, checkIfOnline); }
+	cloudDelete: (setDeletingStatus, checkIfOnline) => { cloudDelete(dispatch, setDeletingStatus, checkIfOnline); },
+	createProject: () => { createProject(dispatch); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
