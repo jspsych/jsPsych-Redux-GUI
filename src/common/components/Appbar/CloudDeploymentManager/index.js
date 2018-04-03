@@ -33,7 +33,7 @@ const colors = {
   offlineGrey: '#757575',
   defaultFontColor: '#424242',
   infoBlue: '#03A9F4',
-  settingGrey: '#9E9E9E'
+  settingGrey: '#795548'
 }
 
 const cssStyle = {
@@ -137,7 +137,7 @@ export default class CloudDeploymentManager extends React.Component {
 			<div>
 				<IconButton 
 	              tooltip="Cloud Deploy"
-	              onClick={this.handleOpen}
+	              onClick={() => { this.props.checkBeforeOpen(this.handleOpen); }}
 	          	>
 	              <CloudIcon {...style.Icon}/>
 	          	</IconButton>
@@ -176,6 +176,7 @@ export default class CloudDeploymentManager extends React.Component {
 						    <CardText expandable={true} style={{paddingTop: 0}}>
 								<div style={{display: 'flex'}}>
 									<MenuItem
+										style={{width: 170}}
 										disabled
 										primaryText={`Experiment Status:`}
 							    	/>
@@ -187,6 +188,7 @@ export default class CloudDeploymentManager extends React.Component {
 						    	</div>
 						    	<div style={{display: 'flex'}}>
 									<MenuItem
+										style={{width: 170}}
 										disabled
 										primaryText={`Experiment URL:`}
 							    	/>
@@ -194,6 +196,8 @@ export default class CloudDeploymentManager extends React.Component {
 										disabled={!this.state.isOnline}
 										href={`http://${this.props.experimentUrl}`}
 										target="_blank"
+										title={this.state.isOnline ? "Go to your experiment" : ""}
+										style={{color: this.state.isOnline ? colors.defaultFontColor : colors.offlineGrey }}
 										primaryText={`${this.state.isOnline ? this.props.experimentUrl : 'The experiment is currently offline.'}`}
 							    	/>
 						    	</div>

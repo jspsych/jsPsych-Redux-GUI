@@ -10,6 +10,9 @@ import {
 	notifySuccessBySnackbar,
 	notifyWarningBySnackbar
 } from '../../Notification';
+import {
+	checkBeforeOpen
+} from '../../MediaManager';
 
 const cloudDeploy = (dispatch, setDeloyingStatus) => {
 	dispatch((dispatch, getState) => {
@@ -50,7 +53,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	cloudDeploy: (setDeloyingStatus) => { cloudDeploy(dispatch, setDeloyingStatus); },
-	setOsfParentNode: (value) => { setOsfParentNode(dispatch, value); }
+	setOsfParentNode: (value) => { setOsfParentNode(dispatch, value); },
+	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
