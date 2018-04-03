@@ -75,7 +75,7 @@ const deleteFiles = (dispatch, filePaths) => {
 	});
 }
 
-const checkBeforeOpen = (dispatch, handleOpen) => {
+export const checkBeforeOpen = (dispatch, handleOpen) => {
 	dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {

@@ -68,4 +68,4 @@ export const NOTIFICATION = "NOTIFICATION";
 export const NOTIFICATION_CLOSE = "NOTIFICATION_CLOSE";
 
 // Cloud
-export const SET_OSF_PARENT = "SET_OSF_PARENT"
+export const SET_OSF_PARENT = "SET_OSF_PARENT";
