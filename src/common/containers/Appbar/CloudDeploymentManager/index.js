@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
 import * as backendActions from '../../../actions/backendActions';
+import * as userActions from '../../../actions/userActions';
 import * as experimentActions from '../../../actions/experimentSettingActions';
 import CloudDeploymentManager from '../../../components/Appbar/CloudDeploymentManager';
-
+import { LoginModes } from '../../../reducers/User';
 import { cloudDeploy as $cloudDeploy } from '../../../backend/deploy';
 import { listBucketContents, Cloud_Bucket, deleteObject } from '../../../backend/s3';
 import {
@@ -11,8 +12,8 @@ import {
 	notifyWarningBySnackbar
 } from '../../Notification';
 import {
-	checkBeforeOpen
-} from '../../MediaManager';
+	$save
+} from '../index.js';
 
 const cloudDeploy = (dispatch, insertAfter, setDeloyingStatus, checkIfOnline) => {
 	dispatch((dispatch, getState) => {
@@ -58,6 +59,10 @@ const setCloudSaveDataAfter = (dispatch, index) => {
 }
 
 const setOsfParentNode = (dispatch, value) => {
+	// dispatch((dispatch, getState) => {
+	// 	dispatch(experimentActions.setOsfParentNodeAction(value ? value : null));
+	// 	$save(dispatch, getState);
+	// })
 	dispatch(experimentActions.setOsfParentNodeAction(value ? value : null));
 }
 
@@ -70,6 +75,18 @@ const checkIfOnline = (experimentId, callback) => {
 	})
 }
 
+const checkBeforeOpen = (dispatch, handleOpen) => {
+	dispatch((dispatch, getState) => {
+		// not logged in
+		if (!getState().userState.user.identityId) {
+			notifyWarningBySnackbar(dispatch, 'You need to sign in before deploying your experiment on Cloud !');
+			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
+			return;
+		}
+		handleOpen();
+	})
+}
+
 const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 
@@ -78,7 +95,10 @@ const mapStateToProps = (state, ownProps) => {
 		osfParentNode: experimentState.osfParentNode,
 		checkIfOnline: (callback) => { checkIfOnline(experimentState.experimentId, callback); },
 		indexedNodeNames: experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`),
-		cloudSaveDataAfter: experimentState.cloudSaveDataAfter
+		cloudSaveDataAfter: experimentState.cloudSaveDataAfter,
+		osfToken: state.userState.osfToken,
+		osfTokenError: !state.userState.osfToken,
+		osfParentNodeError: !experimentState.osfParentNode
 	};
 };
 

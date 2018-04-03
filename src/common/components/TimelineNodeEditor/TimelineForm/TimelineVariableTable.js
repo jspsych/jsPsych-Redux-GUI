@@ -5,7 +5,6 @@ import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import { MenuItem } from 'material-ui/Menu';
 import Subheader from 'material-ui/Subheader';
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';

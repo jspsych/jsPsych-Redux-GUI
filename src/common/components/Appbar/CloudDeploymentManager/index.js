@@ -18,6 +18,7 @@ import ConfirmIcon from 'material-ui/svg-icons/navigation/check';
 import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import SettingIcon from 'material-ui/svg-icons/action/settings';
+import AlertIcon from 'material-ui/svg-icons/alert/error';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
@@ -35,7 +36,8 @@ const colors = {
   defaultFontColor: '#424242',
   infoColor: '#03A9F4',
   settingIconColor: '#795548',
-  deleteColor: 'red'
+  deleteColor: 'red',
+  errorColor: 'red'
 }
 
 const cssStyle = {
@@ -159,18 +161,22 @@ export default class CloudDeploymentManager extends React.Component {
 	}
 
 	render() {
+		let notReady = this.props.osfTokenError || this.props.osfParentNodeError;
 		let actions = [
 			!this.state.deleting ? 
 			<FlatButton
 				label={"Delete"}
-				style={{color: colors.deleteColor}}
+				disabled={!this.state.isOnline}
+				style={{color: this.state.isOnline ? colors.deleteColor : colors.offlineColor}}
 				onClick={this.handleConfirmOpen}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
 			!this.state.deploying ? 
 			<FlatButton
 				label={this.state.isOnline ? "Update" : "Deploy"}
-				style={{color: colors.primaryDeep}}
+				style={{color: notReady ? colors.offlineColor : colors.primaryDeep}}
+				disabled={notReady}
+				title={notReady ? "The experiment is not ready for deployment." : ""}
 				onClick={() => { 
 					this.props.cloudDeploy(
 						this.state.insertAfter, 
@@ -227,7 +233,7 @@ export default class CloudDeploymentManager extends React.Component {
 									<MenuItem
 										style={{width: 170}}
 										disabled
-										primaryText={`Experiment Status:`}
+										primaryText={`Status:`}
 							    	/>
 									<MenuItem
 										disabled
@@ -250,6 +256,20 @@ export default class CloudDeploymentManager extends React.Component {
 										primaryText={`${this.state.isOnline ? this.props.experimentUrl : 'The experiment is currently offline.'}`}
 							    	/>
 						    	</div>
+						    	<div style={{display: 'flex'}}>
+									<MenuItem
+										style={{width: 170}}
+										disabled
+										primaryText={`Data Storage:`}
+							    	/>
+									<MenuItem
+										disabled={this.props.osfParentNodeError}
+										href={`https://osf.io/${this.state.osfParentNode}`}
+										target="_blank"
+										style={{color: !this.props.osfParentNodeError ? colors.defaultFontColor : colors.offlineColor }}
+										primaryText={`osf.io/${this.state.osfParentNode ? this.state.osfParentNode : 'null'}`}
+							    	/>
+						    	</div>
 						    </CardText>
 						</Card>						
 						<Card>
@@ -257,6 +277,8 @@ export default class CloudDeploymentManager extends React.Component {
 						      title="Settings"
 						      actAsExpander={true}
 						      avatar={
+						      	notReady ? 
+						      	<AlertIcon color={colors.errorColor}/> :
 						      	<SettingIcon color={colors.settingIconColor}/>
 						      }
 						      showExpandableButton={true}
@@ -265,13 +287,14 @@ export default class CloudDeploymentManager extends React.Component {
 								<div style={{display: 'flex', justifyContent: 'center'}}>
 									<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
 										<TextField
-											{...style.TextFieldFocusStyle()}
+											{...style.TextFieldFocusStyle(this.props.osfParentNodeError)}
 											fullWidth
-											value={this.state.osfParentNode}
+											value={this.state.osfParentNode ? this.state.osfParentNode : ''}
 											onChange={this.updateParentNode}
 											disabled={!this.state.editParentNode}
 											floatingLabelFixed
 											floatingLabelText="OSF Project ID"
+											errorText={this.props.osfParentNodeError ? "This field is required." : ""}
 											hintText="Input the id of your project."
 										/>
 										{this.state.editParentNode ? 
@@ -312,6 +335,26 @@ export default class CloudDeploymentManager extends React.Component {
 							          	)
 							          }
 							        </SelectField>
+						    	</div>
+						    	<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Your OSF Token:`}
+							    	/>
+									<TextField
+										disabled
+										fullWidth
+										inputStyle={{
+											color: colors.defaultFontColor,
+											textOverflow: 'ellipsis',
+											overflow: 'hidden',
+											whiteSpace: 'nowrap',
+										}}
+										title={this.props.osfToken ? this.props.osfToken : ''}
+										value={this.props.osfToken ? this.props.osfToken : ''}
+										errorText={this.props.osfTokenError ? "This field is required." : ""}
+										hintText="Please go to User Profile to set your OSF Access Token."
+							    	/>
 						    	</div>
 						    </CardText>
 						</Card>
