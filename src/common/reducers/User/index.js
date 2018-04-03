@@ -20,6 +20,9 @@ export const initState = {
 	// osfToken
 	osfToken: null,
 
+	// osf token experiment map
+	osfTokenMap: {},
+
 	// last
 	lastModifiedExperimentId: null,
 
@@ -62,6 +65,11 @@ function setOsfToken(state, action) {
 	})
 }
 
+function setOsfTokenMap(state, action) {
+	return Object.assign({}, state, {
+		osfTokenMap: action.map
+	})
+}
 
 export function signInOut(state, action) {
 	let { signIn } = action;
@@ -88,6 +96,8 @@ export default function userReducer(state = initState, action) {
 			return signInOut(state, action);
 		case actionTypes.SET_OSFTOKEN:
 			return setOsfToken(state, action);
+		case actionTypes.SET_OSF_TOKEN_MAP:
+			return setOsfTokenMap(state, action);
 		default:
 			return state;
 	}

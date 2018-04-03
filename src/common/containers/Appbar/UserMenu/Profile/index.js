@@ -1,9 +1,7 @@
 import { connect } from 'react-redux';
 import Profile from '../../../../components/Appbar/UserMenu/Profile';
 import * as userActions from '../../../../actions/userActions';
-import {
-	pushUserData,
-} from '../../../../backend/dynamoDB';
+import { pushUserData } from '../../../../backend/dynamoDB';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,

@@ -28,3 +28,10 @@ export function setOsfTokenAction(osfToken) {
 		osfToken: osfToken
 	}
 }
+
+export function setOsfTokenMapAction(map) {
+	return {
+		type: actionTypes.SET_OSF_TOKEN_MAP,
+		map: map
+	}
+}

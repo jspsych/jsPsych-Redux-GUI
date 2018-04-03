@@ -192,7 +192,8 @@ export function cloudDeploy({
     deployInfo: deployInfo,
     cloudMode: true,
     userId: state.userState.user.identityId,
-    osfFolderId: experimentState.osfParentNode
+    osfFolderId: experimentState.osfParentNode,
+    experimentId: experimentId
   })], "index.html");
   var param = generateUploadParam({
     Key: [experimentId, indexPage.name].join(Delimiter),
@@ -544,14 +545,16 @@ export function generatePage({
   cloudMode = false,
   userId = '',
   osfFolderId = '',
-  customCode=''
+  customCode='',
+  experimentId=''
 }) {
   let OsfPostHelper = `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
           userId: "${userId}",
           osfFolderId: "${osfFolderId}",
-          experimentData: data
+          experimentData: data,
+          experimentId: "${experimentId}"
         };
         let request = new XMLHttpRequest();
         request.open("POST", "${SaveDataAPI}", true);

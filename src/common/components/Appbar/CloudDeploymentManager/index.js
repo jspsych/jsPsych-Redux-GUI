@@ -77,7 +77,8 @@ export default class CloudDeploymentManager extends React.Component {
 			deploying: false,
 			deleting: false,
 			isOnline: false,
-			confirmOpen: false
+			confirmOpen: false,
+			creating: false
 		}
 
 		this.update = () => {
@@ -164,6 +165,12 @@ export default class CloudDeploymentManager extends React.Component {
 		this.handleConfirmOpen = () => {
 			this.setState({
 				confirmOpen: true
+			})
+		}
+
+		this.setCreatingStatus = (flag) => {
+			this.setState({
+				creating: flag
 			})
 		}
 	}
@@ -334,13 +341,16 @@ export default class CloudDeploymentManager extends React.Component {
 												<EditIcon hoverColor={colors.secondary}/>
 											</IconButton>
 										}
-										<IconButton
-											disabled={this.props.osfTokenError}
-											tooltip={this.props.osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
-											onClick={this.props.createProject}
-										>
-											<CreateIcon />
-										</IconButton> 
+										{!this.state.creating ?
+											<IconButton
+												disabled={this.props.osfTokenError}
+												tooltip={this.props.osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
+												onClick={() => { this.props.createProject(this.setCreatingStatus)} }
+											>
+												<CreateIcon />
+											</IconButton>  :
+											<CircularProgress {...style.Actions.Wait} />
+										}
 									</div>
 								</div>
 								<div style={{display: 'flex'}}>

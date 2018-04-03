@@ -6,6 +6,7 @@ import CloudDeploymentManager from '../../../components/Appbar/CloudDeploymentMa
 import { LoginModes } from '../../../reducers/User';
 import { cloudDeploy as $cloudDeploy } from '../../../backend/deploy';
 import { listBucketContents, Cloud_Bucket, deleteObject } from '../../../backend/s3';
+import { pushUserData } from '../../../backend/dynamoDB';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
@@ -14,11 +15,7 @@ import {
 
 const https = require('https');
 
-function createNodeAtOSF({
-	token,
-	experimentName,
-	experimentId
-}) {
+function createNodeAtOSF({token, experimentName, experimentId}) {
 	return new Promise((resolve, reject) => {
 		let body = JSON.stringify({
 				"data": {
@@ -57,10 +54,12 @@ function createNodeAtOSF({
 	})
 }
 
-const createProject = (dispatch) => {
+const createProject = (dispatch, setCreatingStatus) => {
+	setCreatingStatus(true);
 	dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState,
-			osfToken = getState().userState.osfToken;
+			osfToken = getState().userState.osfTokenMap[experimentState.experimentId];
+
 		createNodeAtOSF({
 			token: osfToken,
 			experimentName: experimentState.experimentName,
@@ -68,9 +67,12 @@ const createProject = (dispatch) => {
 		}).then((res) => {
 			let id = res.data.id;
 			dispatch(experimentActions.setOsfParentNodeAction(id));
+		}).then(() => {
 			notifySuccessBySnackbar(dispatch, "Storage Place Created !");
 		}).catch((e) => {
 			notifyErrorByDialog(dispatch, e.message);
+		}).finally(() => {
+			setCreatingStatus(false);
 		})
 	})
 }
@@ -78,36 +80,54 @@ const createProject = (dispatch) => {
 const cloudDeploy = (dispatch, insertAfter, setDeloyingStatus, checkIfOnline) => {
 	dispatch((dispatch, getState) => {
 		setDeloyingStatus(true);
-		$cloudDeploy({
-			state: getState(),
-			insertAfter: insertAfter
-		}).then(() => {
-			setDeloyingStatus(false);
+		let experimentState = getState().experimentState,
+			osfToken = getState().userState.osfToken,
+			osfTokenMap = utils.deepCopy(getState().userState.osfTokenMap);
+
+		osfTokenMap[experimentState.experimentId] = osfToken;
+		dispatch(userActions.setOsfTokenMapAction(osfTokenMap));
+		Promise.all([
+			pushUserData(getState().userState),
+			$cloudDeploy({
+				state: getState(),
+				insertAfter: insertAfter
+			})
+		]).then(() => {
 			notifySuccessBySnackbar(dispatch, "Experiment Deployed !");
-			checkIfOnline();
 		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
+		}).finally(() => {
 			checkIfOnline();
+			setDeloyingStatus(false);
 		});
 	})
 }
 
 const cloudDelete = (dispatch, setDeletingStatus, checkIfOnline) => {
 	dispatch((dispatch, getState) => {
-		listBucketContents({
-			bucket: Cloud_Bucket,
-			Prefix: getState().experimentState.experimentId
-		}).then((data) => {
-			return Promise.all(data.Contents.map(item => deleteObject({
-				Bucket: Cloud_Bucket,
-				Key: item.Key
-			})));
-		}).then(() => {
-			setDeletingStatus(false);
+		let experimentState = getState().experimentState,
+			osfToken = getState().userState.osfToken,
+			osfTokenMap = utils.deepCopy(getState().userState.osfTokenMap);
+
+		delete osfTokenMap[experimentState.experimentId];
+		dispatch(userActions.setOsfTokenMapAction(osfTokenMap));
+		Promise.all([
+			pushUserData(getState().userState),
+			listBucketContents({
+				bucket: Cloud_Bucket,
+				Prefix: getState().experimentState.experimentId
+			}).then((data) => {
+				return Promise.all(data.Contents.map(item => deleteObject({
+					Bucket: Cloud_Bucket,
+					Key: item.Key
+				})));
+			})
+		]).then(() => {
 			notifyWarningBySnackbar(dispatch, "Experiment Offline !");
-			checkIfOnline();
 		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
+		}).finally(() => {
+			setDeletingStatus(false);
 			checkIfOnline();
 		});
 	})
@@ -128,6 +148,8 @@ const checkIfOnline = (experimentId, callback) => {
 		Prefix: experimentId
 	}).then(data => {
 		callback(data.Contents.length > 0)
+	}).catch(e => {
+		notifyErrorByDialog(dispatch, e.message);
 	})
 }
 
@@ -152,7 +174,7 @@ const mapStateToProps = (state, ownProps) => {
 		checkIfOnline: (callback) => { checkIfOnline(experimentState.experimentId, callback); },
 		indexedNodeNames: experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`),
 		cloudSaveDataAfter: experimentState.cloudSaveDataAfter,
-		osfToken: state.userState.osfToken,
+		osfToken: state.userState.osfTokenMap[experimentState.experimentId],
 		osfTokenError: !state.userState.osfToken,
 		osfParentNodeError: !experimentState.osfParentNode
 	};
@@ -164,7 +186,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
 	setCloudSaveDataAfter: (index) => { setCloudSaveDataAfter(dispatch, index); },
 	cloudDelete: (setDeletingStatus, checkIfOnline) => { cloudDelete(dispatch, setDeletingStatus, checkIfOnline); },
-	createProject: () => { createProject(dispatch); }
+	createProject: (setCreatingStatus) => { createProject(dispatch, setCreatingStatus); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
