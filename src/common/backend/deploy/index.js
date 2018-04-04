@@ -167,9 +167,8 @@ export function diyDeploy(state, progressHook) {
       .then(function(blob) {
         FileSaver.saveAs(blob, deployInfo.experimentName + ".zip");
       });
-    })
-    // functions as Finally 
-  }).then(() => {
+    }) 
+  }).finally(() => {
     // clear progress
     progressHook(null, null, true);
   })
@@ -246,10 +245,8 @@ export function cloudDeploy({
           sourceBucket: Website_Bucket,
         })
       ));
-      return jsPsychParams;
-    }).then((params) => {
-      return copyFiles({params: params});
-    })
+      return copyFiles({params: jsPsychParams});
+    });
   }
 
   return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);

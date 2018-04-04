@@ -173,7 +173,7 @@ const mapStateToProps = (state, ownProps) => {
 		osfParentNode: experimentState.osfParentNode,
 		checkIfOnline: (callback) => { checkIfOnline(experimentState.experimentId, callback); },
 		indexedNodeNames: experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`),
-		cloudSaveDataAfter: experimentState.cloudSaveDataAfter,
+		cloudSaveDataAfter: experimentState.cloudSaveDataAfter ? experimentState.cloudSaveDataAfter : 0,
 		osfToken: state.userState.osfTokenMap[experimentState.experimentId],
 		osfTokenError: !state.userState.osfToken,
 		osfParentNodeError: !experimentState.osfParentNode

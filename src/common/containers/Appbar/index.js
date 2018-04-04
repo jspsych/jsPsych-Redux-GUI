@@ -52,9 +52,9 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 		// if there is any change
 		if (anyChange) {
 			onStart();
-			$save(dispatch, getState).then(() => {
+			$save(dispatch, getState).finally(() => {
 				onFinish();
-			});;
+			});
 		} else {
 			notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
 		}
@@ -132,7 +132,7 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 			})
 		}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
-		}).then(() => {
+		}).finally(() => {
 			onFinish();
 		});
 	});

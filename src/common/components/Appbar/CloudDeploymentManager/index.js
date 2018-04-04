@@ -83,16 +83,14 @@ export default class CloudDeploymentManager extends React.Component {
 
 		this.update = () => {
 			this.setState({
-				osfParentNode: this.props.osfParentNode,
-				insertAfter: this.props.cloudSaveDataAfter
+				osfParentNode: this.props.osfParentNode
 			})
 		}
 
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
-				osfParentNode: this.props.osfParentNode,
-				insertAfter: this.props.cloudSaveDataAfter
+				osfParentNode: this.props.osfParentNode
 			})
 			this.props.checkIfOnline(this.setOnlineStatus);
 		}
@@ -149,13 +147,6 @@ export default class CloudDeploymentManager extends React.Component {
 			})
 		}
 
-		this.setInsertAfter = (i) => {
-			this.setState({
-				insertAfter: i
-			})
-			this.props.setCloudSaveDataAfter(i);
-		}
-
 		this.handleConfirmClose = () => {
 			this.setState({
 				confirmOpen: false
@@ -204,7 +195,7 @@ export default class CloudDeploymentManager extends React.Component {
 				title={notReady ? "The experiment is not ready for deployment." : ""}
 				onClick={() => { 
 					this.props.cloudDeploy(
-						this.state.insertAfter, 
+						this.props.cloudSaveDataAfter, 
 						this.setDeloyingStatus, 
 						() => { this.props.checkIfOnline(this.setOnlineStatus) }
 					)
@@ -337,6 +328,7 @@ export default class CloudDeploymentManager extends React.Component {
 											</div> :
 											<IconButton
 												onClick={this.startEditParentNode}
+												tooltip={"Set Storage Place"}
 											>
 												<EditIcon hoverColor={colors.secondary}/>
 											</IconButton>
@@ -347,7 +339,7 @@ export default class CloudDeploymentManager extends React.Component {
 												tooltip={this.props.osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
 												onClick={() => { this.props.createProject(this.setCreatingStatus)} }
 											>
-												<CreateIcon />
+												<CreateIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep}/>
 											</IconButton>  :
 											<CircularProgress {...style.Actions.Wait} />
 										}
@@ -360,9 +352,9 @@ export default class CloudDeploymentManager extends React.Component {
 							    	/>
 							    	<SelectField
 							    	  disabled={!this.state.isOnline}
-							          onChange={(event, index, value) => { this.setInsertAfter(value); }}
+							          onChange={(event, index, value) => { this.props.setCloudSaveDataAfter(value); }}
 							          {...style.SelectFieldStyle}
-							          value={this.state.insertAfter}
+							          value={this.props.cloudSaveDataAfter}
 							        >
 							          {
 							          	this.props.indexedNodeNames.map((n, i) => (
