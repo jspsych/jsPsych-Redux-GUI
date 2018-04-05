@@ -60,7 +60,7 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 				getState().userState.lastModifiedExperimentState,
 				getState().experimentState)) {
 			onStart();
-			$pullExperiment(dispatch, getState, selected).then(() => {
+			$pullExperiment(dispatch, getState, selected).finally(() => {
 				onFinish();
 			});
 			return;
@@ -75,14 +75,14 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 					$pullExperiment(dispatch, getState, selected);
 				}, (err) => {
 					notifyErrorByDialog(dispatch, err.message);
-				}).then(() => {
+				}).finally(() => {
 					onFinish();
 				});
 			},
 			"Yes (Continue with saving)",
 			() => {
 				onStart();
-				$pullExperiment(dispatch, getState, selected).then(() => {
+				$pullExperiment(dispatch, getState, selected).finally(() => {
 					onFinish();
 				});
 			},
@@ -138,11 +138,11 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 						})
 					}, (err) => {
 						notifyErrorByDialog(dispatch, err.message);
-					}).then(() => {
-						onFinish();
-					});
+					})
 				}).catch((err) => {
 					notifyErrorByDialog(dispatch, err.message);
+				}).finally(() => {
+					onFinish();
 				});
 			},
 			"Yes, I want to delete it.",
@@ -218,7 +218,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 			});
 		}).catch((err) => {
 			notifyErrorByDialog(dispatch, err.message);
-		}).then(() => {
+		}).finally(() => {
 			onFinish();
 		});
 	});

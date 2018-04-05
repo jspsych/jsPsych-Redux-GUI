@@ -27,14 +27,24 @@ const Icon = {
 	hoverColor: colors.secondary
 };
 
-const TextFieldFocusStyle = (error=false) => ({
-	floatingLabelFocusStyle: {
-		color: error ? colors.errorRed : colors.secondary
-	},
-	underlineFocusStyle: {
-		borderColor: error ? colors.errorRed : colors.secondary
+const TextFieldFocusStyle = (error = false) => {
+	var res = {
+		floatingLabelFocusStyle: {
+			color: error ? colors.errorRed : colors.secondary
+		},
+		underlineFocusStyle: {
+			borderColor: error ? colors.errorRed : colors.secondary
+		}
 	}
-});
+
+	if (error) {
+		res.floatingLabelStyle = {
+			color: colors.errorRed
+		}
+	}
+
+	return res;
+};
 
 export default {
 	colors: colors,

@@ -213,7 +213,7 @@ Detail is in reducers/backend.
 export function pushState(state) {
 	let { userState, experimentState } = state;
 
-	return pushUserData(userState).then(() => { pushExperimentData(experimentState); });
+	return Promise.all([pushUserData(userState), pushExperimentData(experimentState)]);
 }
 
 /*
@@ -228,4 +228,14 @@ export function deleteExperiment(experimentId) {
 	}
 
 	return deleteItem(param);
+}
+
+export function getUserData(id) {
+	let param = {
+		TableName: User_Table_Name,
+		Key: {
+			'userId': id
+		}
+	};
+	return getItem(param);
 }

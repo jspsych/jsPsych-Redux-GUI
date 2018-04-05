@@ -25,10 +25,13 @@ const changeExperimentName = (dispatch, text) => {
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
-export const $save = (dispatch, getState) => {
-	// process state
+export const pureSaveFlow = (dispatch, getState) => {
 	dispatch(backendActions.clickSavePushAction());
-	return pushState(getState()).then(
+	return pushState(getState());
+}
+
+export const $save = (dispatch, getState) => {
+	return pureSaveFlow(dispatch, getState).then(
 		() => {
 			notifySuccessBySnackbar(dispatch, "Saved !");
 		}, (err) => {
@@ -52,9 +55,9 @@ const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
 		// if there is any change
 		if (anyChange) {
 			onStart();
-			$save(dispatch, getState).then(() => {
+			$save(dispatch, getState).finally(() => {
 				onFinish();
-			});;
+			});
 		} else {
 			notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
 		}
@@ -132,7 +135,7 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 			})
 		}, (err) => {
 			notifyErrorByDialog(dispatch, err.message);
-		}).then(() => {
+		}).finally(() => {
 			onFinish();
 		});
 	});

@@ -167,32 +167,34 @@ export function diyDeploy(state, progressHook) {
       .then(function(blob) {
         FileSaver.saveAs(blob, deployInfo.experimentName + ".zip");
       });
-    })
-    // functions as Finally 
-  }).then(() => {
+    }) 
+  }).finally(() => {
     // clear progress
     progressHook(null, null, true);
   })
 }
 
 export function cloudDeploy({
-  state,
-  insertAfter
+  state
 }) {
-  var experimentState = utils.deepCopy(state.experimentState);
+  var experimentState = utils.deepCopy(state.experimentState),
+      experimentId = experimentState.experimentId,
+      userState = state.userState,
+      user = userState.user,
+      insertAfter = userState.cloudDeployInfo[experimentId].saveAfter;
+
   let saveTrial = generateDataSaveInCloudTrial();
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(insertAfter+1, 0, saveTrial.id);
 
-  var experimentId = experimentState.experimentId,
-      deployInfo = extractDeployInfomation(experimentState),
+  var deployInfo = extractDeployInfomation(experimentState),
       filePaths = Object.keys(deployInfo.media);
 
   var indexPage = new File([generatePage({
     deployInfo: deployInfo,
     cloudMode: true,
-    userId: state.userState.user.identityId,
-    osfFolderId: experimentState.osfParentNode
+    userId: user.identityId,
+    experimentId: experimentId
   })], "index.html");
   var param = generateUploadParam({
     Key: [experimentId, indexPage.name].join(Delimiter),
@@ -245,10 +247,8 @@ export function cloudDeploy({
           sourceBucket: Website_Bucket,
         })
       ));
-      return jsPsychParams;
-    }).then((params) => {
-      return copyFiles({params: params});
-    })
+      return copyFiles({params: jsPsychParams});
+    });
   }
 
   return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
@@ -543,15 +543,15 @@ export function generatePage({
   deployInfo,
   cloudMode = false,
   userId = '',
-  osfFolderId = '',
-  customCode=''
+  customCode='',
+  experimentId=''
 }) {
   let OsfPostHelper = `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
           userId: "${userId}",
-          osfFolderId: "${osfFolderId}",
-          experimentData: data
+          experimentData: data,
+          experimentId: "${experimentId}"
         };
         let request = new XMLHttpRequest();
         request.open("POST", "${SaveDataAPI}", true);

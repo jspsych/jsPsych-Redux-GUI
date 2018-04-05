@@ -20,6 +20,18 @@ export const initState = {
 	// osfToken
 	osfToken: null,
 
+	// osf cloud deploy info
+
+	/********** cloud deployment info **********/
+	/*
+	cloudDeployInfo: {
+		osfNode: null,
+		saveAfter: 0,
+		osfToken: null
+	}
+	*/
+	cloudDeployInfo: {},
+
 	// last
 	lastModifiedExperimentId: null,
 
@@ -62,6 +74,56 @@ function setOsfToken(state, action) {
 	})
 }
 
+const Default_Cloud_Deploy_Information = {
+	osfNode: null,
+	osfToken: null,
+	saveAfter: 0,
+}
+
+function setOsfNode(state, action) {
+	let info = state.cloudDeployInfo[action.id];
+	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
+
+	let clone = utils.deepCopy(state.cloudDeployInfo);
+	clone[action.id] = {
+		...info,
+		osfNode: action.node
+	};
+
+	return Object.assign({}, state, {
+		cloudDeployInfo: clone
+	});
+}
+
+function setCloudSaveDataAfter(state, action) {
+	let info = state.cloudDeployInfo[action.id];
+	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
+
+	let clone = utils.deepCopy(state.cloudDeployInfo);
+	clone[action.id] = {
+		...info,
+		saveAfter: action.index
+	};
+
+	return Object.assign({}, state, {
+		cloudDeployInfo: clone
+	});
+}
+
+function setExperimentOsfToken(state, action) {
+	let info = state.cloudDeployInfo[action.id];
+	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
+
+	let clone = utils.deepCopy(state.cloudDeployInfo);
+	clone[action.id] = {
+		...info,
+		osfToken: action.token
+	};
+
+	return Object.assign({}, state, {
+		cloudDeployInfo: clone
+	});
+}
 
 export function signInOut(state, action) {
 	let { signIn } = action;
@@ -88,6 +150,15 @@ export default function userReducer(state = initState, action) {
 			return signInOut(state, action);
 		case actionTypes.SET_OSFTOKEN:
 			return setOsfToken(state, action);
+
+		// cloud
+		case actionTypes.SET_EXPERIMENT_OSF_TOKEN:
+			return setExperimentOsfToken(state, action);
+		case actionTypes.SET_OSF_PARENT:
+			return setOsfNode(state, action);
+		case actionTypes.SET_CLOUD_SAVE_DATA_AFTER:
+			return setCloudSaveDataAfter(state, action);
+
 		default:
 			return state;
 	}
