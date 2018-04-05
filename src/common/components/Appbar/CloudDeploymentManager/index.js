@@ -73,66 +73,39 @@ export default class CloudDeploymentManager extends React.Component {
 		super(props);
 		this.state = {
 			open: false,
-			editParentNode: false,
+			confirmOpen: false,
+
 			deploying: false,
 			deleting: false,
+			creating: false,
+
 			isOnline: false,
-			confirmOpen: false,
-			creating: false
+			usingOsfNode: '',
+			usingToken: '',
 		}
 
-		this.update = () => {
-			this.setState({
-				osfParentNode: this.props.osfParentNode
-			})
+		this.syncExperimentStatus = () => {
+			this.props.syncExperimentStatus((args) => {
+				this.setState(args)
+			});
 		}
 
 		this.handleOpen = () => {
 			this.setState({
 				open: true,
-				osfParentNode: this.props.osfParentNode
 			})
-			this.props.checkIfOnline(this.setOnlineStatus);
-		}
-
-		this.setOnlineStatus = (hasContent) => {
-			this.setState({
-				isOnline: hasContent
-			})
+			this.syncExperimentStatus();
 		}
 
 		this.handleClose = () => {
 			this.setState({
 				open: false,
 			});
-			this.cancelParentNodeEdit();
 			this.setDeloyingStatus(false);
 		}
 
 		this.updateParentNode = (e, value) => {
-			this.setState({
-				osfParentNode: value,
-			})
-		}
-
-		this.startEditParentNode = () => {
-			this.setState({
-				editParentNode: true
-			})
-		}
-
-		this.cancelParentNodeEdit = () => {
-			this.setState({
-				osfParentNode: this.props.osfParentNode,
-				editParentNode: false
-			});
-		}
-
-		this.confirmParentNodeEdit = () => {
-			this.props.setOsfParentNode(this.state.osfParentNode.trim());
-			this.setState({
-				editParentNode: false
-			});
+			this.props.setOsfNode(value);
 		}
 
 		this.setDeloyingStatus = (flag) => {
@@ -166,43 +139,184 @@ export default class CloudDeploymentManager extends React.Component {
 		}
 	}
 
-	shouldComponentUpdate() {
-		return true;
-	}
-
-	componentDidUpdate(prevProps) {
-		if (prevProps.osfParentNode !== this.props.osfParentNode) {
-			this.update();
-		}
-	}
-
 	render() {
-		let notReady = this.props.osfTokenError || this.props.osfParentNodeError;
+		let {
+			isOnline,
+			deploying,
+			creating,
+			deleting,
+			usingOsfNode,
+			usingOsfToken
+		} = this.state;
+		let {
+			osfTokenError,
+			osfParentNodeError,
+			osfParentNode,
+			osfToken,
+			cloudSaveDataAfter,
+			saveAfterError,
+			experimentUrl,
+		} = this.props;
+
+		let notReady = osfTokenError || osfParentNodeError || saveAfterError;
 		let actions = [
-			!this.state.deleting ? 
+			!deleting ? 
 			<FlatButton
 				label={"Delete"}
-				disabled={!this.state.isOnline}
-				style={{color: this.state.isOnline ? colors.deleteColor : colors.offlineColor}}
+				disabled={!isOnline}
+				style={{color: isOnline ? colors.deleteColor : colors.offlineColor}}
 				onClick={this.handleConfirmOpen}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
-			!this.state.deploying ? 
+			!deploying ? 
 			<FlatButton
-				label={this.state.isOnline ? "Update" : "Deploy"}
+				label={isOnline ? "Update" : "Deploy"}
 				style={{color: notReady ? colors.offlineColor : colors.primaryDeep}}
 				disabled={notReady}
 				title={notReady ? "The experiment is not ready for deployment." : ""}
 				onClick={() => { 
-					this.props.cloudDeploy(
-						this.props.cloudSaveDataAfter, 
-						this.setDeloyingStatus, 
-						() => { this.props.checkIfOnline(this.setOnlineStatus) }
-					)
+					this.props.cloudDeploy({
+						setDeloyingStatus: this.setDeloyingStatus, 
+						syncExperimentStatus: this.syncExperimentStatus
+					})
 				}}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
-		]
+		];
+
+		let Experiment_Detail_Card = (
+			<Card initiallyExpanded>
+			    <CardHeader
+			      title="Details"
+			      actAsExpander={true}
+			      avatar={
+			      	<InfoIcon color={colors.infoColor}/>
+			      }
+			      showExpandableButton={true}
+			    />
+			    <CardText expandable={true} style={{paddingTop: 0}}>
+					<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Status:`}
+				    	/>
+						<MenuItem
+							disabled
+							style={{color: isOnline ? colors.onlineColor : colors.offlineColor }}
+							primaryText={`${isOnline ? 'Online' : 'Offline'}`}
+				    	/>
+			    	</div>
+			    	<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Experiment URL:`}
+				    	/>
+						<MenuItem
+							disabled={!isOnline}
+							href={`http://${experimentUrl}`}
+							target="_blank"
+							title={isOnline ? "Go to your experiment" : ""}
+							style={{color: isOnline ? colors.defaultFontColor : colors.offlineColor }}
+							primaryText={`${isOnline ? experimentUrl : 'The experiment is currently offline.'}`}
+				    	/>
+			    	</div>
+			    	<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Data Storage:`}
+				    	/>
+						<MenuItem
+							href={`https://osf.io/${utils.toEmptyString(usingOsfNode)}`}
+							target="_blank"
+							style={{color: colors.defaultFontColor }}
+							primaryText={`osf.io/${utils.toEmptyString(usingOsfNode) ? utils.toEmptyString(usingOsfNode) : 'null'}`}
+				    	/>
+			    	</div>
+			    	<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Using OSF Token:`}
+				    	/>
+				    	<TextField
+							disabled
+							id="Display_Using_Token"
+							style={{paddingLeft: 16}}
+							inputStyle={{
+								color: colors.defaultFontColor,
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+							}}
+							title={utils.toEmptyString(usingOsfToken)}
+							value={utils.toEmptyString(usingOsfToken)}
+				    	/>
+			    	</div>
+			    </CardText>
+			</Card>		
+		)
+
+		let Setting_Card = (
+			<Card>
+			    <CardHeader
+			      title="Settings"
+			      actAsExpander={true}
+			      avatar={
+			      	notReady ? 
+			      	<AlertIcon color={colors.errorColor}/> :
+			      	<SettingIcon color={colors.settingIconColor}/>
+			      }
+			      showExpandableButton={true}
+			    />
+			    <CardText expandable={true} style={{paddingTop: 0}}>
+					<div style={{display: 'flex', justifyContent: 'center'}}>
+						<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
+							<TextField
+								{...style.TextFieldFocusStyle(this.props.osfParentNodeError)}
+								fullWidth
+								id="OSF_Project_ID"
+								value={utils.toEmptyString(osfParentNode)}
+								onChange={this.updateParentNode}
+								floatingLabelFixed
+								floatingLabelText="OSF Project ID"
+								errorText={osfParentNodeError ? "This field is required." : ""}
+								hintText="Input the id of your project."
+							/>
+							{!creating ?
+								<IconButton
+									disabled={osfTokenError}
+									tooltip={osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
+									onClick={() => { this.props.createProject(this.setCreatingStatus)} }
+								>
+									<CreateIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep}/>
+								</IconButton>  :
+								<CircularProgress {...style.Actions.Wait} />
+							}
+						</div>
+					</div>
+					<div style={{display: 'flex'}}>
+						<MenuItem
+							disabled
+							primaryText={`Save Data After:`}
+				    	/>
+				    	<SelectField
+				          onChange={(event, index, value) => { this.props.setCloudSaveDataAfter(value); }}
+				          {...style.SelectFieldStyle}
+				          value={cloudSaveDataAfter}
+				        >
+				          {
+				          	this.props.indexedNodeNames.map((n, i) => (
+				          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
+				          	)
+				          }
+				        </SelectField>
+			    	</div>
+			    </CardText>
+			</Card>
+		)
 
 		return(
 			<div>
@@ -234,158 +348,9 @@ export default class CloudDeploymentManager extends React.Component {
 					)}
 					actions={actions}
 				>
-					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto'}}>
-						<Card initiallyExpanded>
-						    <CardHeader
-						      title="Details"
-						      actAsExpander={true}
-						      avatar={
-						      	<InfoIcon color={colors.infoColor}/>
-						      }
-						      showExpandableButton={true}
-						    />
-						    <CardText expandable={true} style={{paddingTop: 0}}>
-								<div style={{display: 'flex'}}>
-									<MenuItem
-										style={{width: 170}}
-										disabled
-										primaryText={`Status:`}
-							    	/>
-									<MenuItem
-										disabled
-										style={{color: this.state.isOnline ? colors.onlineColor : colors.offlineColor }}
-										primaryText={`${this.state.isOnline ? 'Online' : 'Offline'}`}
-							    	/>
-						    	</div>
-						    	<div style={{display: 'flex'}}>
-									<MenuItem
-										style={{width: 170}}
-										disabled
-										primaryText={`Experiment URL:`}
-							    	/>
-									<MenuItem
-										disabled={!this.state.isOnline}
-										href={`http://${this.props.experimentUrl}`}
-										target="_blank"
-										title={this.state.isOnline ? "Go to your experiment" : ""}
-										style={{color: this.state.isOnline ? colors.defaultFontColor : colors.offlineColor }}
-										primaryText={`${this.state.isOnline ? this.props.experimentUrl : 'The experiment is currently offline.'}`}
-							    	/>
-						    	</div>
-						    	<div style={{display: 'flex'}}>
-									<MenuItem
-										style={{width: 170}}
-										disabled
-										primaryText={`Data Storage:`}
-							    	/>
-									<MenuItem
-										disabled={this.props.osfParentNodeError}
-										href={`https://osf.io/${this.state.osfParentNode}`}
-										target="_blank"
-										style={{color: !this.props.osfParentNodeError ? colors.defaultFontColor : colors.offlineColor }}
-										primaryText={`osf.io/${this.state.osfParentNode ? this.state.osfParentNode : 'null'}`}
-							    	/>
-						    	</div>
-						    </CardText>
-						</Card>						
-						<Card>
-						    <CardHeader
-						      title="Settings"
-						      actAsExpander={true}
-						      avatar={
-						      	notReady ? 
-						      	<AlertIcon color={colors.errorColor}/> :
-						      	<SettingIcon color={colors.settingIconColor}/>
-						      }
-						      showExpandableButton={true}
-						    />
-						    <CardText expandable={true} style={{paddingTop: 0}}>
-								<div style={{display: 'flex', justifyContent: 'center'}}>
-									<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
-										<TextField
-											{...style.TextFieldFocusStyle(this.props.osfParentNodeError)}
-											fullWidth
-											value={this.state.osfParentNode ? this.state.osfParentNode : ''}
-											onChange={this.updateParentNode}
-											disabled={!this.state.editParentNode}
-											floatingLabelFixed
-											floatingLabelText="OSF Project ID"
-											errorText={this.props.osfParentNodeError ? "This field is required." : ""}
-											hintText="Input the id of your project."
-										/>
-										{this.state.editParentNode ? 
-											<div style={{display: 'flex'}}>
-												<IconButton
-													onClick={this.confirmParentNodeEdit}
-												>
-													<ConfirmIcon color={colors.checkGreen}/>
-												</IconButton>
-												<IconButton
-													onClick={this.cancelParentNodeEdit}
-												>
-													<CancelIcon color={colors.cancelRed}/>
-												</IconButton>
-											</div> :
-											<IconButton
-												onClick={this.startEditParentNode}
-												tooltip={"Set Storage Place"}
-											>
-												<EditIcon hoverColor={colors.secondary}/>
-											</IconButton>
-										}
-										{!this.state.creating ?
-											<IconButton
-												disabled={this.props.osfTokenError}
-												tooltip={this.props.osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
-												onClick={() => { this.props.createProject(this.setCreatingStatus)} }
-											>
-												<CreateIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep}/>
-											</IconButton>  :
-											<CircularProgress {...style.Actions.Wait} />
-										}
-									</div>
-								</div>
-								<div style={{display: 'flex'}}>
-									<MenuItem
-										disabled
-										primaryText={`Save Data After:`}
-							    	/>
-							    	<SelectField
-							    	  disabled={!this.state.isOnline}
-							          onChange={(event, index, value) => { this.props.setCloudSaveDataAfter(value); }}
-							          {...style.SelectFieldStyle}
-							          value={this.props.cloudSaveDataAfter}
-							        >
-							          {
-							          	this.props.indexedNodeNames.map((n, i) => (
-							          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
-							          	)
-							          }
-							        </SelectField>
-						    	</div>
-						    	<div style={{display: 'flex'}}>
-									<MenuItem
-										disabled
-										primaryText={`Your OSF Token:`}
-							    	/>
-									<TextField
-										disabled
-										fullWidth
-										inputStyle={{
-											color: colors.defaultFontColor,
-											textOverflow: 'ellipsis',
-											overflow: 'hidden',
-											whiteSpace: 'nowrap',
-										}}
-										title={this.props.osfToken ? this.props.osfToken : ''}
-										value={this.props.osfToken ? this.props.osfToken : ''}
-										errorText={this.props.osfTokenError ? "This field is required." : ""}
-										hintText="Please go to User Profile to set your OSF Access Token."
-							    	/>
-						    	</div>
-						    </CardText>
-						</Card>
-						
+					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
+						{Experiment_Detail_Card}				
+						{Setting_Card}
 					</Paper>
 				</Dialog>
 
@@ -394,7 +359,7 @@ export default class CloudDeploymentManager extends React.Component {
 	                message={"Are you sure that you want this experiment offline?"}
 	                handleClose={this.handleConfirmClose}
 	                proceedWithOperation={() => { 
-	                	this.props.cloudDelete(this.setDeletingStatus, () => { this.props.checkIfOnline(this.setOnlineStatus) }); 
+	                	this.props.cloudDelete(this.setDeletingStatus, this.syncExperimentStatus); 
 	                	this.handleConfirmClose(); 
 	                }}
 	                proceedWithOperationLabel={"Yes, I want it offline."}

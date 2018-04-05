@@ -25,10 +25,13 @@ const changeExperimentName = (dispatch, text) => {
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
-export const $save = (dispatch, getState) => {
-	// process state
+export const pureSaveFlow = (dispatch, getState) => {
 	dispatch(backendActions.clickSavePushAction());
-	return pushState(getState()).then(
+	return pushState(getState());
+}
+
+export const $save = (dispatch, getState) => {
+	return pureSaveFlow(dispatch, getState).then(
 		() => {
 			notifySuccessBySnackbar(dispatch, "Saved !");
 		}, (err) => {

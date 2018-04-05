@@ -175,23 +175,25 @@ export function diyDeploy(state, progressHook) {
 }
 
 export function cloudDeploy({
-  state,
-  insertAfter
+  state
 }) {
-  var experimentState = utils.deepCopy(state.experimentState);
+  var experimentState = utils.deepCopy(state.experimentState),
+      experimentId = experimentState.experimentId,
+      userState = state.userState,
+      user = userState.user,
+      insertAfter = userState.cloudDeployInfo[experimentId].saveAfter;
+
   let saveTrial = generateDataSaveInCloudTrial();
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(insertAfter+1, 0, saveTrial.id);
 
-  var experimentId = experimentState.experimentId,
-      deployInfo = extractDeployInfomation(experimentState),
+  var deployInfo = extractDeployInfomation(experimentState),
       filePaths = Object.keys(deployInfo.media);
 
   var indexPage = new File([generatePage({
     deployInfo: deployInfo,
     cloudMode: true,
-    userId: state.userState.user.identityId,
-    osfFolderId: experimentState.osfParentNode,
+    userId: user.identityId,
     experimentId: experimentId
   })], "index.html");
   var param = generateUploadParam({
@@ -541,7 +543,6 @@ export function generatePage({
   deployInfo,
   cloudMode = false,
   userId = '',
-  osfFolderId = '',
   customCode='',
   experimentId=''
 }) {
@@ -549,7 +550,6 @@ export function generatePage({
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
           userId: "${userId}",
-          osfFolderId: "${osfFolderId}",
           experimentData: data,
           experimentId: "${experimentId}"
         };

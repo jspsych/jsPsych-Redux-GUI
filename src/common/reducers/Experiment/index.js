@@ -7,6 +7,7 @@ import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
 
+
 /**
  * @typeof {(string|number|object)} guiValue - A native javascript value. 
  * It is important that if the input value is empty string, it should be converted to null for AWS.DynamoDB storage purpose. 
@@ -33,8 +34,6 @@ import * as editor from './editor';
  * @property {Object} media={} - An AWS.S3 object, get by API call: listObjects()
  * @property {Object} [timelineNode-{id}] - {@link TimelineNode}
  * @property {Object} [trialNode-{id}] - {@link TrialNode}
- * @property {guiValue} osfToken=null - OSF Auth Token
- * @property {number} cloudSaveDataAfter - Save data after trial/timeline at this index
  * @description State template for Experiment state. 
  * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
 */
@@ -59,10 +58,6 @@ export const initState = {
 	jsPsychInit: jsPsychInit.initState,
 
 	media: {},
-
-	// cloud deployment info
-	osfParentNode: null,
-	cloudSaveDataAfter: 0
 }
 
 /**@function(state, action)
@@ -79,17 +74,6 @@ const setExperimentName = (state, action) => {
 	})
 }
 
-function setOsfParentNode(state, action) {
-	return Object.assign({}, state, {
-		osfParentNode: action.value
-	})
-}
-
-function setCloudSaveDataAfter(state, action) {
-	return Object.assign({}, state, {
-		cloudSaveDataAfter: action.index
-	})
-}
 
 /**@function(state, action)
  * @name experimentReducer
@@ -127,12 +111,6 @@ export default function experimentReducer(state=initState, action) {
 			return organizer.onToggle(state, action);
 		case actionTypes.SET_COLLAPSED:
 			return organizer.setCollapsed(state, action);
-
-		// cloud
-		case actionTypes.SET_OSF_PARENT:
-			return setOsfParentNode(state, action);
-		case actionTypes.SET_CLOUD_SAVE_DATA_AFTER:
-			return setCloudSaveDataAfter(state, action);
 
 		// jspsych.init starts
 		case actionTypes.SET_JSPSYCH_INIT:
