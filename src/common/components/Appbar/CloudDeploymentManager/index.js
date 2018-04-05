@@ -78,10 +78,23 @@ export default class CloudDeploymentManager extends React.Component {
 			deploying: false,
 			deleting: false,
 			creating: false,
+			saving: false,
 
 			isOnline: false,
 			usingOsfNode: '',
 			usingToken: '',
+		}
+
+		this.update = () => {
+			this.setState({
+				tempOsfNode: this.props.osfNode,
+				tempSaveAfter: this.props.saveAfter
+			})
+		}
+
+		this.isSettingSaved = () => {
+			return this.state.tempOsfNode === this.props.osfNode &&
+				   this.state.tempSaveAfter === this.props.saveAfter;
 		}
 
 		this.syncExperimentStatus = () => {
@@ -94,6 +107,7 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				open: true,
 			})
+			this.update();
 			this.syncExperimentStatus();
 		}
 
@@ -105,7 +119,15 @@ export default class CloudDeploymentManager extends React.Component {
 		}
 
 		this.updateParentNode = (e, value) => {
-			this.props.setOsfNode(value);
+			this.setState({
+				tempOsfNode: value
+			})
+		}
+
+		this.updateSaveAfter = (event, index, value) => {
+			this.setState({
+				tempSaveAfter: value
+			})
 		}
 
 		this.setDeloyingStatus = (flag) => {
@@ -117,6 +139,12 @@ export default class CloudDeploymentManager extends React.Component {
 		this.setDeletingStatus = (flag) => {
 			this.setState({
 				deleting: flag
+			})
+		}
+
+		this.setSavingStatus = (flag) => {
+			this.setState({
+				saving: flag
 			})
 		}
 
@@ -137,6 +165,15 @@ export default class CloudDeploymentManager extends React.Component {
 				creating: flag
 			})
 		}
+
+		this.saveSetting = () => {
+			this.props.saveSetting({
+				saveAfter: this.state.tempSaveAfter,
+				osfNode: this.state.tempOsfNode,
+				setSavingStatus: this.setSavingStatus,
+				syncExperimentStatus: this.syncExperimentStatus
+			})
+		}
 	}
 
 	render() {
@@ -145,20 +182,21 @@ export default class CloudDeploymentManager extends React.Component {
 			deploying,
 			creating,
 			deleting,
+			saving,
 			usingOsfNode,
 			usingOsfToken
 		} = this.state;
 		let {
 			osfTokenError,
-			osfParentNodeError,
-			osfParentNode,
+			osfNodeError,
+			osfNode,
 			osfToken,
-			cloudSaveDataAfter,
+			saveAfter,
 			saveAfterError,
 			experimentUrl,
 		} = this.props;
 
-		let notReady = osfTokenError || osfParentNodeError || saveAfterError;
+		let notReady = osfTokenError || osfNodeError || saveAfterError || !this.isSettingSaved();
 		let actions = [
 			!deleting ? 
 			<FlatButton
@@ -275,14 +313,14 @@ export default class CloudDeploymentManager extends React.Component {
 					<div style={{display: 'flex', justifyContent: 'center'}}>
 						<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
 							<TextField
-								{...style.TextFieldFocusStyle(this.props.osfParentNodeError)}
+								{...style.TextFieldFocusStyle(this.props.osfNodeError)}
 								fullWidth
 								id="OSF_Project_ID"
-								value={utils.toEmptyString(osfParentNode)}
+								value={this.state.tempOsfNode}
 								onChange={this.updateParentNode}
 								floatingLabelFixed
 								floatingLabelText="OSF Project ID"
-								errorText={osfParentNodeError ? "This field is required." : ""}
+								errorText={osfNodeError ? "This field is required." : ""}
 								hintText="Input the id of your project."
 							/>
 							{!creating ?
@@ -303,9 +341,9 @@ export default class CloudDeploymentManager extends React.Component {
 							primaryText={`Save Data After:`}
 				    	/>
 				    	<SelectField
-				          onChange={(event, index, value) => { this.props.setCloudSaveDataAfter(value); }}
+				          onChange={this.updateSaveAfter}
 				          {...style.SelectFieldStyle}
-				          value={cloudSaveDataAfter}
+				          value={this.state.tempSaveAfter}
 				        >
 				          {
 				          	this.props.indexedNodeNames.map((n, i) => (
@@ -313,6 +351,40 @@ export default class CloudDeploymentManager extends React.Component {
 				          	)
 				          }
 				        </SelectField>
+			    	</div>
+			    	<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Current OSF Token:`}
+				    	/>
+				    	<TextField
+							disabled
+							id="Display_Current_Token"
+							style={{paddingLeft: 16, width: 350}}
+							inputStyle={{
+								color: colors.defaultFontColor,
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+							}}
+							title={utils.toEmptyString(osfToken)}
+							value={utils.toEmptyString(osfToken)}
+							errorText={osfTokenError ? 'This field is required' : ''}
+							hintText="Please go to User Profile to set your OSF Token."
+							hintStyle={{
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+							}}
+				    	/>
+			    	</div>
+			    	<div style={{display: 'flex', width: '100%', flexDirection: 'row-reverse'}}>
+			    		{!saving ?
+			    			<FlatButton disabled={this.isSettingSaved()} label="Save" onClick={this.saveSetting}/> :
+			    			<CircularProgress {...style.Actions.Wait}/>
+			    		}
+			    		<FlatButton disabled={!this.isSettingSaved()} label="Cancel" onClick={this.update}/>
 			    	</div>
 			    </CardText>
 			</Card>

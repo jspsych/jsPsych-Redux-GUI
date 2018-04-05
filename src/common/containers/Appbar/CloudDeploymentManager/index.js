@@ -84,16 +84,12 @@ const cloudDeploy = ({dispatch, setDeloyingStatus, syncExperimentStatus}) => {
 		dispatch(experimentActions.setOsfTokenAction(
 			experimentState.experimentId,
 			userState.osfToken
-			)
-		);
+		));
 
-		Promise.all([
-			Promise.resolve().then(() => { setDeloyingStatus(true); }),
-			pushUserData(getState().userState),
-			$cloudDeploy({
-				state: getState(),
-			})
-		]).then(() => {
+		setDeloyingStatus(true);
+		$cloudDeploy({
+			state: getState(),
+		}).then(() => {
 			notifySuccessBySnackbar(dispatch, "Experiment Deployed !");
 		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
@@ -127,23 +123,25 @@ const cloudDelete = (dispatch, setDeletingStatus, syncExperimentStatus) => {
 	})
 }
 
-const setCloudSaveDataAfter = (dispatch, index) => {
+const saveSetting = ({dispatch, osfNode, saveAfter, setSavingStatus, syncExperimentStatus}) => {
 	dispatch((dispatch, getState) => {
 		dispatch(experimentActions.setCloudSaveDataAfterAction(
 			getState().experimentState.experimentId,
-			index
+			saveAfter
 			)
 		);
-	});
-}
-
-const setOsfNode = (dispatch, value) => {
-	dispatch((dispatch, getState) => {
 		dispatch(experimentActions.setOsfNodeAction(
 			getState().experimentState.experimentId,
-			utils.toNull(value.trim())
+			utils.toNull(osfNode.trim())
 			)
 		);
+		setSavingStatus(true);
+		pushUserData(getState().userState).then(() => {
+			notifySuccessBySnackbar(dispatch, "Settings Saved !");
+		}).finally(() => {
+			setSavingStatus(false);
+			syncExperimentStatus();
+		});
 	});
 }
 
@@ -202,11 +200,11 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		experimentUrl: `experiments.jspsych.org/${experimentState.experimentId}`,
 		indexedNodeNames: indexedNodeNames,
-		osfParentNode: osfNode,
-		osfParentNodeError: !osfNode,
+		osfNode: osfNode,
+		osfNodeError: !osfNode,
 		osfToken: userState.osfToken,
 		osfTokenError: !userState.osfToken,
-		cloudSaveDataAfter: saveAfter,
+		saveAfter: saveAfter,
 		saveAfterError: saveAfter >= indexedNodeNames.length || saveAfter === -1
 	};
 };
@@ -219,9 +217,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 			syncExperimentStatus: syncExperimentStatus
 		});
 	},
-	setOsfNode: (value) => { setOsfNode(dispatch, value); },
 	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
-	setCloudSaveDataAfter: (index) => { setCloudSaveDataAfter(dispatch, index); },
 	cloudDelete: (setDeletingStatus, syncExperimentStatus) => { cloudDelete(dispatch, setDeletingStatus, syncExperimentStatus); },
 	createProject: (setCreatingStatus) => { createProject(dispatch, setCreatingStatus); },
 	syncExperimentStatus: (setReactState) => {
@@ -230,6 +226,20 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 			setReactState: setReactState
 		});
 	},
+	saveSetting: ({ 
+		osfNode,
+		saveAfter,
+		setSavingStatus,
+		syncExperimentStatus
+	}) => {
+		return saveSetting({
+			dispatch: dispatch,
+			osfNode: osfNode,
+			saveAfter: saveAfter,
+			setSavingStatus: setSavingStatus,
+			syncExperimentStatus: syncExperimentStatus
+		});
+	}
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
