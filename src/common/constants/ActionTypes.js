@@ -52,6 +52,8 @@ export const SET_TIMELINE_VARIABLE = "SET_TIMELINE_VARIABLE";
 export const SIGN_IN_OUT = "SIGN_IN_OUT";
 export const SET_LOGIN_WINDOW = "SET_LOGIN_WINDOW";
 export const SET_OSFTOKEN = "SET_OSFTOKEN";
+export const SET_OSF_ACCESS = "SET_OSF_ACCESS";
+export const SET_DIY_ACCESS = "SET_DIY_ACCESS";
 
 // Backend Actions
 export const SIGN_UP_PUSH = "SIGN_UP_PUSH";

@@ -56,8 +56,26 @@ export const initState = {
 	trialCount: 0,
 	mainTimeline: [],
 	jsPsychInit: jsPsychInit.initState,
+	/********** experiment contents **********/
 
+	/********** S3 Mappings **********/
 	media: {},
+	/********** S3 Mappings **********/
+
+	/********** Deployment Information **********/
+	cloudDeployInfo: {
+		osfNode: null,
+		osfToken: null,
+		saveAfter: 0
+	},
+
+	diyDeployInfo: {
+		username: null,
+		password: null,
+		saveAfter: 0,
+		dataTable: null,
+	}
+	/********** Deployment Information **********/
 }
 
 /**@function(state, action)

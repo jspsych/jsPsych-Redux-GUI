@@ -11,11 +11,19 @@ export const LoginModes = {
 	forgotPassword: 3,
 }
 
+export const OsfAccessDefault = {
+	token: null,
+	tokenName: null,
+}
+
 export const initState = {
 	user: {
 		username: null,
 		identityId: null,
 	},
+
+	osfAccess: [],
+	diyAccess: [],
 
 	// osfToken
 	osfToken: null,
@@ -52,11 +60,12 @@ export const initState = {
 	*/ 
 	experiments: [],
 
-	// gui
+	/********** GUI (Should be Ignored) Information **********/
 	loginSession: null,
 	windowOpen: false,
 	loginMode: LoginModes.signIn,
 	lastModifiedExperimentState: experimentInitState,
+	/********** GUI (Should be Ignored) Information **********/
 };
 
 
@@ -67,6 +76,20 @@ function setLoginWindow(state, action) {
 		loginMode: (mode === null) ? LoginModes.signIn : mode
 	})
 }
+
+
+function setOsfAccess(state, action) {
+	return Object.assign({}, state, {
+		osfAccess: action.osfAccess
+	});
+}
+
+function setDIYAccess(state, action) {
+	return Object.assign({}, state, {
+		diyAccess: action.diyAccess
+	});
+}
+
 
 function setOsfToken(state, action) {
 	return Object.assign({}, state, {
@@ -152,6 +175,9 @@ export default function userReducer(state = initState, action) {
 			return setOsfToken(state, action);
 
 		// cloud
+		case actionTypes.SET_OSF_ACCESS:
+			return setOsfAccess(state, action);
+
 		case actionTypes.SET_EXPERIMENT_OSF_TOKEN:
 			return setExperimentOsfToken(state, action);
 		case actionTypes.SET_OSF_PARENT:

@@ -64,7 +64,7 @@ const createProject = (dispatch, setCreatingStatus) => {
 			experimentId: experimentState.experimentId
 		}).then((res) => {
 			let id = res.data.id;
-			dispatch(experimentActions.setOsfNodeAction(experimentState.experimentId, id));
+			// dispatch(experimentActions.setOsfNodeAction(experimentState.experimentId, id));
 		}).then(() => {
 			notifySuccessBySnackbar(dispatch, "Storage Place Created !");
 		}).catch((e) => {

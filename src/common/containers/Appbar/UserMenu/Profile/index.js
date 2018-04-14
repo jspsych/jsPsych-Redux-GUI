@@ -23,15 +23,23 @@ const setOsfToken = (dispatch, osfToken) => {
 	})
 }
 
+const setOsfAccess = (dispatch, osfAccess) => {
+	return dispatch(userActions.setOsfAccessAction(osfAccess));
+}
+
 const mapStateToProps = (state, ownProps) => {
+	let userState = state.userState;
+
 	return {
-		osfToken: state.userState.osfToken ? state.userState.osfToken : '',
-		username: state.userState.user.username,
+		osfToken: userState.osfToken ? state.userState.osfToken : '',
+		username: userState.user.username,
+		osfAccess: userState.osfAccess,
 	};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	setOsfToken: (osfToken) => { setOsfToken(dispatch, osfToken); }
+	setOsfToken: (osfToken) => { setOsfToken(dispatch, osfToken); },
+	setOsfAccess: (osfAccess) => setOsfAccess(dispatch, osfAccess),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
