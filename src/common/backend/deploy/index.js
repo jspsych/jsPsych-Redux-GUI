@@ -178,14 +178,15 @@ export function cloudDeploy({
   state
 }) {
   var experimentState = utils.deepCopy(state.experimentState),
+      cloudDeployInfo = experimentState.cloudDeployInfo,
       experimentId = experimentState.experimentId,
       userState = state.userState,
       user = userState.user,
-      insertAfter = userState.cloudDeployInfo[experimentId].saveAfter;
+      saveAfter = cloudDeployInfo.saveAfter;
 
   let saveTrial = generateDataSaveInCloudTrial();
   experimentState[saveTrial.id] = saveTrial;
-  experimentState.mainTimeline.splice(insertAfter+1, 0, saveTrial.id);
+  experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
 
   var deployInfo = extractDeployInfomation(experimentState),
       filePaths = Object.keys(deployInfo.media);
@@ -193,7 +194,6 @@ export function cloudDeploy({
   var indexPage = new File([generatePage({
     deployInfo: deployInfo,
     cloudMode: true,
-    userId: user.identityId,
     experimentId: experimentId
   })], "index.html");
   var param = generateUploadParam({
@@ -542,14 +542,12 @@ deployInfo is defined in function deploy
 export function generatePage({
   deployInfo,
   cloudMode = false,
-  userId = '',
   customCode='',
   experimentId=''
 }) {
   let OsfPostHelper = `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
-          userId: "${userId}",
           experimentData: data,
           experimentId: "${experimentId}"
         };

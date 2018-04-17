@@ -1,5 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
+import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import Paper from 'material-ui/Paper';
@@ -19,7 +20,7 @@ import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import SettingIcon from 'material-ui/svg-icons/action/settings';
 import AlertIcon from 'material-ui/svg-icons/alert/error';
-import CreateIcon from 'material-ui/svg-icons/content/add';
+import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
 
 import deepEqual from 'deep-equal';
 
@@ -39,8 +40,9 @@ const colors = {
   defaultFontColor: '#424242',
   infoColor: '#03A9F4',
   settingIconColor: '#795548',
-  deleteColor: 'red',
-  errorColor: 'red'
+  deleteColor: '#E91E63',
+  errorColor: 'red',
+  white: '#FEFEFE'
 }
 
 const cssStyle = {
@@ -94,8 +96,11 @@ export default class CloudDeploymentManager extends React.Component {
 		}
 
 		this.syncExperimentStatus = () => {
-			this.props.syncExperimentStatus((args) => {
-				this.setState(args);
+			this.update();
+			this.props.syncExperimentStatus().then((isOnline) => {
+				this.setState({
+					isOnline: isOnline
+				})
 			});
 		}
 
@@ -103,7 +108,6 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				open: true,
 			})
-			this.update();
 			this.syncExperimentStatus();
 		}
 
@@ -121,7 +125,12 @@ export default class CloudDeploymentManager extends React.Component {
 			});
 		}
 
-		this.updateOsfNode = (event, index, value) => {
+		this.handleCancel = () => {
+			this.handleClose();
+			this.update();
+		}
+
+		this.updateOsfNode = (event, value) => {
 			this.setState({
 				tempOsfNode: value
 			})
@@ -157,7 +166,7 @@ export default class CloudDeploymentManager extends React.Component {
 			});
 			this.props.cloudDeploy({
 				osfAccess: this.state.tempChosenOsfAccess,
-				osfNode: this.state.tempOsfNode,
+				osfNode: utils.toNull(this.state.tempOsfNode.trim()),
 				saveAfter: this.state.tempSaveAfter
 			}).finally(() => {
 				this.setState({
@@ -180,13 +189,18 @@ export default class CloudDeploymentManager extends React.Component {
 		}
 
 		this.createProject = () => {
+			let osfAccess = this.state.tempChosenOsfAccess,
+				token = osfAccess ? osfAccess.token : '';
+			if (!token) {
+				this.props.notifyErrorByDialog("An OSF token with full-write access is required !")
+				return;
+			}
+
 			this.setState({
 				creating: true
 			});
-			let osfAccess = this.state.tempChosenOsfAccess,
-				token = osfAccess ? osfAccess.token : '';
 			this.props.createProject(token).then((data) => {
-				this.updateOsfNode(null, null, data);
+				this.updateOsfNode(null, data);
 			}).finally(() => {
 				this.setState({
 					creating: false
@@ -223,10 +237,9 @@ export default class CloudDeploymentManager extends React.Component {
 		let actions = [
 			!deleting ? 
 			<FlatButton
-				label={"Delete"}
-				disabled={!isOnline}
-				style={{color: isOnline ? colors.deleteColor : colors.offlineColor}}
-				onClick={this.handleConfirmOpen}
+				label={"Cancel"}
+				style={{color: colors.defaultFontColor}}
+				onClick={this.handleCancel}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
 			!deploying ? 
@@ -262,6 +275,20 @@ export default class CloudDeploymentManager extends React.Component {
 							style={{color: isOnline ? colors.onlineColor : colors.offlineColor }}
 							primaryText={`${isOnline ? 'Online' : 'Offline'}`}
 				    	/>
+				    	<div style={{display: 'flex', }}>
+				    	{
+							!deleting ?
+								<IconButton
+									tooltip="Pull Experiment Offline"
+									disabled={!isOnline}
+									onClick={this.handleConfirmOpen}
+								>
+									<DeleteIcon color={colors.deleteColor}/>
+								</IconButton> :
+						    	<CircularProgress {...style.Actions.Wait}/>
+				    	}
+				    	</div>
+				    	
 			    	</div>
 			    	<div style={{display: 'flex'}}>
 						<MenuItem
@@ -291,25 +318,27 @@ export default class CloudDeploymentManager extends React.Component {
 							primaryText={`osf.io/${utils.toEmptyString(osfNode) ? utils.toEmptyString(osfNode) : 'null'}`}
 				    	/>
 			    	</div>
-			    	<div style={{display: 'flex'}}>
+			    	<div style={{display: 'flex', alignItems: 'baseline'}}>
 						<MenuItem
 							style={{width: 170}}
 							disabled
 							primaryText={`Using OSF Token:`}
 				    	/>
-				    	<TextField
-							disabled
-							id="Display_Using_Token"
-							style={{paddingLeft: 16}}
-							inputStyle={{
+				    	<div
+							style={{
+								paddingLeft: 16,
 								color: colors.defaultFontColor,
 								textOverflow: 'ellipsis',
 								overflow: 'hidden',
 								whiteSpace: 'nowrap',
+								fontSize: '16px',
+								display: 'block',
+								maxWidth: '380px'
 							}}
 							title={utils.toEmptyString(osfToken)}
-							value={utils.toEmptyString(osfToken)}
-				    	/>
+				    	>
+				    	 "{osfToken}"
+				    	</div>
 			    	</div>
 			    </CardText>
 			</Card>		
@@ -328,34 +357,67 @@ export default class CloudDeploymentManager extends React.Component {
 			      showExpandableButton={true}
 			    />
 			    <CardText expandable={true} style={{paddingTop: 0}}>
+			    	<div style={{display: 'flex'}}>
+						<MenuItem
+							style={{width: 170}}
+							disabled
+							primaryText={`Current OSF Token:`}
+				    	/>
+				    	<SelectField
+							id="Choose_OSF_Token"
+							{...style.SelectFieldStyle}
+							style={{paddingLeft: 16, minWidth: 350}}
+							labelStyle={{
+								textOverflow: 'ellipsis',
+								overflow: 'hidden',
+								whiteSpace: 'nowrap',
+							}}
+							onChange={this.updateOsfAccess}
+							title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
+							value={tempChosenOsfAccess}
+							errorText={osfTokenError ? 'A token is required' : ''}
+				    	>
+					    	{
+					    		osfAccess.map((item, i) => {
+					    			if (deepEqual(item, tempChosenOsfAccess)) {
+					    				item = tempChosenOsfAccess;
+					    			}
+					    			return (
+					    				<MenuItem
+					    					key={`Registered-Osf-Access-${i}`}
+					    					primaryText={utils.toEmptyString(item.tokenName)}
+					    					title={utils.toEmptyString(item.token)}
+					    					value={item}
+					    				/>
+					    			)
+					    		})
+					    	}
+				    	</SelectField>
+			    	</div>
 					<div style={{display: 'flex'}}>
 						<MenuItem
 							disabled
 							primaryText={`OSF Project Id:`}
 				    	/>
 						<div style={{display: 'flex', alignItems: 'center'}}>
-							<SelectField
+							<TextField
+							  {...style.TextFieldFocusStyle(osfNodeError)}
+							  style={{width: 300}}
 					          onChange={this.updateOsfNode}
 					          id="Choose_OSF_Node"
-					          {...style.SelectFieldStyle}
-					          value={tempOsfNode}
-					        >
-					        	<MenuItem 
-					        		value={tempOsfNode}
-					        		primaryText={utils.toEmptyString(tempOsfNode)}
-					        	/>
-					        {
-
-					        }
-					        </SelectField>
+					          value={utils.toEmptyString(tempOsfNode)}
+					          errorText={osfNodeError ? 'A project id is required.' : ''}
+					        />
 							{!creating ?
-								<IconButton
-									disabled={osfTokenError}
-									tooltip={osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
+								<RaisedButton
+									backgroundColor={colors.primary}
+									labelColor={colors.white}
+									style={{marginLeft: '10px'}}
+									labelStyle={{textTransform: "none",}}
+									label={"Create One For Me!"}
+									title={"Create One For Me!"}
 									onClick={this.createProject}
-								>
-									<CreateIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep}/>
-								</IconButton>  :
+								/> :
 								<CircularProgress {...style.Actions.Wait} />
 							}
 						</div>
@@ -377,46 +439,6 @@ export default class CloudDeploymentManager extends React.Component {
 				          	)
 				          }
 				        </SelectField>
-			    	</div>
-			    	<div style={{display: 'flex'}}>
-						<MenuItem
-							style={{width: 170}}
-							disabled
-							primaryText={`Select OSF Token:`}
-				    	/>
-				    	<SelectField
-							id="Choose_OSF_Token"
-							{...style.SelectFieldStyle}
-							style={{paddingLeft: 16, minWidth: 350}}
-							labelStyle={{
-								textOverflow: 'ellipsis',
-								overflow: 'hidden',
-								whiteSpace: 'nowrap',
-							}}
-							onChange={this.updateOsfAccess}
-							title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
-							value={tempChosenOsfAccess}
-							errorText={!tempChosenOsfAccess ? 'This field is required' : ''}
-				    	>
-				    		<MenuItem
-		    					primaryText={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.tokenName) : ''}
-		    					title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
-		    					value={tempChosenOsfAccess}
-		    				/>
-					    	{
-					    		osfAccess.map((item, i) => {
-					    			if (deepEqual(item, tempChosenOsfAccess)) return null;
-					    			return (
-					    				<MenuItem
-					    					key={`Registered-Osf-Access-${i}`}
-					    					primaryText={utils.toEmptyString(item.tokenName)}
-					    					title={utils.toEmptyString(item.token)}
-					    					value={item}
-					    				/>
-					    			)
-					    		})
-					    	}
-				    	</SelectField>
 			    	</div>
 			    </CardText>
 			</Card>

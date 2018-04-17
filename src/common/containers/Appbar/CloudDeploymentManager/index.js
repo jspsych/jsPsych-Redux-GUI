@@ -12,6 +12,7 @@ import {
 	notifySuccessBySnackbar,
 	notifyWarningBySnackbar
 } from '../../Notification';
+import deepEqual from 'deep-equal';
 
 const https = require('https');
 
@@ -78,7 +79,12 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 			osfAccess: osfAccess,
 			saveAfter: saveAfter
 		}));
-		console.log(getState().experimentState)
+
+		if (deepEqual(getState().userState.lastModifiedExperimentState, getState().experimentState)) {
+			notifyWarningBySnackbar(dispatch, "Nothing has changed so far !");
+			return Promise.resolve();
+		}
+
 		return Promise.all([
 			pureSaveFlow(dispatch, getState),
 			$cloudDeploy({
@@ -116,49 +122,16 @@ const cloudDelete = (dispatch) => {
 	})
 }
 
-const saveSetting = ({dispatch, osfNode, saveAfter, setSavingStatus, syncExperimentStatus}) => {
-	return dispatch((dispatch, getState) => {
-		dispatch(experimentActions.setCloudSaveDataAfterAction(
-			getState().experimentState.experimentId,
-			saveAfter
-		));
-		dispatch(experimentActions.setOsfNodeAction(
-			getState().experimentState.experimentId,
-			utils.toNull(osfNode.trim())
-		));
-		setSavingStatus(true);
-		return pushUserData(getState().userState).then(() => {
-			notifySuccessBySnackbar(dispatch, "Settings Saved !");
-		}).finally(() => {
-			setSavingStatus(false);
-			syncExperimentStatus();
-		});
-	});
-}
-
-const syncExperimentStatus = ({dispatch, setReactState}) => {
+const syncExperimentStatus = ({dispatch,}) => {
 	return dispatch((dispatch, getState) => {
 		let experimentId = getState().experimentState.experimentId,
 			userId = getState().userState.user.identityId;
-		return Promise.all([
-			listBucketContents({
-				bucket: Cloud_Bucket,
-				Prefix: experimentId
-			}).then((data) => {
-				setReactState({
-					isOnline: data.Contents.length > 0
-				})
-			}),
-			getUserData(userId).then((data) => {
-				let userState = data.Item.fetch;
-				if (userState.cloudDeployInfo[experimentId]) {
-					setReactState({
-						usingOsfToken: userState.cloudDeployInfo[experimentId].osfToken,
-						usingOsfNode: userState.cloudDeployInfo[experimentId].osfNode
-					})
-				}
-			})
-		]).catch(e => {
+		return listBucketContents({
+			bucket: Cloud_Bucket,
+			Prefix: experimentId
+		}).then((data) => {
+			return data.Contents.length > 0;
+		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
 		});
 	});
@@ -181,6 +154,7 @@ const mapStateToProps = (state, ownProps) => {
 		userState = state.userState,
 		indexedNodeNames = experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`);
 
+	// Set default values for past experiment state
 	let cloudDeployInfo = experimentState.cloudDeployInfo || {},
 		osfAccess = userState.osfAccess || [],
 		chosenOsfAccess = cloudDeployInfo.osfAccess || {},
@@ -210,26 +184,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	checkBeforeOpen: () => checkBeforeOpen(dispatch),
 	cloudDelete: () => cloudDelete(dispatch),
 	createProject: (token) => createProject(dispatch, token),
-	syncExperimentStatus: (setReactState) => {
-		return syncExperimentStatus({
-			dispatch: dispatch,
-			setReactState: setReactState
-		});
-	},
-	saveSetting: ({ 
-		osfNode,
-		saveAfter,
-		setSavingStatus,
-		syncExperimentStatus
-	}) => {
-		return saveSetting({
-			dispatch: dispatch,
-			osfNode: osfNode,
-			saveAfter: saveAfter,
-			setSavingStatus: setSavingStatus,
-			syncExperimentStatus: syncExperimentStatus
-		});
-	}
+	syncExperimentStatus: () => syncExperimentStatus({dispatch: dispatch,}),
+	notifyErrorByDialog: (message) => notifyErrorByDialog(dispatch, message)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);
