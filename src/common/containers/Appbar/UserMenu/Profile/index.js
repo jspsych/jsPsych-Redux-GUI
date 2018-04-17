@@ -8,23 +8,19 @@ import {
 	notifyWarningBySnackbar
 } from '../../../Notification';
 
-const setOsfToken = (dispatch, osfToken) => {
-	dispatch((dispatch, getState) => {
-		// if (osfToken === getState().userState.osfToken) {
-		// 	notifyWarningBySnackbar(dispatch, "Nothing has changed !");
-		// 	return;
-		// }
-		dispatch(userActions.setOsfTokenAction(osfToken ? osfToken : null));
-		pushUserData(getState().userState).then(() => {
-			notifySuccessBySnackbar(dispatch, "Token Updated !");
-		}, (err) => {
+
+const setOsfAccess = (dispatch, osfAccess, setReactState) => {
+	return dispatch((dispatch, getState) => {
+		dispatch(userActions.setOsfAccessAction(osfAccess));
+		// setReactState({
+		// 	updating: true
+		// });
+		return pushUserData(getState().userState).then(() => {
+			notifySuccessBySnackbar(dispatch, "Profile Updated !");
+		}).catch((err) => {
 			notifyErrorByDialog(dispatch, err.message);
 		});
-	})
-}
-
-const setOsfAccess = (dispatch, osfAccess) => {
-	return dispatch(userActions.setOsfAccessAction(osfAccess));
+	});
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -38,8 +34,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	setOsfToken: (osfToken) => { setOsfToken(dispatch, osfToken); },
-	setOsfAccess: (osfAccess) => setOsfAccess(dispatch, osfAccess),
+	setOsfAccess: (osfAccess, setReactState) => setOsfAccess(dispatch, osfAccess, setReactState),
+	notifyWarningBySnackbar: (message) => notifyWarningBySnackbar(dispatch, message),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

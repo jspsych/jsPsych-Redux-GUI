@@ -21,6 +21,8 @@ import SettingIcon from 'material-ui/svg-icons/action/settings';
 import AlertIcon from 'material-ui/svg-icons/alert/error';
 import CreateIcon from 'material-ui/svg-icons/content/add';
 
+import deepEqual from 'deep-equal';
+
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../../gadgets';
 
@@ -88,22 +90,18 @@ export default class CloudDeploymentManager extends React.Component {
 		this.update = () => {
 			this.setState({
 				tempOsfNode: this.props.osfNode,
-				tempSaveAfter: this.props.saveAfter
+				tempSaveAfter: this.props.saveAfter,
+				tempChosenOsfAccess: this.props.chosenOsfAccess
 			})
-		}
-
-		this.isSettingSaved = () => {
-			return this.state.tempOsfNode === this.props.osfNode &&
-				   this.state.tempSaveAfter === this.props.saveAfter;
 		}
 
 		this.syncExperimentStatus = () => {
 			this.props.syncExperimentStatus((args) => {
-				this.setState(args)
+				this.setState(args);
 			});
 		}
 
-		this.handleOpen = () => {
+		this.handleOpenHepler = () => {
 			this.setState({
 				open: true,
 			})
@@ -111,14 +109,21 @@ export default class CloudDeploymentManager extends React.Component {
 			this.syncExperimentStatus();
 		}
 
+		this.handleOpen = () => {
+			this.props.checkBeforeOpen().then((shouldOpen) => {
+				if (shouldOpen) {
+					this.handleOpenHepler();
+				}
+			});
+		}
+
 		this.handleClose = () => {
 			this.setState({
 				open: false,
 			});
-			this.setDeloyingStatus(false);
 		}
 
-		this.updateParentNode = (e, value) => {
+		this.updateOsfNode = (event, index, value) => {
 			this.setState({
 				tempOsfNode: value
 			})
@@ -130,21 +135,9 @@ export default class CloudDeploymentManager extends React.Component {
 			})
 		}
 
-		this.setDeloyingStatus = (flag) => {
+		this.updateOsfAccess = (event, index, value) => {
 			this.setState({
-				deploying: flag
-			})
-		}
-
-		this.setDeletingStatus = (flag) => {
-			this.setState({
-				deleting: flag
-			})
-		}
-
-		this.setSavingStatus = (flag) => {
-			this.setState({
-				saving: flag
+				tempChosenOsfAccess: value
 			})
 		}
 
@@ -160,19 +153,47 @@ export default class CloudDeploymentManager extends React.Component {
 			})
 		}
 
-		this.setCreatingStatus = (flag) => {
+		this.cloudDeploy = () => {
 			this.setState({
-				creating: flag
+				deploying: true
+			});
+			this.props.cloudDeploy({
+				osfAccess: this.state.tempChosenOsfAccess,
+				osfNode: this.state.tempChosenOsfNode,
+				saveAfter: this.state.tempSaveAfter
+			}).finally(() => {
+				this.setState({
+					deploying: false
+				});
+				this.syncExperimentStatus();
 			})
 		}
 
-		this.saveSetting = () => {
-			this.props.saveSetting({
-				saveAfter: this.state.tempSaveAfter,
-				osfNode: this.state.tempOsfNode,
-				setSavingStatus: this.setSavingStatus,
-				syncExperimentStatus: this.syncExperimentStatus
+		this.cloudDelete = () => {
+			this.setState({
+				deleting: true
+			});
+			this.props.cloudDelete().finally(() => {
+				this.setState({
+					deleting: false
+				});
+				this.syncExperimentStatus();
 			})
+		}
+
+		this.createProject = () => {
+			this.setState({
+				creating: true
+			});
+			let osfAccess = this.state.tempChosenOsfAccess,
+				token = osfAccess ? osfAccess.token : '';
+			this.props.createProject(token).then((data) => {
+				this.updateOsfNode(null, null, data);
+			}).finally(() => {
+				this.setState({
+					creating: false
+				});
+			});
 		}
 	}
 
@@ -184,19 +205,25 @@ export default class CloudDeploymentManager extends React.Component {
 			deleting,
 			saving,
 			usingOsfNode,
-			usingOsfToken
+			usingOsfToken,
+			tempChosenOsfAccess,
+			tempOsfNode,
+			tempSaveAfter
 		} = this.state;
 		let {
-			osfTokenError,
-			osfNodeError,
 			osfNode,
 			osfToken,
 			saveAfter,
-			saveAfterError,
 			experimentUrl,
+			chosenOsfAccess,
+			osfAccess,
+			indexedNodeNames
 		} = this.props;
 
-		let notReady = osfTokenError || osfNodeError || saveAfterError || !this.isSettingSaved();
+		let osfTokenError = !tempChosenOsfAccess || !tempChosenOsfAccess.token,
+			osfNodeError = !tempOsfNode,
+			saveAfterError = tempSaveAfter >= indexedNodeNames.length,
+			notReady = osfTokenError || osfNodeError || saveAfterError;
 		let actions = [
 			!deleting ? 
 			<FlatButton
@@ -212,12 +239,7 @@ export default class CloudDeploymentManager extends React.Component {
 				style={{color: notReady ? colors.offlineColor : colors.primaryDeep}}
 				disabled={notReady}
 				title={notReady ? "The experiment is not ready for deployment." : ""}
-				onClick={() => { 
-					this.props.cloudDeploy({
-						setDeloyingStatus: this.setDeloyingStatus, 
-						syncExperimentStatus: this.syncExperimentStatus
-					})
-				}}
+				onClick={this.cloudDeploy}
 			/>:
 			<CircularProgress {...style.Actions.Wait}/>,
 		];
@@ -310,24 +332,31 @@ export default class CloudDeploymentManager extends React.Component {
 			      showExpandableButton={true}
 			    />
 			    <CardText expandable={true} style={{paddingTop: 0}}>
-					<div style={{display: 'flex', justifyContent: 'center'}}>
-						<div style={{width: '95%', display: 'flex', alignItems: 'baseline',}}>
-							<TextField
-								{...style.TextFieldFocusStyle(this.props.osfNodeError)}
-								fullWidth
-								id="OSF_Project_ID"
-								value={this.state.tempOsfNode}
-								onChange={this.updateParentNode}
-								floatingLabelFixed
-								floatingLabelText="OSF Project ID"
-								errorText={osfNodeError ? "This field is required." : ""}
-								hintText="Input the id of your project."
-							/>
+					<div style={{display: 'flex'}}>
+						<MenuItem
+							disabled
+							primaryText={`OSF Project Id:`}
+				    	/>
+						<div style={{display: 'flex', alignItems: 'center'}}>
+							<SelectField
+					          onChange={this.updateOsfNode}
+					          id="Choose_OSF_Node"
+					          {...style.SelectFieldStyle}
+					          value={tempOsfNode}
+					        >
+					        	<MenuItem 
+					        		value={tempOsfNode}
+					        		primaryText={utils.toEmptyString(tempOsfNode)}
+					        	/>
+					        {
+
+					        }
+					        </SelectField>
 							{!creating ?
 								<IconButton
 									disabled={osfTokenError}
 									tooltip={osfTokenError ? "An OSF Token is required." : "Create a project for me!"}
-									onClick={() => { this.props.createProject(this.setCreatingStatus)} }
+									onClick={this.createProject}
 								>
 									<CreateIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep}/>
 								</IconButton>  :
@@ -342,11 +371,12 @@ export default class CloudDeploymentManager extends React.Component {
 				    	/>
 				    	<SelectField
 				          onChange={this.updateSaveAfter}
+				          id="Choose_Save_After"
 				          {...style.SelectFieldStyle}
-				          value={this.state.tempSaveAfter}
+				          value={tempSaveAfter}
 				        >
 				          {
-				          	this.props.indexedNodeNames.map((n, i) => (
+				          	indexedNodeNames.map((n, i) => (
 				          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
 				          	)
 				          }
@@ -356,35 +386,41 @@ export default class CloudDeploymentManager extends React.Component {
 						<MenuItem
 							style={{width: 170}}
 							disabled
-							primaryText={`Current OSF Token:`}
+							primaryText={`Select OSF Token:`}
 				    	/>
-				    	<TextField
-							disabled
-							id="Display_Current_Token"
-							style={{paddingLeft: 16, width: 350}}
-							inputStyle={{
-								color: colors.defaultFontColor,
+				    	<SelectField
+							id="Choose_OSF_Token"
+							{...style.SelectFieldStyle}
+							style={{paddingLeft: 16, minWidth: 350}}
+							labelStyle={{
 								textOverflow: 'ellipsis',
 								overflow: 'hidden',
 								whiteSpace: 'nowrap',
 							}}
-							title={utils.toEmptyString(osfToken)}
-							value={utils.toEmptyString(osfToken)}
-							errorText={osfTokenError ? 'This field is required' : ''}
-							hintText="Please go to User Profile to set your OSF Token."
-							hintStyle={{
-								textOverflow: 'ellipsis',
-								overflow: 'hidden',
-								whiteSpace: 'nowrap',
-							}}
-				    	/>
-			    	</div>
-			    	<div style={{display: 'flex', width: '100%', flexDirection: 'row-reverse'}}>
-			    		{!saving ?
-			    			<FlatButton disabled={this.isSettingSaved()} label="Save" onClick={this.saveSetting}/> :
-			    			<CircularProgress {...style.Actions.Wait}/>
-			    		}
-			    		<FlatButton disabled={!this.isSettingSaved()} label="Cancel" onClick={this.update}/>
+							onChange={this.updateOsfAccess}
+							title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
+							value={tempChosenOsfAccess}
+							errorText={!tempChosenOsfAccess ? 'This field is required' : ''}
+				    	>
+				    		<MenuItem
+		    					primaryText={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.tokenName) : ''}
+		    					title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
+		    					value={tempChosenOsfAccess}
+		    				/>
+					    	{
+					    		osfAccess.map((item, i) => {
+					    			if (deepEqual(item, tempChosenOsfAccess)) return null;
+					    			return (
+					    				<MenuItem
+					    					key={`Registered-Osf-Access-${i}`}
+					    					primaryText={utils.toEmptyString(item.tokenName)}
+					    					title={utils.toEmptyString(item.token)}
+					    					value={item}
+					    				/>
+					    			)
+					    		})
+					    	}
+				    	</SelectField>
 			    	</div>
 			    </CardText>
 			</Card>
@@ -394,7 +430,7 @@ export default class CloudDeploymentManager extends React.Component {
 			<div>
 				<IconButton 
 	              tooltip="Cloud Deploy"
-	              onClick={() => { this.props.checkBeforeOpen(this.handleOpen); }}
+	              onClick={this.handleOpen}
 	          	>
 	              <CloudIcon {...style.Icon}/>
 	          	</IconButton>
@@ -431,7 +467,7 @@ export default class CloudDeploymentManager extends React.Component {
 	                message={"Are you sure that you want this experiment offline?"}
 	                handleClose={this.handleConfirmClose}
 	                proceedWithOperation={() => { 
-	                	this.props.cloudDelete(this.setDeletingStatus, this.syncExperimentStatus); 
+	                	this.cloudDelete(); 
 	                	this.handleConfirmClose(); 
 	                }}
 	                proceedWithOperationLabel={"Yes, I want it offline."}

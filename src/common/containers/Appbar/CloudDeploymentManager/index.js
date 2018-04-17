@@ -2,9 +2,11 @@ import { connect } from 'react-redux';
 import * as experimentActions from '../../../actions/experimentSettingActions';
 import CloudDeploymentManager from '../../../components/Appbar/CloudDeploymentManager';
 import { LoginModes } from '../../../reducers/User';
+import { getDefaultInitCloudDeployInfo } from '../../../reducers/Experiment';
 import { cloudDeploy as $cloudDeploy } from '../../../backend/deploy';
 import { listBucketContents, Cloud_Bucket, deleteObject } from '../../../backend/s3';
 import { pushUserData, getUserData } from '../../../backend/dynamoDB';
+import { pureSaveFlow } from '../index.js';
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
@@ -52,91 +54,79 @@ function createNodeAtOSF({token, experimentName, experimentId}) {
 	})
 }
 
-const createProject = (dispatch, setCreatingStatus) => {
-	setCreatingStatus(true);
-	dispatch((dispatch, getState) => {
-		let experimentState = getState().experimentState,
-			osfToken = getState().userState.osfToken;
+const createProject = (dispatch, token) => {
+	return dispatch((dispatch, getState) => {
+		let experimentState = getState().experimentState;
 
-		createNodeAtOSF({
-			token: osfToken,
+		return createNodeAtOSF({
+			token: token,
 			experimentName: experimentState.experimentName,
 			experimentId: experimentState.experimentId
 		}).then((res) => {
-			let id = res.data.id;
-			// dispatch(experimentActions.setOsfNodeAction(experimentState.experimentId, id));
-		}).then(() => {
 			notifySuccessBySnackbar(dispatch, "Storage Place Created !");
+			return res.data.id;
 		}).catch((e) => {
 			notifyErrorByDialog(dispatch, e.message);
-		}).finally(() => {
-			setCreatingStatus(false);
 		})
 	})
 }
 
-const cloudDeploy = ({dispatch, setDeloyingStatus, syncExperimentStatus}) => {
-	dispatch((dispatch, getState) => {
-		let experimentState = getState().experimentState,
-			userState = getState().userState;
-
-		// For now set token as user's only token
-		dispatch(experimentActions.setOsfTokenAction(
-			experimentState.experimentId,
-			userState.osfToken
-		));
-
-		setDeloyingStatus(true);
-		$cloudDeploy({
-			state: getState(),
-		}).then(() => {
-			notifySuccessBySnackbar(dispatch, "Experiment Deployed !");
-		}).catch(e => {
+const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
+	return dispatch((dispatch, getState) => {
+		dispatch(experimentActions.setCloudDeployInfoAction({
+			osfNode: osfNode,
+			osfAccess: osfAccess,
+			saveAfter: saveAfter
+		}));
+		return Promise.all([
+			pureSaveFlow(dispatch, getState),
+			$cloudDeploy({
+				state: getState(),
+			}).then(() => {
+				notifySuccessBySnackbar(dispatch, "Experiment Deployed !");
+			})
+		]).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
-		}).finally(() => {
-			syncExperimentStatus();
-			setDeloyingStatus(false);
 		});
 	})
 }
 
-const cloudDelete = (dispatch, setDeletingStatus, syncExperimentStatus) => {
-	dispatch((dispatch, getState) => {
+const cloudDelete = (dispatch) => {
+	return dispatch((dispatch, getState) => {
+		dispatch(experimentActions.setCloudDeployInfoAction(getDefaultInitCloudDeployInfo()));
 		let experimentState = getState().experimentState;
 
-		listBucketContents({
-			bucket: Cloud_Bucket,
-			Prefix: getState().experimentState.experimentId
-		}).then((data) => {
-			return Promise.all(data.Contents.map(item => deleteObject({
-				Bucket: Cloud_Bucket,
-				Key: item.Key
-			})));
-		}).then(() => {
-			notifyWarningBySnackbar(dispatch, "Experiment Offline !");
-		}).catch(e => {
+		return Promise.all([
+			pureSaveFlow(dispatch, getState),
+			listBucketContents({
+				bucket: Cloud_Bucket,
+				Prefix: experimentState.experimentId
+			}).then((data) => {
+				return Promise.all(data.Contents.map(item => deleteObject({
+					Bucket: Cloud_Bucket,
+					Key: item.Key
+				})));
+			}).then(() => {
+				notifyWarningBySnackbar(dispatch, "Experiment Offline !");
+			})
+		]).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
-		}).finally(() => {
-			setDeletingStatus(false);
-			syncExperimentStatus();
 		});
 	})
 }
 
 const saveSetting = ({dispatch, osfNode, saveAfter, setSavingStatus, syncExperimentStatus}) => {
-	dispatch((dispatch, getState) => {
+	return dispatch((dispatch, getState) => {
 		dispatch(experimentActions.setCloudSaveDataAfterAction(
 			getState().experimentState.experimentId,
 			saveAfter
-			)
-		);
+		));
 		dispatch(experimentActions.setOsfNodeAction(
 			getState().experimentState.experimentId,
 			utils.toNull(osfNode.trim())
-			)
-		);
+		));
 		setSavingStatus(true);
-		pushUserData(getState().userState).then(() => {
+		return pushUserData(getState().userState).then(() => {
 			notifySuccessBySnackbar(dispatch, "Settings Saved !");
 		}).finally(() => {
 			setSavingStatus(false);
@@ -146,10 +136,10 @@ const saveSetting = ({dispatch, osfNode, saveAfter, setSavingStatus, syncExperim
 }
 
 const syncExperimentStatus = ({dispatch, setReactState}) => {
-	dispatch((dispatch, getState) => {
+	return dispatch((dispatch, getState) => {
 		let experimentId = getState().experimentState.experimentId,
 			userId = getState().userState.user.identityId;
-		Promise.all([
+		return Promise.all([
 			listBucketContents({
 				bucket: Cloud_Bucket,
 				Prefix: experimentId
@@ -173,15 +163,15 @@ const syncExperimentStatus = ({dispatch, setReactState}) => {
 	});
 }
 
-const checkBeforeOpen = (dispatch, handleOpen) => {
-	dispatch((dispatch, getState) => {
+const checkBeforeOpen = (dispatch) => {
+	return dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
 			notifyWarningBySnackbar(dispatch, 'You need to sign in before deploying your experiment on Cloud !');
 			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
-			return;
+			return Promise.resolve(false);
 		}
-		handleOpen();
+		return Promise.resolve(true);
 	})
 }
 
@@ -190,38 +180,36 @@ const mapStateToProps = (state, ownProps) => {
 		userState = state.userState,
 		indexedNodeNames = experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`);
 
-	let cloudDeployInfo = {}, saveAfter = -1, osfNode = '';
-	if (userState.cloudDeployInfo[experimentState.experimentId]) {
-		cloudDeployInfo = userState.cloudDeployInfo[experimentState.experimentId];
-		saveAfter = cloudDeployInfo.saveAfter;
-		osfNode = cloudDeployInfo.osfNode;
-	}
+	let cloudDeployInfo = experimentState.cloudDeployInfo || {},
+		osfAccess = userState.osfAccess || [],
+		chosenOsfAccess = cloudDeployInfo.osfAccess || {},
+		saveAfter = cloudDeployInfo.saveAfter || 0,
+		osfNode = cloudDeployInfo.osfNode || null;
 
 	return {
 		experimentUrl: `experiments.jspsych.org/${experimentState.experimentId}`,
+		osfAccess: osfAccess,
+		chosenOsfAccess: chosenOsfAccess,
 		indexedNodeNames: indexedNodeNames,
 		osfNode: osfNode,
-		osfNodeError: !osfNode,
-		osfToken: userState.osfToken,
-		osfTokenError: !userState.osfToken,
 		saveAfter: saveAfter,
-		saveAfterError: saveAfter >= indexedNodeNames.length || saveAfter === -1
 	};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	cloudDeploy: ({setDeloyingStatus, syncExperimentStatus}) => { 
-		cloudDeploy({
+	cloudDeploy: ({osfNode, osfAccess, saveAfter}) => { 
+		return cloudDeploy({
 			dispatch: dispatch,
-			setDeloyingStatus: setDeloyingStatus,
-			syncExperimentStatus: syncExperimentStatus
+			osfNode: osfNode,
+			osfAccess: osfAccess,
+			saveAfter: saveAfter
 		});
 	},
-	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
-	cloudDelete: (setDeletingStatus, syncExperimentStatus) => { cloudDelete(dispatch, setDeletingStatus, syncExperimentStatus); },
-	createProject: (setCreatingStatus) => { createProject(dispatch, setCreatingStatus); },
+	checkBeforeOpen: () => checkBeforeOpen(dispatch),
+	cloudDelete: () => cloudDelete(dispatch),
+	createProject: (token) => createProject(dispatch, token),
 	syncExperimentStatus: (setReactState) => {
-		syncExperimentStatus({
+		return syncExperimentStatus({
 			dispatch: dispatch,
 			setReactState: setReactState
 		});

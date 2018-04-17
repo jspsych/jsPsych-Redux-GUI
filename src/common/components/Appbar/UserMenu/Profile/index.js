@@ -1,5 +1,6 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import Divider from 'material-ui/Divider';
@@ -16,6 +17,8 @@ import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import OsfAccessIcon from 'material-ui/svg-icons/communication/vpn-key'
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 
+import deepEqual from 'deep-equal';
+
 import { renderDialogTitle } from '../../../gadgets';
 import { OsfAccessDefault } from '../../../../reducers/User';
 import AppbarTheme from '../../theme.js';
@@ -27,11 +30,18 @@ const colors = {
   defaultFontColor: '#424242',
   titleColor: '#3F51B5',
   osfAccessColor: '#03A9F4',
-  deleteColor: '#F44336'
+  deleteColor: '#F44336',
+  white: '#FEFEFE'
 }
 
 const style = {
-	TextFieldFocusStyle: AppbarTheme.TextFieldFocusStyle
+	TextFieldFocusStyle: AppbarTheme.TextFieldFocusStyle,
+	Actions: {
+		Wait: {
+			size: 30,
+			color: colors.primaryDeep
+		}
+	},
 }
 
 class OSFValue extends React.Component {
@@ -87,6 +97,7 @@ class OSFValue extends React.Component {
 						}}
 						onChange={(e, v) => { this.updateValue(v); }}
 						inputStyle={{color: colors.primary, textOverflow: 'ellipsis'}}
+						hintText="Please refer to your OSF Account."
 						style={{minWidth: 200, maxWidth: 200}}
 						underlineFocusStyle={{borderColor: colors.secondary}}
 						/>:
@@ -111,7 +122,8 @@ export default class Profile extends React.Component {
 		super(props);
 		this.state = {
 			osfAccess: this.props.osfAccess,
-			open: false
+			open: false,
+			updating: false
 		}
 
 		this.update = () => {
@@ -121,10 +133,18 @@ export default class Profile extends React.Component {
 		}
 
 		this.commit = () => {
-			this.props.setOsfAccess(this.getOsfAccessFromReact());
-			this.setState({
-				open: false
-			})
+			if (deepEqual(this.getOsfAccessFromReact(), this.props.osfAccess)) {
+				this.props.notifyWarningBySnackbar("Nothing has changed !");
+			} else {
+				this.setState({
+					updating: true
+				});
+				this.props.setOsfAccess(this.getOsfAccessFromReact()).then(() => {
+					this.setState({
+						updating: false
+					});
+				});
+			}
 		}
 
 		this.handleCancel = () => {
@@ -144,7 +164,7 @@ export default class Profile extends React.Component {
 		this.getOsfAccessFromRedux = () => {
 			let osfAccess = utils.deepCopy(this.props.osfAccess);
 			for (let item of osfAccess) {
-				for (let item of Object.keys(item)) {
+				for (let key of Object.keys(item)) {
 					item[key] = utils.toEmptyString(item[key]);
 				}
 			}
@@ -191,7 +211,7 @@ export default class Profile extends React.Component {
 				}
 			}
 			newToken.tokenName = name;
-			newToken.token = "Please refer to your OSF Account.";
+			newToken.token = "";
 			clone.push(newToken);
 			this.setOsfAccess(clone);
 		}
@@ -258,12 +278,19 @@ export default class Profile extends React.Component {
 		let actions = [
 			<FlatButton
 				label="Cancel"
+				style={{marginRight: '5px'}}
 				onClick={this.handleCancel}
 			/>,
-			<FlatButton
-				label="Update"
-				onClick={this.commit}
-			/>
+			(
+				this.state.updating ?
+				<CircularProgress {...style.Actions.Wait}/> :
+				<RaisedButton
+					backgroundColor={colors.primary}
+					labelColor={colors.white}
+					label="Update"
+					onClick={this.commit}
+				/>
+			)
 		]
 
 		return (
@@ -311,7 +338,12 @@ export default class Profile extends React.Component {
 					    <CardText expandable={true} style={{paddingTop: 0}}>
 					    	{this.renderOsfAccessItem()}
 					    	<div style={{display: 'flex', width: '100%', flexDirection: 'row-reverse'}}>
-					    		<FlatButton label="Add" onClick={this.addOsfAccess}/>
+					    		<RaisedButton
+									backgroundColor={colors.primary}
+									labelColor={colors.white} 
+									label="Add" 
+									onClick={this.addOsfAccess}
+								/>
 					    	</div>
 					    </CardText>
 					</Card>	
