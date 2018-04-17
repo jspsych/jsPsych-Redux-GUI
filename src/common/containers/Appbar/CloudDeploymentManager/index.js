@@ -78,6 +78,7 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 			osfAccess: osfAccess,
 			saveAfter: saveAfter
 		}));
+		console.log(getState().experimentState)
 		return Promise.all([
 			pureSaveFlow(dispatch, getState),
 			$cloudDeploy({
@@ -192,6 +193,7 @@ const mapStateToProps = (state, ownProps) => {
 		chosenOsfAccess: chosenOsfAccess,
 		indexedNodeNames: indexedNodeNames,
 		osfNode: osfNode,
+		osfToken: chosenOsfAccess.token,
 		saveAfter: saveAfter,
 	};
 };

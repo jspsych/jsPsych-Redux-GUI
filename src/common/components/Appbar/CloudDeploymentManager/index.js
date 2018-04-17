@@ -83,8 +83,6 @@ export default class CloudDeploymentManager extends React.Component {
 			saving: false,
 
 			isOnline: false,
-			usingOsfNode: '',
-			usingToken: '',
 		}
 
 		this.update = () => {
@@ -159,7 +157,7 @@ export default class CloudDeploymentManager extends React.Component {
 			});
 			this.props.cloudDeploy({
 				osfAccess: this.state.tempChosenOsfAccess,
-				osfNode: this.state.tempChosenOsfNode,
+				osfNode: this.state.tempOsfNode,
 				saveAfter: this.state.tempSaveAfter
 			}).finally(() => {
 				this.setState({
@@ -204,8 +202,6 @@ export default class CloudDeploymentManager extends React.Component {
 			creating,
 			deleting,
 			saving,
-			usingOsfNode,
-			usingOsfToken,
 			tempChosenOsfAccess,
 			tempOsfNode,
 			tempSaveAfter
@@ -289,10 +285,10 @@ export default class CloudDeploymentManager extends React.Component {
 							primaryText={`Data Storage:`}
 				    	/>
 						<MenuItem
-							href={`https://osf.io/${utils.toEmptyString(usingOsfNode)}`}
+							href={`https://osf.io/${utils.toEmptyString(osfNode)}`}
 							target="_blank"
 							style={{color: colors.defaultFontColor }}
-							primaryText={`osf.io/${utils.toEmptyString(usingOsfNode) ? utils.toEmptyString(usingOsfNode) : 'null'}`}
+							primaryText={`osf.io/${utils.toEmptyString(osfNode) ? utils.toEmptyString(osfNode) : 'null'}`}
 				    	/>
 			    	</div>
 			    	<div style={{display: 'flex'}}>
@@ -311,8 +307,8 @@ export default class CloudDeploymentManager extends React.Component {
 								overflow: 'hidden',
 								whiteSpace: 'nowrap',
 							}}
-							title={utils.toEmptyString(usingOsfToken)}
-							value={utils.toEmptyString(usingOsfToken)}
+							title={utils.toEmptyString(osfToken)}
+							value={utils.toEmptyString(osfToken)}
 				    	/>
 			    	</div>
 			    </CardText>
