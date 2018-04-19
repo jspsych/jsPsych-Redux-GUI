@@ -22,15 +22,25 @@ import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../util
 
 const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
+const OsfPostHelper = (experimentId) => {
+  return `
+    function ${SaveDataToOSF_Function_Name}(data) {
+        let postData = {
+          experimentData: data,
+          experimentId: "${experimentId}"
+        };
+        let request = new XMLHttpRequest();
+        request.open("POST", "${SaveDataAPI}", true);
+        request.send(JSON.stringify(postData));
+    }
+  `
+}
 
 const jsPsych = window.jsPsych;
 
 const Deploy_Folder = 'assets';
-
 const jsPysch_Folder = 'jsPsych';
-
 const DEPLOY_PATH = 'assets/';
-
 const jsPsych_PATH = 'jsPsych/';
 
 const welcomeObj = {
@@ -61,16 +71,19 @@ const undefinedObj = {
   ]
 }
 
-const generateDataSaveInCloudTrial = () => {
-  let param = {
-    type: 'call-function',
-    func: createComplexDataObject(null)
-  };
-  param.func.func.code = `
+const cloudSaveDataFunctionCode = () => {
+  return `
     function() {
       ${SaveDataToOSF_Function_Name}(jsPsych.data.get().csv());
     }
   `
+}
+const generateDataSaveInCloudTrial = (code=cloudSaveDataFunctionCode()) => {
+  let param = {
+    type: 'call-function',
+    func: createComplexDataObject(null)
+  };
+  param.func.func.code = code;
   param.func.mode = ParameterMode.USE_FUNC;
 
   let res = createTrial('SaveDataTrial',
@@ -534,6 +547,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
   return res;
 }
 
+
 /*
 Generate index.html
 
@@ -545,18 +559,6 @@ export function generatePage({
   customCode='',
   experimentId=''
 }) {
-  let OsfPostHelper = `
-    function ${SaveDataToOSF_Function_Name}(data) {
-        let postData = {
-          experimentData: data,
-          experimentId: "${experimentId}"
-        };
-        let request = new XMLHttpRequest();
-        request.open("POST", "${SaveDataAPI}", true);
-        request.send(JSON.stringify(postData));
-    }
-  `
-
   return `
   <!doctype html>
   <html lang="en">
@@ -571,7 +573,7 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${cloudMode ? OsfPostHelper : ''}
+      ${cloudMode ? OsfPostHelper(experimentId) : ''}
       ${deployInfo.code}
     </script>
   </html>

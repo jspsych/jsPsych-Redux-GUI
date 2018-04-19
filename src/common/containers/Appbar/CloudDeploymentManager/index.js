@@ -55,6 +55,34 @@ function createNodeAtOSF({token, experimentName, experimentId}) {
 	})
 }
 
+function listNodesAtOSF({token, userId, dispatch}) {
+	if (!userId || !token) return Promise.resolve(false);
+	return new Promise((resolve, reject) => {
+		let getOptions = {
+			hostname: "api.osf.io",
+				path: `/v2/users/${userId}/nodes/`,
+				method: "GET",
+				headers: {
+					"Content-Type": "application/vnd.api+json",
+					"Authorization": `Bearer ${token}`
+				}
+		}
+		
+		const req = https.request(getOptions, (res) => {
+			res.on('data', (d) => {
+				let data = JSON.parse(d.toString('utf8'));
+				resolve(data ? data.data : []);
+			});
+		})
+
+		req.on('error', (e) => {
+			reject(e);
+		});
+
+		req.end();
+	})
+}
+
 const createProject = (dispatch, token) => {
 	return dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState;
@@ -185,7 +213,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	cloudDelete: () => cloudDelete(dispatch),
 	createProject: (token) => createProject(dispatch, token),
 	syncExperimentStatus: () => syncExperimentStatus({dispatch: dispatch,}),
-	notifyErrorByDialog: (message) => notifyErrorByDialog(dispatch, message)
+	notifyErrorByDialog: (message) => notifyErrorByDialog(dispatch, message),
+	listNodesAtOSF: ({...args}) => listNodesAtOSF({dispatch, ...args})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CloudDeploymentManager);

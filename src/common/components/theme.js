@@ -19,7 +19,8 @@ const colors = {
 	secondaryDeep: '#FF5722',
 	secondaryLight: '#FFB74D',
 	font: 'white',
-	errorRed: '#F34335'
+	errorRed: '#F34335',
+	defaultFontColor: '#424242',
 };
 
 const Icon = {

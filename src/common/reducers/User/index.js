@@ -13,7 +13,7 @@ export const LoginModes = {
 
 export const OsfAccessDefault = {
 	token: null,
-	tokenName: null,
+	alias: null,
 }
 
 export const initState = {

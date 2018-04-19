@@ -15,11 +15,11 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import ConfirmIcon from 'material-ui/svg-icons/navigation/check';
 import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import OsfAccessIcon from 'material-ui/svg-icons/communication/vpn-key'
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
 
 import deepEqual from 'deep-equal';
 
-import { renderDialogTitle } from '../../../gadgets';
+import { renderDialogTitle, Text } from '../../../gadgets';
 import { OsfAccessDefault } from '../../../../reducers/User';
 import AppbarTheme from '../../theme.js';
 
@@ -31,7 +31,8 @@ const colors = {
   titleColor: '#3F51B5',
   osfAccessColor: '#03A9F4',
   deleteColor: '#F44336',
-  white: '#FEFEFE'
+  white: '#FEFEFE',
+  viewDetails: '#3F51B5'
 }
 
 const style = {
@@ -117,6 +118,92 @@ class OSFValue extends React.Component {
 	}
 }
 
+class OSFAccessItem extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.handleOpen = () => {
+			this.props.setVisibility(true);
+		}
+
+		this.handleClose = () => {
+			this.props.setVisibility(false);
+		}
+	}
+
+	static defaultProps = {
+		setVisibility: (v) => {},
+		updateToken: (v) => {},
+		updateUserId: (v) => {},
+		updateAlias: (v) => {},
+		open: false,
+		alias: '',
+		token: '',
+		userId: '',
+	}
+
+	render() {
+		return (
+			<div>
+				<MenuItem
+					primaryText={this.props.open ? "Hide Details" : "View Details"}
+					onClick={this.props.open ? this.handleClose : this.handleOpen}
+					style={{color: this.props.open ? colors.secondaryDeep : colors.viewDetails, maxWidth: 130}}
+				/>
+				{
+					this.props.open ?
+					<div>
+						<div style={{display: 'flex', alignItems: 'baseline'}}>
+							<Text
+								text={"Alias"}
+								style={{width: '100px'}}
+							/>
+							<Text
+								text={":"}
+								style={{marginRight: '10px', marginLeft: '10px'}}
+							/>
+							<OSFValue 
+								value={this.props.alias} 
+								onUpdate={this.props.updateAlias} 
+							/>
+						</div>
+						<div style={{display: 'flex', alignItems: 'baseline'}}>
+							<Text
+								text={"User Id"}
+								style={{width: '100px'}}
+							/>
+							<Text
+								text={":"}
+								style={{marginRight: '10px', marginLeft: '10px'}}
+							/>
+							<OSFValue 
+								value={this.props.userId} 
+								onUpdate={this.props.updateUserId} 
+							/>
+						</div>
+						<div style={{display: 'flex', alignItems: 'baseline'}}>
+							<Text
+								text={"Token"}
+								style={{width: '100px'}}
+							/>
+							<Text
+								text={":"}
+								style={{marginRight: '10px', marginLeft: '10px'}}
+							/>
+							<OSFValue 
+								value={this.props.token} 
+								onUpdate={this.props.updateToken} 
+							/>
+						</div>
+					</div>:
+					null
+				}
+			</div>
+		)
+	}
+}
+
+
 export default class Profile extends React.Component {
 	constructor(props) {
 		super(props);
@@ -174,6 +261,7 @@ export default class Profile extends React.Component {
 		this.getOsfAccessFromReact = () => {
 			let osfAccess = utils.deepCopy(this.state.osfAccess);
 			for (let item of osfAccess) {
+				delete item['$open']
 				for (let key of Object.keys(item)) {
 					item[key] = utils.toNull(item[key].trim());
 				}
@@ -203,15 +291,18 @@ export default class Profile extends React.Component {
 			while (needNewName) {
 				needNewName = false;
 				for (let item of clone) {
-					needNewName |= item.tokenName === name;
+					needNewName |= item.alias === name;
 					if (needNewName) {
 						name = getName();
 						break;
 					}
 				}
 			}
-			newToken.tokenName = name;
-			newToken.token = "";
+			newToken.alias = name;
+			for (let key of Object.keys(newToken)) {
+				newToken[key] = utils.toEmptyString(newToken[key]);
+			}
+			newToken['$open'] = false;
 			clone.push(newToken);
 			this.setOsfAccess(clone);
 		}
@@ -221,10 +312,22 @@ export default class Profile extends React.Component {
 			clone[index].token = value;
 			this.setOsfAccess(clone);
 		}
-		
-		this.editOsfTokenNameAt = (index, value) => {
+
+		this.editOsfUserIdAt = (index, value) => {
 			let clone = this.state.osfAccess.slice();
-			clone[index].tokenName = value;
+			clone[index].userId = value;
+			this.setOsfAccess(clone);
+		}
+		
+		this.editOsfAliasAt = (index, value) => {
+			let clone = this.state.osfAccess.slice();
+			clone[index].alias = value;
+			this.setOsfAccess(clone);
+		}
+
+		this.setOsfItemVisibilityAt = (index, value) => {
+			let clone = this.state.osfAccess.slice();
+			clone[index]['$open'] = value;
 			this.setOsfAccess(clone);
 		}
 
@@ -232,18 +335,39 @@ export default class Profile extends React.Component {
 			let OSFAccessRow = ({item, index, ...props}) => {
 				return (
 					<div style={{display: 'flex'}}>
-						<OSFValue 
-							value={item.tokenName} 
-							onUpdate={(v) => {
-								this.editOsfTokenNameAt(index, v);
-							}} 
+						<MenuItem
+							primaryText={item.alias}
+							style={{
+								color: colors.defaultFontColor,
+								width: 130,
+								textAlign: 'center'
+							}}
+							disabled
 						/>
-						<MenuItem primaryText=":" disabled={true} />
-						<OSFValue 
-							value={item.token} 
-							onUpdate={(v) => {
+						<MenuItem
+							primaryText=":"
+							style={{
+								color: colors.defaultFontColor,
+							}}
+							disabled
+						/>
+						<OSFAccessItem
+							alias={item.alias}
+							token={item.token} 
+							userId={item.userId}
+							open={item['$open']}
+							updateToken={(v) => {
 								this.editOsfTokenAt(index, v);
 							}} 
+							updateUserId={(v) => {
+								this.editOsfUserIdAt(index, v);
+							}}
+							updateAlias={(v) => {
+								this.editOsfAliasAt(index, v);
+							}}
+							setVisibility={(v) => {
+								this.setOsfItemVisibilityAt(index, v);
+							}}
 						/>
 						<div style={{right: 0}}>
 							<IconButton onClick={()=>{ this.deleteOsfAccess(index); }} >
@@ -285,7 +409,7 @@ export default class Profile extends React.Component {
 				this.state.updating ?
 				<CircularProgress {...style.Actions.Wait}/> :
 				<RaisedButton
-					backgroundColor={colors.primary}
+					backgroundColor={colors.primaryDeep}
 					labelColor={colors.white}
 					label="Update"
 					onClick={this.commit}

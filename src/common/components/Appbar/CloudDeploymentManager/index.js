@@ -21,11 +21,13 @@ import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import SettingIcon from 'material-ui/svg-icons/action/settings';
 import AlertIcon from 'material-ui/svg-icons/alert/error';
 import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
+import ShowDetailIcon from 'material-ui/svg-icons/navigation/expand-more';
+import HideDetailIcon from 'material-ui/svg-icons/navigation/expand-less';
 
 import deepEqual from 'deep-equal';
 
 import ConfirmationDialog from '../../Notification/ConfirmationDialog';
-import { renderDialogTitle } from '../../gadgets';
+import { renderDialogTitle, Text } from '../../gadgets';
 
 import AppbarTheme from '../theme.js';
 
@@ -42,7 +44,7 @@ const colors = {
   settingIconColor: '#795548',
   deleteColor: '#E91E63',
   errorColor: 'red',
-  white: '#FEFEFE'
+  white: '#FEFEFE',
 }
 
 const cssStyle = {
@@ -68,6 +70,9 @@ const style = {
 	SelectFieldStyle: {
 		selectedMenuItemStyle: {
 			color: colors.secondary
+		},
+		underlineFocusStyle: {
+			borderColor: colors.secondary
 		}
 	},
 }
@@ -85,6 +90,12 @@ export default class CloudDeploymentManager extends React.Component {
 			saving: false,
 
 			isOnline: false,
+
+			showOsfAccessDetails: true,
+
+			tempAvaliableProjects: [],
+			listing: false,
+			canReadFromOSF: false
 		}
 
 		this.update = () => {
@@ -104,11 +115,43 @@ export default class CloudDeploymentManager extends React.Component {
 			});
 		}
 
+		this.syncAvaliableProjects = () => {
+			this.setState({
+				listing: true
+			});
+			this.props.listNodesAtOSF({
+				...this.state.tempChosenOsfAccess
+			}).then((data) => {
+				let projects = [];
+				for (let item of data) {
+					projects.push({
+						id: item.id,
+						title: item.attributes.title
+					})
+				}
+				this.setState({
+					tempAvaliableProjects: projects,
+					canReadFromOSF: true
+				})
+			}).catch((e) => {
+				this.setState({
+					canReadFromOSF: false,
+					tempOsfNode: '',
+					tempAvaliableProjects: [],
+				})
+			}).finally(() => {
+				this.setState({
+					listing: false
+				})
+			})
+		}
+
 		this.handleOpenHepler = () => {
 			this.setState({
 				open: true,
 			})
 			this.syncExperimentStatus();
+			this.syncAvaliableProjects();
 		}
 
 		this.handleOpen = () => {
@@ -130,7 +173,7 @@ export default class CloudDeploymentManager extends React.Component {
 			this.update();
 		}
 
-		this.updateOsfNode = (event, value) => {
+		this.updateOsfNode = (event, index, value) => {
 			this.setState({
 				tempOsfNode: value
 			})
@@ -145,7 +188,8 @@ export default class CloudDeploymentManager extends React.Component {
 		this.updateOsfAccess = (event, index, value) => {
 			this.setState({
 				tempChosenOsfAccess: value
-			})
+			}, this.syncAvaliableProjects
+			)
 		}
 
 		this.handleConfirmClose = () => {
@@ -200,12 +244,20 @@ export default class CloudDeploymentManager extends React.Component {
 				creating: true
 			});
 			this.props.createProject(token).then((data) => {
-				this.updateOsfNode(null, data);
+				this.updateOsfNode(null, null, data);
+			}).then(() => {
+				this.syncAvaliableProjects();
 			}).finally(() => {
 				this.setState({
 					creating: false
 				});
 			});
+		}
+
+		this.toggleOsfAccessDetails = () => {
+			this.setState({
+				showOsfAccessDetails: !this.state.showOsfAccessDetails
+			})
 		}
 	}
 
@@ -218,7 +270,8 @@ export default class CloudDeploymentManager extends React.Component {
 			saving,
 			tempChosenOsfAccess,
 			tempOsfNode,
-			tempSaveAfter
+			tempSaveAfter,
+			showOsfAccessDetails
 		} = this.state;
 		let {
 			osfNode,
@@ -361,19 +414,19 @@ export default class CloudDeploymentManager extends React.Component {
 						<MenuItem
 							style={{width: 170}}
 							disabled
-							primaryText={`Current OSF Token:`}
+							primaryText={`OSF Access Information:`}
 				    	/>
 				    	<SelectField
 							id="Choose_OSF_Token"
 							{...style.SelectFieldStyle}
-							style={{paddingLeft: 16, minWidth: 350}}
+							style={{maxWidth: 200, marginLeft: 36}}
 							labelStyle={{
 								textOverflow: 'ellipsis',
 								overflow: 'hidden',
 								whiteSpace: 'nowrap',
 							}}
 							onChange={this.updateOsfAccess}
-							title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
+							title={utils.toEmptyString(tempChosenOsfAccess ? tempChosenOsfAccess.token : null)}
 							value={tempChosenOsfAccess}
 							errorText={osfTokenError ? 'A token is required' : ''}
 				    	>
@@ -385,7 +438,7 @@ export default class CloudDeploymentManager extends React.Component {
 					    			return (
 					    				<MenuItem
 					    					key={`Registered-Osf-Access-${i}`}
-					    					primaryText={utils.toEmptyString(item.tokenName)}
+					    					primaryText={utils.toEmptyString(item.alias)}
 					    					title={utils.toEmptyString(item.token)}
 					    					value={item}
 					    				/>
@@ -393,21 +446,97 @@ export default class CloudDeploymentManager extends React.Component {
 					    		})
 					    	}
 				    	</SelectField>
+				    	<div
+				    		style={{display: 'flex', flexGrow: '1', flexDirection: 'row-reverse'}}
+				    	>
+					    	<IconButton
+					    		onClick={this.toggleOsfAccessDetails}
+					    	>
+					    		{
+					    			showOsfAccessDetails ?
+					    			<HideDetailIcon /> :
+					    			<ShowDetailIcon />
+					    		}
+					    	</IconButton>
+				    	</div>
 			    	</div>
+			    	{
+			    		showOsfAccessDetails ?
+			    		<div>
+			    			<div style={{display: 'flex', alignItems: 'baseline', marginLeft: 74}}>
+					    		<MenuItem
+									style={{width: 100,}}
+									disabled
+									primaryText={`User Id`}
+						    	/>
+						    	<MenuItem primaryText=":" disabled/>
+								<Text 
+									style={{maxWidth: '300px', paddingLeft: '0px'}}
+									text={utils.toEmptyString(
+										tempChosenOsfAccess && tempChosenOsfAccess.userId ? 
+										tempChosenOsfAccess.userId : 
+										'""'
+									)} 
+								/>
+							</div>
+							<div style={{display: 'flex', alignItems: 'baseline', marginLeft: 74}}>
+								<MenuItem
+									style={{width: 100,}}
+									disabled
+									primaryText={`Token Value`}
+						    	/>
+						    	<MenuItem primaryText=":" disabled/>
+								<Text 	
+									style={{maxWidth: '300px', paddingLeft: '0px'}}
+									text={utils.toEmptyString(
+										tempChosenOsfAccess && tempChosenOsfAccess.token ? 
+										tempChosenOsfAccess.token : 
+										'""'
+									)} 
+								/>
+							</div>
+			    		</div> :
+			    		null
+			    	}
 					<div style={{display: 'flex'}}>
 						<MenuItem
 							disabled
+							style={{width: 170}}
 							primaryText={`OSF Project Id:`}
 				    	/>
 						<div style={{display: 'flex', alignItems: 'center'}}>
-							<TextField
-							  {...style.TextFieldFocusStyle(osfNodeError)}
-							  style={{width: 300}}
-					          onChange={this.updateOsfNode}
-					          id="Choose_OSF_Node"
-					          value={utils.toEmptyString(tempOsfNode)}
-					          errorText={osfNodeError ? 'A project id is required.' : ''}
-					        />
+							{
+								this.state.canReadFromOSF ?
+								(
+									this.state.listing ?
+									<CircularProgress {...style.Actions.Wait}/> :
+									<SelectField
+							          onChange={this.updateOsfNode}
+							          id="Choose_OSF_Node"
+							          {...style.SelectFieldStyle}
+							          value={tempOsfNode}
+							          errorText={osfNodeError ? 'A node id is required' : ''}
+							        >
+							          {
+							          	this.state.tempAvaliableProjects.map((item, i) => (
+							          		<MenuItem 
+							          			value={item.id} 
+							          			title={item.title}
+							          			primaryText={item.id} 
+							          			key={item.id+"-"+i}
+							          		/>)
+							          	)
+							          }
+							        </SelectField>
+								) :
+								<TextField
+									disabled
+									id="Choose_OSF_Node"
+									value={tempOsfNode}
+									errorText={osfNodeError ? 'A node id is required' : ''}
+								/>
+							}
+					        
 							{!creating ?
 								<RaisedButton
 									backgroundColor={colors.primary}
