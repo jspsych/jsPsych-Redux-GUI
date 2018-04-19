@@ -64,7 +64,7 @@ export function deepCopy(target) {
 
 export const toNull = (s) => ((s === '') ? null : s);
 
-export const toEmptyString = (s) => ((s === null) ? '' : s);
+export const toEmptyString = (s) => ((s === null || s === undefined) ? '' : s);
 
 export const toEmptyArray = (s) => (!s ? [] : s);
 

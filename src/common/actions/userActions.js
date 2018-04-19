@@ -22,9 +22,9 @@ export function signOutAction() {
 	};
 }
 
-export function setOsfTokenAction(osfToken) {
+export function setOsfAccessAction(osfAccess) {
 	return {
-		type: actionTypes.SET_OSFTOKEN,
-		osfToken: osfToken
+		type: actionTypes.SET_OSF_ACCESS,
+		osfAccess: osfAccess
 	}
 }

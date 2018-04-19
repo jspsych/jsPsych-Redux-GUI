@@ -11,11 +11,19 @@ export const LoginModes = {
 	forgotPassword: 3,
 }
 
+export const OsfAccessDefault = {
+	token: null,
+	alias: null,
+}
+
 export const initState = {
 	user: {
 		username: null,
 		identityId: null,
 	},
+
+	osfAccess: [],
+	diyAccess: [],
 
 	// osfToken
 	osfToken: null,
@@ -52,11 +60,12 @@ export const initState = {
 	*/ 
 	experiments: [],
 
-	// gui
+	/********** GUI (Should be Ignored) Information **********/
 	loginSession: null,
 	windowOpen: false,
 	loginMode: LoginModes.signIn,
 	lastModifiedExperimentState: experimentInitState,
+	/********** GUI (Should be Ignored) Information **********/
 };
 
 
@@ -68,60 +77,9 @@ function setLoginWindow(state, action) {
 	})
 }
 
-function setOsfToken(state, action) {
+function setOsfAccess(state, action) {
 	return Object.assign({}, state, {
-		osfToken: action.osfToken
-	})
-}
-
-const Default_Cloud_Deploy_Information = {
-	osfNode: null,
-	osfToken: null,
-	saveAfter: 0,
-}
-
-function setOsfNode(state, action) {
-	let info = state.cloudDeployInfo[action.id];
-	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
-
-	let clone = utils.deepCopy(state.cloudDeployInfo);
-	clone[action.id] = {
-		...info,
-		osfNode: action.node
-	};
-
-	return Object.assign({}, state, {
-		cloudDeployInfo: clone
-	});
-}
-
-function setCloudSaveDataAfter(state, action) {
-	let info = state.cloudDeployInfo[action.id];
-	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
-
-	let clone = utils.deepCopy(state.cloudDeployInfo);
-	clone[action.id] = {
-		...info,
-		saveAfter: action.index
-	};
-
-	return Object.assign({}, state, {
-		cloudDeployInfo: clone
-	});
-}
-
-function setExperimentOsfToken(state, action) {
-	let info = state.cloudDeployInfo[action.id];
-	info = info ? info : utils.deepCopy(Default_Cloud_Deploy_Information);
-
-	let clone = utils.deepCopy(state.cloudDeployInfo);
-	clone[action.id] = {
-		...info,
-		osfToken: action.token
-	};
-
-	return Object.assign({}, state, {
-		cloudDeployInfo: clone
+		osfAccess: action.osfAccess
 	});
 }
 
@@ -148,16 +106,10 @@ export default function userReducer(state = initState, action) {
 			return setLoginWindow(state, action);
 		case actionTypes.SIGN_IN_OUT:
 			return signInOut(state, action);
-		case actionTypes.SET_OSFTOKEN:
-			return setOsfToken(state, action);
 
 		// cloud
-		case actionTypes.SET_EXPERIMENT_OSF_TOKEN:
-			return setExperimentOsfToken(state, action);
-		case actionTypes.SET_OSF_PARENT:
-			return setOsfNode(state, action);
-		case actionTypes.SET_CLOUD_SAVE_DATA_AFTER:
-			return setCloudSaveDataAfter(state, action);
+		case actionTypes.SET_OSF_ACCESS:
+			return setOsfAccess(state, action);
 
 		default:
 			return state;

@@ -13,26 +13,16 @@ export function setJspyschInitAction(key, value) {
 	};
 }
 
-export function setOsfTokenAction(id, token) {
+export function setCloudDeployInfoAction(cloudDeployInfo) {
 	return {
-		type: actionTypes.SET_EXPERIMENT_OSF_TOKEN,
-		id: id,
-		token: token
+		type: actionTypes.SET_CLOUD_DEPLOY_INFO,
+		cloudDeployInfo: cloudDeployInfo
 	}
 }
 
-export function setOsfNodeAction(id, node) {
+export function setDIYDeployInfoAction(diyDeployInfo) {
 	return {
-		type: actionTypes.SET_OSF_PARENT,
-		id: id,
-		node: node
-	}
-}
-
-export function setCloudSaveDataAfterAction(id, index) {
-	return {
-		type: actionTypes.SET_CLOUD_SAVE_DATA_AFTER,
-		id: id,
-		index: index
+		type: actionTypes.SET_CLOUD_DEPLOY_INFO,
+		diyDeployInfo: diyDeployInfo
 	}
 }

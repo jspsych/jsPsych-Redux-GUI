@@ -47,3 +47,23 @@ export const renderDialogTitle = (messageNode = null,
 		
 	</div>
 )
+
+
+export const Text = ({text, style={}, ...props}) => (
+	<div
+		style={utils.prefixer({
+			paddingLeft: 16,
+			color: colors.defaultFontColor,
+			textOverflow: 'ellipsis',
+			overflow: 'hidden',
+			whiteSpace: 'nowrap',
+			fontSize: '16px',
+			display: 'block',
+			...style
+		})}
+		title={utils.toEmptyString(text)}
+		{...props}
+	>
+	 {text}
+	</div>
+)

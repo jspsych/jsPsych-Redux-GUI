@@ -7,6 +7,11 @@ import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
 
+export const getDefaultInitCloudDeployInfo = () => ({
+	osfNode: null,
+	osfAccess: null, // check userState.osfAccess[i]
+	saveAfter: 0
+})
 
 /**
  * @typeof {(string|number|object)} guiValue - A native javascript value. 
@@ -56,8 +61,22 @@ export const initState = {
 	trialCount: 0,
 	mainTimeline: [],
 	jsPsychInit: jsPsychInit.initState,
+	/********** experiment contents **********/
 
+	/********** S3 Mappings **********/
 	media: {},
+	/********** S3 Mappings **********/
+
+	/********** Deployment Information **********/
+	cloudDeployInfo: getDefaultInitCloudDeployInfo(),
+
+	diyDeployInfo: {
+		username: null,
+		password: null,
+		saveAfter: 0,
+		dataTable: null,
+	}
+	/********** Deployment Information **********/
 }
 
 /**@function(state, action)
@@ -71,6 +90,18 @@ export const initState = {
 const setExperimentName = (state, action) => {
 	return Object.assign({}, state, {
 		experimentName: action.name
+	})
+}
+
+const setCloudDeployInfo = (state, action) => {
+	return Object.assign({}, state, {
+		cloudDeployInfo: action.cloudDeployInfo
+	})
+}
+
+const setDIYDeployInfo = (state, action) => {
+	return Object.assign({}, state, {
+		diyDeployInfo: action.diyDeployInfo
 	})
 }
 
@@ -119,6 +150,12 @@ export default function experimentReducer(state=initState, action) {
 		// Main
 		case actionTypes.SET_EXPERIMENT_NAME:
 			return setExperimentName(state, action);
+
+		// Deploy
+		case actionTypes.SET_CLOUD_DEPLOY_INFO:
+			return setCloudDeployInfo(state, action);
+		case actionTypes.SET_DIY_DEPLOY_INFO:
+			return setDIYDeployInfo(state, action);
 
 		// editor starts
 		case actionTypes.SET_NAME:
