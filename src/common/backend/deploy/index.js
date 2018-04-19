@@ -139,7 +139,7 @@ Param
 state, whole redux state
 progressHook, callback from presentational component that will show user downloading progress
 */
-export function diyDeploy(state, progressHook) {
+export function diyDeploy({state, progressHook}) {
   let experimentState = state.experimentState;
   var zip = new JSZip();
 

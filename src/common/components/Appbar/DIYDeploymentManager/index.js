@@ -3,6 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
+import { ListItem } from 'material-ui/List';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
@@ -10,7 +11,9 @@ import MenuItem from 'material-ui/MenuItem';
 import CircularProgress from 'material-ui/CircularProgress';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
-import { Card, CardHeader, CardText} from 'material-ui/Card';
+
+import DIYIcon from 'material-ui/svg-icons/content/archive';
+import DIYTitleIcon from 'material-ui/svg-icons/content/archive';
 
 import { renderDialogTitle } from '../../gadgets';
 import AppbarTheme from '../theme.js';
@@ -63,6 +66,12 @@ export default class DIYDeploymentManager extends React.Component {
 		super(props);
 		this.state = {
 			open: false,
+
+			deploying: false,
+
+			total: 0,
+      		loaded: [],
+      		percent: 0,
 		}
 
 		this.update = () => {
@@ -70,15 +79,29 @@ export default class DIYDeploymentManager extends React.Component {
 			})
 		}
 
+		this.progresHook = (loadedInfo, total, onFinish = false) => {
+			if (onFinish) {
+				this.setState({
+					loaded: [],
+					total: 0,
+				})
+				return;
+			}
+			let loaded = this.state.loaded.slice();
+			loaded[loadedInfo.index] = loadedInfo.value;
 
-		this.handleOpenHepler = () => {
+			let percent = loaded.reduce((sum, val) => (sum + val), 0) / total * 100;
 			this.setState({
-				open: true,
-			})
+				loaded: loaded,
+				total: total,
+				percent: (percent > 100) ? 100 : parseInt(percent, 10)
+			});
 		}
 
 		this.handleOpen = () => {
-
+			this.setState({
+				open: true
+			})
 		}
 
 		this.handleClose = () => {
@@ -87,169 +110,85 @@ export default class DIYDeploymentManager extends React.Component {
 			});
 		}
 
-		this.handleCancel = () => {
-			this.handleClose();
-			this.update();
+		this.diyDeploy = () => {
+			this.setState({
+				deploying: true
+			})
+			this.props.diyDeploy(this.progresHook).finally(() => {
+				this.setState({
+					deploying: false
+				})
+			})
 		}
 	}
 
 	render() {
 		let {
-
+			open,
+			percent,
+			deploying,
+			total
 		} = this.state;
 		let {
 
 		} = this.props;
 
 		let actions = [
-			!deleting ? 
+			!deploying ? 
+			<FlatButton
+				label={"Deploy"}
+				style={{color: colors.primaryDeep}}
+				onClick={this.diyDeploy}
+			/>:
+			<div style={{display:'flex', paddingLeft: 10, alignItems: 'center'}}>
+              <div>
+                <CircularProgress {...style.Actions.Wait} value={percent} mode="determinate"/>
+              </div>
+              <ListItem primaryText={`${percent}%`} disabled={true}/>
+            </div>,
 			<FlatButton
 				label={"Cancel"}
 				style={{color: colors.defaultFontColor}}
-				onClick={this.handleCancel}
-			/>:
-			<CircularProgress {...style.Actions.Wait}/>,
-			!deploying ? 
-			<FlatButton
-				label={isOnline ? "Update" : "Deploy"}
-				style={{color: notReady ? colors.offlineColor : colors.primaryDeep}}
-				disabled={notReady}
-				title={notReady ? "The experiment is not ready for deployment." : ""}
-				onClick={this.cloudDeploy}
-			/>:
-			<CircularProgress {...style.Actions.Wait}/>,
+				onClick={this.handleClose}
+			/>,
 		];
-
-
-		let Setting_Card = (
-			<Card initiallyExpanded>
-			    <CardHeader
-			      title="Settings"
-			      actAsExpander={true}
-			      avatar={
-			      	notReady ? 
-			      	<AlertIcon color={colors.errorColor}/> :
-			      	<SettingIcon color={colors.settingIconColor}/>
-			      }
-			      showExpandableButton={true}
-			    />
-			    <CardText expandable={true} style={{paddingTop: 0}}>
-			    	<div style={{display: 'flex'}}>
-						<MenuItem
-							style={{width: 170}}
-							disabled
-							primaryText={`Current OSF Token:`}
-				    	/>
-				    	<SelectField
-							id="Choose_OSF_Token"
-							{...style.SelectFieldStyle}
-							style={{paddingLeft: 16, minWidth: 350}}
-							labelStyle={{
-								textOverflow: 'ellipsis',
-								overflow: 'hidden',
-								whiteSpace: 'nowrap',
-							}}
-							onChange={this.updateOsfAccess}
-							title={tempChosenOsfAccess ? utils.toEmptyString(tempChosenOsfAccess.token) : ''}
-							value={tempChosenOsfAccess}
-							errorText={osfTokenError ? 'A token is required' : ''}
-				    	>
-					    	{
-					    		osfAccess.map((item, i) => {
-					    			if (deepEqual(item, tempChosenOsfAccess)) {
-					    				item = tempChosenOsfAccess;
-					    			}
-					    			return (
-					    				<MenuItem
-					    					key={`Registered-Osf-Access-${i}`}
-					    					primaryText={utils.toEmptyString(item.alias)}
-					    					title={utils.toEmptyString(item.token)}
-					    					value={item}
-					    				/>
-					    			)
-					    		})
-					    	}
-				    	</SelectField>
-			    	</div>
-					<div style={{display: 'flex'}}>
-						<MenuItem
-							disabled
-							primaryText={`OSF Project Id:`}
-				    	/>
-						<div style={{display: 'flex', alignItems: 'center'}}>
-							<TextField
-							  {...style.TextFieldFocusStyle(osfNodeError)}
-							  style={{width: 300}}
-					          onChange={this.updateOsfNode}
-					          id="Choose_OSF_Node"
-					          value={utils.toEmptyString(tempOsfNode)}
-					          errorText={osfNodeError ? 'A project id is required.' : ''}
-					        />
-							{!creating ?
-								<RaisedButton
-									backgroundColor={colors.primary}
-									labelColor={colors.white}
-									style={{marginLeft: '10px'}}
-									labelStyle={{textTransform: "none",}}
-									label={"Create One For Me!"}
-									title={"Create One For Me!"}
-									onClick={this.createProject}
-								/> :
-								<CircularProgress {...style.Actions.Wait} />
-							}
-						</div>
-					</div>
-					<div style={{display: 'flex'}}>
-						<MenuItem
-							disabled
-							primaryText={`Save Data After:`}
-				    	/>
-				    	<SelectField
-				          onChange={this.updateSaveAfter}
-				          id="Choose_Save_After"
-				          {...style.SelectFieldStyle}
-				          value={tempSaveAfter}
-				        >
-				          {
-				          	indexedNodeNames.map((n, i) => (
-				          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
-				          	)
-				          }
-				        </SelectField>
-			    	</div>
-			    </CardText>
-			</Card>
-		)
 
 		return(
 			<div>
 				<IconButton 
-	              tooltip="Cloud Deploy"
+	              tooltip="DIY Deploy"
 	              onClick={this.handleOpen}
 	          	>
-	              <CloudIcon {...style.Icon}/>
+	              <DIYIcon {...style.Icon}/>
 	          	</IconButton>
 				<Dialog
 					modal
 					autoScrollBodyContent
-					open={this.state.open}
+					open={open}
 					titleStyle={{...cssStyle.Dialog.Title}}
 					bodyStyle={{...cssStyle.Dialog.Body}}
 					title={renderDialogTitle(
 						<Subheader>
 							<div style={{display: 'flex', maxHeight: 48}}>
 								<div style={{paddingTop: 8, paddingRight: 10, maxHeight: 48}}>
-									<CloudTitleIcon color={colors.titleIconColor}/>
+									<DIYTitleIcon color={colors.titleIconColor}/>
 								</div>
 								<div style={{fontSize: 20, maxHeight: 48}}>
-			      					{"Cloud Deployment"}
+			      					{"DIY Deployment"}
 			      				</div>
 		      				</div>
 						</Subheader>, 
 						this.handleClose, 
-						null
+						null,
+						null,
+						false
 					)}
 					actions={actions}
+					actionsContainerStyle={{
+						display: 'flex',
+						alignItems: 'center',
+						flexDirection: 'row-reverse'
+					}}
 				>
 					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
 

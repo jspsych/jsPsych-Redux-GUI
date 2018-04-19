@@ -12,7 +12,6 @@ import {
 	notifyWarningBySnackbar
 } from '../Notification';
 import { pushState } from '../../backend/dynamoDB';
-import { diyDeploy as $diyDeploy } from '../../backend/deploy';
 import {
 	listBucketContents,
 	generateCopyParam,
@@ -21,7 +20,7 @@ import {
 
 
 const changeExperimentName = (dispatch, text) => {
-	text = utils.toNull(text.trim());
+	text = utils.toNull(text); //.trim()
 	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
@@ -141,17 +140,6 @@ const saveAs = (dispatch, newName, onStart, onFinish) => {
 	});
 }
 
-const diyDeploy = (dispatch, progressHook) => {
-	dispatch((dispatch, getState) => {
-		if (!getState().userState.user.identityId) {
-			notifyWarningBySnackbar(dispatch, 'You need to sign in first !');
-			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
-		} else {
-			$diyDeploy(getState(), progressHook);
-		}
-	});
-}
-
 const mapStateToProps = (state, ownProps) => {
 	return {
 		experimentName: utils.toEmptyString(state.experimentState.experimentName),
@@ -159,12 +147,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	changeExperimentName: (e, text) => { changeExperimentName(dispatch, text); },
+	changeExperimentName: (text) => { changeExperimentName(dispatch, text); },
 	save: (onStart, onFinish) => { save(dispatch, onStart, onFinish); },
 	newExperiment: (popUpConfirm) => { newExperiment(dispatch, popUpConfirm); },
 	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
 	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); },
-	diyDeploy: (progressHook) => { diyDeploy(dispatch, progressHook); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Appbar);

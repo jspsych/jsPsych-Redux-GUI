@@ -20,6 +20,7 @@ import InitEditor from '../../containers/Appbar/jsPsychInitEditor';
 import UserMenu from '../../containers/Appbar/UserMenu';
 import MediaManager from '../../containers/MediaManager';
 import CloudDeploymentManager from '../../containers/Appbar/CloudDeploymentManager';
+import DIYDeploymentManager from '../../containers/Appbar/DIYDeploymentManager';
 
 import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
@@ -97,6 +98,52 @@ const Actions = {
   saveAs: "SAVEAS"
 }
 
+class ExperimentNameField extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      experimentName: utils.toEmptyString(this.props.experimentName)
+    }
+
+    this.onChange = (e, v) => {
+      this.setState({
+        experimentName: v
+      })
+    }
+
+    this.onCommit = () => {
+      this.props.commit(this.state.experimentName.trim());
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return {
+      ...nextProps
+    }
+  }
+
+
+  render() {
+    let { experimentName } = this.state;
+
+    return (
+      <TextField
+        {...style.NameField}
+        id="Experiment-Name-Textfield"
+        value={experimentName}
+        errorText={(/\S/.test(experimentName)) ? '' : "Experiment name can't be empty."}
+        onChange={this.onChange}
+        onBlur={this.onCommit}
+        onKeyPress={(e) => {
+          if (e.which === 13) {
+            document.activeElement.blur();
+          } 
+        }}
+      />
+    )
+  }
+}
+
 export default class Appbar extends React.Component {
   constructor(props) {
     super(props);
@@ -114,33 +161,18 @@ export default class Appbar extends React.Component {
       proceedLabel: "No",
       showCloseButton: false,
 
-      total: 0,
-      loaded: [],
-      percent: 0,
+      experimentName: this.props.experimentName
+    }
+
+    this.updateExperimentName = (e, v) => {
+      this.setState({
+        experimentName: v
+      })
     }
 
     this.setPerforming = (p) => {
       this.setState({
         performing: p
-      });
-    }
-
-    this.progresHook = (loadedInfo, total, onFinish=false) => {
-      if (onFinish) {
-        this.setState({
-          loaded: [],
-          total: 0,
-        })
-        return;
-      }
-      let loaded = this.state.loaded.slice();
-      loaded[loadedInfo.index] = loadedInfo.value;
-
-      let percent = loaded.reduce((sum, val) => (sum+val), 0) / total * 100;
-      this.setState({
-        loaded: loaded,
-        total: total,
-        percent: (percent > 100) ? 100 : parseInt(percent, 10)
       });
     }
 
@@ -199,8 +231,6 @@ export default class Appbar extends React.Component {
       this.handleSaveAsClose();
     }
 
-    let isBundling = this.state.total !== 0;
-
     const OrangizerToggle = (
       <IconButton 
         onClick={() => {
@@ -216,12 +246,9 @@ export default class Appbar extends React.Component {
     );
 
     const title = (
-      <TextField
-        {...style.NameField}
-        id="Experiment-Name-Textfield"
-        value={this.props.experimentName}
-        errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
-        onChange={this.props.changeExperimentName}
+      <ExperimentNameField
+        experimentName={this.props.experimentName}
+        commit={this.props.changeExperimentName}
       />
     );
 
@@ -266,22 +293,7 @@ export default class Appbar extends React.Component {
 
           <ToolbarSeparator style={{...style.ToolbarSeparator}}/>
 
-          {isBundling ?
-            <div style={{display:'flex', paddingLeft: 10}}>
-              <div style={{paddingTop: 10}}>
-                <CircularProgress {...style.Actions.Wait} value={this.state.percent} mode="determinate"/>
-              </div>
-              <ListItem primaryText={this.state.percent+"%"} disabled={true}/>
-            </div>:
-          <IconButton
-            tooltip="DIY Deploy"
-            onClick={() => { 
-              this.props.diyDeploy(this.progresHook);
-            }}
-            >
-            <DIYDeploy {...style.icon} />
-          </IconButton>
-          }
+          <DIYDeploymentManager />
 
           <CloudDeploymentManager />
       </div>
