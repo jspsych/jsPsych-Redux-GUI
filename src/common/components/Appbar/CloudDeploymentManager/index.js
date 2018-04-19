@@ -371,28 +371,6 @@ export default class CloudDeploymentManager extends React.Component {
 							primaryText={`osf.io/${utils.toEmptyString(osfNode) ? utils.toEmptyString(osfNode) : 'null'}`}
 				    	/>
 			    	</div>
-			    	<div style={{display: 'flex', alignItems: 'baseline'}}>
-						<MenuItem
-							style={{width: 170}}
-							disabled
-							primaryText={`Using OSF Token:`}
-				    	/>
-				    	<div
-							style={{
-								paddingLeft: 16,
-								color: colors.defaultFontColor,
-								textOverflow: 'ellipsis',
-								overflow: 'hidden',
-								whiteSpace: 'nowrap',
-								fontSize: '16px',
-								display: 'block',
-								maxWidth: '380px'
-							}}
-							title={utils.toEmptyString(osfToken)}
-				    	>
-				    	 "{osfToken}"
-				    	</div>
-			    	</div>
 			    </CardText>
 			</Card>		
 		)

@@ -56,7 +56,6 @@ function createNodeAtOSF({token, experimentName, experimentId}) {
 }
 
 function listNodesAtOSF({token, userId, dispatch}) {
-	if (!userId || !token) return Promise.resolve(false);
 	return new Promise((resolve, reject) => {
 		let getOptions = {
 			hostname: "api.osf.io",
