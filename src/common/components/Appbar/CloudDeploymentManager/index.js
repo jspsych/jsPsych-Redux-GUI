@@ -288,13 +288,6 @@ export default class CloudDeploymentManager extends React.Component {
 			saveAfterError = tempSaveAfter >= indexedNodeNames.length,
 			notReady = osfTokenError || osfNodeError || saveAfterError;
 		let actions = [
-			!deleting ? 
-			<FlatButton
-				label={"Cancel"}
-				style={{color: colors.defaultFontColor}}
-				onClick={this.handleCancel}
-			/>:
-			<CircularProgress {...style.Actions.Wait}/>,
 			!deploying ? 
 			<FlatButton
 				label={isOnline ? "Update" : "Deploy"}
@@ -303,7 +296,12 @@ export default class CloudDeploymentManager extends React.Component {
 				title={notReady ? "The experiment is not ready for deployment." : ""}
 				onClick={this.cloudDeploy}
 			/>:
-			<CircularProgress {...style.Actions.Wait}/>,
+			<CircularProgress {...style.Actions.Wait} style={{marginLeft: 16, marginRight: 10}}/>,
+			<FlatButton
+				label={"Cancel"}
+				style={{color: colors.defaultFontColor}}
+				onClick={this.handleCancel}
+			/>,
 		];
 
 		let Experiment_Detail_Card = (
@@ -370,28 +368,6 @@ export default class CloudDeploymentManager extends React.Component {
 							style={{color: colors.defaultFontColor }}
 							primaryText={`osf.io/${utils.toEmptyString(osfNode) ? utils.toEmptyString(osfNode) : 'null'}`}
 				    	/>
-			    	</div>
-			    	<div style={{display: 'flex', alignItems: 'baseline'}}>
-						<MenuItem
-							style={{width: 170}}
-							disabled
-							primaryText={`Using OSF Token:`}
-				    	/>
-				    	<div
-							style={{
-								paddingLeft: 16,
-								color: colors.defaultFontColor,
-								textOverflow: 'ellipsis',
-								overflow: 'hidden',
-								whiteSpace: 'nowrap',
-								fontSize: '16px',
-								display: 'block',
-								maxWidth: '380px'
-							}}
-							title={utils.toEmptyString(osfToken)}
-				    	>
-				    	 "{osfToken}"
-				    	</div>
 			    	</div>
 			    </CardText>
 			</Card>		
@@ -599,9 +575,16 @@ export default class CloudDeploymentManager extends React.Component {
 		      				</div>
 						</Subheader>, 
 						this.handleClose, 
-						null
+						null,
+						null,
+						false
 					)}
 					actions={actions}
+					actionsContainerStyle={{
+						display: 'flex',
+						alignItems: 'center',
+						flexDirection: 'row-reverse'
+					}}
 				>
 					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
 						{Experiment_Detail_Card}				
