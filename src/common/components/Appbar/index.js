@@ -295,7 +295,7 @@ export default class Appbar extends React.Component {
 
           <DIYDeploymentManager />
 
-          <CloudDeploymentManager />
+          <CloudDeploymentManager openProfilePage={this.openProfilePage} />
       </div>
     )
 
@@ -304,7 +304,7 @@ export default class Appbar extends React.Component {
             {OrangizerToggle}
             {title}
             {toolbar}
-            <UserMenu />
+            <UserMenu openProfilePage={el => this.openProfilePage = el}/>
             <ConfirmationDialog
               open={this.state.confirmOpen}
               message={this.state.confirmMessage}

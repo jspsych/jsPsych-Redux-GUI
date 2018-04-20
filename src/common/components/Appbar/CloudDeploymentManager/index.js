@@ -386,7 +386,7 @@ export default class CloudDeploymentManager extends React.Component {
 			      showExpandableButton={true}
 			    />
 			    <CardText expandable={true} style={{paddingTop: 0}}>
-			    	<div style={{display: 'flex'}}>
+			    	<div style={{display: 'flex', alignItems: 'center'}}>
 						<MenuItem
 							style={{width: 170}}
 							disabled
@@ -422,6 +422,11 @@ export default class CloudDeploymentManager extends React.Component {
 					    		})
 					    	}
 				    	</SelectField>
+				    	<FlatButton
+				    		label="Edit"
+				    		style={{marginLeft: 8, color: colors.infoColor}}
+				    		onClick={this.props.openProfilePage}
+				    	/>
 				    	<div
 				    		style={{display: 'flex', flexGrow: '1', flexDirection: 'row-reverse'}}
 				    	>
