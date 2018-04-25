@@ -18,6 +18,8 @@ import DIYTitleIcon from 'material-ui/svg-icons/content/archive';
 import { renderDialogTitle } from '../../gadgets';
 import AppbarTheme from '../theme.js';
 
+import { DIY_Deploy_Mode } from '../../../backend/deploy';
+
 const colors = {
   ...AppbarTheme.colors,
   checkGreen: '#4CAF50',
@@ -76,10 +78,11 @@ export default class DIYDeploymentManager extends React.Component {
 
 		this.update = () => {
 			this.setState({
+				tempSaveAfter: this.props.saveAfter,
 			})
 		}
 
-		this.progresHook = (loadedInfo, total, onFinish = false) => {
+		this.progressHook = (loadedInfo, total, onFinish = false) => {
 			if (onFinish) {
 				this.setState({
 					loaded: [],
@@ -101,23 +104,35 @@ export default class DIYDeploymentManager extends React.Component {
 		this.handleOpen = () => {
 			this.setState({
 				open: true
-			})
+			});
+			this.update();
 		}
 
 		this.handleClose = () => {
 			this.setState({
 				open: false,
 			});
+			this.update();
 		}
 
 		this.diyDeploy = () => {
 			this.setState({
 				deploying: true
 			})
-			this.props.diyDeploy(this.progresHook).finally(() => {
+			this.props.diyDeploy({
+				progressHook: this.progressHook,
+				saveAfter: this.state.tempSaveAfter,
+				mode: DIY_Deploy_Mode.disk
+			}).finally(() => {
 				this.setState({
 					deploying: false
 				})
+			})
+		}
+
+		this.updateSaveAfter = (event, index, value) => {
+			this.setState({
+				tempSaveAfter: value
 			})
 		}
 	}
@@ -127,10 +142,11 @@ export default class DIYDeploymentManager extends React.Component {
 			open,
 			percent,
 			deploying,
-			total
+			total,
+			tempSaveAfter
 		} = this.state;
 		let {
-
+			indexedNodeNames
 		} = this.props;
 
 		let actions = [
@@ -191,7 +207,24 @@ export default class DIYDeploymentManager extends React.Component {
 					}}
 				>
 					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
-
+						<div style={{display: 'flex'}}>
+							<MenuItem
+								disabled
+								primaryText={`Save Data After:`}
+					    	/>
+					    	<SelectField
+					          onChange={this.updateSaveAfter}
+					          id="Choose_Save_After"
+					          {...style.SelectFieldStyle}
+					          value={tempSaveAfter}
+					        >
+					          {
+					          	indexedNodeNames.map((n, i) => (
+					          		<MenuItem value={i} primaryText={n} key={n+"-"+i}/>)
+					          	)
+					          }
+					        </SelectField>
+				    	</div>
 					</Paper>
 				</Dialog>
 			</div>

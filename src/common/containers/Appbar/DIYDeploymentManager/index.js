@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
-import * as experimentSettingActions from '../../../actions/experimentSettingActions';
+import * as experimentActions from '../../../actions/experimentSettingActions';
 import DIYDeploymentManager from '../../../components/Appbar/DIYDeploymentManager';
 import {
 	notifyErrorByDialog,
@@ -10,21 +10,40 @@ import {
 import { pureSaveFlow } from '../index.js';
 import { diyDeploy as $diyDeploy } from '../../../backend/deploy';
 
-const diyDeploy = (dispatch, progressHook) => {
+const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
 	return dispatch((dispatch, getState) => {
-		return $diyDeploy({state: getState(), progressHook: progressHook}).catch((e) => {
+		dispatch(experimentActions.setDIYDeployInfoAction({
+			...diyDeployInfo
+		}));
+
+		return Promise.all([
+			pureSaveFlow(dispatch, getState),
+			$diyDeploy({state: getState(), progressHook: progressHook})
+		]).catch((e) => {
 			notifyErrorByDialog(dispatch, e.message)
 		});
 	});
 }
 
 const mapStateToProps = (state, ownProps) => {
+	let experimentState = state.experimentState,
+		indexedNodeNames = experimentState.mainTimeline.map((id, i) => `${i+1}. ${experimentState[id].name}`);
+
 	return {
+		indexedNodeNames: indexedNodeNames,
+		...experimentState.diyDeployInfo
 	}
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	diyDeploy: (progressHook) => diyDeploy(dispatch, progressHook),
+	diyDeploy: ({
+		progressHook,
+		...diyDeployInfo
+	}) => diyDeploy({
+		dispatch: dispatch,
+		progressHook: progressHook,
+		...diyDeployInfo
+	}),
 
 })
 

@@ -120,38 +120,44 @@ export default class UserMenu extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.props.openProfilePage(this.Profile.handleOpen);
+  }
+  
+  componentWillUnmount() {
+    this.props.openProfilePage(() => {});
+  }
+
   render() {
     let login = this.props.username !== null;
     let buttonLabel = (!login) ? 'Sign Up/Log In' : this.props.username;
 
     return (
       <div>
-      <div style={{float: 'right', paddingRight: 1}}>
-        <ListItem 
-          primaryText={buttonLabel} 
-          onClick={this.handleTouchTap} 
-          style={{...style.Username(login)}}
-          leftAvatar={this.renderUserPic(login)}
-        />
-      </div>
-       <Login />
-       <Profile
-        onRef={ref => (this.Profile = ref)}
-       />
-       <ExperimentList 
-        open={this.state.experimentListOpen} 
-        handleOpen={this.openExperimentList}
-        handleClose={this.closeExperimentList}
-       />
-        <Popover
-          open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          onRequestClose={this.handleRequestClose}
-          anchorOrigin={{horizontal:"right",vertical:"bottom"}}
-          targetOrigin={{horizontal:"right",vertical:"top"}}
-          >
-          {this.renderMenu(login)}
-        </Popover>
+        <div style={{float: 'right', paddingRight: 1}}>
+          <ListItem 
+            primaryText={buttonLabel} 
+            onClick={this.handleTouchTap} 
+            style={{...style.Username(login)}}
+            leftAvatar={this.renderUserPic(login)}
+          />
+        </div>
+         <Login />
+         <Profile onRef={ref => (this.Profile = ref)} />
+         <ExperimentList 
+          open={this.state.experimentListOpen} 
+          handleOpen={this.openExperimentList}
+          handleClose={this.closeExperimentList}
+         />
+          <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            onRequestClose={this.handleRequestClose}
+            anchorOrigin={{horizontal:"right",vertical:"bottom"}}
+            targetOrigin={{horizontal:"right",vertical:"top"}}
+            >
+            {this.renderMenu(login)}
+          </Popover>
     </div>
     )
   }

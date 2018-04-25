@@ -20,7 +20,7 @@ import {
 } from '../s3';
 import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
 
-const SaveDataAPI = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
+const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
 const OsfPostHelper = (experimentId) => {
   return `
@@ -30,10 +30,55 @@ const OsfPostHelper = (experimentId) => {
           experimentId: "${experimentId}"
         };
         let request = new XMLHttpRequest();
-        request.open("POST", "${SaveDataAPI}", true);
+        request.open("POST", "${SaveData_OSF_API}", true);
         request.send(JSON.stringify(postData));
     }
   `
+}
+
+const SaveData_PHP_API = 'save_data.php';
+const SaveData_PHP_Function_Name = 'saveDataPHP';
+const SaveData_PHP_Disk_API_Code = `<?php
+$rest_json = file_get_contents("php://input");
+$_POST = json_decode($rest_json, true);
+
+// data storage path
+$dataPath = "data";
+
+if (!file_exists('data')) {
+    mkdir('data', 0777, true);
+}
+$filename = sprintf("./%s/%s-%d.csv", $dataPath, uniqid(), time());
+$data = $_POST['filedata'];
+file_put_contents($filename, $data);
+?>`;
+const SaveData_PHP_SQLite_Code = ``;
+const SaveData_PHP_MySQL_Code = ``;
+export const DIY_Deploy_Mode = {
+  disk: 'save_to_disk_as_csv',
+  sqlite: 'save_to_sqlite',
+  mysql: 'save_to_mysql'
+}
+const generateSaveData_PHP_API_Code = (mode) => {
+  switch(mode) {
+    case DIY_Deploy_Mode.mysql:
+      return SaveData_PHP_MySQL_Code;
+    case DIY_Deploy_Mode.sqlite:
+      return SaveData_PHP_SQLite_Code;
+    case DIY_Deploy_Mode.disk:
+    default:
+      return SaveData_PHP_Disk_API_Code;
+  }
+}
+const diyPostHelper = (mode) => {
+  return `function ${SaveData_PHP_Function_Name}(data) {
+    let postData = {
+        filedata: data
+    };
+    let request = new XMLHttpRequest();
+    request.open("POST", "${SaveData_PHP_API}", true);
+    request.send(JSON.stringify(postData));
+  }`
 }
 
 const jsPsych = window.jsPsych;
@@ -78,7 +123,14 @@ const cloudSaveDataFunctionCode = () => {
     }
   `
 }
-const generateDataSaveInCloudTrial = (code=cloudSaveDataFunctionCode()) => {
+const diySaveDataToDiskFunctionCode = () => {
+  return `
+  function() {
+    ${SaveData_PHP_Function_Name}(jsPsych.data.get().csv());
+  }
+  `
+}
+const generateDataSaveTrial = ({code}) => {
   let param = {
     type: 'call-function',
     func: createComplexDataObject(null)
@@ -88,7 +140,7 @@ const generateDataSaveInCloudTrial = (code=cloudSaveDataFunctionCode()) => {
 
   let res = createTrial('SaveDataTrial',
       null,
-      "Save Data To OSF",
+      "Save Data",
       true,
       param
     );
@@ -140,7 +192,17 @@ state, whole redux state
 progressHook, callback from presentational component that will show user downloading progress
 */
 export function diyDeploy({state, progressHook}) {
-  let experimentState = state.experimentState;
+  let experimentState = state.experimentState,
+      diyDeployInfo = experimentState.diyDeployInfo,
+      saveAfter = diyDeployInfo.saveAfter,
+      mode = diyDeployInfo.mode;
+
+  /* ************ Step 0: Inject save data trial ************ */
+  let saveTrial = generateDataSaveTrial({code: diySaveDataToDiskFunctionCode()});
+  experimentState[saveTrial.id] = saveTrial;
+  experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
+  /* ************ Step 0: Inject save data trial ************ */
+
   var zip = new JSZip();
 
   /* ************ Step 1 ************ */
@@ -157,8 +219,17 @@ export function diyDeploy({state, progressHook}) {
   if (deployInfo.errorLog !== '') {
     zip.file("error log.txt", deployInfo.errorLog)
   }
+
   // generate index.html, append it in zip file
-  zip.file("index.html", generatePage({deployInfo: deployInfo}));
+  zip.file("index.html", generatePage({
+    deployInfo: deployInfo,
+    isDiyDeployment: true,
+    diyDeployMode: mode
+  }));
+
+  // generate save_data.php according to user's choice of storage
+  zip.file(SaveData_PHP_API, generateSaveData_PHP_API_Code(mode));
+
   // create assets folder
   var assets = zip.folder(Deploy_Folder);
   var jsPsych = zip.folder(jsPysch_Folder);
@@ -197,7 +268,7 @@ export function cloudDeploy({
       user = userState.user,
       saveAfter = cloudDeployInfo.saveAfter;
 
-  let saveTrial = generateDataSaveInCloudTrial();
+  let saveTrial = generateDataSaveTrial({code: cloudSaveDataFunctionCode()});
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
 
@@ -206,7 +277,7 @@ export function cloudDeploy({
 
   var indexPage = new File([generatePage({
     deployInfo: deployInfo,
-    cloudMode: true,
+    isCloudDeployment: true,
     experimentId: experimentId
   })], "index.html");
   var param = generateUploadParam({
@@ -555,9 +626,11 @@ deployInfo is defined in function deploy
 */
 export function generatePage({
   deployInfo,
-  cloudMode = false,
+  isCloudDeployment = false,
   customCode='',
-  experimentId=''
+  experimentId='',
+  isDiyDeployment = false,
+  diyDeployMode='',
 }) {
   return `
   <!doctype html>
@@ -573,7 +646,8 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${cloudMode ? OsfPostHelper(experimentId) : ''}
+      ${isDiyDeployment ? diyPostHelper(diyDeployMode) : ''}
+      ${isCloudDeployment ? OsfPostHelper(experimentId) : ''}
       ${deployInfo.code}
     </script>
   </html>
