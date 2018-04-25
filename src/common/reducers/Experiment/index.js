@@ -6,11 +6,17 @@ import * as actionTypes from '../../constants/ActionTypes';
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
+import { DIY_Deploy_Mode } from '../../backend/deploy';
 
 export const getDefaultInitCloudDeployInfo = () => ({
 	osfNode: null,
 	osfAccess: null, // check userState.osfAccess[i]
 	saveAfter: 0
+})
+
+export const getDefaultInitDiyDeployInfo = () => ({
+	mode: DIY_Deploy_Mode.disk,
+	saveAfter: 0,
 })
 
 /**
@@ -70,12 +76,7 @@ export const initState = {
 	/********** Deployment Information **********/
 	cloudDeployInfo: getDefaultInitCloudDeployInfo(),
 
-	diyDeployInfo: {
-		username: null,
-		password: null,
-		saveAfter: 0,
-		dataTable: null,
-	}
+	diyDeployInfo: getDefaultInitDiyDeployInfo(),
 	/********** Deployment Information **********/
 }
 

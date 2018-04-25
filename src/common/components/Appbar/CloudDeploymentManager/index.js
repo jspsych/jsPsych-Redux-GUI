@@ -496,6 +496,7 @@ export default class CloudDeploymentManager extends React.Component {
 							          id="Choose_OSF_Node"
 							          {...style.SelectFieldStyle}
 							          value={tempOsfNode}
+							          style={{minWidth: 300}}
 							          errorText={osfNodeError ? 'A node id is required' : ''}
 							        >
 							          {
@@ -503,7 +504,7 @@ export default class CloudDeploymentManager extends React.Component {
 							          		<MenuItem 
 							          			value={item.id} 
 							          			title={item.title}
-							          			primaryText={item.id} 
+							          			primaryText={`${item.title} (${item.id})`} 
 							          			key={item.id+"-"+i}
 							          		/>)
 							          	)

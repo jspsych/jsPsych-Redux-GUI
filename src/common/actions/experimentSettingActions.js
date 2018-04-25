@@ -22,7 +22,7 @@ export function setCloudDeployInfoAction(cloudDeployInfo) {
 
 export function setDIYDeployInfoAction(diyDeployInfo) {
 	return {
-		type: actionTypes.SET_CLOUD_DEPLOY_INFO,
+		type: actionTypes.SET_DIY_DEPLOY_INFO,
 		diyDeployInfo: diyDeployInfo
 	}
 }
