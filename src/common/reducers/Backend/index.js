@@ -165,7 +165,7 @@ function clickSavePush(state, action) {
 		registerNewExperiment(new_state);
 	}
 	new_state.userState.lastModifiedExperimentState = utils.deepCopy(new_state.experimentState);
-	
+
 	return new_state;
 }
 

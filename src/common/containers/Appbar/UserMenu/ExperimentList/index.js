@@ -22,6 +22,8 @@ import {
 	notifySuccessBySnackbar,
 	// notifyWarningBySnackbar
 } from '../../../Notification';
+import { pureCloudDelete as cloudDelete } from '../../CloudDeploymentManager';
+import { getDefaultInitCloudDeployInfo, getDefaultInitDiyDeployInfo } from '../../../../reducers/Experiment';
 
 const $pullExperiment = (dispatch, getState, selected) => {
 	// fetch experiment
@@ -114,34 +116,32 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 		popUpConfirm(
 			"Are you sure that you want to delete experiment: " + experiment.name + "?",
 			() => {
-				onStart();
-				// fetch experiment state
-				fetchExperimentById(id).then((data) => {
-					if (!data || !data.Item) {
-						throw Errors.internetError;
-					}
-					let filepaths = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) => (f.Key)) : [];
-					// delete it from dynamoDB
-					$deleteExperiment(id).then((data) => {
-						// delete corresponding s3 files
-						deleteFiles(filepaths).then(() => {
-							// unregister experiment from user
-							dispatch(backendActions.deleteExperimentAction(id));
+				onStart();				
+				Promise.all([
+					// fetch experiment state
+					fetchExperimentById(id).then((data) => {
+						if (!data || !data.Item) {
+							throw Errors.internetError;
+						}
+						let filepaths = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) => (f.Key)) : [];
+
+						return Promise.all([
+							// delete it from cloud
+							cloudDelete(id),
+							// delete it from dynamoDB
+							$deleteExperiment(id),
+							// delete corresponding s3 files
+							deleteFiles(filepaths),
+						]).then(() => {
 							// update user state on dynamoDB
-							pushUserData(getState().userState).then(() => {
-								notifySuccessBySnackbar(dispatch, "Deleted !");
-							}, (err) => {
-								notifyErrorByDialog(dispatch, err.message);
-							});
-						}, (err) => {
-							notifyErrorByDialog(dispatch, err.message);
+							dispatch(backendActions.deleteExperimentAction(id));
+							return pushUserData(getState().userState);
 						})
-					}, (err) => {
-						notifyErrorByDialog(dispatch, err.message);
 					})
-				}).catch((err) => {
+				]).catch((err) => {
 					notifyErrorByDialog(dispatch, err.message);
 				}).finally(() => {
+					notifySuccessBySnackbar(dispatch, "Deleted !");
 					onFinish();
 				});
 			},
@@ -179,7 +179,9 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				experimentDetails: Object.assign({}, data.Item.fetch.experimentDetails, {
 					createDate: now,
 					lastEditDate: now,
-				})
+				}),
+				cloudDeployInfo: getDefaultInitCloudDeployInfo(),
+				diyDeployInfo: getDefaultInitDiyDeployInfo(),
 			});
 
 			// duplicate resources saved on s3
@@ -187,10 +189,11 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 				(generateCopyParam({source: f.Key, target: f.Key.replace(data.Item.fetch.experimentId, newId)}))
 			) : [];
 			// duplicate s3 files
-			copyFiles({params: params}).then(() => {
+			copyFiles({params: params}).then((data) => {
+				cloudDelete(experimentState.experimentId),
 				// fetch new media
 				listBucketContents(
-					{Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}
+					{Prefix: `${getState().userState.user.identityId}/${experimentState.experimentId}/`}
 					).then((data) => {
 					// update media property
 					experimentState.media = data;

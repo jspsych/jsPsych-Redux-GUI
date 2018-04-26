@@ -20,7 +20,7 @@ const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
 			pureSaveFlow(dispatch, getState),
 			$diyDeploy({state: getState(), progressHook: progressHook})
 		]).catch((e) => {
-			notifyErrorByDialog(dispatch, e.message)
+			notifyErrorByDialog(dispatch, e.message);
 		});
 	});
 }
