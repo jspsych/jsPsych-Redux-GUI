@@ -130,15 +130,17 @@ export const pureCloudDelete = (experimentId) => {
 		bucket: Cloud_Bucket,
 		Prefix: experimentId
 	}).then((data) => {
-		return Promise.all(data.Contents.map(item => deleteObject({
-			Bucket: Cloud_Bucket,
-			Key: item.Key
-		})));
+		return Promise.all(data.Contents.map(
+			item => deleteObject({
+				Bucket: Cloud_Bucket,
+				Key: item.Key
+			}))
+		);
 	})
 }
 const cloudDelete = (dispatch) => {
 	return dispatch((dispatch, getState) => {
-		dispatch(experimentActions.setCloudDeployInfoAction(getDefaultInitCloudDeployInfo()));
+		// dispatch(experimentActions.setCloudDeployInfoAction(getDefaultInitCloudDeployInfo()));
 		let experimentState = getState().experimentState;
 
 		return Promise.all([

@@ -118,7 +118,6 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 			() => {
 				onStart();				
 				Promise.all([
-					// cloudDelete(id),
 					// fetch experiment state
 					fetchExperimentById(id).then((data) => {
 						if (!data || !data.Item) {
@@ -127,6 +126,8 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 						let filepaths = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) => (f.Key)) : [];
 
 						return Promise.all([
+							// delete it from cloud
+							cloudDelete(id),
 							// delete it from dynamoDB
 							$deleteExperiment(id),
 							// delete corresponding s3 files
