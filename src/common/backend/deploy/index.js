@@ -31,6 +31,12 @@ const OsfPostHelper = (experimentId) => {
         };
         let request = new XMLHttpRequest();
         request.open("POST", "${SaveData_OSF_API}", true);
+        request.onload = () => {
+          if (request.status === 200) {
+            let response = JSON.parse(request.responseText);
+            console.log(response);
+          }
+        }
         request.send(JSON.stringify(postData));
     }
   `
@@ -39,18 +45,23 @@ const OsfPostHelper = (experimentId) => {
 const SaveData_PHP_API = 'save_data.php';
 const SaveData_PHP_Function_Name = 'saveDataPHP';
 const SaveData_PHP_Disk_API_Code = `<?php
-$rest_json = file_get_contents("php://input");
-$_POST = json_decode($rest_json, true);
-
 // data storage path
 $dataPath = "data";
 
-if (!file_exists('data')) {
+try {
+  $rest_json = file_get_contents("php://input");
+  $_POST = json_decode($rest_json, true);
+  if (!file_exists('data')) {
     mkdir('data', 0777, true);
+  }
+  $filename = sprintf("./%s/%s-%d.csv", $dataPath, uniqid(), time());
+  $data = $_POST['filedata'];
+  file_put_contents($filename, $data);
+  echo '200';
+} catch (Exception $e) {
+  echo $e->getMessage();
 }
-$filename = sprintf("./%s/%s-%d.csv", $dataPath, uniqid(), time());
-$data = $_POST['filedata'];
-file_put_contents($filename, $data);
+
 ?>`;
 const SaveData_PHP_SQLite_Code = ``;
 const SaveData_PHP_MySQL_Code = ``;
@@ -70,13 +81,19 @@ const generateSaveData_PHP_API_Code = (mode) => {
       return SaveData_PHP_Disk_API_Code;
   }
 }
-const diyPostHelper = (mode) => {
+const diyPostHelper = () => {
   return `function ${SaveData_PHP_Function_Name}(data) {
     let postData = {
         filedata: data
     };
     let request = new XMLHttpRequest();
     request.open("POST", "${SaveData_PHP_API}", true);
+    request.onload = () => {
+      if (request.status === 200) {
+        let response = JSON.parse(request.responseText);
+        console.log(response);
+      }
+    }
     request.send(JSON.stringify(postData));
   }`
 }
@@ -123,13 +140,22 @@ const cloudSaveDataFunctionCode = () => {
     }
   `
 }
-const diySaveDataToDiskFunctionCode = () => {
-  return `
-  function() {
-    ${SaveData_PHP_Function_Name}(jsPsych.data.get().csv());
+const diySaveDataFunctionCode = (mode) => {
+  let data = '';
+  switch(mode) {
+    case DIY_Deploy_Mode.mysql:
+    case DIY_Deploy_Mode.sqlite:
+      data = 'jsPsych.data.get().json()';
+      break;
+    case DIY_Deploy_Mode.disk:
+    default:
+      data = 'jsPsych.data.get().csv()';
   }
-  `
+  return `function() {
+    ${SaveData_PHP_Function_Name}(${data});
+  }`
 }
+
 const generateDataSaveTrial = ({code}) => {
   let param = {
     type: 'call-function',
@@ -192,13 +218,13 @@ state, whole redux state
 progressHook, callback from presentational component that will show user downloading progress
 */
 export function diyDeploy({state, progressHook}) {
-  let experimentState = state.experimentState,
+  let experimentState = utils.deepCopy(state.experimentState),
       diyDeployInfo = experimentState.diyDeployInfo,
       saveAfter = diyDeployInfo.saveAfter,
       mode = diyDeployInfo.mode;
 
   /* ************ Step 0: Inject save data trial ************ */
-  let saveTrial = generateDataSaveTrial({code: diySaveDataToDiskFunctionCode()});
+  let saveTrial = generateDataSaveTrial({code: diySaveDataFunctionCode(mode)});
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
   /* ************ Step 0: Inject save data trial ************ */
@@ -646,7 +672,7 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${isDiyDeployment ? diyPostHelper(diyDeployMode) : ''}
+      ${isDiyDeployment ? diyPostHelper() : ''}
       ${isCloudDeployment ? OsfPostHelper(experimentId) : ''}
       ${deployInfo.code}
     </script>

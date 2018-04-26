@@ -107,10 +107,10 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 			saveAfter: saveAfter
 		}));
 
-		if (deepEqual(getState().userState.lastModifiedExperimentState, getState().experimentState)) {
-			notifyWarningBySnackbar(dispatch, "Nothing has changed so far !");
-			return Promise.resolve();
-		}
+		// if (deepEqual(getState().userState.lastModifiedExperimentState, getState().experimentState)) {
+		// 	notifyWarningBySnackbar(dispatch, "Nothing has changed so far !");
+		// 	return Promise.resolve();
+		// }
 
 		return Promise.all([
 			pureSaveFlow(dispatch, getState),
@@ -125,6 +125,17 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 	})
 }
 
+export const pureCloudDelete = (experimentId) => {
+	return listBucketContents({
+		bucket: Cloud_Bucket,
+		Prefix: experimentId
+	}).then((data) => {
+		return Promise.all(data.Contents.map(item => deleteObject({
+			Bucket: Cloud_Bucket,
+			Key: item.Key
+		})));
+	})
+}
 const cloudDelete = (dispatch) => {
 	return dispatch((dispatch, getState) => {
 		dispatch(experimentActions.setCloudDeployInfoAction(getDefaultInitCloudDeployInfo()));
@@ -132,18 +143,10 @@ const cloudDelete = (dispatch) => {
 
 		return Promise.all([
 			pureSaveFlow(dispatch, getState),
-			listBucketContents({
-				bucket: Cloud_Bucket,
-				Prefix: experimentState.experimentId
-			}).then((data) => {
-				return Promise.all(data.Contents.map(item => deleteObject({
-					Bucket: Cloud_Bucket,
-					Key: item.Key
-				})));
-			}).then(() => {
-				notifyWarningBySnackbar(dispatch, "Experiment Offline !");
-			})
-		]).catch(e => {
+			pureCloudDelete(experimentState.experimentId),
+		]).then(() => {
+			notifyWarningBySnackbar(dispatch, "Experiment Offline !");
+		}).catch(e => {
 			notifyErrorByDialog(dispatch, e.message);
 		});
 	})
@@ -168,8 +171,12 @@ const checkBeforeOpen = (dispatch) => {
 	return dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
-			notifyWarningBySnackbar(dispatch, 'You need to sign in before deploying your experiment on Cloud !');
+			notifyErrorByDialog(dispatch, 'You need to sign in before deploying your experiment on Cloud !');
 			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
+			return Promise.resolve(false);
+		}
+		if (!deepEqual(getState().userState.lastModifiedExperimentState, getState().experimentState)) {
+			notifyWarningBySnackbar(dispatch, 'Please save the newest changes first !');
 			return Promise.resolve(false);
 		}
 		return Promise.resolve(true);
