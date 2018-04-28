@@ -1,6 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import { ListItem } from 'material-ui/List';
@@ -79,6 +80,7 @@ export default class DIYDeploymentManager extends React.Component {
 		this.update = () => {
 			this.setState({
 				tempSaveAfter: this.props.saveAfter,
+				tempMode: this.props.mode
 			})
 		}
 
@@ -122,7 +124,7 @@ export default class DIYDeploymentManager extends React.Component {
 			this.props.diyDeploy({
 				progressHook: this.progressHook,
 				saveAfter: this.state.tempSaveAfter,
-				mode: DIY_Deploy_Mode.disk
+				mode: this.state.tempMode
 			}).finally(() => {
 				this.setState({
 					deploying: false
@@ -130,9 +132,15 @@ export default class DIYDeploymentManager extends React.Component {
 			})
 		}
 
-		this.updateSaveAfter = (event, index, value) => {
+		this.setSaveAfter = (event, index, value) => {
 			this.setState({
 				tempSaveAfter: value
+			})
+		}
+
+		this.setSaveMode = (e, value) => {
+			this.setState({
+				tempMode: value
 			})
 		}
 	}
@@ -143,7 +151,8 @@ export default class DIYDeploymentManager extends React.Component {
 			percent,
 			deploying,
 			total,
-			tempSaveAfter
+			tempSaveAfter,
+			tempMode
 		} = this.state;
 		let {
 			indexedNodeNames
@@ -168,6 +177,28 @@ export default class DIYDeploymentManager extends React.Component {
 				onClick={this.handleClose}
 			/>,
 		];
+
+		let SaveModeChoices = (
+			<RadioButtonGroup
+				style={{display: 'flex', flexGrow: 1}}
+				valueSelected={tempMode}
+				name="DIY_Save_Mode"
+				onChange={this.setSaveMode}
+			>
+				<RadioButton 
+					value={globals.DIY_Deploy_Mode.disk}
+					label="Disk"
+					iconStyle={{fill: colors.primary}}
+					labelStyle={{fontWeight: 100}}
+				/>
+				<RadioButton 
+					value={globals.DIY_Deploy_Mode.sqlite}
+					label="SQLite 3"
+					iconStyle={{fill: colors.primary}}
+					labelStyle={{fontWeight: 100}}
+				/>
+			</RadioButtonGroup>
+		)
 
 		return(
 			<div>
@@ -206,14 +237,21 @@ export default class DIYDeploymentManager extends React.Component {
 						flexDirection: 'row-reverse'
 					}}
 				>
-					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
+					<Paper style={{minHeight: 188, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
+						<div style={{display: 'flex', alignItems: 'center'}}>
+							<MenuItem
+								disabled
+								primaryText={`Data Storage Method:`}
+					    	/>
+					    	{SaveModeChoices}
+				    	</div>
 						<div style={{display: 'flex'}}>
 							<MenuItem
 								disabled
 								primaryText={`Save Data After:`}
 					    	/>
 					    	<SelectField
-					          onChange={this.updateSaveAfter}
+					          onChange={this.setSaveAfter}
 					          id="Choose_Save_After"
 					          {...style.SelectFieldStyle}
 					          value={tempSaveAfter}
@@ -225,6 +263,28 @@ export default class DIYDeploymentManager extends React.Component {
 					          }
 					        </SelectField>
 				    	</div>
+				    	{this.state.tempMode !== globals.DIY_Deploy_Mode.disk ?
+				    		(
+				    			<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Database Name:`}
+							    	/>
+							    </div>
+							) :
+							null
+				    	}
+				    	{this.state.tempMode !== globals.DIY_Deploy_Mode.disk ?
+				    		(
+				    			<div style={{display: 'flex'}}>
+									<MenuItem
+										disabled
+										primaryText={`Table Name:`}
+							    	/>
+							    </div>
+							) :
+							null
+				    	}
 					</Paper>
 				</Dialog>
 			</div>

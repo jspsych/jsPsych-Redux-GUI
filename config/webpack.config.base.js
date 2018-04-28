@@ -7,12 +7,14 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      'utils': path.resolve(__dirname, '../src/common/utils/index.js')
+      'utils': path.resolve(__dirname, '../src/common/utils/index.js'),
+      'globals': path.resolve(__dirname, '../src/common/constants/global.js')
     }
   },
   plugins: [
     new webpack.ProvidePlugin({
-      utils: 'utils'
+      utils: 'utils',
+      globals: 'globals'
     })
   ],
   module: {

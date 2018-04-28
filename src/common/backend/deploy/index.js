@@ -33,8 +33,7 @@ const OsfPostHelper = (experimentId) => {
         request.open("POST", "${SaveData_OSF_API}", true);
         request.onload = () => {
           if (request.status === 200) {
-            let response = JSON.parse(request.responseText);
-            console.log(response);
+            console.log(request.responseText);
           }
         }
         request.send(JSON.stringify(postData));
@@ -63,7 +62,60 @@ try {
 }
 
 ?>`;
-const SaveData_PHP_SQLite_Code = ``;
+const SaveData_PHP_SQLite_Code = `
+<?php
+
+// this path should point to your configuration file.
+include('database_config.php');
+
+$post_data = json_decode(file_get_contents('php://input'), true);
+$data_array = $post_data["data_array"];
+
+$database = "data.sqlite3";
+$table = "jspsych";
+
+try {
+  $conn = new PDO("sqlite:$database");
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  // First stage is to get all column names from the table and store
+  // them in $col_names array.
+  $stmt = $conn->prepare("SHOW COLUMNS FROM \`$table\`");
+  $stmt->execute();
+  $col_names = array();
+  while($row = $stmt->fetchColumn()) {
+    $col_names[] = $row;
+  }
+  // Second stage is to create prepared SQL statement using the column
+  // names as a guide to what values might be in the JSON.
+  // If a value is missing from a particular trial, then NULL is inserted
+  $sql = "INSERT INTO $table VALUES(";
+  for($i = 0; $i < count($col_names); $i++){
+    $name = $col_names[$i];
+    $sql .= ":$name";
+    if($i != count($col_names)-1){
+      $sql .= ", ";
+    }
+  }
+  $sql .= ");";
+  $insertstmt = $conn->prepare($sql);
+  for($i=0; $i < count($data_array); $i++){
+    for($j = 0; $j < count($col_names); $j++){
+      $colname = $col_names[$j];
+      if(!isset($data_array[$i][$colname])){
+        $insertstmt->bindValue(":$colname", null, PDO::PARAM_NULL);
+      } else {
+        $insertstmt->bindValue(":$colname", $data_array[$i][$colname]);
+      }
+    }
+    $insertstmt->execute();
+  }
+  echo 'Success';
+} catch(PDOException $e) {
+  echo $e->getMessage();
+}
+$conn = null;
+?>
+`;
 const SaveData_PHP_MySQL_Code = ``;
 export const DIY_Deploy_Mode = {
   disk: 'save_to_disk_as_csv',
@@ -81,11 +133,8 @@ const generateSaveData_PHP_API_Code = (mode) => {
       return SaveData_PHP_Disk_API_Code;
   }
 }
-const diyPostHelper = () => {
+const diyPostHelper = (mode) => {
   return `function ${SaveData_PHP_Function_Name}(data) {
-    let postData = {
-        filedata: data
-    };
     let request = new XMLHttpRequest();
     request.open("POST", "${SaveData_PHP_API}", true);
     request.onload = () => {
@@ -94,7 +143,7 @@ const diyPostHelper = () => {
         console.log(response);
       }
     }
-    request.send(JSON.stringify(postData));
+    request.send(${mode === DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
   }`
 }
 
@@ -672,7 +721,7 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${isDiyDeployment ? diyPostHelper() : ''}
+      ${isDiyDeployment ? diyPostHelper(diyDeployMode) : ''}
       ${isCloudDeployment ? OsfPostHelper(experimentId) : ''}
       ${deployInfo.code}
     </script>
