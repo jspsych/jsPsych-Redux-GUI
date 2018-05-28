@@ -27,7 +27,6 @@ const mapStateToProps = (state, ownProps) => {
 	let userState = state.userState;
 
 	return {
-		osfToken: userState.osfToken ? state.userState.osfToken : '',
 		username: userState.user.username,
 		osfAccess: userState.osfAccess,
 	};

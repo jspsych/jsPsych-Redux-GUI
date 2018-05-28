@@ -16,10 +16,10 @@ import SelectField from 'material-ui/SelectField';
 import DIYIcon from 'material-ui/svg-icons/content/archive';
 import DIYTitleIcon from 'material-ui/svg-icons/content/archive';
 
-import { renderDialogTitle } from '../../gadgets';
+import { renderDialogTitle, Text } from '../../gadgets';
 import AppbarTheme from '../theme.js';
 
-import { DIY_Deploy_Mode } from '../../../backend/deploy';
+import { SQLite_Database } from '../../../backend/deploy';
 
 const colors = {
   ...AppbarTheme.colors,
@@ -186,13 +186,13 @@ export default class DIYDeploymentManager extends React.Component {
 				onChange={this.setSaveMode}
 			>
 				<RadioButton 
-					value={globals.DIY_Deploy_Mode.disk}
+					value={enums.DIY_Deploy_Mode.disk}
 					label="Disk"
 					iconStyle={{fill: colors.primary}}
 					labelStyle={{fontWeight: 100}}
 				/>
 				<RadioButton 
-					value={globals.DIY_Deploy_Mode.sqlite}
+					value={enums.DIY_Deploy_Mode.sqlite}
 					label="SQLite 3"
 					iconStyle={{fill: colors.primary}}
 					labelStyle={{fontWeight: 100}}
@@ -241,15 +241,19 @@ export default class DIYDeploymentManager extends React.Component {
 						<div style={{display: 'flex', alignItems: 'center'}}>
 							<MenuItem
 								disabled
-								primaryText={`Data Storage Method:`}
+								style={{width: 160}}
+								primaryText={`Data Storage Method`}
 					    	/>
+					    	<MenuItem disabled primaryText={":"} />
 					    	{SaveModeChoices}
 				    	</div>
 						<div style={{display: 'flex'}}>
 							<MenuItem
 								disabled
-								primaryText={`Save Data After:`}
+								style={{width: 160}}
+								primaryText={`Save Data After`}
 					    	/>
+					    	<MenuItem disabled primaryText={":"} />
 					    	<SelectField
 					          onChange={this.setSaveAfter}
 					          id="Choose_Save_After"
@@ -263,24 +267,43 @@ export default class DIYDeploymentManager extends React.Component {
 					          }
 					        </SelectField>
 				    	</div>
-				    	{this.state.tempMode !== globals.DIY_Deploy_Mode.disk ?
+				    	{this.state.tempMode !== enums.DIY_Deploy_Mode.disk ?
 				    		(
 				    			<div style={{display: 'flex'}}>
 									<MenuItem
 										disabled
-										primaryText={`Database Name:`}
+										style={{width: 160}}
+										primaryText={`Database Name`}
 							    	/>
+							    	<MenuItem disabled primaryText={":"} />
+							    	{this.state.tempMode === enums.DIY_Deploy_Mode.sqlite ?
+								    	<Text 
+								    		style={{alignSelf: 'center', padding: 0}}
+								    		text={SQLite_Database.filename} 
+								    	/> :
+								    	null
+								    }
 							    </div>
+							    
 							) :
 							null
 				    	}
-				    	{this.state.tempMode !== globals.DIY_Deploy_Mode.disk ?
+				    	{this.state.tempMode !== enums.DIY_Deploy_Mode.disk ?
 				    		(
 				    			<div style={{display: 'flex'}}>
 									<MenuItem
 										disabled
-										primaryText={`Table Name:`}
+										style={{width: 160}}
+										primaryText={`Table Name`}
 							    	/>
+							    	<MenuItem disabled primaryText={":"} />
+							    	{this.state.tempMode === enums.DIY_Deploy_Mode.sqlite ?
+								    	<Text 
+								    		style={{alignSelf: 'center', padding: 0}}
+								    		text={SQLite_Database.table} 
+								    	/> :
+								    	null
+								    }
 							    </div>
 							) :
 							null

@@ -15,17 +15,6 @@ export function enterTest() {
 	__TEST__ = 1;
 }
 
-const TIMELINE_ID_PREFIX = "TIMELINE-";
-const TRIAL_ID_PREFIX = "TRIAL-";
-
-export const standardizeTimelineId = (id) => {
-	return TIMELINE_ID_PREFIX + id;
-}
-
-export const standardizeTrialId = (id) => {
-	return TRIAL_ID_PREFIX + id;
-}
-
 function getNodeById(state, id) {
 	if (id === null)
 		return null;
@@ -111,8 +100,7 @@ const isEnabled = (parent, isEnabled) => (parent ? parent.enabled && isEnabled :
 export function addTimeline(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let n = new_state.timelineCount++;
-	let id = standardizeTimelineId(n);
+	let id = experimentUtils.genTimelineId();
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -126,7 +114,7 @@ export function addTimeline(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let timeline = createTimeline(id, action.parent, getDefaultTimelineName(n));
+	let timeline = createTimeline(id, action.parent, getDefaultTimelineName());
 	timeline.enabled = isEnabled(parent, timeline.enabled);
 
 	new_state[id] = timeline;
@@ -145,8 +133,7 @@ export function addTimeline(state, action) {
 export function addTrial(state, action) {
 	let new_state = Object.assign({}, state);
 
-	let n = new_state.trialCount++;
-	let id = standardizeTrialId(n);
+	let id = experimentUtils.genTrialId();
 	let parent = getNodeById(new_state, action.parent);
 	if (parent !== null) {
 		// update parent: childrenById
@@ -160,7 +147,7 @@ export function addTrial(state, action) {
 		new_state.mainTimeline.push(id);
 	}
 
-	let trial = createTrial(id, action.parent, getDefaultTrialName(n));
+	let trial = createTrial(id, action.parent, getDefaultTrialName());
 	// check if the trial is enabled
 	trial.enabled = isEnabled(parent, trial.enabled);
 
@@ -318,11 +305,11 @@ function duplicateTimelineHelper(state, dupId, targetId) {
 		// if this descendant is a timeline, call duplicate recusively to
 		// reach all nodes
 		if (experimentUtils.isTimeline(dupTarget)) {
-			newId = standardizeTimelineId(state.timelineCount++);
+			newId = experimentUtils.genTimelineId();
 			dupChild = duplicateTimelineHelper(state, newId, dupTargetId);
 		// if this descendant is a trial, simply duplicated it
 		} else {
-			newId = standardizeTrialId(state.trialCount++);
+			newId = experimentUtils.genTrialId();
 			dupChild = utils.deepCopy(dupTarget);
 		}
 
@@ -349,7 +336,7 @@ export function duplicateTimeline(state, action) {
 	const { targetId } = action;
 
 	let new_state = Object.assign({}, state);
-	let dupId = standardizeTimelineId(new_state.timelineCount++);
+	let dupId = experimentUtils.genTimelineId();
 
 	// duplicate
 	let dup = duplicateTimelineHelper(new_state, dupId, targetId);
@@ -388,7 +375,7 @@ export function duplicateTrial(state, action) {
 
 	// duplicate
 	let new_state = Object.assign({}, state);
-	let dupId = standardizeTrialId(new_state.trialCount++);
+	let dupId = experimentUtils.genTrialId();
 	let dup = utils.deepCopy(target);
 	// get its own id
 	dup.id = dupId;

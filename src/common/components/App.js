@@ -8,34 +8,37 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
 import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
 import Notification from '../containers/Notification';
+import Notifications from './Notifications';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
 
-import GeneralTheme, { prefixer } from './theme.js';
+
+
+import GeneralTheme from './theme.js';
 
 const colors = GeneralTheme.colors;
 
 const style = {
-	App: prefixer({
+	App: utils.prefixer({
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'column',
 	}),
-	AppbarContainer: prefixer({
+	AppbarContainer: utils.prefixer({
 		flexBasis: '56px',
 		maxHeight: '56px',
 		zIndex: 5,
 		boxShadow: '0 2px 5px rgba(0,0,0, .26)',
 	}),
-	AppMainContainer: prefixer({
+	AppMainContainer: utils.prefixer({
 		flexGrow: '1',
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'row',
 	}),
-	AppMainPreview: prefixer({
+	AppMainPreview: utils.prefixer({
 		flexGrow: 1,
 		backgroundColor: colors.background,
 		height: "100%",
@@ -205,6 +208,10 @@ class App extends React.Component {
 				}
 			);
 		}
+
+		this.getNotifcationsClass = () => {
+			return this.Notifications;
+		}
 	}
 
 	componentWillMount() {
@@ -266,6 +273,7 @@ class App extends React.Component {
 						drawerOpened={timelineOrganizerDrawerToggle}
 						drawerOpenCallback={openTimelineOgranizerDrawer}
 	  					drawerCloseCallback={closeTimelineOgranizerDrawer}
+	  					getNotifcations={this.getNotifcationsClass}
 					/>
 				</div>
 	  			<div className="App-Main-Container" style={style.AppMainContainer}>
@@ -273,6 +281,7 @@ class App extends React.Component {
 	  					open={timelineOrganizerDrawerToggle}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
+	  					getNotifcations={this.getNotifcationsClass}
 	  				/>
 	  				<div className="App-Main-Preivew"
 	  					id="main-body"
@@ -288,12 +297,14 @@ class App extends React.Component {
 	  						onInputZoomHeight={onInputZoomHeight}
 	  						onInputZoomWidth={onInputZoomWidth}
 	  						setDisplayZoom={setDisplayZoom}
+	  						getNotifcations={this.getNotifcationsClass}
 		  				/>
 		  				<PreviewWindow
 	  						zoomScale={zoomScale}
 	  						zoomWidth={zoomWidth}
 	  						zoomHeight={zoomHeight}
 	  						sizeRef={el => this.previewWindow = el}
+	  						getNotifcations={this.getNotifcationsClass}
 		  				/>
 	  				</div>
 	  				<TimelineNodeEditor 
@@ -301,9 +312,13 @@ class App extends React.Component {
 	  					width={timelineEditorDrawerWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
+	  					getNotifcations={this.getNotifcationsClass}
 	  				/>
 	  			</div>
 	  			<Notification />
+	  			<Notifications
+	  				onRef={el => this.Notifications = el}
+	  			/>	
   			</div>
   		);
 	}

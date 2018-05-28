@@ -7,14 +7,22 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      'utils': path.resolve(__dirname, '../src/common/utils/index.js'),
-      'globals': path.resolve(__dirname, '../src/common/constants/global.js')
+      utils: path.resolve(__dirname, '../src/common/utils/index.js'),
+      enums: path.resolve(__dirname, '../src/common/constants/enumerators.js'),
+      actions: path.resolve(__dirname, '../src/common/constants/ActionTypes.js'),
+      theme: path.resolve(__dirname, '../src/common/constants/theme.js'),
+      core: path.resolve(__dirname, '../src/common/constants/core.js'),
+      myaws: path.resolve(__dirname, '../src/cloud/index.js')
     }
   },
   plugins: [
     new webpack.ProvidePlugin({
       utils: 'utils',
-      globals: 'globals'
+      enums: 'enums',
+      actions: 'actions',
+      theme: 'theme',
+      core: 'core',
+      myaws: 'myaws'
     })
   ],
   module: {

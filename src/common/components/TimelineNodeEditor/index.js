@@ -21,7 +21,7 @@ import TrialForm from '../../containers/TimelineNodeEditor/TrialForm';
 import TimelineForm from '../../containers/TimelineNodeEditor/TimelineForm';
 
 import './TimelineNodeEditor.css';
-import GeneralTheme, { prefixer } from '../theme.js';
+import GeneralTheme from '../theme.js';
 
 export const WIDTH = 335;
 
@@ -33,11 +33,11 @@ const colors = {
 	labelColor: '#B1B1B1'
 };
 const style = {
-	PluginSelectContainer: prefixer({
+	PluginSelectContainer: utils.prefixer({
 		display: 'flex',
 		alignItems: 'flex-start'
 	}),
-	label: prefixer({
+	label: utils.prefixer({
 		color: colors.labelColor,
 		marginRight: '15px',
 		fontSize: '14px',
@@ -59,7 +59,7 @@ const style = {
 			color: colors.secondary
 		}
 	},
-	TimelineNodeEditor: open => (prefixer({
+	TimelineNodeEditor: open => (utils.prefixer({
 		width: (open) ? `${WIDTH}px` : '0px',
 		flexBasis: 'auto',
 		flexShrink: 0,
@@ -71,7 +71,7 @@ const style = {
 		zIndex: '4',
 		boxShadow: '0 2px 5px rgba(0,0,0, .26)'
 	})),
-	TimelineNodeEditorContainer: prefixer({
+	TimelineNodeEditorContainer: utils.prefixer({
 		height: '100%',
 		width: '100%',
 		position: 'relative',
@@ -79,13 +79,13 @@ const style = {
 		display: 'flex',
 		flexDirection: 'column',
 	}),
-	TimelineNodeEditorContent: prefixer({
+	TimelineNodeEditorContent: utils.prefixer({
 		height: '100%',
 		width: '100%',
 		display: 'flex',
 		flexDirection: 'column',
 	}),
-	TimelineNodeEditorHeader: isTimeline => (prefixer({
+	TimelineNodeEditorHeader: isTimeline => (utils.prefixer({
 		flexBasis: 'auto',
 		height: (isTimeline) ? '60px' : '130px',
 		minHeight: (isTimeline) ? '60px' : '130px',
@@ -94,30 +94,30 @@ const style = {
 		width: '95%',
 	})),
 	TimelineNodeEditorSheet: {
-		root: prefixer({
+		root: utils.prefixer({
 			overflowY: 'auto',
 			overflowX: 'auto',
 			flexGrow: '1',
 		}),
-		List: prefixer({
+		List: utils.prefixer({
 			padding: 5,
 			paddingTop: 0,
 			width: '95%'
 		})
 	},
-	TimelineNodeEditorDragger: prefixer({
+	TimelineNodeEditorDragger: utils.prefixer({
 		height: '100%',
 		width: '8px',
 		minWidth: '8px',
 		flexBasis: '8px',
 		// cursor: 'col-resize',
 	}),
-	TimelineNodeEditorCloseHandleContainer: prefixer({
+	TimelineNodeEditorCloseHandleContainer: utils.prefixer({
 		display: 'none',
 	    top: '50%',
 	    position: 'fixed',
 	}),
-	TimelineNodeEditorCloseHandle: prefixer({
+	TimelineNodeEditorCloseHandle: utils.prefixer({
 		width: 25,
 		left: -5,
 	})

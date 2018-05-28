@@ -138,7 +138,7 @@ export const GuiIgonoredInfoEnum = {
 export const DEFAULT_TIMELINE_PARAM = (function() { 
 	let obj = {
 		timeline_variables: [{
-			"V0": createComplexDataObject(null)
+			"V0": createComplexDataObject(null),
 		}],
 		randomize_order: true,
 		repetitions: null,

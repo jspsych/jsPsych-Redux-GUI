@@ -1,4 +1,3 @@
-
 const colors = {
 	primary: '#24B24C', // green
 	primaryDeep: '#04673A', // deep green

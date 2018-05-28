@@ -18,7 +18,7 @@ import {
   Delimiter,
   listBucketContents
 } from '../s3';
-import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
+
 
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
@@ -62,17 +62,19 @@ try {
 }
 
 ?>`;
+
+export const SQLite_Database = {
+  filename: 'jsPsychData.sqlite3',
+  table: 'jsPsych'
+};
 const SaveData_PHP_SQLite_Code = `
 <?php
-
-// this path should point to your configuration file.
-include('database_config.php');
 
 $post_data = json_decode(file_get_contents('php://input'), true);
 $data_array = $post_data["data_array"];
 
-$database = "data.sqlite3";
-$table = "jspsych";
+$database = "${SQLite_Database.filename}";
+$table = "${SQLite_Database.table}";
 
 try {
   $conn = new PDO("sqlite:$database");
@@ -117,18 +119,14 @@ $conn = null;
 ?>
 `;
 const SaveData_PHP_MySQL_Code = ``;
-export const DIY_Deploy_Mode = {
-  disk: 'save_to_disk_as_csv',
-  sqlite: 'save_to_sqlite',
-  mysql: 'save_to_mysql'
-}
+
 const generateSaveData_PHP_API_Code = (mode) => {
   switch(mode) {
-    case DIY_Deploy_Mode.mysql:
+    case enums.DIY_Deploy_Mode.mysql:
       return SaveData_PHP_MySQL_Code;
-    case DIY_Deploy_Mode.sqlite:
+    case enums.DIY_Deploy_Mode.sqlite:
       return SaveData_PHP_SQLite_Code;
-    case DIY_Deploy_Mode.disk:
+    case enums.DIY_Deploy_Mode.disk:
     default:
       return SaveData_PHP_Disk_API_Code;
   }
@@ -143,7 +141,7 @@ const diyPostHelper = (mode) => {
         console.log(response);
       }
     }
-    request.send(${mode === DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
+    request.send(${mode === enums.DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
   }`
 }
 
@@ -192,11 +190,11 @@ const cloudSaveDataFunctionCode = () => {
 const diySaveDataFunctionCode = (mode) => {
   let data = '';
   switch(mode) {
-    case DIY_Deploy_Mode.mysql:
-    case DIY_Deploy_Mode.sqlite:
+    case enums.DIY_Deploy_Mode.mysql:
+    case enums.DIY_Deploy_Mode.sqlite:
       data = 'jsPsych.data.get().json()';
       break;
-    case DIY_Deploy_Mode.disk:
+    case enums.DIY_Deploy_Mode.disk:
     default:
       data = 'jsPsych.data.get().csv()';
   }
@@ -612,7 +610,7 @@ export const createComplexDataObject = (value=null, func=createFuncObj(), mode=n
 function generateTrialBlock({state, trial, all=false, deploy=false, parameterType, error}) {
   let res = {};
   let parameters = trial.parameters;
-  let parameterInfo = parameterType && injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
+  let parameterInfo = parameterType && utils.injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
 
   for (let key of Object.keys(parameters)) {
     // NOTE: this function currently does not fully operate on nested options
@@ -635,7 +633,7 @@ function generateTrialBlock({state, trial, all=false, deploy=false, parameterTyp
           break;
       }
 
-      if (isValueEmpty(value)) {
+      if (utils.isValueEmpty(value)) {
         error.push(parameterInfo[key].pretty_name);
       }
     }
@@ -681,7 +679,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
             parameterType: desc.parameters.type,
             error: error
           });
-          if (!isValueEmpty(trialBlock)) {
+          if (!utils.isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);
           }
         }
@@ -816,4 +814,73 @@ function stringifyFunc(obj, filePath) {
   let func = obj.ifEval ? obj.code : JSON.stringify(obj.code);
   
   return resolveMediaPath(func, filePath);
+}
+
+
+
+function preprocessData() {
+  let rows = jsPsych.data.get().values(),
+    columns = jsPsych.data.get().uniqueNames(),
+    dataType = {},
+    convertedData = rows.map(() => ({}));
+
+  let isFloat = n => n === +n && n !== (n | 0);
+  let db_type = {
+    text: 'TEXT',
+    integer: 'INTEGER',
+    real: 'REAL',
+    varchar: 'VARCHAR(255)'
+  };
+  for (let col of columns) {
+    let type = null;
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = rows[i],
+        v = row[col],
+        t = typeof v,
+        convertedRow = convertedData[i];
+      switch (t) {
+        case 'object':
+          // Consider it as json string in SQLite
+          type = v ? db_type.text : v;
+          convertedRow[col] = v ? JSON.stringify(v) : v;
+          break;
+        case 'boolean':
+          type = db_type.integer;
+          convertedRow[col] = v ? 1 : 0;
+          break;
+        case 'number':
+          convertedRow[col] = v;
+          if (type !== db_type.real) {
+            type = isFloat(v) ? db_type.real : db_type.integer;
+          }
+          break;
+        case 'string':
+          convertedRow[col] = v;
+          if (type === db_type.text || v.length > 255) {
+            type = db_type.text;
+          } else {
+            type = db_type.varchar;
+          }
+          break;
+        case 'undefined':
+        default:
+          convertedRow[col] = null;
+          break;
+      }
+    }
+
+    if (type !== null) {
+      dataType[col] = type;
+    } else {
+      for (let row of convertedData) {
+        delete row[col];
+      }
+    }
+  }
+
+  return {
+    data: convertedData,
+    dataType: dataType
+  }
 }

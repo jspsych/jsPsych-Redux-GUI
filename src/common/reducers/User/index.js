@@ -22,23 +22,7 @@ export const initState = {
 		identityId: null,
 	},
 
-	osfAccess: [],
-	diyAccess: [],
-
-	// osfToken
-	osfToken: null,
-
 	// osf cloud deploy info
-
-	/********** cloud deployment info **********/
-	/*
-	cloudDeployInfo: {
-		osfNode: null,
-		saveAfter: 0,
-		osfToken: null
-	}
-	*/
-	cloudDeployInfo: {},
 
 	// last
 	lastModifiedExperimentId: null,
@@ -66,8 +50,40 @@ export const initState = {
 	loginMode: LoginModes.signIn,
 	lastModifiedExperimentState: experimentInitState,
 	/********** GUI (Should be Ignored) Information **********/
+
+
+
+	// Cognito Identity Id
+	userId: null, 
+	username: null,
+	email: null,
+
+	// osf access information
+	osfAccess: [],
+
+	// diy access information
+	diyAccess: [],
 };
 
+/**
+* Reducer that sets OSF access infomation
+* @param {Object} action.osfAccess - OSF Access information
+* @return A new userState
+*/
+function setOsfAccess(state, action) {
+	return Object.assign({}, state, {
+		osfAccess: action.osfAccess
+	});
+}
+
+/**
+* Reducer that loads fetched user data from dynamoDB
+* @param {Object} action.userState - fetched user data from dynamoDB
+* @return A new userState
+*/
+function loadUserState(state, action) {
+	return action.userState;
+}
 
 function setLoginWindow(state, action) {
 	let { open, mode } = action;
@@ -75,12 +91,6 @@ function setLoginWindow(state, action) {
 		windowOpen: open,
 		loginMode: (mode === null) ? LoginModes.signIn : mode
 	})
-}
-
-function setOsfAccess(state, action) {
-	return Object.assign({}, state, {
-		osfAccess: action.osfAccess
-	});
 }
 
 export function signInOut(state, action) {
@@ -107,12 +117,16 @@ export default function userReducer(state = initState, action) {
 		case actionTypes.SIGN_IN_OUT:
 			return signInOut(state, action);
 
+		case actions.ActionTypes.Load_User_State:
+			return loadUserState(state, action);
+
 		// cloud
-		case actionTypes.SET_OSF_ACCESS:
+		case actions.ActionTypes.SET_OSF_ACCESS:
 			return setOsfAccess(state, action);
 
 		default:
 			return state;
 	}
 }
+
 

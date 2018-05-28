@@ -3,3 +3,10 @@ export const DIY_Deploy_Mode = {
   sqlite: 'save_to_sqlite',
   mysql: 'save_to_mysql'
 }
+
+export const Login_Modes = {
+	signIn: 0,
+	register: 1,
+	verification: 2,
+	forgotPassword: 3,
+}

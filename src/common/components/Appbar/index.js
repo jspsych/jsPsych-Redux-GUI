@@ -26,7 +26,6 @@ import ConfirmationDialog from '../Notification/ConfirmationDialog';
 import { renderDialogTitle } from '../gadgets';
 
 import AppbarTheme from './theme.js';
-import { prefixer } from '../theme.js';
 
 const colors = {
   ...AppbarTheme.colors,
@@ -34,7 +33,7 @@ const colors = {
 }
 
 const style = {
-  Appbar: prefixer({
+  Appbar: utils.prefixer({
     width: '100%',
     height: '100%',
     margin: '0 auto',
@@ -46,12 +45,12 @@ const style = {
   DrawerToggle: {
     iconColor: AppbarTheme.AppbarIcon,
   },
-  Toolbar: prefixer({
+  Toolbar: utils.prefixer({
     display: 'flex',
     flexDirection: 'row',
     flexGrow: 1,
   }),
-  ToolbarSeparator: prefixer({
+  ToolbarSeparator: utils.prefixer({
     alignSelf: 'center',
     backgroundColor: 'white',
     marginLeft: '0px',
@@ -75,13 +74,13 @@ const style = {
       color: colors.primaryDeep
     },
     SaveAs: {
-      labelStyle: prefixer({
+      labelStyle: utils.prefixer({
         textTransform: "none",
         color: colors.primary
       })
     },
     Cancel: {
-      labelStyle: prefixer({
+      labelStyle: utils.prefixer({
         textTransform: "none",
         color: colors.secondary
       })
@@ -162,12 +161,6 @@ export default class Appbar extends React.Component {
       showCloseButton: false,
 
       experimentName: this.props.experimentName
-    }
-
-    this.updateExperimentName = (e, v) => {
-      this.setState({
-        experimentName: v
-      })
     }
 
     this.setPerforming = (p) => {

@@ -18,7 +18,6 @@ Before or after all pushing and pulling, the state will be processed by redux st
 
 
 import { connect } from 'react-redux';
-import deepEqual from 'deep-equal';
 import * as userActions from '../../actions/userActions' ;
 import * as backendActions from '../../actions/backendActions' ;
 import * as Errors from '../../constants/Errors' ;
@@ -68,7 +67,7 @@ export const signIn = (dispatch) => {
 			// update user data locally
 			dispatch(backendActions.signInPullAction(data, null));
 		}).then(() => {
-			let anyChange = !deepEqual(experimentInitState, getState().experimentState);
+			let anyChange = !utils.deepEqual(experimentInitState, getState().experimentState);
 			// if there is any change
 			if (anyChange) {
 				// almost same logic with signUp since we are
@@ -111,7 +110,7 @@ Save case: create account.
 */
 const signUp = (dispatch) => {
 	dispatch((dispatch, getState) => {
-		let anyChange = !deepEqual(experimentInitState, getState().experimentState);
+		let anyChange = !utils.deepEqual(experimentInitState, getState().experimentState);
 		dispatch(backendActions.signUpPushAction(anyChange));
 		signUpPush(getState()).then(() => {
 			notifySuccessBySnackbar(dispatch, "Saved !");

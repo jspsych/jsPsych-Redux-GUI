@@ -17,7 +17,7 @@ const Upload_Limit_MB = 100;
 const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
 
 const updateFileList = (dispatch, feedback = null) => {
-	dispatch((dispatch, getState) => {
+	return dispatch((dispatch, getState) => {
 		if (!getState().experimentState.experimentId) return;
 		$listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
 			dispatch(editorActions.updateMediaAction(data));
@@ -42,7 +42,7 @@ const uploadFiles = (dispatch, files, setState, progressHook) => {
 			return;
 		}
 	}
-	dispatch((dispatch, getState) => {
+	return dispatch((dispatch, getState) => {
 		let params = files.map(f => generateUploadParam({
 			Body: f, 
 			Key: [getState().userState.user.identityId,
@@ -68,7 +68,7 @@ const uploadFiles = (dispatch, files, setState, progressHook) => {
 }
 
 const deleteFiles = (dispatch, filePaths) => {
-	$deleteFiles(filePaths).then((data) => {
+	return $deleteFiles(filePaths).then((data) => {
 		updateFileList(dispatch, "Deleted !");
 	}, (err) => {
 		notify.notifyErrorByDialog(dispatch, err.message);
@@ -76,7 +76,7 @@ const deleteFiles = (dispatch, filePaths) => {
 }
 
 const checkBeforeOpen = (dispatch, handleOpen) => {
-	dispatch((dispatch, getState) => {
+	return dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.user.identityId) {
 			notify.notifyWarningBySnackbar(dispatch, 'You need to sign in before uploading your resources !');
@@ -111,10 +111,10 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	uploadFiles: (files, setState, progressHook) => { uploadFiles(dispatch, files, setState, progressHook); },
-	updateFileList: () => { updateFileList(dispatch); },
-	deleteFiles: (filePaths) => { deleteFiles(dispatch, filePaths); },
-	checkBeforeOpen: (handleOpen) => { checkBeforeOpen(dispatch, handleOpen); },
+	uploadFiles: (files, setState, progressHook) => uploadFiles(dispatch, files, setState, progressHook),
+	updateFileList: () => updateFileList(dispatch),
+	deleteFiles: (filePaths) => deleteFiles(dispatch, filePaths),
+	checkBeforeOpen: (handleOpen) => checkBeforeOpen(dispatch, handleOpen),
 	notifySuccessBySnackbar: (msg) => { notify.notifySuccessBySnackbar(dispatch, msg); },
 	notifyWarningByDialog: (msg) => { notify.notifyWarningByDialog(dispatch, msg); },
 	notifyWarningBySnackbar: (msg) => { notify.notifyWarningBySnackbar(dispatch, msg); }

@@ -10,4 +10,5 @@ if (typeof Promise === 'undefined') {
 	AWS.config.setPromisesDependency(Promise);
 }
 
-module.exports = AWS;
+export default AWS;
+

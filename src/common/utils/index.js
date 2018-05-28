@@ -1,6 +1,7 @@
 import Prefixer from 'inline-style-prefixer';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { cloneDeep, isEqual } from 'lodash';
 var short = require('short-uuid');
 const _prefixer = new Prefixer()
 
@@ -20,47 +21,9 @@ if (!Array.prototype.move) {
   };
 }
 
-/*
-Simple utils.deepCopy,
-Target can be
-object
-boolean
-number
-array
-undefined
+export const deepCopy = cloneDeep;
 
-*/
-export function deepCopy(target) {
-	if (!target) return target;
-
-	let clone = target;
-
-	let type = typeof(target);
-	switch(type) {
-		case "boolean":
-		case "number":
-		case "string":
-			return clone;
-		case "object":
-			if (Array.isArray(clone)) {
-				clone = [];
-				for (let item of target) {
-					clone.push(deepCopy(item));
-				}
-			} else {
-				clone = {};
-				let keys = Object.keys(target);
-				for (let key of keys) {
-					clone[key] = deepCopy(target[key]);
-				}
-			}
-			return clone;
-		case 'function':
-			return clone;
-		default:
-			throw new TypeError(type + " not supported.");
-	}
-}
+export const deepEqual = isEqual;
 
 export const toNull = (s) => ((s === '') ? null : s);
 
