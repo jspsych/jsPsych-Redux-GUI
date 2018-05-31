@@ -12,7 +12,8 @@ module.exports = {
       actions: path.resolve(__dirname, '../src/common/constants/ActionTypes.js'),
       theme: path.resolve(__dirname, '../src/common/constants/theme.js'),
       core: path.resolve(__dirname, '../src/common/constants/core.js'),
-      myaws: path.resolve(__dirname, '../src/cloud/index.js')
+      myaws: path.resolve(__dirname, '../src/cloud/index.js'),
+      errors: path.resolve(__dirname, '../src/common/constants/Errors.js'),
     }
   },
   plugins: [
@@ -22,7 +23,8 @@ module.exports = {
       actions: 'actions',
       theme: 'theme',
       core: 'core',
-      myaws: 'myaws'
+      myaws: 'myaws',
+      errors: 'errors'
     })
   ],
   module: {

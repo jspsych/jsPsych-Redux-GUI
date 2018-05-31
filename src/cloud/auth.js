@@ -20,16 +20,7 @@ Amplify.configure({
 * @return {Promise} - A promise that resolves to an object that contains successfully signed in user's info
 */
 export const signIn = ({username, password}) => {
-	return Auth.signIn(username, password).then(setCredentials).then((credentials) => {
-		return Auth.currentUserInfo().then(info => {
-			return {
-				identityId: info.id,
-				username: info.username,
-				verified: info.attributes.email_verified,
-				email: info.attributes.email
-			}
-		});
-	});
+	return Auth.signIn(username, password).then(setCredentials).then(getCurrentUserInfo);
 }
 
 /**
@@ -107,4 +98,22 @@ export const resendVerification = ({username}) => {
 */
 export const confirmSignUp = ({username, code}) => {
 	return Auth.confirmSignUp(username, code)
+}
+
+/**
+* Wrapped Auth.currentUserInfo function
+* @return {Promise} - A promise that resolves to an object that contains successfully signed in user's info
+*/
+export const getCurrentUserInfo = () => {
+	return Auth.currentUserInfo().then(info => {
+		if (info === null) {
+			return null;
+		}
+		return {
+			identityId: info.id,
+			username: info.username,
+			verified: info.attributes.email_verified,
+			email: info.attributes.email
+		}
+	});
 }
