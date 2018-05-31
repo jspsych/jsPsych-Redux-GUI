@@ -1,121 +1,89 @@
-/*
-This file handles firing flows of actions.
-The important two are 1. signIn 2. signUp
-
-1. signIn
-This flow of actions involves both pulling and pushing.
-It is called when sign in happens as long as it is not user's first time sign in.
-
-2. signUp
-This flow of actions involves pushing only.
-It is called after user is verified and gets automatically signed in.
-It involves pushing only because database does not have any information of this newly
-registered user.
-Note that its code will be borrowed by signIn when user does some change and then signs in.
-
-Before or after all pushing and pulling, the state will be processed by redux store.
-*/
-
-
 import { connect } from 'react-redux';
 import Authentications from '../../components/Authentications';
 
 
-
 export const load = (dispatch) => {
 	return dispatch((dispatch, getState) => {
-		return myaws.aws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
+		return myaws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
+			// break the promise chain when there is no user signed in
 			if (data === null) {
 				throw new errors.NoCurrentUserException();
 			} 
 			if (!data.verified) {
 				throw new errors.NotVerifiedException();
 			} else {
-				let { identityId } = data;
+				let { userId } = data;
+				return Promise.all([
+					myaws.DynamoDB.getLastModifiedExperimentOf(userId),
+					myaws.DynamoDB.getUserDate(userId)
+				]).then(results => {
+					let [ experimentState, userState ] = results;
 
+					console.log(results)
+					/*
+						To Do
+						Dispatch to Redux Store
+					*/
+				})
 			}
-		}).catch(errors.NoCurrentUserException)
+		}).catch(err => {
+			// keep the chaining by throwing all other error except 
+			// NoCurrentUserException
+			if (!(err instanceof errors.NoCurrentUserException)) {
+				throw err;
+			}
+		})
 	})
 }
 
-/*
-Save/fetch case: sign in .
 
-0. Process state
-1. update user data locally
-if there is any change in experiment:
-	2. update user data remotely
-	3. update experiment data remotely
-else:
-	2. update experiment data locally
-*/
-export const signIn = (dispatch) => {
-	dispatch((dispatch, getState) => {
-		// sign in handled by cognito first
-		// sync user state from local storage
-		dispatch(userActions.signInAction());
+export const signIn = ({dispatch, username, password, firstSignIn=false}) => {
+	return myaws.Auth.signIn({username, password}).then((userInfo) => {
+		if (!userInfo.verified) {
+			throw new errors.NotVerifiedException();
+		}
 
-		// fetch user data
-		signInFetchUserData(
-			getState().userState.user.identityId
-		).then((data) => {
-			if (!data) {
-				throw Errors.internetError;
-			}
-			// update user data locally
-			dispatch(backendActions.signInPullAction(data, null));
-		}).then(() => {
-			let anyChange = !utils.deepEqual(experimentInitState, getState().experimentState);
-			// if there is any change
-			if (anyChange) {
-				// almost same logic with signUp since we are
-				// 1. updating user data anyway (due to new experiment)
-				// 2. inserting a new experiment to data base as well
-				dispatch(backendActions.signUpPushAction(anyChange));
-				signUpPush(getState()).then(() => {
-					notifySuccessBySnackbar(dispatch, "Saved !");
-				}, (err) => {
-					notifyErrorByDialog(dispatch, err.message);
-				});
-			} else {
-				// if there is no change
-				// 1. Fetch last editted experiment data
-				// 2. Update experiment state locally
-				let memorizedId = getState().userState.lastModifiedExperimentId;
-				if (!memorizedId) return;
-				fetchExperimentById(
-					memorizedId,
-				).then((data) => {
-					if (!data) {
-						throw Errors.internetError;
-					}
-					dispatch(backendActions.signInPullAction(null, data));
-				}).catch((err) => {
-					notifyErrorByDialog(dispatch, err.message);
-				});
-			}
-		}).catch((err) => {
-			notifyErrorByDialog(dispatch, err.message);
-		});
-	});
+		if (firstSignIn) {
+			/*
+			To do
+
+			update redux state
+			*/
+			return myaws.DynamoDB.saveUserData(getState().userState);
+		}
+		return Promise.resolve();
+	}).then(() => {
+		/*
+		To do
+
+		Check if user has changed experiment, if yes save if
+		*/
+		let anyChange = false;
+		if (anyChange) {
+			/*
+			To do
+
+			update redux state
+			*/
+			return myaws.DynamoDB.saveExperiment(getState().experimentState);
+		} else {
+			return Promise.resolve();
+		}
+	}).then(() => {
+		return load(dispatch);
+	})
 }
-/*
-Save case: create account.
 
-0. Process state
-1. inserting new user to database
-2. inserting new experiment if there is one
-*/
-const signUp = (dispatch) => {
-	dispatch((dispatch, getState) => {
-		let anyChange = !utils.deepEqual(experimentInitState, getState().experimentState);
-		dispatch(backendActions.signUpPushAction(anyChange));
-		signUpPush(getState()).then(() => {
-			notifySuccessBySnackbar(dispatch, "Saved !");
-		}, (err) => {
-			notifyErrorByDialog(dispatch, err.message);
-		});
-	});
+const signUp = ({dispatch, username, password, email}) => {
+	return myaws.Auth.signUp({username, password, email}).then(() => {
+		return signIn({dispatch, username, password});
+	})
+}
+
+const verify = ({dispatch, username, code}) => {
+	return myaws.Auth.confirmSignUp({username, code}).then(() => {
+		return load(dispatch);
+	})
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -124,6 +92,9 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+	signIn: ({...args}) => signIn({dispatch, ...args}),
+	signUp: ({...args}) => signUp({dispatch, ...args}),
+	verify: ({...args}) => verify({dispatch, ...args})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Authentications);

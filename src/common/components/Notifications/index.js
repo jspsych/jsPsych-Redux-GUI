@@ -10,7 +10,6 @@ import Success from 'material-ui/svg-icons/action/check-circle';
 import Warning from 'material-ui/svg-icons/alert/warning';
 import Fail from 'material-ui/svg-icons/alert/error';
 import {
-	grey50 as dialogBodyColor,
   	green500 as successColor,
   	yellow500 as warningColor,
   	red500 as errorColor

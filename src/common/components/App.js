@@ -8,6 +8,7 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 
 import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
 import Notification from '../containers/Notification';
+import Authentications from '../containers/Authentications';
 import Notifications from './Notifications';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
@@ -212,6 +213,10 @@ class App extends React.Component {
 		this.getNotifcationsClass = () => {
 			return this.Notifications;
 		}
+
+		this.getAuthenticationsClass = () => {
+			return this.Authentications;
+		}
 	}
 
 	componentWillMount() {
@@ -274,6 +279,7 @@ class App extends React.Component {
 						drawerOpenCallback={openTimelineOgranizerDrawer}
 	  					drawerCloseCallback={closeTimelineOgranizerDrawer}
 	  					getNotifcations={this.getNotifcationsClass}
+	  					getAuthentications={this.getAuthenticationsClass}
 					/>
 				</div>
 	  			<div className="App-Main-Container" style={style.AppMainContainer}>
@@ -282,6 +288,7 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  					getNotifcations={this.getNotifcationsClass}
+	  					getAuthentications={this.getAuthenticationsClass}
 	  				/>
 	  				<div className="App-Main-Preivew"
 	  					id="main-body"
@@ -313,12 +320,16 @@ class App extends React.Component {
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  					getNotifcations={this.getNotifcationsClass}
+	  					getAuthentications={this.getAuthenticationsClass}
 	  				/>
 	  			</div>
 	  			<Notification />
 	  			<Notifications
 	  				onRef={el => this.Notifications = el}
 	  			/>	
+	  			<Authentications 
+	  				onRef={el => this.Authentications = el}
+	  			/>
   			</div>
   		);
 	}

@@ -10,3 +10,10 @@ export const Login_Modes = {
 	verification: 2,
 	forgotPassword: 3,
 }
+
+export const Notify_Type = {
+	success: "success",
+	warning: "warning",
+	error: "error",
+	confirm: "confirm"
+}

@@ -45,21 +45,27 @@ export const getDefaultInitDiyDeployInfo = () => ({
  * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
 */
 export const initState = {
-	experimentName: "Untitled Experiment",
-	experimentId: null,
-
 	owner: null,
  	private: true,
-
 	experimentDetails: {
 		createdDate: null,
 		lastEditDate: null,
 		description: null,
 	},
-
-	/********** experiment contents **********/
 	previewId: null,
 
+	/****************************************/ 
+
+	experimentName: "Untitled Experiment",
+	experimentId: null,
+	description: null,
+
+	createDate: null,
+	lastModifiedDate: null,
+	ownerId: null,
+	isPublic: false,
+
+	/********** experiment contents **********/
 	mainTimeline: [],
 	jsPsychInit: jsPsychInit.initState,
 	/********** experiment contents **********/

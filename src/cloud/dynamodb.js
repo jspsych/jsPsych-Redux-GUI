@@ -96,7 +96,7 @@ function putItemToExperimentTable(data) {
 */
 function extractUserData(userState) {
 	return {
-		userId: userState.identityId,
+		userId: userState.userId,
 		fetch: userState
 	};
 }
@@ -150,14 +150,17 @@ export function getExperimentById(id) {
 }
 
 /**
-* Wrapper function that fetch experiment data by id
-* @param {string} id - experiment id
-* @return {Promise} - A Promise that resolves to DynamoDB response if success
+* Wrapper function that fetch experiments by userid
+* @param {string} id - user id
+* @return {Promise} - A Promise that resolves to an array of experiments owned by targeted user (userId) if success
 */
 export function getExperimentsOf(userId) {
 	let param = {
 		TableName: Experiment_Table_Name,
 		KeyConditionExpression: "#ownerid = :ownerid",
+		AttributesToGet: [
+			'fetch'
+		],
 		ExpressionAttributeNames: {
 			"#ownerId": "ownerId"
 		},
@@ -165,7 +168,21 @@ export function getExperimentsOf(userId) {
 			":ownerId": userId
 		}
 	};
-	return queryItem(param);
+	return queryItem(param).then(data => {
+		let { Items } = data;
+		return Items.map(item => item.fetch);
+	});
+}
+
+/**
+* Wrapper function that fetch an experiments by userid and largest last modified date
+* @param {string} id - user id
+* @return {Promise} - A Promise that resolves to last modified experiment of targeted user (userId) if success
+*/
+export function getLastModifiedExperimentOf(userId) {
+	return getExperimentsOf(userId).then(experiments => {
+		return Math.max.apply(Math, experiments.map(experiment => experiment.lastModifiedDate));
+	})
 }
 
 /**

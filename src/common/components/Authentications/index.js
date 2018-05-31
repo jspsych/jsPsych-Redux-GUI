@@ -121,32 +121,6 @@ export default class Authentications extends React.Component {
 			this.setLoginMode(AUTH_MODES.forgetPassword)
 		}
 
-		this.notifyErrorByDialog = (m) => {
-			this.props.getNotifcations.notifyErrorByDialog(m);
-		}
-
-		// isFirstTime denotes if it is first signIn after signing up
-		this.handleSignIn = (onFailure, isFirstTime=false) => {
-			var authenticationData = {
-				Username: this.state.username,
-				Password: this.state.password
-			}
-			
-			login(this.state.username,
-				authenticationData,
-				() => {
-					if (isFirstTime) {
-						// signUpPush flow, see container
-						this.props.signUp();
-					} else {
-						// signIn pull, see container
-						this.props.signIn();
-					}
-					this.clearField();
-				},
-				onFailure);
-		}
-
 		this.renderContent = () => {
 			let {
 				username,
@@ -159,7 +133,6 @@ export default class Authentications extends React.Component {
 				setUserName,
 				setPassword,
 				setEmail,
-				handleSignIn,
 				setLoginMode,
 				popVerification,
 				clearField,
@@ -191,9 +164,9 @@ export default class Authentications extends React.Component {
 					      		signIn={this.props.signIn}
 					      		setUserName={setUserName}
 					      		setPassword={setPassword}
-					      		notifyErrorByDialog={notifyErrorByDialog}
 					      		username={username}
 					      		password={password}
+					      		getNotifications={this.props.getNotifcations}
 					      	/>
 					      </Tab>
 					      <Tab label={"Create a new account"} 
@@ -214,7 +187,8 @@ export default class Authentications extends React.Component {
 					      		setUserName={setUserName}
 					      		setPassword={setPassword}
 					      		setEmail={setEmail}
-					      		notifyErrorByDialog={notifyErrorByDialog}
+					      		signUp={this.props.signUp}
+					      		getNotifications={this.props.getNotifcations}
 					      	/>
 					      </Tab>
 					   	</Tabs>
@@ -225,7 +199,8 @@ export default class Authentications extends React.Component {
 						<VerificationWindow 
 							username={username}
 							signIn={this.props.signIn}
-							notifyErrorByDialog={notifyErrorByDialog}
+							verify={this.props.verify}
+							getNotifications={this.props.getNotifcations}
 						/>
 					)
 				case AUTH_MODES.forgetPassword:
@@ -237,7 +212,7 @@ export default class Authentications extends React.Component {
 							setUserName={setUserName}
 							setPassword={setPassword}
 							signIn={this.props.signIn}
-					      	notifyErrorByDialog={notifyErrorByDialog}
+					      	getNotifications={this.props.getNotifcations}
 						/>
 
 					)
@@ -247,6 +222,13 @@ export default class Authentications extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+    	this.props.onRef(this);
+  	}
+  
+  	componentWillUnmount() {
+    	this.props.onRef(null);
+  	}
 
 	render() {
 
@@ -269,8 +251,5 @@ export default class Authentications extends React.Component {
 			</Dialog>
 		)
 	}
-
-
-	
 }
 

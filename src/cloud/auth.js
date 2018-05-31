@@ -17,7 +17,7 @@ Amplify.configure({
 * Wrapped Auth.signIn function
 * @param {string} username - username
 * @param {string} password - password
-* @return {Promise} - A promise that resolves to an object that contains successfully signed in user's info
+* @return {Promise} - A promise that resolves to current user info if successful
 */
 export const signIn = ({username, password}) => {
 	return Auth.signIn(username, password).then(setCredentials).then(getCurrentUserInfo);
@@ -37,7 +37,7 @@ export const setCredentials = () => {
 }
 
 /**
-* Wrapped Auth.forgetPasswordSubmit function
+* Wrapped Auth.signUp function
 * @param {string} username - username
 * @param {string} password - password
 * @param {Object} attributes - user attributes
@@ -50,7 +50,7 @@ export const signUp = ({username, password, attributes={}, validationData=[]}) =
         password: password,
         attributes: attributes,
         validationData: validationData
-    }).then(data => data);
+    });
 }
 
 /**
@@ -110,7 +110,7 @@ export const getCurrentUserInfo = () => {
 			return null;
 		}
 		return {
-			identityId: info.id,
+			userId: info.id,
 			username: info.username,
 			verified: info.attributes.email_verified,
 			email: info.attributes.email
