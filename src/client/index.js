@@ -23,10 +23,6 @@ window.addEventListener('load', () => {
 			signIn(store.dispatch);
 		}
 	});
-	utils.notifications.notifyWarningByDialog({
-		dispatch: store.dispatch,
-		message: "test"
-	})
 });
 
 window.addEventListener('beforeunload', (e) => {

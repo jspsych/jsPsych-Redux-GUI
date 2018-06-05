@@ -19,11 +19,19 @@ export const load = (dispatch) => {
 				]).then(results => {
 					let [ experimentState, userState ] = results;
 
-					console.log(results)
-					/*
-						To Do
-						Dispatch to Redux Store
-					*/
+					console.log(results);
+
+					// load states
+					if (experimentState) {
+						dispatch(actions.actionCreator({
+							type: actions.ActionTypes.LOAD_EXPERIMENT,
+							experimentState
+						}));
+					}
+					dispatch(actions.actionCreator({
+						type: actions.ActionTypes.LOAD_USER,
+						userState
+					}));
 				})
 			}
 		}).catch(err => {
@@ -36,36 +44,39 @@ export const load = (dispatch) => {
 	})
 }
 
+export const saveExperiment = ({dispatch}) => {
+	return dispatch((dispatch, getState) => {
+		let { userState } = getState();
+		dispatch(actions.actionCreator({
+			type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT,
+			userId: userState.userId
+		}));
+		return myaws.DynamoDB.saveExperiment(getState().experimentState);
+	})
+}
 
-export const signIn = ({dispatch, username, password, firstSignIn=false}) => {
+const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 	return myaws.Auth.signIn({username, password}).then((userInfo) => {
 		if (!userInfo.verified) {
 			throw new errors.NotVerifiedException();
 		}
 
+		// Save/Register the user state to DynamoDB 
 		if (firstSignIn) {
-			/*
-			To do
-
-			update redux state
-			*/
-			return myaws.DynamoDB.saveUserData(getState().userState);
+			let { userId, username, email } = userInfo
+			return myaws.DynamoDB.saveUserData({
+				...core.getInitUserState,
+				userId,
+				username,
+				email
+			});
 		}
 		return Promise.resolve();
 	}).then(() => {
-		/*
-		To do
 
-		Check if user has changed experiment, if yes save if
-		*/
-		let anyChange = false;
+		let anyChange = utils.deepEqual(core.getInitExperimentState, getState().experimentState);
 		if (anyChange) {
-			/*
-			To do
-
-			update redux state
-			*/
-			return myaws.DynamoDB.saveExperiment(getState().experimentState);
+			return saveExperiment({dispatch});
 		} else {
 			return Promise.resolve();
 		}
@@ -76,7 +87,7 @@ export const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 
 const signUp = ({dispatch, username, password, email}) => {
 	return myaws.Auth.signUp({username, password, email}).then(() => {
-		return signIn({dispatch, username, password});
+		return signIn({dispatch, username, password, firstSignIn: true});
 	})
 }
 

@@ -51,18 +51,9 @@ export const initState = {
 	lastModifiedExperimentState: experimentInitState,
 	/********** GUI (Should be Ignored) Information **********/
 
+	/////////////////////////////////////////////////////////////////////
 
-
-	// Cognito Identity Id
-	userId: null, 
-	username: null,
-	email: null,
-
-	// osf access information
-	osfAccess: [],
-
-	// diy access information
-	diyAccess: [],
+	...core.getInitUserState
 };
 
 /**
@@ -117,7 +108,7 @@ export default function userReducer(state = initState, action) {
 		case actionTypes.SIGN_IN_OUT:
 			return signInOut(state, action);
 
-		case actions.ActionTypes.Load_User_State:
+		case actions.ActionTypes.LOAD_USER:
 			return loadUserState(state, action);
 
 		// cloud

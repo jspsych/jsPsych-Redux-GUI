@@ -52,3 +52,4 @@ export function injectJsPsychUniversalPluginParameters(obj={}) {
 }
 
 export const withDnDContext = DragDropContext(HTML5Backend);
+

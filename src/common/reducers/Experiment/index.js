@@ -52,33 +52,16 @@ export const initState = {
 		lastEditDate: null,
 		description: null,
 	},
-	previewId: null,
-
-	/****************************************/ 
-
-	experimentName: "Untitled Experiment",
-	experimentId: null,
-	description: null,
-
-	createDate: null,
-	lastModifiedDate: null,
-	ownerId: null,
-	isPublic: false,
-
-	/********** experiment contents **********/
-	mainTimeline: [],
-	jsPsychInit: jsPsychInit.initState,
-	/********** experiment contents **********/
 
 	/********** S3 Mappings **********/
 	media: {},
-	/********** S3 Mappings **********/
 
-	/********** Deployment Information **********/
-	cloudDeployInfo: getDefaultInitCloudDeployInfo(),
+	previewId: null,
 
-	diyDeployInfo: getDefaultInitDiyDeployInfo(),
-	/********** Deployment Information **********/
+
+	/****************************************/ 
+
+	...core.getInitExperimentState(),
 }
 
 /**@function(state, action)
@@ -105,6 +88,33 @@ const setDIYDeployInfo = (state, action) => {
 	return Object.assign({}, state, {
 		diyDeployInfo: action.diyDeployInfo
 	})
+}
+
+/**@function(state, action)
+*
+* @param {Object} action.experimentState
+*
+*/
+const loadExperiment = (state, action) => {
+	return action.experimentState;
+}
+
+const prepareSaveExperiment = (state, action) => {
+	let new_state = utils.deepCopy(state);
+
+	// register experiment to the user if it is new experiment
+	if (new_state.ownerId === null) {
+		new_state.ownerId = action.userId
+	}
+
+	let now = Date.now();
+	// record create date if it is new experiment
+	if (new_state.createDate === null) {
+		new_state.createDate = now;
+	}
+	// record last modified date
+	new_state.lastModifiedDate = now;
+	return new_state;
 }
 
 
@@ -152,6 +162,10 @@ export default function experimentReducer(state=initState, action) {
 		// Main
 		case actions.ActionTypes.SET_EXPERIMENT_NAME:
 			return setExperimentName(state, action);
+		case actions.ActionTypes.LOAD_EXPERIMENT:
+			return loadExperiment(state, action);
+		case actions.ActionTypes.PREPARE_SAVE_EXPERIMENT:
+			return prepareSaveExperiment(state, action);
 
 		// Deploy
 		case actions.ActionTypes.SET_CLOUD_DEPLOY_INFO:

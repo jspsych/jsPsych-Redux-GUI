@@ -24,6 +24,9 @@ export const ActionTypes = {
 
 	// main
 	SET_EXPERIMENT_NAME: "SET_EXPERIMENT_NAME",
+	LOAD_EXPERIMENT: "LOAD_EXPERIMENT",
+	LOAD_USER: "LOAD_USER",
+	PREPARE_SAVE_EXPERIMENT: "PREPARE_SAVE_EXPERIMENT",
 
 	// editor
 	SET_PLUGIN_PARAMTER: "SET_PLUGIN_PARAMTER",
@@ -91,7 +94,7 @@ export const ActionTypes = {
 }
 
 
-export const emitAction = ({type, ...args}) => ({
+export const actionCreator = ({type, ...args}) => ({
 	type: type,
 	...args
 })

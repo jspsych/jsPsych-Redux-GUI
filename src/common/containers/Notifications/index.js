@@ -3,19 +3,19 @@ import Notifications from '../../components/Notifications';
 
 
 const handleDialogClose = ({dispatch}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_DIALOG_CLOSE,
 	}))
 }
 
 const handleSnackbarClose = ({dispatch}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_SNACKBAR_CLOSE,
 	}))
 }
 
 export const notifySuccessByDialog = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_SUCCESS_DIALOG, 
 		notifyType: enums.Notify_Type.success,
 		message
@@ -23,7 +23,7 @@ export const notifySuccessByDialog = ({dispatch, message}) => {
 }
 
 export const notifyWarningByDialog = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_WARNING_DIALOG, 
 		notifyType: enums.Notify_Type.warning,
 		message
@@ -31,7 +31,7 @@ export const notifyWarningByDialog = ({dispatch, message}) => {
 }
 
 export const notifyErrorByDialog = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_ERROR_DIALOG, 
 		notifyType: enums.Notify_Type.error,
 		message
@@ -39,7 +39,7 @@ export const notifyErrorByDialog = ({dispatch, message}) => {
 }
 
 export const notifySuccessBySnackbar = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_SUCCESS_SNACKBAR, 
 		notifyType: enums.Notify_Type.success,
 		message
@@ -47,7 +47,7 @@ export const notifySuccessBySnackbar = ({dispatch, message}) => {
 }
 
 export const notifyWarningBySnackbar = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_WARNING_SNACKBAR, 
 		notifyType: enums.Notify_Type.warning,
 		message
@@ -55,7 +55,7 @@ export const notifyWarningBySnackbar = ({dispatch, message}) => {
 }
 
 export const notifyErrorBySnackbar = ({dispatch, message}) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.NOTIFY_ERROR_SNACKBAR, 
 		notifyType: enums.Notify_Type.error,
 		message
@@ -73,7 +73,7 @@ export const popUpConfirmation = (args = {
 	withExtraCare: false,
 	extraCareText: "Yes, I know what I am doing."
 }) => {
-	dispatch(actions.emitAction({
+	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.POP_UP_CONFIRM, 
 		notifyType: enums.Notify_Type.confirm,
 		...args

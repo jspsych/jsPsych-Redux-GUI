@@ -17,3 +17,11 @@ export const Notify_Type = {
 	error: "error",
 	confirm: "confirm"
 }
+
+
+/**
+ * @enum {string}
+ * @constant
+ * @default
+*/
+export const jsPsych_Display_Element = "jsPsych-Window";
