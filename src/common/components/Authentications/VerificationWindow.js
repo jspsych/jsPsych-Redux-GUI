@@ -9,12 +9,9 @@ import Snackbar from 'material-ui/Snackbar';
 import Verified from 'material-ui/svg-icons/action/verified-user';
 import Sent from 'material-ui/svg-icons/action/check-circle';
 
-import { verify, resendVerification} from '../../backend/cognito';
-
-import GeneralTheme from '../theme.js';
 
 const colors = {
-  ...GeneralTheme.colors,
+  ...theme.colors,
   verifyColor: '#4CAF50'
 }
 
@@ -22,9 +19,9 @@ const style = {
   VerifyIcon: {
     colors: colors.verifyColor,
   },
-  TextFieldFocusStyle: {
-    ...GeneralTheme.TextFieldFocusStyle()
-  },
+  TextFieldFocusStyle: (error=false) => ({
+    ...GeneralTheme.TextFieldFocusStyle(error)
+  }),
   Actions: {
     Wait: {
       color: colors.secondary
@@ -95,20 +92,22 @@ export default class VerificationWindow extends React.Component {
     }
 
     this.handleVerification = () => {
-      this.handleModeChange(Modes.processing);
-      verify(this.props.username, this.state.code, (err, result) => {
-        if (err) {
-          this.handleModeChange(Modes.ready);
-          this.handleCodeError(err.message);
-          return;
-        }
-        if (result === 'SUCCESS') {
-          this.handleModeChange(Modes.success);
-          this.handleCodeError('');
-          this.props.signIn((err) => {
-            this.props.notifyError(err.message);
-          }, true)
-        }
+      this.setState({
+        mode: Modes.processing
+      });
+      myaws.Auth.confirmSignUp({
+        username: this.props.username, 
+        code: this.state.code.trim()
+      }).then(() => {
+        this.setState({
+          mode: Modes.success
+        });
+        return this.props.load();
+      }).catch((err) => {
+        this.setState({
+          mode: Modes.ready,
+          errorText: err.message
+        });
       });
     }
 
@@ -155,24 +154,22 @@ export default class VerificationWindow extends React.Component {
     return(
       <div >
         <Snackbar
-            open={this.state.open}
-            message={ 
-              <MenuItem 
-                primaryText="Verification code was resent."
-                style={{color: 'white' }}
-                disabled={true}
-                rightIcon={<Sent {...style.VerifyIcon}/>} 
-              /> 
-            }
-            autoHideDuration={2500}
-            onRequestClose={this.handleSnackbarClose}
-          />
+          open={this.state.open}
+          message={ 
+            <MenuItem 
+              primaryText="Verification code was resent."
+              style={{color: 'white' }}
+              disabled={true}
+              rightIcon={<Sent {...style.VerifyIcon}/>} 
+            /> 
+          }
+          autoHideDuration={2500}
+          onRequestClose={this.handleSnackbarClose}
+        />
         <p>Your account won't be created until you enter the vertification code that you receive by email. Please enter the code below.</p>
-        <div 
-          style={{width: 300, margin: 'auto'}}
-        >
+        <div style={{width: 300, margin: 'auto'}}>
           <TextField 
-            {...style.TextFieldFocusStyle()}
+            {...style.TextFieldFocusStyle(!!this.state.errorText)}
             id="verificationCode" 
             fullWidth={true}
             floatingLabelText="Verification Code" 

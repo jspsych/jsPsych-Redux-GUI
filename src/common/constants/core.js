@@ -86,6 +86,11 @@ export const getInitExperimentState = () => ({
 	diyDeployInfo: getDefaultInitDiyDeployInfo(),
 })
 
+const CodeLanguage = {
+  // text: [null, 'Plain Text'],
+  javascript: ['javascript', 'Javascript'],
+  html: ['htmlmixed', 'HTML/Plain Text']
+}
 
 /**
  * @typeof {Object} StringifiedFunction

@@ -28,7 +28,7 @@ const mapStateToProps = (state, ownProps) => {
 
 	return {
 		username: userState.user.username,
-		osfAccess: userState.osfAccess,
+		osfAccess: userState.osfAccess || [],
 	};
 };
 

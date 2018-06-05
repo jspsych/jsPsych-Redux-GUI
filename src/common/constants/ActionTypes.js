@@ -90,7 +90,7 @@ export const ActionTypes = {
 	POP_UP_CONFIRM: "POP_UP_CONFIRM",
 
 	// Authentications Window
-
+	SET_AUTH_WINDOW: "SET_AUTH_WINDOW",
 }
 
 

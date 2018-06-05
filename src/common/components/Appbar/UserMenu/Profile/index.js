@@ -17,8 +17,6 @@ import CancelIcon from 'material-ui/svg-icons/navigation/close';
 import OsfAccessIcon from 'material-ui/svg-icons/communication/vpn-key'
 import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
 
-import deepEqual from 'deep-equal';
-
 import { renderDialogTitle, Text } from '../../../gadgets';
 import { OsfAccessDefault } from '../../../../reducers/User';
 import AppbarTheme from '../../theme.js';
@@ -220,7 +218,7 @@ export default class Profile extends React.Component {
 		}
 
 		this.commit = () => {
-			if (deepEqual(this.getOsfAccessFromReact(), this.props.osfAccess)) {
+			if (utils.deepEqual(this.getOsfAccessFromReact(), this.props.osfAccess)) {
 				this.props.notifyWarningBySnackbar("Nothing has changed !");
 			} else {
 				this.setState({

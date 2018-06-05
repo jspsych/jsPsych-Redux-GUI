@@ -34,8 +34,8 @@ const TextFieldFocusStyle = (error = false) => {
 	return res;
 };
 
-export default {
-	colors: colors,
-	Icon: Icon,
-	TextFieldFocusStyle: TextFieldFocusStyle
+export {
+	colors,
+	Icon,
+	TextFieldFocusStyle
 };

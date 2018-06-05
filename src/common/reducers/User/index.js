@@ -53,7 +53,7 @@ export const initState = {
 
 	/////////////////////////////////////////////////////////////////////
 
-	...core.getInitUserState
+	...core.getInitUserState(),
 };
 
 /**

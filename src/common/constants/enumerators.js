@@ -18,6 +18,12 @@ export const Notify_Type = {
 	confirm: "confirm"
 }
 
+export const AUTH_MODES = {
+	signIn: 'signIn',
+	register: 'register',
+	verification: 'verification',
+	forgetPassword: 'forgetPassword'
+}
 
 /**
  * @enum {string}
