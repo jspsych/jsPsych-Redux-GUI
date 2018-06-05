@@ -9,141 +9,65 @@ import TextField from 'material-ui/TextField';
 import Success from 'material-ui/svg-icons/action/check-circle';
 import Warning from 'material-ui/svg-icons/alert/warning';
 import Fail from 'material-ui/svg-icons/alert/error';
-import {
-  	green500 as successColor,
-  	yellow500 as warningColor,
-  	red500 as errorColor
-} from 'material-ui/styles/colors';
+
 import { DialogTitle } from '../gadgets';
 
 const colors = {
 	...theme.colors,
-	dialogBodyColor: '#FAFAFA'
+	dialogBodyColor: '#FAFAFA',
+	successColor: '#4CAF50',
+	warningColor: '#FFEB3B',
+	errorColor: '#F44336'
 }
 
-const Notify_Type = {
-	success: "success",
-	warning: "warning",
-	error: "error",
-	confirm: "confirm"
-}
-
-export default class Notification extends React.Component {
+export default class Notifications extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			dialogOpen: false,
-			snackbarOpen: false,
-			notifyType: Notify_Type.success,
-			message: "",
-
-			// confirm
-			continueWithOperation: () => {},
-			continueWithoutOperation: () => {},
-			continueWithOperationLabel: "",
-			continueWithoutOperationLabel: "",
-			showCancelButton: true,
-			withExtraCare: false,
-			extraCareText: "",
-			extraCareInput: "",
-			extraCareError: ""
+			extraCareInput: '',
+			extraCareError: '',
 		}
 
 		this.renderSnackbarIcon = () => {
-			switch(this.state.notifyType) {
-				case Notify_Type.success:
-					return (<Success color={successColor}/>);
-				case Notify_Type.warning:
-					return (<Warning color={warningColor}/>);
-				case Notify_Type.error:
-					return (<Fail color={errorColor}/>);
+			switch(this.props.notifyType) {
+				case enums.Notify_Type.success:
+					return (<Success color={colors.successColor}/>);
+				case enums.Notify_Type.warning:
+					return (<Warning color={colors.warningColor}/>);
+				case enums.Notify_Type.error:
+					return (<Fail color={colors.errorColor}/>);
 				default:
 					return null;
 			}
 		}
 
 		this.renderDialogTitleText = () => {
-			switch(this.state.notifyType) {
-				case Notify_Type.success:
-					return (<Subheader style={{fontSize: 24, color: successColor}}>Done!</Subheader>);
-				case Notify_Type.confirm:
-				case Notify_Type.warning:
-					return (<Subheader style={{fontSize: 24, color: warningColor}}>Warning!</Subheader>);
-				case Notify_Type.error:
-					return (<Subheader style={{fontSize: 24, color: errorColor}}>Error!</Subheader>);
+			switch(this.props.notifyType) {
+				case enums.Notify_Type.success:
+					return (<Subheader style={{fontSize: 24, color: colors.successColor}}>Done!</Subheader>);
+				case enums.Notify_Type.confirm:
+				case enums.Notify_Type.warning:
+					return (<Subheader style={{fontSize: 24, color: colors.warningColor}}>Warning!</Subheader>);
+				case enums.Notify_Type.error:
+					return (<Subheader style={{fontSize: 24, color: colors.errorColor}}>Error!</Subheader>);
 				default:
 					return null;
 			}
 		}
 
-		this.handleDialogClose = () => {
-			this.setState({
-				dialogOpen: false
-			})
-		}
-
-		this.handleSnackbarClose = () => {
-			this.setState({
-				snackbarOpen: false
-			})
-		}
-
-		this.notifySuccessByDialog = (message) => {
-			this.setState({
-				message: message,
-				dialogOpen: true,
-				notifyType: Notify_Type.success
-			})
-		}
-
-		this.notifyWarningByDialog = (message) => {
-			this.setState({
-				message: message,
-				dialogOpen: true,
-				notifyType: Notify_Type.warning
-			})
-		}
-
-		this.notifyErrorByDialog = (message) => {
-			this.setState({
-				message: message,
-				dialogOpen: true,
-				notifyType: Notify_Type.error
-			})
-		}
-
-		this.notifySuccessBySnackbar = (message) => {
-			this.setState({
-				message: message,
-				snackbarOpen: true,
-				notifyType: Notify_Type.success
-			})
-		}
-
-		this.notifyWarningBySnackbar = (message) => {
-			this.setState({
-				message: message,
-				snackbarOpen: true,
-				notifyType: Notify_Type.warning
-			})
-		}
-
-		this.notifyErrorBySnackbar = (message) => {
-			this.setState({
-				message: message,
-				snackbarOpen: true,
-				notifyType: Notify_Type.error
-			})
+		this.continueWithoutOperation = () => {
+			this.props.continueWithoutOperation();
+			this.props.handleDialogClose();
 		}
 
 		this.continueWithOperation = () => {
 			let proceed = () => {
-				this.state.continueWithOperation();
-				this.handleDialogClose();
+				this.props.continueWithOperation();
+				this.props.handleDialogClose();
 			}
-			if (this.state.withExtraCare) {
-				if (this.state.extraCareText === this.state.extraCareInput.trim()) {
+			if (this.props.withExtraCare) {
+				if (this.props.extraCareText === this.state.extraCareInput.trim()) {
 					proceed();
 				} else {
 					this.setState({
@@ -154,40 +78,25 @@ export default class Notification extends React.Component {
 				proceed();
 			}
 		}
-
-		this.continueWithoutOperation = () => {
-			this.state.continueWithoutOperation();
-			this.handleDialogClose();
-		}
-
-		this.popUpConfirmation = (args={
-			message:"",
-			continueWithOperation: ()=>{},
-			continueWithoutOperation: ()=>{},
-			continueWithOperationLabel: "Yes",
-			continueWithoutOperationLabel: "No",
-			showCancelButton: true,
-			withExtraCare: false,
-			extraCareText: "Yes, I know what I am doing."
-		}) => {
-			this.setState({
-				dialogOpen: true,
-				...args
-			});
-		}
 	}
 
 	static defaultProps = {
-		onRef: (el) => {}
-	}
+		dialogOpen: false,
+		snackbarOpen: false,
+		notifyType: enums.Notify_Type.success,
+		message: "",
 
-	componentDidMount() {
-    	this.props.onRef(this);
-  	}
-  
-  	componentWillUnmount() {
-    	this.props.onRef(null);
-  	}
+		// confirm
+		continueWithOperation: () => {},
+		continueWithoutOperation: () => {},
+		continueWithOperationLabel: "",
+		continueWithoutOperationLabel: "",
+		showCancelButton: true,
+		withExtraCare: false,
+		extraCareText: "",
+		extraCareInput: "",
+		extraCareError: ""
+	}
 
 	render() {
 		let {
@@ -195,31 +104,30 @@ export default class Notification extends React.Component {
 			message,
 			dialogOpen,
 			snackbarOpen,
-		} = this.state;
-
+		} = this.props;
 
 		let actions = [];
-		if (notifyType === Notify_Type.confirm) {
+		if (notifyType === enums.Notify_Type.confirm) {
 			actions = [
       			<FlatButton
-      				label={this.state.continueWithOperationLabel}
+      				label={this.props.continueWithOperationLabel}
       				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
       				onClick={this.continueWithOperation}
       				keyboardFocused={true}
       			/>,
 				<FlatButton
-      				label={this.state.continueWithoutOperationLabel}
+      				label={this.props.continueWithoutOperationLabel}
       				labelStyle={{textTransform: "none", color: colors.secondaryDeep}}
       				onClick={this.continueWithoutOperation}
       				keyboardFocused={true}
       			/>
 			]
-			if (this.state.showCancelButton) {
+			if (this.props.showCancelButton) {
 				action.push(
 					<FlatButton
 	      				label="Cancel"
 	      				labelStyle={{textTransform: "none", }}
-	      				onClick={this.handleDialogClose}
+	      				onClick={this.props.handleDialogClose}
 	      			/>
 				)
 			}
@@ -228,7 +136,7 @@ export default class Notification extends React.Component {
       			<FlatButton
       				label="Okay"
       				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
-      				onClick={this.handleDialogClose}
+      				onClick={this.props.handleDialogClose}
       				keyboardFocused={true}
       			/>
       		]

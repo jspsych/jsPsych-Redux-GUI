@@ -2,8 +2,12 @@ import Prefixer from 'inline-style-prefixer';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { cloneDeep, isEqual } from 'lodash';
+import * as notifications from '../containers/Notifications';
+
 var short = require('short-uuid');
 const _prefixer = new Prefixer()
+
+export { notifications };
 
 export const prefixer = (style={}, multiple=false) => {
 	if (!multiple) return _prefixer.prefix(style);

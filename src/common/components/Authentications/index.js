@@ -8,6 +8,8 @@ import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
 import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
 import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
 
+import { DialogTitle } from '../gadgets';
+
 const AUTH_MODES = {
 	signIn: 'signIn',
 	register: 'register',
@@ -136,7 +138,7 @@ export default class Authentications extends React.Component {
 				setLoginMode,
 				popVerification,
 				clearField,
-				notifyErrorByDialog
+				handleClose
 			} = this;
 
 
@@ -166,7 +168,6 @@ export default class Authentications extends React.Component {
 					      		setPassword={setPassword}
 					      		username={username}
 					      		password={password}
-					      		getNotifications={this.props.getNotifcations}
 					      	/>
 					      </Tab>
 					      <Tab label={"Create a new account"} 
@@ -188,7 +189,6 @@ export default class Authentications extends React.Component {
 					      		setPassword={setPassword}
 					      		setEmail={setEmail}
 					      		signUp={this.props.signUp}
-					      		getNotifications={this.props.getNotifcations}
 					      	/>
 					      </Tab>
 					   	</Tabs>
@@ -200,7 +200,6 @@ export default class Authentications extends React.Component {
 							username={username}
 							signIn={this.props.signIn}
 							verify={this.props.verify}
-							getNotifications={this.props.getNotifcations}
 						/>
 					)
 				case AUTH_MODES.forgetPassword:
@@ -212,7 +211,6 @@ export default class Authentications extends React.Component {
 							setUserName={setUserName}
 							setPassword={setPassword}
 							signIn={this.props.signIn}
-					      	getNotifications={this.props.getNotifcations}
 						/>
 
 					)
@@ -222,21 +220,19 @@ export default class Authentications extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-    	this.props.onRef(this);
-  	}
-  
-  	componentWillUnmount() {
-    	this.props.onRef(null);
-  	}
-
 	render() {
 
 		return (
 			<Dialog
           		open={this.state.open}
           		titleStyle={{padding: 0}}
-          		title={renderDialogTitle(<Subheader></Subheader>, handleClose)}
+          		title={
+          			<DialogTitle
+          				node={<Subheader></Subheader>}
+          				showCloseButton={true}
+          				closeCallback={this.handleClose}
+          			/>
+          		}
           		onRequestClose={this.handleClose}
           		contentStyle={{width: 450, height: 600,}}
           		bodyStyle={{backgroundColor: colors.dialogBodyColor, paddingTop: 0}}

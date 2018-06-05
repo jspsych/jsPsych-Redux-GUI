@@ -9,7 +9,7 @@ import TimelineNodeEditor from '../containers/TimelineNodeEditor';
 import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
 import Notification from '../containers/Notification';
 import Authentications from '../containers/Authentications';
-import Notifications from './Notifications';
+import Notifications from '../containers/Notifications';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
 
@@ -210,10 +210,6 @@ class App extends React.Component {
 			);
 		}
 
-		this.getNotifcationsClass = () => {
-			return this.Notifications;
-		}
-
 		this.getAuthenticationsClass = () => {
 			return this.Authentications;
 		}
@@ -278,8 +274,6 @@ class App extends React.Component {
 						drawerOpened={timelineOrganizerDrawerToggle}
 						drawerOpenCallback={openTimelineOgranizerDrawer}
 	  					drawerCloseCallback={closeTimelineOgranizerDrawer}
-	  					getNotifcations={this.getNotifcationsClass}
-	  					getAuthentications={this.getAuthenticationsClass}
 					/>
 				</div>
 	  			<div className="App-Main-Container" style={style.AppMainContainer}>
@@ -287,8 +281,6 @@ class App extends React.Component {
 	  					open={timelineOrganizerDrawerToggle}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
-	  					getNotifcations={this.getNotifcationsClass}
-	  					getAuthentications={this.getAuthenticationsClass}
 	  				/>
 	  				<div className="App-Main-Preivew"
 	  					id="main-body"
@@ -304,14 +296,12 @@ class App extends React.Component {
 	  						onInputZoomHeight={onInputZoomHeight}
 	  						onInputZoomWidth={onInputZoomWidth}
 	  						setDisplayZoom={setDisplayZoom}
-	  						getNotifcations={this.getNotifcationsClass}
 		  				/>
 		  				<PreviewWindow
 	  						zoomScale={zoomScale}
 	  						zoomWidth={zoomWidth}
 	  						zoomHeight={zoomHeight}
 	  						sizeRef={el => this.previewWindow = el}
-	  						getNotifcations={this.getNotifcationsClass}
 		  				/>
 	  				</div>
 	  				<TimelineNodeEditor 
@@ -319,17 +309,11 @@ class App extends React.Component {
 	  					width={timelineEditorDrawerWidth}
 	  					openTimelineEditorCallback={openTimelineEditorDrawer}
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
-	  					getNotifcations={this.getNotifcationsClass}
-	  					getAuthentications={this.getAuthenticationsClass}
 	  				/>
 	  			</div>
 	  			<Notification />
-	  			<Notifications
-	  				onRef={el => this.Notifications = el}
-	  			/>	
-	  			<Authentications 
-	  				onRef={el => this.Authentications = el}
-	  			/>
+	  			<Notifications />	
+	  			<Authentications />
   			</div>
   		);
 	}

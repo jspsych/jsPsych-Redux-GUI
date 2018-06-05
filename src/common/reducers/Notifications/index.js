@@ -15,17 +15,26 @@ const initState = {
 }
 
 
-const setNotification(state, action) {
-	switch(action.type) {
+const setNotification = (state, action) => {
+	action = utils.deepCopy(action);
+	let type = action.type;
+	delete action[type];
+	switch(type) {
 		case actions.ActionTypes.NOTIFY_WARNING_DIALOG:
 		case actions.ActionTypes.NOTIFY_SUCCESS_DIALOG:
 		case actions.ActionTypes.NOTIFY_ERROR_DIALOG:
-			return 
+		case actions.ActionTypes.POP_UP_CONFIRM:
+			return Object.assign({}, state, {
+				dialogOpen: true,
+				...action
+			});
 		case actions.ActionTypes.NOTIFY_SUCCESS_SNACKBAR:
 		case actions.ActionTypes.NOTIFY_WARNING_SNACKBAR: 
 		case actions.ActionTypes.NOTIFY_ERROR_SNACKBAR: 
-		case actions.ActionTypes.POP_UP_CONFIRM: 
-			return 
+			return Object.assign({}, state, {
+				snackOpen: true,
+				...action
+			});
 		case actions.ActionTypes.NOTIFY_DIALOG_CLOSE: 
 		case actions.ActionTypes.NOTIFY_SNACKBAR_CLOSE: 
 			return initState;
@@ -34,7 +43,7 @@ const setNotification(state, action) {
 	}
 }
 
-export default function(state=initState, action) {
+export default function reducer(state=initState, action) {
 	switch(action.type) {
 		case actions.ActionTypes.NOTIFY_WARNING_DIALOG:
 		case actions.ActionTypes.NOTIFY_WARNING_SNACKBAR: 
