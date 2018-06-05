@@ -30,6 +30,8 @@ export const load = (dispatch) => {
 						type: actions.ActionTypes.LOAD_USER,
 						userState
 					}));
+
+					return Promise.resolve();
 				})
 			}
 		}).catch(err => {
@@ -65,11 +67,15 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 				email
 			});
 		}
+		
+		return Promise.resolve();
 	}).then(() => {
 		let anyChange = utils.deepEqual(core.getInitExperimentState, getState().experimentState);
 		if (anyChange) {
 			return saveExperiment({dispatch});
 		}
+		
+		return Promise.resolve();
 	}).then(() => {
 		if (!userInfo.verified) {
 			throw new errors.NotVerifiedException();
