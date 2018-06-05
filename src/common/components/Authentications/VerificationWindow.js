@@ -1,14 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
-import Snackbar from 'material-ui/Snackbar';
 
 import Verified from 'material-ui/svg-icons/action/verified-user';
-import Sent from 'material-ui/svg-icons/action/check-circle';
-
 
 const colors = {
   ...theme.colors,
@@ -50,45 +48,28 @@ let Modes = {
   success: 2,
 }
 
-export default class VerificationWindow extends React.Component {
+class VerificationWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       code: '',
       codeError: '',
       mode: Modes.ready,
-      open: false,
-      message: '',
     }
 
-    this.handleSnackbarClose = () => {
-      this.setState({
-        open: false,
-      });
-    }
 
-    this.handleSnackbarOpen = () => {
-      this.setState({
-        open: true,
-      });
-    }
-
-    this.handleCodeChange = (e, newVal) => {
+    this.setCode = (e, newVal) => {
       this.setState({
         code: newVal,
+        codeError: ''
       });
     }
 
-    this.handleCodeError = (m) => {
+    this.clearField = () => {
       this.setState({
-        codeError: m
-      });
-    }
-
-    this.handleModeChange = (mode) => {
-      this.setState({
-        mode: mode
-      });
+        code: '',
+        codeError: '',
+      })
     }
 
     this.handleVerification = () => {
@@ -102,23 +83,27 @@ export default class VerificationWindow extends React.Component {
         this.setState({
           mode: Modes.success
         });
-        return this.props.load();
+        this.props.load();
       }).catch((err) => {
         this.setState({
           mode: Modes.ready,
-          errorText: err.message
+          codeError: err.message
         });
       });
     }
 
     this.resendVerificationCode = () => {
-      this.handleCodeChange(null, '');
-      this.handleSnackbarOpen(); 
-      resendVerification(this.props.username, (err, result) => {
-        if (err) {
-          this.props.notifyError(err.message);
-          return;
-        }
+      this.clearField();
+      myaws.Auth.resendVerification({username: this.props.username}).then(() => {
+        utils.notifications.notifySuccessBySnackbar({
+          dispatch: this.props.dispatch,
+          message: "Verification code was resent."
+        });
+      }).catch((err) => {
+        utils.notifications.notifyErrorByDialog({
+          dispatch: this.props.dispatch,
+          message: err.message
+        });
       });
     }
 
@@ -153,19 +138,6 @@ export default class VerificationWindow extends React.Component {
   render(){
     return(
       <div >
-        <Snackbar
-          open={this.state.open}
-          message={ 
-            <MenuItem 
-              primaryText="Verification code was resent."
-              style={{color: 'white' }}
-              disabled={true}
-              rightIcon={<Sent {...style.VerifyIcon}/>} 
-            /> 
-          }
-          autoHideDuration={2500}
-          onRequestClose={this.handleSnackbarClose}
-        />
         <p>Your account won't be created until you enter the vertification code that you receive by email. Please enter the code below.</p>
         <div style={{width: 300, margin: 'auto'}}>
           <TextField 
@@ -175,7 +147,7 @@ export default class VerificationWindow extends React.Component {
             floatingLabelText="Verification Code" 
             errorText={this.state.codeError} 
             value={this.state.code} 
-            onChange={this.handleCodeChange}
+            onChange={this.setCode}
                onKeyPress={(e)=>{
                   if (e.which === 13) {
                     this.handleVerification();
@@ -201,3 +173,14 @@ export default class VerificationWindow extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  dispatch: dispatch
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(VerificationWindow);

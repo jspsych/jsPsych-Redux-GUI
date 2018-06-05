@@ -4,17 +4,14 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 
-import { forgotPassword, forgotPasswordReset } from '../../backend/cognito';
-import GeneralTheme from '../theme.js';
-
 const colors = {
-  ...GeneralTheme.colors,
+  ...theme.colors,
 }
 
 const style = {
-  TextFieldFocusStyle: {
-    ...GeneralTheme.TextFieldFocusStyle()
-  },
+  TextFieldFocusStyle: () => ({
+    ...theme.TextFieldFocusStyle()
+  }),
   Actions: {
     Wait: {
       color: colors.secondary
@@ -49,6 +46,7 @@ export default class forgotPasswordWindow extends React.Component {
     super(props);
     this.state = {
       mode: Modes.ready,
+      username: '',
       usernameError: '',
       code: '',
       codeError: '',
@@ -132,7 +130,7 @@ export default class forgotPasswordWindow extends React.Component {
           return (
             <div  style={{width: 300, margin: 'auto'}}>
               <TextField 
-                {...style.TextFieldFocusStyle}
+                {...style.TextFieldFocusStyle()}
                 id="forgot-password-username-input" 
                 fullWidth={true}
                 floatingLabelText="Username" 
@@ -162,7 +160,7 @@ export default class forgotPasswordWindow extends React.Component {
           return (
             <div style={{width: 300, margin: 'auto'}}>
               <TextField 
-                {...style.TextFieldFocusStyle}
+                {...style.TextFieldFocusStyle()}
                 id="forgot-password-code-input" 
                 fullWidth={true}
                 floatingLabelText="Verification code" 
@@ -176,7 +174,7 @@ export default class forgotPasswordWindow extends React.Component {
                 }}
                 />
               <TextField 
-                {...style.TextFieldFocusStyle}
+                {...style.TextFieldFocusStyle()}
                 id="forgot-password-password-input" 
                 fullWidth={true}
                 floatingLabelText="Password" 
@@ -214,16 +212,13 @@ export default class forgotPasswordWindow extends React.Component {
       }
     }
   }
-  
 
-  componentDidMount() {
-    this.props.setUserName('');
-    this.props.setPassword('');
+  static getDerivedStateFromProps(nextProps, prevState) {
+    return {
+      ...nextProps
+    }
   }
-
   
-
-
   render() {
     return(
       <div >
