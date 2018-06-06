@@ -78,6 +78,8 @@ class SignInWindow extends React.Component {
         this.props.signIn({
           username: this.props.username,
           password: this.props.password,
+        }).then(() => {
+          this.props.handleClose();
         }).catch((err) => {
           if (err.code === "NotAuthorizedException") {
             this.setState({

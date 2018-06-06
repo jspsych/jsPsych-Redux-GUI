@@ -82,6 +82,7 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 		}).then(() => {
 			// if user has changed anything
 			// save the change
+
 			// testing stage
 			let anyChange = utils.deepEqual(core.getInitExperimentState(), getState().experimentState) && false;
 			if (anyChange) {
@@ -89,6 +90,8 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			}
 
 			return Promise.resolve();
+		}).then(() => {
+			return load({dispatch});
 		}).catch((err) => {
 			if (err.code === "UserNotConfirmedException") {
 				popVerification({
