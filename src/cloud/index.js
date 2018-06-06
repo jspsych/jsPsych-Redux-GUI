@@ -16,4 +16,4 @@ if (typeof Promise === 'undefined') {
 
 export const Auth = auth;
 export const S3 = s3;
-export const Dynamodb = dynamodb;
+export const DynamoDB = dynamodb;

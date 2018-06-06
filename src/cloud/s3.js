@@ -1,4 +1,4 @@
-import AWS from './index.js';
+import { AWS } from './index.js';
 
 export const Bucket_Name = "jspsych-builder";
 export const Website_Bucket = "builder.jspsych.org";

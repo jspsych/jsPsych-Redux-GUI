@@ -79,12 +79,12 @@ export default class UserMenu extends React.Component {
               <MenuItem
                 leftIcon={<SignInIcon {...style.Icon}/>}
                 primaryText={"Sign In"}
-                onClick={() => { this.props.handleSignIn(); this.handleRequestClose(); }} />
+                onClick={() => { this.props.popSignIn(); this.handleRequestClose(); }} />
               <Divider />
               <MenuItem
                 leftIcon={<SignUpIcon {...style.Icon}/>}
                 primaryText={"Create Account"}
-                onClick={() => { this.props.handleCreateAccount(); this.handleRequestClose(); }} />
+                onClick={() => { this.props.popSignUp(); this.handleRequestClose(); }} />
           </Menu>
         )
       } else {

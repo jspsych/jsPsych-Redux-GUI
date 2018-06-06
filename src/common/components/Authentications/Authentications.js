@@ -3,10 +3,10 @@ import Dialog from 'material-ui/Dialog';
 import Subheader from 'material-ui/Subheader';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
-import SignInWindow from '../../containers/Login/SignInWindowContainer';
-import RegisterWindow from '../../containers/Login/RegisterWindowContainer';
-import VerificationWindow from '../../containers/Login/VerificationWindowContainer';
-import ForgotPasswordWindow from '../../containers/Login/ForgotPasswordWindowContainer';
+import SignInWindow from './SignInWindow.js';
+import RegisterWindow from './RegisterWindow.js';
+import VerificationWindow from './VerificationWindow.js';
+import ForgotPasswordWindow from './ForgotPasswordWindow.js';
 
 import { DialogTitle } from '../gadgets';
 
@@ -93,14 +93,15 @@ export default class Authentications extends React.Component {
 				setUserName,
 				setPassword,
 				setEmail,
-				popVerification,
 				clearField,
 				handleClose
 			} = this;
 
 			let {
 				loginMode,
-				setLoginMode
+				setLoginMode,
+				popForgetPassword,
+				popVerification
 			} = this.props;
 			
 			switch(loginMode) {
@@ -124,6 +125,7 @@ export default class Authentications extends React.Component {
 					      	<SignInWindow 
 					      		handleClose={handleClose}
 					      		popVerification={popVerification}
+					      		popForgetPassword={popForgetPassword}
 					      		signIn={this.props.signIn}
 					      		setUserName={setUserName}
 					      		setPassword={setPassword}
@@ -160,9 +162,10 @@ export default class Authentications extends React.Component {
 						<VerificationWindow 
 							username={username}
 							load={this.props.load}
+							handleClose={handleClose}
 						/>
 					)
-				case enums.AUTH_MODES.forgetPassword:
+				case enums.AUTH_MODES.forgotPassword:
 					return (
 						<ForgotPasswordWindow 
 							handleClose={handleClose}

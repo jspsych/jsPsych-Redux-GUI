@@ -62,22 +62,22 @@ export const signOut = () => {
 }
 
 /**
-* Wrapped Auth.forgetPassword function
+* Wrapped Auth.forgotPassword function
 * @param {string} username - username
 * @return {Promise} - A promise that resolves if success
 */
-export const forgetPassword = ({username}) => {
-	return Auth.forgetPassword(username);
+export const forgotPassword = ({username}) => {
+	return Auth.forgotPassword(username);
 } 
 
 /**
-* Wrapped Auth.forgetPasswordSubmit function
+* Wrapped Auth.forgotPasswordSubmit function
 * @param {string} username - username
 * @param {string} code - verification code
 * @param {string} new_password - new password
 * @return {Promise} - A promise that resolves if success
 */
-export const forgetPasswordSubmit = ({username, code, new_password}) => {
+export const forgotPasswordSubmit = ({username, code, new_password}) => {
 	return Auth.forgotPasswordSubmit(username, code, new_password);
 }
 

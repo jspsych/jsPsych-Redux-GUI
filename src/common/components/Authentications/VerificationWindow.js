@@ -15,10 +15,10 @@ const colors = {
 
 const style = {
   VerifyIcon: {
-    colors: colors.verifyColor,
+    color: colors.verifyColor,
   },
   TextFieldFocusStyle: (error=false) => ({
-    ...GeneralTheme.TextFieldFocusStyle(error)
+    ...theme.TextFieldFocusStyle(error)
   }),
   Actions: {
     Wait: {
@@ -53,22 +53,23 @@ class VerificationWindow extends React.Component {
     super(props);
     this.state = {
       code: '',
-      codeError: '',
+      codeErrorText: '',
       mode: Modes.ready,
+      resending: false
     }
 
 
     this.setCode = (e, newVal) => {
       this.setState({
         code: newVal,
-        codeError: ''
+        codeErrorText: ''
       });
     }
 
     this.clearField = () => {
       this.setState({
         code: '',
-        codeError: '',
+        codeErrorText: '',
       })
     }
 
@@ -83,17 +84,25 @@ class VerificationWindow extends React.Component {
         this.setState({
           mode: Modes.success
         });
-        this.props.load();
-      }).catch((err) => {
-        this.setState({
-          mode: Modes.ready,
-          codeError: err.message
+        return this.props.load().then(() => {
+          this.props.handleClose();
         });
+      }).catch((err) => {
+        if (err.code === "CodeMismatchException") {
+          this.setState({
+            mode: Modes.ready,
+            codeErrorText: err.message
+          });
+        }
+        console.log(err);
       });
     }
 
     this.resendVerificationCode = () => {
       this.clearField();
+      this.setState({
+        resending: true
+      })
       myaws.Auth.resendVerification({username: this.props.username}).then(() => {
         utils.notifications.notifySuccessBySnackbar({
           dispatch: this.props.dispatch,
@@ -104,6 +113,10 @@ class VerificationWindow extends React.Component {
           dispatch: this.props.dispatch,
           message: err.message
         });
+      }).finally(() => {
+        this.setState({
+          resending: false
+        })
       });
     }
 
@@ -116,7 +129,7 @@ class VerificationWindow extends React.Component {
         case Modes.success:
           return (
             <FlatButton
-              labelStyle={{textTransform: "none", }}
+              labelStyle={{textTransform: "none", color: colors.verifyColor}}
               label="User Verified"
               icon={<Verified {...style.VerifyIcon}/>}
             />
@@ -141,11 +154,11 @@ class VerificationWindow extends React.Component {
         <p>Your account won't be created until you enter the vertification code that you receive by email. Please enter the code below.</p>
         <div style={{width: 300, margin: 'auto'}}>
           <TextField 
-            {...style.TextFieldFocusStyle(!!this.state.errorText)}
+            {...style.TextFieldFocusStyle(!!this.state.codeErrorText)}
             id="verificationCode" 
             fullWidth={true}
             floatingLabelText="Verification Code" 
-            errorText={this.state.codeError} 
+            errorText={this.state.codeErrorText} 
             value={this.state.code} 
             onChange={this.setCode}
                onKeyPress={(e)=>{
@@ -162,11 +175,14 @@ class VerificationWindow extends React.Component {
             }
           </div>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-            <FlatButton 
-              label="Resend Verification Code" 
-              onClick={this.resendVerificationCode} 
-              {...style.Actions.Resend}
-            />
+            {!this.state.resending ?
+              <FlatButton 
+                label="Resend Verification Code" 
+                onClick={this.resendVerificationCode} 
+                {...style.Actions.Resend}
+              /> :
+              <CircularProgress {...style.Actions.Wait}/>
+            }
           </div>
         </div>
       </div>

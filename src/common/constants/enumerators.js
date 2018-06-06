@@ -22,7 +22,7 @@ export const AUTH_MODES = {
 	signIn: 'signIn',
 	register: 'register',
 	verification: 'verification',
-	forgetPassword: 'forgetPassword'
+	forgotPassword: 'forgotPassword'
 }
 
 /**

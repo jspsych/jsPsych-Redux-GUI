@@ -27,7 +27,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	handleSignIn: () => { handleSignIn(dispatch) },
 	handleCreateAccount: () => { handleCreateAccount(dispatch) },
-	handleSignOut: () => { handleSignOut(dispatch); }
+	handleSignOut: () => { handleSignOut(dispatch); },
+	popSignUp: () => utils.logins.popRegister({dispatch}),
+	popSignIn: () => utils.logins.popSignIn({dispatch})
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

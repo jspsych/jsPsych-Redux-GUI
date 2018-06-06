@@ -1,21 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import CircularProgress from 'material-ui/CircularProgress';
 
-import { signUp } from '../../backend/cognito';
-import GeneralTheme from '../theme.js';
-
 const colors = {
-  ...GeneralTheme.colors,
+  ...theme.colors,
 }
 
 const style = {
-  TextFieldFocusStyle: {
-    ...GeneralTheme.TextFieldFocusStyle()
-  },
+  TextFieldFocusStyle: (error=false) => ({
+    ...theme.TextFieldFocusStyle(error)
+  }),
   Actions: {
     Create: {
       labelStyle: {
@@ -38,86 +37,95 @@ const style = {
   }
 }
 
-export default class RegisterWindow extends React.Component {
+class RegisterWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      usernameError: null,
-      emailError: null,
-      passwordError: null,
-      ready: true,
+      usernameErrorText: null,
+      emailErrorText: null,
+      passwordErrorText: null,
+      registering: false
     }
 
-    this.handleReadyChange = (r) => {
-      this.setState({
-        ready: r
-      });
-    }
-
-    this.handleUserNameChange = (e, newVal) => {
+    this.setUsername = (e, newVal) => {
       this.props.setUserName(newVal);
       this.setState({
-        usernameError: newVal.length > 0 ? null : "Please enter a username"
+        usernameErrorText: newVal.length > 0 ? null : "Please enter a username"
       });
     }
 
-    this.handleEmailChange = (e, newVal) => {
+    this.setEmail = (e, newVal) => {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       const validEmail = re.test(newVal);
       this.props.setEmail(newVal);
       this.setState({
-        emailError: validEmail ? null : "Please enter a valid email address"
+        emailErrorText: validEmail ? null : "Please enter a valid email address"
       });
     }
 
-    this.handlePasswordChange = (e, newVal) => {
+    this.setPassword = (e, newVal) => {
       this.props.setPassword(newVal);
       this.setState({
-        passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+        passwordErrorText: newVal.length < 10 ? "Password must be at least 10 characters long" : null
       });
     }
 
     this.handleCreateAccount = () => {
-      this.handleReadyChange(false);
-      var cont_flag = true;
-      if(this.props.username === ''){
-        this.setState({usernameError: "Please enter a username"});
+      let cont_flag = true;
+      let { username, password, email, dispatch } = this.props;
+
+      if(username === ''){
+        this.setState({usernameErrorText: "Please enter a username"});
         cont_flag = false;
       }
-      if(this.props.email === '' || this.state.emailError !== null){
-        this.setState({emailError: "Please enter a valid email address"});
+      if(email === '' || this.state.emailErrorText !== null){
+        this.setState({emailErrorText: "Please enter a valid email address"});
+        cont_flag = false;
+      }
+      if(password === '' || this.state.passwordErrorText !== null){
+        this.setState({passwordErrorText: "Password must be at least 10 characters long"});
         cont_flag = false;
       }
 
-      if(this.props.password === '' || this.state.passwordError !== null){
-        this.setState({passwordError: "Password must be at least 10 characters long"});
-        cont_flag = false;
+      if (cont_flag) {
+        this.setState({
+          registering: true
+        });
+        this.props.signUp({
+          username,
+          password,
+          attributes: {
+            email
+          }
+        }).finally(() => {
+          this.setState({
+            registering: false
+          });
+        }).catch((err) => {
+          if (err.code === "UsernameExistsException") {
+            this.setState({
+              usernameErrorText: 'This username is already taken.'
+            });
+          } else if (err.code === "EmailExistsException") {
+            this.setState({
+              emailErrorText: 'This email is already used.'
+            });
+          } else {
+            throw err
+            utils.notifications.notifyErrorByDialog({
+              dispatch,
+              message: err.message
+            });
+          }
+        });
       }
-      if(!cont_flag){
-        this.handleReadyChange(true);
-        return;
-      }
-
-      var attributes = [{
-        Name: 'email',
-        Value: this.props.email,
-      }];
-
-
-
-      signUp(this.props.username, this.props.password, attributes, (err, result) => {
-        if (err) {
-          this.handleReadyChange(true);
-          this.props.notifyError(err.message);
-          return;
-        }
-        this.props.popVerification();
-      });
     }
   }
   
 
   render(){
+
+    let { usernameErrorText, passwordErrorText, emailErrorText, registering } = this.state;
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}}>
@@ -129,35 +137,35 @@ export default class RegisterWindow extends React.Component {
              }}
           >
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle(!!usernameErrorText)}
             fullWidth={true}
             id="userName" 
             floatingLabelText="Username" 
             value={this.props.username} 
-            errorText={this.state.usernameError} 
-            onChange={this.handleUserNameChange}>
+            errorText={usernameErrorText} 
+            onChange={this.setUsername}>
           </TextField>
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle(!!emailErrorText)}
             fullWidth={true}
             id="email" 
             floatingLabelText="Email" 
             value={this.props.email} 
-            errorText={this.state.emailError} 
-            onChange={this.handleEmailChange}>
+            errorText={emailErrorText} 
+            onChange={this.setEmail}>
           </TextField>
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle(!!passwordErrorText)}
             fullWidth={true}
             id="password" 
             type="password" 
             floatingLabelText="Password" 
-            errorText={this.state.passwordError} 
+            errorText={passwordErrorText} 
             value={this.props.password} 
-            onChange={this.handlePasswordChange}>
+            onChange={this.setPassword}>
           </TextField>
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
-            {this.state.ready ?
+            {!registering ?
               <RaisedButton 
                 label="Create Account" 
                 onClick={this.handleCreateAccount} 
@@ -178,3 +186,14 @@ export default class RegisterWindow extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  dispatch: dispatch
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterWindow);

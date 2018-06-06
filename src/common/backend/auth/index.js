@@ -28,11 +28,11 @@ export const signOut = () => {
 	return Auth.signOut().then(data => data);
 }
 
-export const forgetPassword = ({username}) => {
-	return Auth.forgetPassword(username).then(data => data);
+export const forgotPassword = ({username}) => {
+	return Auth.forgotPassword(username).then(data => data);
 } 
 
-export const forgetPasswordSubmit = ({username, code, new_password}) => {
+export const forgotPasswordSubmit = ({username, code, new_password}) => {
 	return Auth.forgotPasswordSubmit(username, code, new_password).then(data => data);
 }
 

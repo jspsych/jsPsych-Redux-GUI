@@ -2,42 +2,47 @@ import { connect } from 'react-redux';
 import Authentications from '../../components/Authentications';
 
 
-export const load = (dispatch) => {
+export const load = ({dispatch}) => {
 	return dispatch((dispatch, getState) => {
 		return myaws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
 			// break the promise chain when there is no user signed in
 			if (data === null) {
 				throw new errors.NoCurrentUserException();
 			} 
-			if (!data.verified) {
-				throw new errors.NotVerifiedException();
-			} else {
-				let { userId } = data;
-				return Promise.all([
-					myaws.DynamoDB.getLastModifiedExperimentOf(userId),
-					myaws.DynamoDB.getUserDate(userId)
-				]).then(results => {
-					let [ experimentState, userState ] = results;
 
-					// load states
-					if (experimentState) {
-						dispatch(actions.actionCreator({
-							type: actions.ActionTypes.LOAD_EXPERIMENT,
-							experimentState
-						}));
-					}
+			let { userId } = data;
+
+			return Promise.all([
+				myaws.DynamoDB.getLastModifiedExperimentOf(userId),
+				myaws.DynamoDB.getUserDate(userId)
+			]).then(results => {
+				let [ experimentState, userState ] = results;
+				console.log(results)
+				console.log(results[1].Item)
+
+				return;
+				// load states
+				if (experimentState) {
 					dispatch(actions.actionCreator({
-						type: actions.ActionTypes.LOAD_USER,
-						userState
+						type: actions.ActionTypes.LOAD_EXPERIMENT,
+						experimentState
 					}));
+				}
+				let userState = results[1].Item.fetch;
+				dispatch(actions.actionCreator({
+					type: actions.ActionTypes.LOAD_USER,
+					userState
+				}));
 
-					return Promise.resolve();
-				})
-			}
+				return Promise.resolve();
+			});
 		}).catch(err => {
 			// keep the chaining by throwing all other error except 
 			// NoCurrentUserException
-			if (!(err instanceof errors.NoCurrentUserException)) {
+			if (err instanceof errors.NoCurrentUserException) {
+				console.log(err.message);
+			} else {
+				console.log(err)
 				throw err;
 			}
 		})
@@ -55,39 +60,45 @@ export const saveExperiment = ({dispatch}) => {
 	})
 }
 
-const signIn = ({dispatch, username, password, firstSignIn=false}) => {
-	return myaws.Auth.signIn({username, password}).then((userInfo) => {
-		// Save/Register the user state to DynamoDB 
-		if (firstSignIn) {
-			let { userId, username, email } = userInfo
-			return myaws.DynamoDB.saveUserData({
-				...core.getInitUserState,
-				userId,
-				username,
-				email
-			});
-		}
-		
-		return Promise.resolve();
-	}).then(() => {
-		let anyChange = utils.deepEqual(core.getInitExperimentState, getState().experimentState);
-		if (anyChange) {
-			return saveExperiment({dispatch});
-		}
-		
-		return Promise.resolve();
-	}).then(() => {
-		if (!userInfo.verified) {
-			throw new errors.NotVerifiedException();
-		}
-		return load(dispatch);
-	})
+const signIn = ({dispatch, username, password}) => {
+	return dispatch((dispatch, getState) => {
+		return myaws.Auth.signIn({username, password}).then(() => {
+			// testing stage
+			let anyChange = utils.deepEqual(core.getInitExperimentState(), getState().experimentState) && false;
+			if (anyChange) {
+				return saveExperiment({dispatch});
+			}
+			
+			return Promise.resolve();
+		}).then(() => {
+			return load({dispatch});
+		}).catch((err) => {
+			if (err.code === "UserNotConfirmedException") {
+	            popVerification({dispatch});
+	        } else {
+	        	throw err;
+	        }
+		});
+	});
 }
 
-const signUp = ({dispatch, username, password, email}) => {
-	return myaws.Auth.signUp({username, password, email}).then(() => {
-		return signIn({dispatch, username, password, firstSignIn: true});
-	})
+const signUp = ({dispatch, username, password, ...options}) => {
+	return myaws.Auth.signUp({username, password, ...options}).then(() => {
+		return myaws.Auth.signIn({
+			username,
+			password
+		});
+	}).then((userInfo) => {
+		let { userId, username, email } = userInfo
+		return myaws.DynamoDB.saveUserData({
+			...core.getInitUserState,
+			userId,
+			username,
+			email
+		});
+	}).then(() => {
+		return load({dispatch});
+	});
 }
 
 const handleWindowClose = ({dispatch}) => {
@@ -101,7 +112,7 @@ export const popSignIn = ({dispatch}) => {
 	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.SET_AUTH_WINDOW,
 		open: true,
-		loginMode: enums.Login_Mode.signIn
+		loginMode: enums.AUTH_MODES.signIn
 	}));
 }
 
@@ -117,7 +128,7 @@ export const popForgetPassword = ({dispatch}) => {
 	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.SET_AUTH_WINDOW,
 		open: true,
-		loginMode: enums.AUTH_MODES.forgetPassword
+		loginMode: enums.AUTH_MODES.forgotPassword
 	}));
 }
 

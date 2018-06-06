@@ -1,6 +1,6 @@
 const initState = {
 	dialogOpen: false,
-	snackOpen: false,
+	snackbarOpen: false,
 	notifyType: enums.Notify_Type.success,
 	message: "",
 
@@ -32,7 +32,7 @@ const setNotification = (state, action) => {
 		case actions.ActionTypes.NOTIFY_WARNING_SNACKBAR: 
 		case actions.ActionTypes.NOTIFY_ERROR_SNACKBAR: 
 			return Object.assign({}, state, {
-				snackOpen: true,
+				snackbarOpen: true,
 				...action
 			});
 		case actions.ActionTypes.NOTIFY_DIALOG_CLOSE: 

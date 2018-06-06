@@ -105,7 +105,7 @@ export default class Notifications extends React.Component {
 			dialogOpen,
 			snackbarOpen,
 		} = this.props;
-
+		
 		let actions = [];
 		if (notifyType === enums.Notify_Type.confirm) {
 			actions = [

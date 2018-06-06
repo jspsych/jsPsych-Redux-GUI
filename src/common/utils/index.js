@@ -2,12 +2,13 @@ import Prefixer from 'inline-style-prefixer';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { cloneDeep, isEqual } from 'lodash';
+import short_uuid from 'short-uuid';
 import * as notifications from '../containers/Notifications';
+import * as logins from '../containers/Authentications/AuthenticationsContainer.js';
 
-var short = require('short-uuid');
-const _prefixer = new Prefixer()
+const _prefixer = new Prefixer();
 
-export { notifications };
+export { notifications, logins };
 
 export const prefixer = (style={}, multiple=false) => {
 	if (!multiple) return _prefixer.prefix(style);
@@ -36,7 +37,7 @@ export const toEmptyString = (s) => ((s === null || s === undefined) ? '' : s);
 export const toEmptyArray = (s) => (!s ? [] : s);
 
 export function getUUID() {
-	var translator = short();
+	var translator = short_uuid();
 	//var decimalTranslator = short("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 	let res = translator.new();
 	return res;
@@ -52,4 +53,3 @@ export function injectJsPsychUniversalPluginParameters(obj={}) {
 }
 
 export const withDnDContext = DragDropContext(HTML5Backend);
-

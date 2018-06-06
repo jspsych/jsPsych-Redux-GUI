@@ -3,7 +3,7 @@
  * @author Junyan Qi <juqi@vassar.edu>
 */
 
-import AWS from './index.js';
+import { AWS } from './index.js';
 
 const API_VERSION = '2012-08-10';
 const User_Table_Name = "jsPsych_Builder_Users";
@@ -47,12 +47,12 @@ function deleteItem(param) {
 }
 
 /**
-* Promise wrapper function of dynamoDB.query
+* Promise wrapper function of dynamoDB.scan
 * @param {Object} param - parameters
 * @return {Promise} - A Promise that resolves if success
 */
-function queryItem(param) {
-	return connectDynamoDB().query(param).promise();
+function scanItem(param) {
+	return connectDynamoDB().scan(param).promise();
 }
 
 /**
@@ -157,18 +157,15 @@ export function getExperimentById(id) {
 export function getExperimentsOf(userId) {
 	let param = {
 		TableName: Experiment_Table_Name,
-		KeyConditionExpression: "#ownerid = :ownerid",
-		AttributesToGet: [
-			'fetch'
-		],
+		FilterExpression: "#ownerId = :ownerId",
 		ExpressionAttributeNames: {
-			"#ownerId": "ownerId"
+			"#ownerId": "experimentId"
 		},
 		ExpressionAttributeValues: {
-			":ownerId": userId
+			":ownerId": "sHVHJWcDT1LtQWtwqJTKdN"
 		}
 	};
-	return queryItem(param).then(data => {
+	return scanItem(param).then(data => {
 		let { Items } = data;
 		return Items.map(item => item.fetch);
 	});
@@ -182,7 +179,7 @@ export function getExperimentsOf(userId) {
 export function getLastModifiedExperimentOf(userId) {
 	return getExperimentsOf(userId).then(experiments => {
 		return Math.max.apply(Math, experiments.map(experiment => experiment.lastModifiedDate));
-	})
+	});
 }
 
 /**

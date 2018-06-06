@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -10,9 +12,9 @@ const colors = {
 }
 
 const style = {
-  TextFieldFocusStyle: {
-    ...theme.TextFieldFocusStyle()
-  },
+  TextFieldFocusStyle: (error=false) => ({
+    ...theme.TextFieldFocusStyle(error)
+  }),
   Actions: {
     SignIn: {
       labelStyle: {
@@ -35,135 +37,110 @@ const style = {
   }
 }
 
-export default class SignInWindow extends React.Component {
+class SignInWindow extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      userError: null,
-      passwordError: null,
-      ready: true,
+      userErrorText: null,
+      passwordErrorText: null,
       signIning: false
     }
 
-    this.handleReadyChange = (r) => {
-      this.setState({
-        ready: r
-      });
-    }
-
-    this.handleUserNameChange = (e, newVal) => {
+    this.setUsername = (e, newVal) => {
       this.props.setUserName(newVal);
       this.setState({
-        userError: newVal.length > 0 ? null : "Please enter your username or email address"
+        userErrorText: newVal.length > 0 ? null : "Please enter your username or email address"
       });
     }
 
-    this.handlePasswordChange = (e, newVal) => {
+    this.setPassword = (e, newVal) => {
       this.props.setPassword(newVal);
       this.setState({
-        passwordError: newVal.length < 10 ? "Password must be at least 10 characters long" : null
+        passwordErrorText: newVal.length < 10 ? "Password must be at least 10 characters long" : null
       });
     }
 
     this.signIn = () => {
       let cont_flag = true;
       if(this.props.username === ''){
-        this.setState({userError: "Please enter your username or email"});
+        this.setState({userErrorText: "Please enter your username or email"});
         cont_flag = false;
       }
       if(this.props.password === ''){
-        this.setState({passwordError: "Please enter your password"});
+        this.setState({passwordErrorText: "Please enter your password"});
         cont_flag = false;
       }
-      if (!cont_flag) {
-        return;
+      if (cont_flag) {
+        this.setState({
+          signIning: true
+        });
+        this.props.signIn({
+          username: this.props.username,
+          password: this.props.password,
+        }).catch((err) => {
+          if (err.code === "NotAuthorizedException") {
+            this.setState({
+              passwordErrorText: "Invalid password"
+            });
+          } else if (err.code === "UserNotFoundException") {
+            this.setState({
+              userErrorText: "No account found for this username / email"
+            });
+          } else {
+            console.log(err);
+            utils.notifications.notifyErrorByDialog({
+              dispatch: this.props.dispatch,
+              message: err.message
+            });
+          }
+        }).finally(() => {
+          this.setState({
+            signIning: false
+          });
+        });
       }
-      
-      this.setState({
-        signIning: false
-      })
-
     }
 
-    this.handleSignIn = () => {
-      this.handleReadyChange(false);
-      var cont_flag = true;
-      if(this.props.username === ''){
-        this.setState({userError: "Please enter your username or email"});
-        cont_flag = false;
-      }
-      if(this.props.password === ''){
-        this.setState({passwordError: "Please enter your password"});
-        cont_flag = false;
-      }
-      if(!cont_flag){
-        return;
-      }
-      
-      this.props.signIn((err) => {
-        if (err) {
-          this.handleReadyChange(true);
-        }
-
-        if (err.code === "NotAuthorizedException") {
-          this.setState({
-            passwordError: "Invalid password"
-          });
-          return;
-        }
-        if (err.code === "UserNotFoundException") {
-          this.setState({
-            userError: "No account found for this username / email"
-          });
-          return;
-        }
-        if (err.code === "UserNotConfirmedException") {
-          this.props.popVerification();
-          return;
-        }
-        this.props.notifyError(err.message);
-      });
-    }
   }
   
 
   render(){
-    let { username, password, popForgotPassword } = this.props;
-    let { handleSignIn } = this;
+    let { username, password, popForgetPassword } = this.props;
+    let { userErrorText, passwordErrorText, signIning } = this.state;
 
     return(
       <Paper zDepth={1} style={{paddingTop: 10}} >
         <div style={{width: 350, margin: 'auto'}} 
              onKeyPress={(e)=>{
               if (e.which === 13) {
-                this.handleSignIn();
+                this.signIn();
               }
              }}>
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle(!!userErrorText)}
             fullWidth={true}
             id="username-signIn" 
             floatingLabelText="Username or Email" 
             value={username} 
-            errorText={this.state.userError} 
-            onChange={this.handleUserNameChange}
+            errorText={userErrorText} 
+            onChange={this.setUsername}
           />
           <TextField 
-            {...style.TextFieldFocusStyle}
+            {...style.TextFieldFocusStyle(!!passwordErrorText)}
             id="password-signIn" 
             fullWidth={true}
             type="password" 
             floatingLabelText="Password" 
-            errorText={this.state.passwordError} 
+            errorText={passwordErrorText} 
             value={password} 
-            onChange={this.handlePasswordChange} 
+            onChange={this.setPassword} 
           />
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
-            {this.state.ready ?
+            {!signIning ?
               <RaisedButton 
                 label="Sign In" 
-                onClick={handleSignIn} 
+                onClick={this.signIn} 
                 {...style.Actions.SignIn}
               /> :
               <CircularProgress {...style.Actions.Wait}/>
@@ -172,7 +149,7 @@ export default class SignInWindow extends React.Component {
           <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
             <FlatButton 
               label="Forgot my password" 
-              onClick={popForgotPassword}
+              onClick={popForgetPassword}
               {...style.Actions.Forget}
             />
           </div>
@@ -182,11 +159,13 @@ export default class SignInWindow extends React.Component {
   }
 }
 
-// <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-//           <FlatButton
-//               label="Not right now"
-//               secondary={true}
-//               keyboardFocused={true}
-//               onClick={handleClose}
-//             />
-//           </div>
+const mapStateToProps = (state, ownProps) => {
+  return {
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  dispatch: dispatch
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignInWindow);
