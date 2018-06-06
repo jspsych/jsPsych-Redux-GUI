@@ -1,6 +1,7 @@
 const initState = {
 	open: false,
-	loginMode: enums.AUTH_MODES.signIn
+	loginMode: enums.AUTH_MODES.signIn,
+	signInCallback: () => Promise.resolve(),
 }
 
 const setAuthWindow = (state, action) => {

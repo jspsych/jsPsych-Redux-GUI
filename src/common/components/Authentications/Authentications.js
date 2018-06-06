@@ -161,7 +161,6 @@ export default class Authentications extends React.Component {
 					return (
 						<VerificationWindow 
 							username={username}
-							load={this.props.load}
 							handleClose={handleClose}
 						/>
 					)

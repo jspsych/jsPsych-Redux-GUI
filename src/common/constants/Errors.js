@@ -12,6 +12,7 @@ export class NoCurrentUserException extends Error {
 	constructor(message='There is no currently signed in user.') {
 		super(message);
 		this.name = 'NoCurrentUserException';
+		this.code = 'NoCurrentUserException';
 		this.message = message;
 	}
 }

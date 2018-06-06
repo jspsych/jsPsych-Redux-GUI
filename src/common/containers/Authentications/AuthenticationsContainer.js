@@ -3,6 +3,7 @@ import Authentications from '../../components/Authentications';
 
 
 export const load = ({dispatch}) => {
+	// myaws.Auth.signOut();
 	return dispatch((dispatch, getState) => {
 		return myaws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
 			// break the promise chain when there is no user signed in
@@ -16,11 +17,8 @@ export const load = ({dispatch}) => {
 				myaws.DynamoDB.getLastModifiedExperimentOf(userId),
 				myaws.DynamoDB.getUserDate(userId)
 			]).then(results => {
-				let [ experimentState, userState ] = results;
-				console.log(results)
-				console.log(results[1].Item)
+				let [ experimentState, userDataResponse ] = results;
 
-				return;
 				// load states
 				if (experimentState) {
 					dispatch(actions.actionCreator({
@@ -28,7 +26,8 @@ export const load = ({dispatch}) => {
 						experimentState
 					}));
 				}
-				let userState = results[1].Item.fetch;
+				let userState = userDataResponse.Item.fetch;
+
 				dispatch(actions.actionCreator({
 					type: actions.ActionTypes.LOAD_USER,
 					userState
@@ -39,7 +38,7 @@ export const load = ({dispatch}) => {
 		}).catch(err => {
 			// keep the chaining by throwing all other error except 
 			// NoCurrentUserException
-			if (err instanceof errors.NoCurrentUserException) {
+			if (err.code === 'NoCurrentUserException') {
 				console.log(err.message);
 			} else {
 				console.log(err)
@@ -60,44 +59,69 @@ export const saveExperiment = ({dispatch}) => {
 	})
 }
 
-const signIn = ({dispatch, username, password}) => {
+const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 	return dispatch((dispatch, getState) => {
-		return myaws.Auth.signIn({username, password}).then(() => {
+		return myaws.Auth.signIn({
+			username,
+			password
+		}).then((userInfo) => {
+			// if it is first time signing in
+			// register user in DynamoDB
+			if (firstSignIn) {
+				let { userId, username, email } = userInfo;
+
+				return myaws.DynamoDB.saveUserData({
+					...core.getInitUserState(),
+					userId,
+					username,
+					email
+				});
+			}
+
+			return Promise.resolve();
+		}).then(() => {
+			// if user has changed anything
+			// save the change
 			// testing stage
 			let anyChange = utils.deepEqual(core.getInitExperimentState(), getState().experimentState) && false;
 			if (anyChange) {
 				return saveExperiment({dispatch});
 			}
-			
+
 			return Promise.resolve();
-		}).then(() => {
-			return load({dispatch});
 		}).catch((err) => {
 			if (err.code === "UserNotConfirmedException") {
-	            popVerification({dispatch});
-	        } else {
-	        	throw err;
-	        }
+				popVerification({
+					dispatch,
+					signInCallback: () => {
+						return signIn({
+							dispatch,
+							username,
+							password,
+							firstSignIn
+						});
+					}
+				});
+			} else {
+				throw err;
+			}
 		});
 	});
 }
 
-const signUp = ({dispatch, username, password, ...options}) => {
-	return myaws.Auth.signUp({username, password, ...options}).then(() => {
-		return myaws.Auth.signIn({
-			username,
-			password
+const signUp = ({dispatch, username, password, attributes, ...options}) => {
+	return myaws.Auth.signUp({username, password, attributes, ...options}).then(() => {
+		popVerification({
+			dispatch,
+			signInCallback: () => {
+				return signIn({
+					dispatch,
+					username,
+					password,
+					firstSignIn: true,
+				})
+			}
 		});
-	}).then((userInfo) => {
-		let { userId, username, email } = userInfo
-		return myaws.DynamoDB.saveUserData({
-			...core.getInitUserState,
-			userId,
-			username,
-			email
-		});
-	}).then(() => {
-		return load({dispatch});
 	});
 }
 
@@ -132,11 +156,12 @@ export const popForgetPassword = ({dispatch}) => {
 	}));
 }
 
-export const popVerification = ({dispatch}) => {
+export const popVerification = ({dispatch, ...args}) => {
 	dispatch(actions.actionCreator({
 		type: actions.ActionTypes.SET_AUTH_WINDOW,
 		open: true,
-		loginMode: enums.AUTH_MODES.verification
+		loginMode: enums.AUTH_MODES.verification,
+		...args
 	}));
 }
 

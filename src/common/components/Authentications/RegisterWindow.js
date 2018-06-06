@@ -111,7 +111,7 @@ class RegisterWindow extends React.Component {
               emailErrorText: 'This email is already used.'
             });
           } else {
-            throw err
+            console.log(err);
             utils.notifications.notifyErrorByDialog({
               dispatch,
               message: err.message

@@ -73,7 +73,9 @@ function setOsfAccess(state, action) {
 * @return A new userState
 */
 function loadUserState(state, action) {
-	return action.userState;
+	return Object.assign({}, state, {
+		...action.userState
+	});
 }
 
 function setLoginWindow(state, action) {

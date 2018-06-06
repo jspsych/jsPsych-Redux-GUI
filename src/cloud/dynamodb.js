@@ -97,6 +97,7 @@ function putItemToExperimentTable(data) {
 function extractUserData(userState) {
 	return {
 		userId: userState.userId,
+		username: userState.username,
 		fetch: userState
 	};
 }
@@ -126,7 +127,7 @@ export function getUserDate(id) {
 	let param = {
 		TableName: User_Table_Name,
 		Key: {
-			'userId': id
+			'userId': id,
 		},
 		AttributesToGet: [ 'fetch' ] // fetch update local state needed info
 	};
@@ -159,10 +160,10 @@ export function getExperimentsOf(userId) {
 		TableName: Experiment_Table_Name,
 		FilterExpression: "#ownerId = :ownerId",
 		ExpressionAttributeNames: {
-			"#ownerId": "experimentId"
+			"#ownerId": "ownerId"
 		},
 		ExpressionAttributeValues: {
-			":ownerId": "sHVHJWcDT1LtQWtwqJTKdN"
+			":ownerId": userId
 		}
 	};
 	return scanItem(param).then(data => {
@@ -178,7 +179,14 @@ export function getExperimentsOf(userId) {
 */
 export function getLastModifiedExperimentOf(userId) {
 	return getExperimentsOf(userId).then(experiments => {
-		return Math.max.apply(Math, experiments.map(experiment => experiment.lastModifiedDate));
+		let res = null, max = 0;
+		for (let experiment of experiments) {
+			if (experiment.lastModifiedDate > max) {
+				max = experiment.lastModifiedDate;
+				res = experiment;
+			}
+		}
+		return res;
 	});
 }
 

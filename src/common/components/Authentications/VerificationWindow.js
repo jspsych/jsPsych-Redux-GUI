@@ -84,9 +84,7 @@ class VerificationWindow extends React.Component {
         this.setState({
           mode: Modes.success
         });
-        return this.props.load().then(() => {
-          this.props.handleClose();
-        });
+        return this.props.signInCallback().then(this.props.handleClose);
       }).catch((err) => {
         if (err.code === "CodeMismatchException") {
           this.setState({
@@ -192,6 +190,7 @@ class VerificationWindow extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    signInCallback: state.authentications.signInCallback
   }
 }
 

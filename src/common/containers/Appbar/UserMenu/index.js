@@ -20,7 +20,7 @@ const mapStateToProps = (state, ownProps) => {
 	let userState = state.userState;
 	let user = userState.user;
 	return {
-		username: (user.username) ? user.username : null,
+		username: userState.username
 	}
 }
 

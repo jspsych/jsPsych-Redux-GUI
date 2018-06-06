@@ -20,7 +20,7 @@ Amplify.configure({
 * @return {Promise} - A promise that resolves to current user info if successful
 */
 export const signIn = ({username, password}) => {
-	return Auth.signIn(username, password).then(setCredentials).then(getCurrentUserInfo);
+	return Auth.signIn(username, password).then(myaws.Auth.setCredentials).then(myaws.Auth.getCurrentUserInfo);
 }
 
 /**
@@ -33,6 +33,13 @@ export const setCredentials = () => {
 		AWS.config.credentials = essentialCredentials;
 		
 		return essentialCredentials;
+	}).catch(err => {
+		// not signed in
+		if (err.code === 'NotAuthorizedException') {
+			console.log(err.message);
+			return Promise.resolve(null);
+		}
+		throw err;
 	});
 }
 
