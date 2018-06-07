@@ -110,7 +110,11 @@ const prepareSaveExperiment = (state, action) => {
 		new_state.experimentId = core.generateExperimentId();
 	}
 
-	new_state.lastModifiedDate = Date.now();
+	let now = Date.now();
+	if (new_state.createDate === null) {
+		new_state.createDate = now;
+	}
+	new_state.lastModifiedDate = now;
 	return new_state;
 }
 

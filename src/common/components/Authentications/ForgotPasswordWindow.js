@@ -152,7 +152,7 @@ class ForgotPasswordWindow extends React.Component {
             dispatch,
             message: "Your password has been reset successfully."
           });
-          utils.logins.popSignIn({dispatch});
+          utils.loginWindows.popSignIn({dispatch});
         }).catch((err) => {
           if (err.code === 'CodeMismatchException') {
             this.setState({

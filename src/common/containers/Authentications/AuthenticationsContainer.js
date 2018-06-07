@@ -2,70 +2,6 @@ import { connect } from 'react-redux';
 import Authentications from '../../components/Authentications';
 
 
-export const load = ({dispatch}) => {
-	// myaws.Auth.signOut();
-	return dispatch((dispatch, getState) => {
-		return myaws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
-			// break the promise chain when there is no user signed in
-			if (data === null) {
-				throw new errors.NoCurrentUserException();
-			} 
-
-			let { userId } = data;
-
-			return Promise.all([
-				myaws.DynamoDB.getLastModifiedExperimentOf(userId),
-				myaws.DynamoDB.getUserDate(userId)
-			]).then(results => {
-				let [ experimentState, userDataResponse ] = results;
-
-				// load states
-				if (experimentState) {
-					dispatch(actions.actionCreator({
-						type: actions.ActionTypes.LOAD_EXPERIMENT,
-						experimentState
-					}));
-				}
-				let userState = userDataResponse.Item.fetch;
-
-				dispatch(actions.actionCreator({
-					type: actions.ActionTypes.LOAD_USER,
-					userState
-				}));
-
-				return Promise.resolve();
-			});
-		}).catch(err => {
-			// keep the chaining by throwing all other error except 
-			// NoCurrentUserException
-			if (err.code === 'NoCurrentUserException') {
-				console.log(err.message);
-			} else {
-				console.log(err)
-				throw err;
-			}
-		})
-	})
-}
-
-export const saveExperiment = ({dispatch}) => {
-	return dispatch((dispatch, getState) => {
-		return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
-			dispatch(actions.actionCreator({
-				type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT,
-				userId: userInfo.userId
-			}));
-
-			return myaws.DynamoDB.saveExperiment(getState().experimentState);
-		}).then(() => {
-			utils.notifications.notifySuccessBySnackbar({
-				dispatch,
-				message: "Saved !"
-			});
-		});
-	})
-}
-
 const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 	return dispatch((dispatch, getState) => {
 		return myaws.Auth.signIn({
@@ -96,7 +32,7 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 
 			return Promise.resolve();
 		}).then(() => {
-			return load({dispatch});
+			return utils.commonFlows.load({dispatch});
 		}).catch((err) => {
 			if (err.code === "UserNotConfirmedException") {
 				popVerification({
@@ -189,7 +125,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	signIn: ({...args}) => signIn({dispatch, ...args}),
 	signUp: ({...args}) => signUp({dispatch, ...args}),
-	load: () => load({dispatch}),
 	handleWindowClose: () => handleWindowClose({dispatch}),
 	popSignIn: () => popSignIn({dispatch}),
 	popRegister: () => popRegister({dispatch}),

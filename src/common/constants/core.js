@@ -85,8 +85,8 @@ export const createExperiment = ({
 	experimentId: null,
 	description: null,
 
-	createDate: Date.now(),
-	lastModifiedDate: Date.now(),
+	createDate: null,
+	lastModifiedDate: null,
 	ownerId: ownerId,
 	isPublic: isPublic,
 
