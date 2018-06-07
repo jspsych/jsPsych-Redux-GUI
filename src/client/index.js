@@ -13,7 +13,7 @@ import { getUserInfoFromCognito, fetchCredential } from '../common/backend/cogni
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('load', () => {
-	utils.logins.load({dispatch: store.dispatch})
+	utils.logins.load({dispatch: store.dispatch});
 });
 
 window.addEventListener('beforeunload', (e) => {

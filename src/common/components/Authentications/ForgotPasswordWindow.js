@@ -11,8 +11,8 @@ const colors = {
 }
 
 const style = {
-  TextFieldFocusStyle: () => ({
-    ...theme.TextFieldFocusStyle()
+  TextFieldFocusStyle: (error = false) => ({
+    ...theme.TextFieldFocusStyle(error)
   }),
   Actions: {
     Wait: {
@@ -54,81 +54,123 @@ class ForgotPasswordWindow extends React.Component {
       codeErrorText: '',
       passwordErrorText: '',
       prompt: "A verification code will be sent to the email that you used to verify this account.",
+      sendingCode: false,
+      reseting: false
+    }
+
+    this.setUsername = (e, v) => {
+      this.props.setUserName(v);
+      this.setState({
+        usernameErrorText: ''
+      });
+    }
+
+    this.setPassword = (e, v) => {
+      this.props.setPassword(v);
+      this.setState({
+        passwordErrorText: v.length < 10 ? "Password must be at least 10 characters long" : null
+      });
     }
 
     this.setCode = (e, newVal) => {
       this.setState({
         code: newVal,
+        codeErrorText: ''
       });
     }
 
-    this.setCodeError = (m) => {
+    this.sendVerificationCode = () => {
       this.setState({
-        codeErrorText: m
-      });
-    }
-
-    this.setUsernameError = (m) => {
-      this.setState({
-        usernameErrorText: m
-      });
-    }
-
-    this.setPasswordError = (m) => {
-      this.setState({
-        passwordErrorText: m
-      });
-    }
-
-    this.setPrompt = (m) => {
-      this.setState({
-        prompt: m
+        sendingCode: true
+      })
+      let { username } = this.props;
+      myaws.Auth.forgotPassword({username}).then((data) => {
+        if (data) {
+          this.setState({
+            mode: Modes.reset
+          });
+          if (data.CodeDeliveryDetails) {
+            this.setState({ 
+              prompt: `The verification code has been sent to ${data.CodeDeliveryDetails.Destination}.` 
+            });
+            utils.notifications.notifySuccessBySnackbar({
+              dispatch: this.props.dispatch,
+              message: 'The verification code was sent.'
+            });
+          }
+        }
+      }).catch((err) => {
+        if (err.code === 'UserNotFoundException') {
+          this.setState({
+            usernameErrorText: err.message,
+            mode: Modes.ready
+          });
+        }
+        utils.notifications.notifyErrorByDialog({
+          dispatch: this.props.dispatch,
+          message: err.message
+        })
+      }).finally(() => {
+        this.setState({
+          sendingCode: false
+        })
       });
     }
 
     this.handleFogortPassword = () => {
       this.setState({
-        mode: Modes.sendingCode
+        mode: Modes.sendingCode,
       })
-
-      let { username } = this.props;
-      myaws.Auth.forgotPassword({username}).then((data) => {
-        if (data) {
-          console.log(data);
-          this.setState({
-            mode: Modes.reset
-          });
-          if (data.CodeDeliveryDetails) {
-            this.setPrompt("The verification code has been sent to " + data.CodeDeliveryDetails.Destination);
-          }
-        }
-      }).catch((err) => {
-        this.setUsernameError(err.message);
-        this.setState({
-            mode: Modes.ready
-          });
-      });
+      this.sendVerificationCode();
     }
 
-    this.handlePasswordReset = () => {
+    this.resetPassword = () => {
+      let cont_flag = true;
       let { username, password, dispatch } = this.props;
       let { code } = this.state;
 
-      myaws.Auth.forgotPasswordSubmit({
-        username,
-        new_password: password,
-        code
-      }).then(() => {
-        utils.notifications.notifySuccessByDialog({
-          dispatch,
-          message: "Your password has been reset successfully."
+      if(code === ''){
+        this.setState({codeErrorText: "Please enter a valid verification code."});
+        cont_flag = false;
+      }
+      if(password === '' || this.state.passwordErrorText !== null){
+        this.setState({passwordErrorText: "Password must be at least 10 characters long"});
+        cont_flag = false;
+      }
+
+      if (cont_flag) {
+        this.setState({
+          reseting: true
+        })
+        myaws.Auth.forgotPasswordSubmit({
+          username,
+          new_password: password,
+          code
+        }).then(() => {
+          this.props.handleClose();
+          utils.notifications.notifySuccessByDialog({
+            dispatch,
+            message: "Your password has been reset successfully."
+          });
+          utils.logins.popSignIn({dispatch});
+        }).catch((err) => {
+          if (err.code === 'CodeMismatchException') {
+            this.setState({
+              codeErrorText: err.message
+            });
+          } else {
+            utils.notifications.notifyErrorByDialog({
+              dispatch,
+              message: err.message
+            });
+          }
+        }).finally(() => {
+          this.setState({
+            reseting: false
+          })
         });
-      }).catch((err) => {
-        utils.notifications.notifyErrorByDialog({
-          dispatch,
-          message: err.message
-        });
-      });
+      }
+      
     }
 
     this.renderContent = () => {
@@ -146,7 +188,7 @@ class ForgotPasswordWindow extends React.Component {
                 floatingLabelText="Username" 
                 errorText={usernameErrorText} 
                 value={this.props.username} 
-                onChange={(e, v) => { this.props.setUserName(v); }}
+                onChange={this.setUsername}
                    onKeyPress={(e)=>{
                       if (e.which === 13) {
                         this.handleFogortPassword();
@@ -154,7 +196,7 @@ class ForgotPasswordWindow extends React.Component {
                    }}
                 />
               <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-                {(this.state.mode === Modes.sendingCode) ?
+                {this.state.sendingCode ?
                   <CircularProgress {...style.Actions.Wait}/> :
                   <FlatButton 
                     label="Next" 
@@ -179,7 +221,7 @@ class ForgotPasswordWindow extends React.Component {
                 onChange={this.setCode}
                 onKeyPress={(e)=>{
                    if (e.which === 13) {
-                     this.handlePasswordReset();
+                     this.resetPassword();
                    }
                 }}
                 />
@@ -191,41 +233,38 @@ class ForgotPasswordWindow extends React.Component {
                 type="password" 
                 errorText={passwordErrorText} 
                 value={this.props.password} 
-                onChange={(e, v) => { this.props.setPassword(v); }}
+                onChange={this.setPassword}
                    onKeyPress={(e)=>{
                       if (e.which === 13) {
-                        this.handlePasswordReset();
+                        this.resetPassword();
                       }
                    }}
                 />
               <div style={{margin:'auto', textAlign: 'center', paddingTop: 15}}>
-                {(this.state.mode === Modes.resetProcessing) ? 
+                {this.state.reseting ? 
                   <CircularProgress {...style.Actions.Wait}/> :
                   <RaisedButton 
                     label="Reset your password" 
-                    onClick={this.handlePasswordReset} 
+                    onClick={this.resetPassword} 
                     {...style.Actions.Next}
                   />
                 }
               </div>
               <div style={{margin:'auto', textAlign: 'center', paddingTop: 15, paddingBottom: 20}}>
-                <FlatButton 
-                  label="Resend verification Code" 
-                  onClick={this.handleFogortPassword} 
-                  {...style.Actions.Resend}
-                />
+                {this.state.sendingCode ? 
+                  <CircularProgress {...style.Actions.Wait}/> :
+                  <FlatButton 
+                    label="Resend verification Code" 
+                    onClick={this.sendVerificationCode} 
+                    {...style.Actions.Resend}
+                  />
+                }
               </div>
             </div>
           )
         default:
           return null;
       }
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return {
-      ...nextProps
     }
   }
   

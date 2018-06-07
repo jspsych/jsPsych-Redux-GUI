@@ -74,26 +74,37 @@ class VerificationWindow extends React.Component {
     }
 
     this.handleVerification = () => {
-      this.setState({
-        mode: Modes.processing
-      });
-      myaws.Auth.confirmSignUp({
-        username: this.props.username, 
-        code: this.state.code.trim()
-      }).then(() => {
+      let cont_flag = true;
+      let { code } = this.state;
+
+      if(code === ''){
+        this.setState({codeErrorText: "Please enter a valid verification code."});
+        cont_flag = false;
+      }
+
+      if (cont_flag) {
         this.setState({
-          mode: Modes.success
+          mode: Modes.processing
         });
-        return this.props.signInCallback().then(this.props.handleClose);
-      }).catch((err) => {
-        if (err.code === "CodeMismatchException") {
+        myaws.Auth.confirmSignUp({
+          username: this.props.username, 
+          code: this.state.code.trim()
+        }).then(() => {
           this.setState({
-            mode: Modes.ready,
-            codeErrorText: err.message
+            mode: Modes.success
           });
-        }
-        console.log(err);
-      });
+          return this.props.signInCallback().then(this.props.handleClose);
+        }).catch((err) => {
+          if (err.code === "CodeMismatchException") {
+            this.setState({
+              mode: Modes.ready,
+              codeErrorText: err.message
+            });
+          }
+          console.log(err);
+        });
+      }
+      
     }
 
     this.resendVerificationCode = () => {

@@ -24,14 +24,14 @@ const setNotification = (state, action) => {
 		case actions.ActionTypes.NOTIFY_SUCCESS_DIALOG:
 		case actions.ActionTypes.NOTIFY_ERROR_DIALOG:
 		case actions.ActionTypes.POP_UP_CONFIRM:
-			return Object.assign({}, state, {
+			return Object.assign({}, initState, {
 				dialogOpen: true,
 				...action
 			});
 		case actions.ActionTypes.NOTIFY_SUCCESS_SNACKBAR:
 		case actions.ActionTypes.NOTIFY_WARNING_SNACKBAR: 
 		case actions.ActionTypes.NOTIFY_ERROR_SNACKBAR: 
-			return Object.assign({}, state, {
+			return Object.assign({}, initState, {
 				snackbarOpen: true,
 				...action
 			});
