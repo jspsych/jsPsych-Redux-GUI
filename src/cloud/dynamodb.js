@@ -108,6 +108,7 @@ function extractUserData(userState) {
 * @return {Object} - Key-Value pairs that map the design of experiment table
 */
 function extractExperimentData(experimentState) {
+	console.log(experimentState)
 	return {
 		experimentId: experimentState.experimentId,
 		fetch: experimentState,

@@ -101,19 +101,16 @@ const loadExperiment = (state, action) => {
 
 const prepareSaveExperiment = (state, action) => {
 	let new_state = utils.deepCopy(state);
-
+	
 	// register experiment to the user if it is new experiment
 	if (new_state.ownerId === null) {
-		new_state.ownerId = action.userId
+		new_state.ownerId = action.userId;
+	}
+	if (new_state.experimentId === null) {
+		new_state.experimentId = core.generateExperimentId();
 	}
 
-	let now = Date.now();
-	// record create date if it is new experiment
-	if (new_state.createDate === null) {
-		new_state.createDate = now;
-	}
-	// record last modified date
-	new_state.lastModifiedDate = now;
+	new_state.lastModifiedDate = Date.now();
 	return new_state;
 }
 

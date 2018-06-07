@@ -19,7 +19,7 @@ window.addEventListener('load', () => {
 window.addEventListener('beforeunload', (e) => {
 	let { userState, experimentState } = store.getState();
 	// new 
-	if (!utils.deepEqual(userState.lastModifiedExperimentState, experimentState)) {
+	if (utils.deepEqual(userState.lastModifiedExperimentState, experimentState)) {
 		e.returnValue = true;
 		return true;
 	}

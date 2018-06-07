@@ -50,12 +50,19 @@ export const load = ({dispatch}) => {
 
 export const saveExperiment = ({dispatch}) => {
 	return dispatch((dispatch, getState) => {
-		let { userState } = getState();
-		dispatch(actions.actionCreator({
-			type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT,
-			userId: userState.userId
-		}));
-		return myaws.DynamoDB.saveExperiment(getState().experimentState);
+		return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
+			dispatch(actions.actionCreator({
+				type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT,
+				userId: userInfo.userId
+			}));
+
+			return myaws.DynamoDB.saveExperiment(getState().experimentState);
+		}).then(() => {
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch,
+				message: "Saved !"
+			});
+		});
 	})
 }
 
@@ -70,12 +77,11 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			if (firstSignIn) {
 				let { userId, username, email } = userInfo;
 
-				return myaws.DynamoDB.saveUserData({
-					...core.getInitUserState(),
+				return myaws.DynamoDB.saveUserData(core.createUser({
 					userId,
 					username,
 					email
-				});
+				}));
 			}
 
 			return Promise.resolve();
@@ -83,9 +89,8 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			// if user has changed anything
 			// save the change
 
-			// testing stage
-			let anyChange = utils.deepEqual(core.getInitExperimentState(), getState().experimentState) && false;
-			if (anyChange) {
+			let anyChange = !utils.deepEqual(core.getInitExperimentState(), getState().experimentState);
+			if (anyChange || true) {
 				return saveExperiment({dispatch});
 			}
 

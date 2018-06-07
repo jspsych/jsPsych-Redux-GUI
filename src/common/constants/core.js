@@ -1,8 +1,12 @@
-export const getInitUserState = () => ({
+export const createUser = ({
+	userId = null,
+	username = null,
+	email = null,
+}={}) => ({
 	// Cognito Identity Id
-	userId: null, 
-	username: null,
-	email: null,
+	userId: userId, 
+	username: username,
+	email: email,
 
 	// osf access information
 	osfAccess: [],
@@ -67,15 +71,24 @@ export const getDefaultInitDiyDeployInfo = () => ({
 	saveAfter: 0,
 })
 
-export const getInitExperimentState = () => ({
-	experimentName: "Untitled Experiment",
+export const getInitExperimentState = () => createExperiment({experimentId: null});
+
+export const generateExperimentId = () => `experiment_${utils.getUUID()}`;
+
+export const createExperiment = ({
+	experimentName = "Untitled Experiment",
+	ownerId = null,
+	isPublic = false,
+	experimentId = generateExperimentId()
+}={}) => ({
+	experimentName: experimentName,
 	experimentId: null,
 	description: null,
 
-	createDate: null,
-	lastModifiedDate: null,
-	ownerId: null,
-	isPublic: false,
+	createDate: Date.now(),
+	lastModifiedDate: Date.now(),
+	ownerId: ownerId,
+	isPublic: isPublic,
 
 	/********** experiment contents **********/
 	mainTimeline: [],
