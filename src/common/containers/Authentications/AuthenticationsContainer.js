@@ -90,7 +90,7 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			// save the change
 
 			let anyChange = !utils.deepEqual(core.getInitExperimentState(), getState().experimentState);
-			if (anyChange || true) {
+			if (anyChange) {
 				return saveExperiment({dispatch});
 			}
 
