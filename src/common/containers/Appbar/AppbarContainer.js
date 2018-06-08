@@ -70,33 +70,6 @@ const clickSave = ({dispatch}) => {
 	});
 }
 
-
-const save = (dispatch, onStart = () => {}, onFinish = () => {}) => {
-	dispatch((dispatch, getState) => {
-		// not logged in
-		if (!getState().userState.user.identityId) {
-			notifyWarningBySnackbar(dispatch, 'You need to sign in before saving your work !');
-			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
-			return;
-		}
-
-		// on start effect
-		let anyChange = !utils.deepEqual(getState().userState.lastModifiedExperimentState,
-			getState().experimentState);
-
-		// if there is any change
-		if (anyChange) {
-			onStart();
-			$save(dispatch, getState).finally(() => {
-				onFinish();
-			});
-		} else {
-			notifyWarningBySnackbar(dispatch, 'Nothing has changed since last save !');
-		}
-	});
-}
-
-
 const clickNewExperiment = ({dispatch}) => {
 	let loadNewExperiment = () => {
 		dispatch(actions.actionCreator({
@@ -123,39 +96,6 @@ const clickNewExperiment = ({dispatch}) => {
 			});
 		} else {
 			loadNewExperiment();
-		}
-	});
-}
-
-const newExperiment = (dispatch, popUpConfirm) => {
-	dispatch((dispatch ,getState) => {
-		let anyChange = !utils.deepEqual(
-			getState().userState.lastModifiedExperimentState,
-			getState().experimentState
-		);
-		if (anyChange) {
-			popUpConfirm(
-				"Do you want to save the changes before creating a new experiment?",
-				() => {
-					$save(dispatch, getState).then(() => {
-						dispatch(backendActions.newExperimentAction());
-					});
-				},
-				"Yes (Continue with saving)",
-				() => { dispatch(backendActions.newExperimentAction()); },
-				"No (Continue without saving)"
-			);
-		} else {
-			popUpConfirm(
-				"Do you want to close the current experiment and open a new one?",
-				() => {
-					dispatch(backendActions.newExperimentAction());
-				},
-				"Yes, close it!",
-				() => {},
-				"No, hold on...",
-				false
-			);
 		}
 	});
 }
@@ -212,8 +152,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	changeExperimentName: (text) => { changeExperimentName(dispatch, text); },
-	save: (onStart, onFinish) => { save(dispatch, onStart, onFinish); },
-	newExperiment: (popUpConfirm) => { newExperiment(dispatch, popUpConfirm); },
 	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
 	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); },
 	clickSave: () => clickSave({dispatch}),
