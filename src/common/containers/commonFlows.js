@@ -5,7 +5,7 @@ export const load = ({dispatch}) => {
 			// Save initial experiment state to local storage
 			// break the promise chain when there is no user signed in
 			if (data === null) {
-				utils.saveExperimentStateToLocal(core.getInitExperimentState());
+				saveExperimentStateToLocal(core.getInitExperimentState());
 				throw new errors.NoCurrentUserException();
 			} 
 
@@ -20,7 +20,7 @@ export const load = ({dispatch}) => {
 				// load states
 				if (experimentState) {
 					// Save state to local storage
-					utils.saveExperimentStateToLocal(experimentState);
+					saveExperimentStateToLocal(experimentState);
 
 					// load experiment state
 					dispatch(actions.actionCreator({
@@ -64,7 +64,7 @@ export const saveExperiment = ({dispatch}) => {
 			return myaws.DynamoDB.saveExperiment(getState().experimentState);
 		}).then(() => {
 			// Update local storage 
-			utils.saveExperimentStateToLocal(experimentState);
+			saveExperimentStateToLocal(getState().experimentState);
 			// notify success
 			utils.notifications.notifySuccessBySnackbar({
 				dispatch,
@@ -77,4 +77,31 @@ export const saveExperiment = ({dispatch}) => {
 			});
 		});
 	})
+}
+
+
+
+const Jspsych_Experiment_Local_Storage = '$Jspsych_Experiment_Local_Storage';
+export const saveExperimentStateToLocal = (state) => {
+	window.localStorage.setItem(Jspsych_Experiment_Local_Storage, JSON.stringify(state));
+}
+
+export const getExperimentStateFromLocal = () => {
+	let lastExperimentStateString = window.localStorage.getItem(Jspsych_Experiment_Local_Storage);
+	if (!lastExperimentStateString) {
+		saveExperimentStateToLocal(core.getInitExperimentState());
+		return getExperimentStateFromLocal();
+	} else {
+		return JSON.parse(lastExperimentStateString);
+	}
+}
+
+export const anyExperimentChange = (currentExperimentState) => !utils.deepEqual(getExperimentStateFromLocal(), currentExperimentState);
+
+export const isUserSignedIn = () => {
+	return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
+		return !!userInfo;
+	}).catch((err) => {
+		return Promise.resolve(false)
+	});
 }

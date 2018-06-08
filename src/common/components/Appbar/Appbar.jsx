@@ -160,13 +160,26 @@ export default class Appbar extends React.Component {
       proceedLabel: "No",
       showCloseButton: false,
 
-      experimentName: this.props.experimentName
+      experimentName: this.props.experimentName,
+
+      saving: false
     }
 
     this.setPerforming = (p) => {
       this.setState({
         performing: p
       });
+    }
+
+    this.handleSave = () => {
+      this.setState({
+        saving: true
+      });
+      this.props.clickSave().finally(() => {
+        this.setState({
+          saving: false
+        })
+      })
     }
 
     this.handleSaveAsOpen = () => {
@@ -255,25 +268,22 @@ export default class Appbar extends React.Component {
 
           <IconButton 
             tooltip="New Experiment"
-            onClick={() => { this.props.newExperiment(this.popUpConfirm); }}
+            onClick={this.props.clickNewExperiment}
             > 
             <New {...style.icon} />
           </IconButton>
 
 
-          {(this.state.performing === Actions.save) ?
+          {this.state.saving ?
             <CircularProgress {...style.Actions.Wait}/> :
             <IconButton 
               tooltip="Save"
-              onClick={() => { this.props.save(()=>{
-                this.setPerforming(Actions.save);
-              }, () => {
-                this.setPerforming(null);
-              });}}
+              onClick={this.handleSave}
             > 
               <Save {...style.icon} />
             </IconButton>
           }
+
           {(this.state.performing === Actions.saveAs) ?
             <CircularProgress {...style.Actions.Wait}/> :
             <IconButton 

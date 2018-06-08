@@ -81,6 +81,23 @@ export const createExperiment = ({
 	isPublic = false,
 	experimentId = generateExperimentId()
 }={}) => ({
+	owner: null,
+ 	private: true,
+	experimentDetails: {
+		createdDate: null,
+		lastEditDate: null,
+		description: null,
+	},
+
+	/********** S3 Mappings **********/
+	media: {},
+
+	previewId: null,
+
+	/////////////////////////////////////////
+
+
+	
 	experimentName: experimentName,
 	experimentId: null,
 	description: null,

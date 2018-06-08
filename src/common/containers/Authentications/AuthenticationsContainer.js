@@ -25,9 +25,8 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			// if user has changed anything
 			// save the change
 
-			let anyChange = !utils.deepEqual(core.getInitExperimentState(), getState().experimentState);
-			if (anyChange) {
-				return saveExperiment({dispatch});
+			if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
+				return utils.commonFlows.saveExperiment({dispatch});
 			}
 
 			return Promise.resolve();

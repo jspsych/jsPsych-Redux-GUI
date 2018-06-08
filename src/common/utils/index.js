@@ -4,7 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { cloneDeep, isEqual } from 'lodash';
 import short_uuid from 'short-uuid';
 
-import * as notifications from '../containers/Notifications';
+import * as notifications from '../containers/Notifications/NotificationsContainer.js';
 import * as loginWindows from '../containers/Authentications/AuthenticationsContainer.js';
 import * as commonFlows from '../containers/commonFlows.js';
 
@@ -28,13 +28,6 @@ export const prefixer = (style={}, multiple=false) => {
 
 // Backend flows or related
 export { notifications, loginWindows, commonFlows };
-
-const Jspsych_Experiment_Local_Storage = '$Jspsych_Experiment_Local_Storage';
-export const saveExperimentStateToLocal = (state) => {
-	window.localStorage.setItem(Jspsych_Experiment_Local_Storage, JSON.stringify(state));
-}
-
-export const getExperimentStateFromLocal = () => JSON.parse(window.localStorage.getItem(Jspsych_Experiment_Local_Storage));
 
 // React-DnD
 export const withDnDContext = DragDropContext(HTML5Backend);
