@@ -44,6 +44,7 @@ export default class UserMenu extends React.Component {
     this.state = {
         open: false,
         experimentListOpen: false,
+        isSignedIn: false
     }
 
 
@@ -109,19 +110,28 @@ export default class UserMenu extends React.Component {
     }
 
     this.renderUserPic = (login, size=36) => {
-      return ((!login) ? 
-              null:
-              <Avatar 
-                size={size} 
-                {...style.Avatar}
-              >
-                {this.props.username.charAt(0)}
-              </Avatar>)
+      if (login) {
+        return (
+          <Avatar 
+            size={size} 
+            {...style.Avatar}
+          >
+            {this.props.username.charAt(0)}
+          </Avatar>
+        )
+      } else {
+        return null;
+      }
     }
   }
 
   componentDidMount() {
     this.props.openProfilePage(this.Profile.handleOpen);
+    utils.commonFlows.isUserSignedIn().then((signedIn) => {
+      this.setState({
+        isSignedIn: signedIn
+      });
+    });
   }
   
   componentWillUnmount() {
@@ -129,7 +139,8 @@ export default class UserMenu extends React.Component {
   }
 
   render() {
-    let login = this.props.username !== null;
+    // double check
+    let login = !!this.props.username && this.state.isSignedIn;
     let buttonLabel = (!login) ? 'Sign Up/Log In' : this.props.username;
 
     return (
@@ -156,7 +167,7 @@ export default class UserMenu extends React.Component {
             anchorOrigin={{horizontal:"right",vertical:"bottom"}}
             targetOrigin={{horizontal:"right",vertical:"top"}}
             >
-            {this.renderMenu(login)}
+            {this.renderMenu()}
           </Popover>
     </div>
     )

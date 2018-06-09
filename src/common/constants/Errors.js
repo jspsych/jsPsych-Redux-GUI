@@ -1,4 +1,4 @@
-export const internetError = new Error("Your internet may be disconnected !");
+export const InternetError = new Error("Your internet may be disconnected !");
 
 export class NotVerifiedException extends Error {
 	constructor(message='You must verify your account first.') {

@@ -7,7 +7,6 @@ import {
 	notifySuccessBySnackbar,
 	notifyWarningBySnackbar
 } from '../../Notification';
-import { pureSaveFlow } from '../index.js';
 import { diyDeploy as $diyDeploy } from '../../../backend/deploy';
 
 const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
@@ -17,7 +16,10 @@ const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
 		}));
 
 		return Promise.all([
-			pureSaveFlow(dispatch, getState),
+			utils.commonFlows.saveExperiment({
+				dispatch,
+				displayNotification: false
+			}),
 			$diyDeploy({state: getState(), progressHook: progressHook})
 		]).catch((e) => {
 			notifyErrorByDialog(dispatch, e.message);

@@ -118,6 +118,19 @@ const prepareSaveExperiment = (state, action) => {
 	return new_state;
 }
 
+const prepareSaveExperimentAs = (state, action) => {
+	let new_state = utils.deepCopy(state);
+
+	new_state.experimentId = core.generateExperimentId();
+	new_state.experimentName = action.newName;
+
+	let now = Date.now();
+	new_state.createDate = now;
+	new_state.lastModifiedDate = now;
+
+	return new_state;
+}
+
 
 /**@function(state, action)
  * @name experimentReducer
@@ -167,6 +180,8 @@ export default function experimentReducer(state=initState, action) {
 			return loadExperiment(state, action);
 		case actions.ActionTypes.PREPARE_SAVE_EXPERIMENT:
 			return prepareSaveExperiment(state, action);
+		case actions.ActionTypes.PREPARE_SAVE_EXPERIMENT_AS:
+			return prepareSaveExperimentAs(state, action);
 
 		// Deploy
 		case actions.ActionTypes.SET_CLOUD_DEPLOY_INFO:

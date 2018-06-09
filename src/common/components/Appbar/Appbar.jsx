@@ -22,8 +22,7 @@ import MediaManager from '../../containers/MediaManager';
 import CloudDeploymentManager from '../../containers/Appbar/CloudDeploymentManager';
 import DIYDeploymentManager from '../../containers/Appbar/DIYDeploymentManager';
 
-import ConfirmationDialog from '../Notification/ConfirmationDialog';
-import { renderDialogTitle } from '../gadgets';
+import { DialogTitle } from '../gadgets';
 
 import AppbarTheme from './theme.js';
 
@@ -147,28 +146,14 @@ export default class Appbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      saveAsOpen: false,
-      saveAsName: '',
-      saveAsNameError: '',
-
-      performing: null,
-      confirmOpen: false,
-      confirmMessage: "Null",
-      proceedWithOperation: () => {},
-      proceedWithOperationLabel: "Yes",
-      proceed: () => {},
-      proceedLabel: "No",
-      showCloseButton: false,
+      saveAsWindowOpen: false,
+      newExperimentName: '',
+      newExperimentNameErrorText: '',
 
       experimentName: this.props.experimentName,
 
-      saving: false
-    }
-
-    this.setPerforming = (p) => {
-      this.setState({
-        performing: p
-      });
+      saving: false,
+      isSignedIn: false
     }
 
     this.handleSave = () => {
@@ -182,61 +167,55 @@ export default class Appbar extends React.Component {
       })
     }
 
-    this.handleSaveAsOpen = () => {
+    this.handleSaveAsWindowOpen = () => {
+      utils.commonFlows.isUserSignedIn().then((signedIn) => {
+        if (signedIn) {
+          this.setState({
+            saveAsWindowOpen: true,
+            newExperimentName: this.props.experimentName,
+            newExperimentNameErrorText: '',
+          })
+        } else {
+          utils.notifications.notifyWarningBySnackbar({
+            dispatch: this.props.dispatch,
+            message: 'You need to sign in before saving your work !'
+          });
+        }
+      });
+    }
+
+    this.handleSaveAsWindowClose = () => {
       this.setState({
-        saveAsOpen: true,
-        saveAsName: this.props.experimentName
+        saveAsWindowOpen: false,
+        newExperimentName: '',
+        newExperimentNameErrorText: '',
       })
     }
 
-    this.handleSaveAsClose = () => {
+    this.handleSaveAs = () => {
       this.setState({
-        saveAsOpen: false,
-        saveAsName: '',
-        saveAsNameError: '',
-      })
+        savingAs: true
+      });
+      this.props.clickSaveAs({
+        newName: this.state.newExperimentName
+      }).then(() => {
+        this.handleSaveAsWindowClose();
+      }).finally(() => {
+        this.setState({
+          savingAs: false
+        });
+      });
     }
 
     this.setSaveAsName = (e, n) => {
       this.setState({
-        saveAsName: n,
-        saveAsNameError: (/\S/.test(n)) ? '' : "New experiment name can't be empty."
+        newExperimentName: n,
+        newExperimentNameErrorText: (/\S/.test(n)) ? '' : "New experiment name can't be empty."
       })
     } 
-
-    this.handleConfirmClose = () => {
-      this.setState({
-        confirmOpen: false
-      })
-    }
-
-    this.popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel, showCloseButton=true) => {
-      this.setState({
-        confirmOpen: true,
-        confirmMessage: message,
-        proceedWithOperation: proceedWithOperation,
-        proceedWithOperationLabel: proceedWithOperationLabel,
-        proceed: proceed,
-        proceedLabel: proceedLabel,
-        showCloseButton: showCloseButton
-      })
-    }
   }
 
-	render() {
-    const saveAsCallback = () => {
-      if (this.state.saveAsNameError === '') {
-        this.props.saveAs(
-          this.state.saveAsName,
-          () => {
-            this.setPerforming(Actions.saveAs);
-          }, () => {
-            this.setPerforming(null);
-          });
-      }
-      this.handleSaveAsClose();
-    }
-
+  render() {
     const OrangizerToggle = (
       <IconButton 
         onClick={() => {
@@ -251,14 +230,14 @@ export default class Appbar extends React.Component {
       </IconButton>
     );
 
-    const title = (
+    const Experiment_Title = (
       <ExperimentNameField
         experimentName={this.props.experimentName}
         commit={this.props.changeExperimentName}
       />
     );
 
-    const toolbar = (
+    const Experiment_Toolbar = (
       <div className="Appbar-tools" style={style.Toolbar}>
           <InitEditor />
 
@@ -284,15 +263,12 @@ export default class Appbar extends React.Component {
             </IconButton>
           }
 
-          {(this.state.performing === Actions.saveAs) ?
-            <CircularProgress {...style.Actions.Wait}/> :
-            <IconButton 
-              tooltip="Save As"
-              onClick={() => { this.props.saveAsOpen(this.handleSaveAsOpen); }}
-              > 
-              <SaveAs {...style.icon} />
-            </IconButton>
-          }
+          <IconButton 
+            tooltip="Save As"
+            onClick={this.handleSaveAsWindowOpen}
+            > 
+            <SaveAs {...style.icon} />
+          </IconButton>
 
           <ToolbarSeparator style={{...style.ToolbarSeparator}}/>
 
@@ -302,64 +278,66 @@ export default class Appbar extends React.Component {
       </div>
     )
 
-		return (
-      		<div className="Appbar" style={style.Appbar} >
-            {OrangizerToggle}
-            {title}
-            {toolbar}
-            <UserMenu openProfilePage={el => this.openProfilePage = el}/>
-            <ConfirmationDialog
-              open={this.state.confirmOpen}
-              message={this.state.confirmMessage}
-              handleClose={this.handleConfirmClose}
-              proceedWithOperation={this.state.proceedWithOperation}
-              proceedWithOperationLabel={this.state.proceedWithOperationLabel}
-              proceed={this.state.proceed}
-              proceedLabel={this.state.proceedLabel}
-              showCloseButton={this.state.showCloseButton}
-            />
-
-            <Dialog
-              open={this.state.saveAsOpen}
-              onRequestClose={this.handleSaveAsClose}
-              titleStyle={{padding: 12}}
-              title={renderDialogTitle(<Subheader></Subheader>, this.handleSaveAsClose, null, {}, false)}
-              contentStyle={{width: 450, height: 300, padding: 0}}
-              bodyStyle={{backgroundColor: colors.dialogBodyColor}}
-              actions={[
-                <FlatButton
-                  {...style.Actions.SaveAs}
-                  label="Save As"
-                  onClick={saveAsCallback}
-                />,
-                <FlatButton
-                  {...style.Actions.Cancel}
-                  label="Cancel"
-                  onClick={this.handleSaveAsClose}
-                />
-              ]}
-            >
-            <div style={{width: 400, margin: 'auto'}}
-              onKeyPress={(e)=>{
-                if (e.which === 13) {
-                  saveAsCallback();
-                }
-               }}
-            >
-              <TextField
-                {...style.TextFieldFocusStyle(this.state.saveAsNameError !== '')}
-                id="Save-as-new-experiment-name"
-                floatingLabelFixed={true}
-                floatingLabelText="New experiment name"
-                value={this.state.saveAsName}
-                errorText={this.state.saveAsNameError}
-                onChange={this.setSaveAsName}
-                fullWidth={true}
+    const SaveAs_Window = (
+        <Dialog
+            open={this.state.saveAsWindowOpen}
+            modal
+            titleStyle={{padding: 12}}
+            title={
+              <DialogTitle
+                node={<Subheader></Subheader>}
+                closeCallback={this.handleSaveAsWindowClose}
+                showCloseButton={false}
               />
-            </div>
-            </Dialog>
-					</div>
-		   )
-	}
+            }
+            contentStyle={{width: 450, height: 300, padding: 0}}
+            bodyStyle={{backgroundColor: colors.dialogBodyColor}}
+            actions={[
+              this.state.savingAs ?
+              <CircularProgress {...style.Actions.Wait}/> :
+              <FlatButton
+                {...style.Actions.SaveAs}
+                label="Save As"
+                onClick={this.handleSaveAs}
+              />,
+              <FlatButton
+                {...style.Actions.Cancel}
+                label="Cancel"
+                disabled={this.state.savingAs}
+                onClick={this.handleSaveAsWindowClose}
+              />
+            ]}
+          >
+          <div style={{width: 400, margin: 'auto'}}
+            onKeyPress={(e)=>{
+              if (e.which === 13) {
+                this.handleSaveAs();
+              }
+             }}
+          >
+            <TextField
+              {...style.TextFieldFocusStyle(!!this.state.newExperimentNameErrorText)}
+              id="Save-as-new-experiment-name"
+              floatingLabelFixed
+              floatingLabelText="New experiment name"
+              value={this.state.newExperimentName}
+              errorText={this.state.newExperimentNameErrorText}
+              onChange={this.setSaveAsName}
+              fullWidth
+            />
+          </div>
+      </Dialog>
+    )
+
+    return (
+          <div className="Appbar" style={style.Appbar} >
+            {OrangizerToggle}
+            {Experiment_Title}
+            {Experiment_Toolbar}
+            <UserMenu openProfilePage={el => this.openProfilePage = el}/>
+            {SaveAs_Window}
+        </div>
+       )
+  }
 
 }

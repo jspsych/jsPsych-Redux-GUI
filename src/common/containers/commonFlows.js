@@ -51,7 +51,7 @@ export const load = ({dispatch}) => {
 	})
 }
 
-export const saveExperiment = ({dispatch}) => {
+export const saveExperiment = ({dispatch, displayNotification=true}) => {
 	return dispatch((dispatch, getState) => {
 		return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
 			// pre-process experiment state for pushing to AWS
@@ -66,11 +66,14 @@ export const saveExperiment = ({dispatch}) => {
 			// Update local storage 
 			saveExperimentStateToLocal(getState().experimentState);
 			// notify success
-			utils.notifications.notifySuccessBySnackbar({
-				dispatch,
-				message: "Saved !"
-			});
+			if (displayNotification) {
+				utils.notifications.notifySuccessBySnackbar({
+					dispatch,
+					message: "Saved !"
+				});
+			}
 		}).catch((err) => {
+			console.log(err);
 			utils.notifications.notifyErrorByDialog({
 				dispatch,
 				message: err.message

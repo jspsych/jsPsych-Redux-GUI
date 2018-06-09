@@ -1,8 +1,7 @@
 import { connect } from 'react-redux';
-import deepEqual from 'deep-equal';
-import * as backendActions from '../../../../actions/backendActions';
 import ExperimentList from '../../../../components/Appbar/UserMenu/ExperimentList';
-import * as Errors from '../../../../constants/Errors' ;
+import * as backendActions from '../../../../actions/backendActions';
+
 import { $save } from '../../index';
 import {
 	fetchExperimentById,
@@ -11,12 +10,7 @@ import {
 	pushExperimentData,
 	// pushState
 } from '../../../../backend/dynamoDB';
-import {
-	deleteFiles,
-	generateCopyParam,
-	copyFiles,
-	listBucketContents
-} from '../../../../backend/s3';
+
 import {
 	notifyErrorByDialog,
 	notifySuccessBySnackbar,
@@ -29,7 +23,7 @@ const $pullExperiment = (dispatch, getState, selected) => {
 	// fetch experiment
 	return fetchExperimentById(selected).then((data) => {
 		if (!data) {
-			throw Errors.internetError;
+			throw errors.InternetError;
 		}
 		// set lastModifiedExperiment id
 		dispatch(backendActions.pullExperimentAction(data));
@@ -58,7 +52,7 @@ const pullExperiment = (dispatch, selected, popUpConfirm, onStart, onFinish) => 
 	dispatch((dispatch, getState) => {
 		// check if save current experiment
 		if (getState().experimentState.experimentId === selected) return;
-		if (deepEqual(
+		if (utils.deepEqual(
 				getState().userState.lastModifiedExperimentState,
 				getState().experimentState)) {
 			onStart();
@@ -121,7 +115,7 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 					// fetch experiment state
 					fetchExperimentById(id).then((data) => {
 						if (!data || !data.Item) {
-							throw Errors.internetError;
+							throw errors.InternetError;
 						}
 						let filepaths = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) => (f.Key)) : [];
 
@@ -131,7 +125,7 @@ const deleteExperiment = (dispatch, id, popUpConfirm, onStart, onFinish) => {
 							// delete it from dynamoDB
 							$deleteExperiment(id),
 							// delete corresponding s3 files
-							deleteFiles(filepaths),
+							myaws.S3.deleteFiles(filepaths),
 						]).then(() => {
 							// update user state on dynamoDB
 							dispatch(backendActions.deleteExperimentAction(id));
@@ -169,7 +163,7 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 		// fetch experiment
 		fetchExperimentById(id).then((data) => {
 			if (!data) {
-				throw Errors.internetError;
+				throw errors.InternetError;
 			}
 			let now = Date.now();
 			let newId = utils.getUUID();
@@ -186,13 +180,13 @@ const duplicateExperiment = (dispatch, id, onStart, onFinish) => {
 
 			// duplicate resources saved on s3
 			let params = (data.Item.fetch.media.Contents) ? data.Item.fetch.media.Contents.map((f) =>
-				(generateCopyParam({source: f.Key, target: f.Key.replace(data.Item.fetch.experimentId, newId)}))
+				(myaws.S3.generateCopyParam({source: f.Key, target: f.Key.replace(data.Item.fetch.experimentId, newId)}))
 			) : [];
 			// duplicate s3 files
-			copyFiles({params: params}).then((data) => {
+			myaws.S3.copyFiles({params: params}).then((data) => {
 				cloudDelete(experimentState.experimentId),
 				// fetch new media
-				listBucketContents(
+				myaws.S3.listBucketContents(
 					{Prefix: `${getState().userState.user.identityId}/${experimentState.experimentId}/`}
 					).then((data) => {
 					// update media property

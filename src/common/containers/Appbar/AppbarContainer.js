@@ -1,28 +1,11 @@
 import { connect } from 'react-redux';
+import Appbar from '../../components/Appbar';
 
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
 import * as backendActions from '../../actions/backendActions';
-import * as userActions from '../../actions/userActions' ;
-import * as editorActions from '../../actions/editorActions';
-import Appbar from '../../components/Appbar';
-import { LoginModes } from '../../reducers/User';
-import {
-	notifyErrorByDialog,
-	notifySuccessBySnackbar,
-	notifyWarningBySnackbar
-} from '../Notification';
+
 import { pushState } from '../../backend/dynamoDB';
-import {
-	listBucketContents,
-	generateCopyParam,
-	copyFiles,
-} from '../../backend/s3';
 
-
-const changeExperimentName = (dispatch, text) => {
-	text = utils.toNull(text);
-	dispatch(experimentSettingActions.setExperimentNameAction(text));
-}
 
 export const pureSaveFlow = (dispatch, getState) => {
 	dispatch(backendActions.clickSavePushAction());
@@ -32,10 +15,13 @@ export const pureSaveFlow = (dispatch, getState) => {
 export const $save = (dispatch, getState) => {
 	return pureSaveFlow(dispatch, getState).then(
 		() => {
-			notifySuccessBySnackbar(dispatch, "Saved !");
 		}, (err) => {
-			notifyErrorByDialog(dispatch, err.message);
 		});
+}
+
+const changeExperimentName = (dispatch, text) => {
+	text = utils.toNull(text);
+	dispatch(experimentSettingActions.setExperimentNameAction(text));
 }
 
 const clickSave = ({dispatch}) => {
@@ -100,46 +86,43 @@ const clickNewExperiment = ({dispatch}) => {
 	});
 }
 
-const saveAsOpen = (dispatch, callback) => {
-	dispatch((dispatch, getState) => {
-		// not logged in
-		if (!getState().userState.user.identityId) {
-			notifyWarningBySnackbar(dispatch, 'You need to sign in before saving your work !');
-			dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
-			return;
-		} else {
-			callback();
-		}
-	});
-}
+const clickSaveAs = ({dispatch, newName}) => {
+	return dispatch((dispatch, getState) => {
+		let sourceExperimentId = getState().experimentState.experimentId,
+			userId = getState().userState.userId;
 
-const saveAs = (dispatch, newName, onStart, onFinish) => {
-	dispatch((dispatch, getState) => {
-		let oldExperimentId = getState().experimentState.experimentId;
-		// process state, assign new id
-		dispatch(backendActions.saveAsAction(newName));
+		dispatch(actions.actionCreator({
+			type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT_AS,
+			newName
+		}));
 
-		onStart();
-		let experimentState = getState().experimentState;
-		let params = (experimentState.media.Contents) ? experimentState.media.Contents.map((f) =>
-			(generateCopyParam({source: f.Key, target: f.Key.replace(oldExperimentId, experimentState.experimentId)}))
-		) : [];
-		// s3 duplicate
-		copyFiles({params: params}).then(() => {
-			listBucketContents({Prefix: `${getState().userState.user.identityId}/${getState().experimentState.experimentId}/`}).then((data) => {
-				dispatch(editorActions.updateMediaAction(data));
-				pushState(getState()).then(() => {
-					notifySuccessBySnackbar(dispatch, "Saved !");
-				}, (err) => {
-					notifyErrorByDialog(dispatch, err.message);
-				})
-			}, (err) => {
-				notifyErrorByDialog(dispatch, err.message);
-			})
-		}, (err) => {
-			notifyErrorByDialog(dispatch, err.message);
-		}).finally(() => {
-			onFinish();
+		let targetExeprimentId = getState().experimentState.experimentId;
+
+		return myaws.S3.listBucketContents({
+			Prefix: `${userId}/${sourceExperimentId}/`
+		}).then((data) => {
+			let params = [];
+			if (data) {
+				params = data.Contents.map((f) => {
+					return myaws.S3.generateCopyParam({
+						source: f.Key,
+						target: f.Key.replace(sourceExperimentId, targetExeprimentId)
+					});
+				});
+				return myaws.S3.copyFiles({ params });
+			} else {
+				return Promise.resolve();
+			}
+		}).then(() => {
+			return utils.commonFlows.saveExperiment({
+				dispatch
+			});
+		}).catch((err) => {
+			console.log(err);
+			utils.notifications.notifyErrorByDialog({
+				dispatch,
+				message: err.message
+			});
 		});
 	});
 }
@@ -151,9 +134,9 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+	dispatch,
 	changeExperimentName: (text) => { changeExperimentName(dispatch, text); },
-	saveAs: (newName, onStart, onFinish) => { saveAs(dispatch, newName, onStart, onFinish); },
-	saveAsOpen: (callback) => { saveAsOpen(dispatch, callback); },
+	clickSaveAs: ({newName}) => clickSaveAs({dispatch, newName}),
 	clickSave: () => clickSave({dispatch}),
 	clickNewExperiment: () => clickNewExperiment({dispatch})
 })
