@@ -22,6 +22,9 @@ const colors = {
 }
 
 const style = {
+	TextFieldFocusStyle: (error = false) => ({
+		...theme.TextFieldFocusStyle(error)
+	}),
 	progress: {
 		color: colors.primary
 	},
@@ -33,9 +36,16 @@ export default class Notifications extends React.Component {
 
 		this.state = {
 			extraCareInput: '',
-			extraCareError: '',
+			extraCareErrorText: '',
 			processingWithOp: false,
 			processingWithoutOp: false
+		}
+
+		this.setExtraCareInput = (evt, v) => {
+			this.setState({
+				extraCareInput: v,
+				extraCareErrorText: ''
+			})
 		}
 
 		this.renderSnackbarIcon = () => {
@@ -96,7 +106,7 @@ export default class Notifications extends React.Component {
 					proceed();
 				} else {
 					this.setState({
-						extraCareError: "Please input the prompt exactly."
+						extraCareErrorText: "Please input the prompt exactly."
 					});
 				}
 			} else {
@@ -119,8 +129,6 @@ export default class Notifications extends React.Component {
 		showCancelButton: true,
 		withExtraCare: false,
 		extraCareText: "",
-		extraCareInput: "",
-		extraCareError: ""
 	}
 
 	render() {
@@ -129,7 +137,11 @@ export default class Notifications extends React.Component {
 			message,
 			dialogOpen,
 			snackbarOpen,
+			withExtraCare,
+			extraCareText
 		} = this.props;
+
+		let { extraCareInput, extraCareErrorText } = this.state;
 		
 		let dialogActions = [];
 		if (notifyType === enums.Notify_Type.confirm) {
@@ -158,7 +170,7 @@ export default class Notifications extends React.Component {
 	      				labelStyle={{textTransform: "none", }}
 	      				onClick={this.props.handleDialogClose}
 	      			/>
-				)
+				);
 			}
 		} else {
 			dialogActions = [
@@ -187,9 +199,24 @@ export default class Notifications extends React.Component {
 	          		bodyStyle={{backgroundColor: colors.dialogBodyColor, paddingTop: 0}}
 	          		modal
 	          		autoScrollBodyContent
-	          		dialogActions={dialogActions}
+	          		actions={dialogActions}
 				>
 					<p>{message}</p>
+					{
+						notifyType === enums.Notify_Type.confirm && withExtraCare ?
+						<div  style={{width: 300 }}>
+						  <p>{`Please input: "${extraCareText}" to confirm your operation.`}</p>
+			              <TextField 
+			                {...style.TextFieldFocusStyle(!!extraCareErrorText)}
+			                id="extra-care-input" 
+			                fullWidth 
+			                errorText={extraCareErrorText} 
+			                value={extraCareInput} 
+			                onChange={this.setExtraCareInput}
+			                />
+			            </div> :
+						null
+					}
 				</Dialog>
 				<Snackbar
 	                open={snackbarOpen}
@@ -203,7 +230,7 @@ export default class Notifications extends React.Component {
 	                }
 	                autoHideDuration={2500}
 	                onRequestClose={this.props.handleSnackbarClose}
-	              />
+	            />
 			</div>
 		)
 	}
