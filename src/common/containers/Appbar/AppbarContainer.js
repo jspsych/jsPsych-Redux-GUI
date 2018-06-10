@@ -73,6 +73,7 @@ const clickSaveAs = ({dispatch, newName}) => {
 	return dispatch((dispatch, getState) => {
 		let sourceExperimentState = getState().experimentState;
 		return utils.commonFlows.duplicateExperiment({
+			dispatch,
 			sourceExperimentState,
 			newName
 		});

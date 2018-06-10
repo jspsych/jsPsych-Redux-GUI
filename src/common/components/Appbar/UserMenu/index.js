@@ -43,7 +43,6 @@ export default class UserMenu extends React.Component {
     super(props);
     this.state = {
         open: false,
-        experimentListOpen: false,
         isSignedIn: false
     }
 
@@ -58,18 +57,6 @@ export default class UserMenu extends React.Component {
     this.handleRequestClose = () => {
       this.setState({
         open: false
-      })
-    }
-
-    this.openExperimentList = () => {
-      this.setState({
-        experimentListOpen: true
-      })
-    }
-
-    this.closeExperimentList = () => {
-      this.setState({
-        experimentListOpen: false
       })
     }
 
@@ -98,7 +85,7 @@ export default class UserMenu extends React.Component {
               <MenuItem
                 primaryText={"Your experiments"}
                 leftIcon={<ExperimentIcon {...style.Icon} />}
-                onClick={() => { this.openExperimentList(); this.handleRequestClose(); }} />
+                onClick={() => { this.ExperimentList.handleOpen(); this.handleRequestClose(); }} />
               <Divider />
               <MenuItem
                 primaryText={"Sign out"}
@@ -155,11 +142,7 @@ export default class UserMenu extends React.Component {
         </div>
          <Login />
          <Profile onRef={ref => (this.Profile = ref)} />
-         <ExperimentList 
-          open={this.state.experimentListOpen} 
-          handleOpen={this.openExperimentList}
-          handleClose={this.closeExperimentList}
-         />
+         <ExperimentList onRef={ref => (this.ExperimentList = ref)}/>
           <Popover
             open={this.state.open}
             anchorEl={this.state.anchorEl}
@@ -167,7 +150,7 @@ export default class UserMenu extends React.Component {
             anchorOrigin={{horizontal:"right",vertical:"bottom"}}
             targetOrigin={{horizontal:"right",vertical:"top"}}
             >
-            {this.renderMenu()}
+            {this.renderMenu(login)}
           </Popover>
     </div>
     )

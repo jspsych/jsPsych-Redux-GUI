@@ -143,7 +143,7 @@ export const saveCurrentExperiment = ({dispatch, displayNotification=true}) => {
 * 1. Duplicate the experiment
 * 2. Call $saveExperiment
 */
-export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
+export const duplicateExperiment = ({dispatch, sourceExperimentState, newName=null}) => {
 	return dispatch((dispatch, getState) => {
 		let sourceExperimentId = sourceExperimentState.experimentId,
 			// process experiment state
@@ -161,6 +161,7 @@ export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
 			targetExeprimentId
 		}).then(() => {
 			return $saveExperiment({ 
+				dispatch,
 				experimentState,
 				userId
 			});

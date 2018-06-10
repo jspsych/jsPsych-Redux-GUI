@@ -135,7 +135,7 @@ const ExperimentListItem = ({
 					"Currently open" : 
 					"Last modified: " + displayedTime}
 				onClick={onClick}
-				rightIconButton={ isPerforming ? null : <ExperimentListItemIconMenu /> }
+				rightIconButton={ isPerforming ? null : ExperimentListItemIconMenu }
 				rightIcon={isPerforming ? <CircularProgress {...style.progress}/> : null}
 				leftAvatar={ <Avatar {...style.avatar} icon={<ExperimentIcon />} /> }
 			/>
@@ -204,9 +204,17 @@ export default class ExperimentList extends React.Component {
 		}
 
 		this.handleDuplicateExperiment = (sourceExperimentState) => {
+			this.setState({
+				performing: sourceExperimentState.experimentId
+			});
 			return utils.commonFlows.duplicateExperiment({ 
+				dispatch: this.props.dispatch,
 				sourceExperimentState 
-			}).then(this.fetchAllExperiment);
+			}).then(this.fetchAllExperiment).finally(() => {
+				this.setState({
+					performing: null
+				});
+			});
 		}
 
 		this.handleDeleteExperiment = (targetExperimentState) => {
@@ -214,14 +222,21 @@ export default class ExperimentList extends React.Component {
 				dispatch: this.props.dispatch,
 				message: "Do you want to save the changes before creating a new experiment?",
 				continueWithOperation: () => {
-					return this.props.deleteExperiment({ targetExperimentState });
+					this.setState({
+						performing: targetExperimentState.experimentId
+					});
+					return this.props.deleteExperiment({ targetExperimentState }).finally(() => {
+						this.setState({
+							performing: null
+						});
+					});
 				},
 				continueWithoutOperation: () => Promise.resolve(),
 				continueWithOperationLabel: "Yes, I want to delete it.",
 				continueWithoutOperationLabel: "No, hold on.",
 				showCancelButton: false,
 				withExtraCare: true,
-				extraCareText: id
+				extraCareText: targetExperimentState.experimentId
 			});
 		}
 
@@ -236,7 +251,12 @@ export default class ExperimentList extends React.Component {
 				this.setState({
 					fetching: true
 				});
-				this.props.pullExperiment({ targetExperimentId });
+				this.props.pullExperiment({ targetExperimentId }).finally(() => {
+					this.setState({
+						fetching: false
+					});
+					this.handleClose();
+				});
 			} else {
 				// ask if save changes
 				utils.notifications.popUpConfirmation({
@@ -288,12 +308,21 @@ export default class ExperimentList extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+	  this.props.onRef(this);
+	}
+	
+	componentWillUnmount() {
+	  this.props.onRef(undefined);
+	}
+
 	render() {
 		let {
 			fetchingAll,
 			open,
 			fetching,
-			performing
+			performing,
+			selected
 		} = this.state;
 
 		let { currentExperimentId } = this.props;
@@ -324,12 +353,8 @@ export default class ExperimentList extends React.Component {
 								isCurrentlyOpen={currentExperimentId === experimentId}
 								isSelected={selected === experimentId}
 								onClick={() => this.setSeletected(experimentId)}
-								handleDeleteExperiment={() => this.handleDeleteExperiment({
-									targetExperimentState: experiment
-								})}
-								handleDuplicateExperiment={() => this.handleDuplicateExperiment({
-									sourceExperimentState: experiment
-								})}
+								handleDeleteExperiment={() => this.handleDeleteExperiment(experiment)}
+								handleDuplicateExperiment={() => this.handleDuplicateExperiment(experiment)}
 								isPerforming={performing === experimentId}
 							/>
 						)
