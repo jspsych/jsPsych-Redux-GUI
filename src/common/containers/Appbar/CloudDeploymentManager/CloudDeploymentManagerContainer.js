@@ -106,7 +106,7 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 		}));
 
 		return Promise.all([
-			utils.commonFlows.saveExperiment({
+			utils.commonFlows.saveCurrentExperiment({
 				dispatch,
 				displayNotification: false
 			}),
@@ -146,7 +146,7 @@ const cloudDelete = (dispatch) => {
 		let experimentState = getState().experimentState;
 
 		return Promise.all([
-			utils.commonFlows.saveExperiment({
+			utils.commonFlows.saveCurrentExperiment({
 				dispatch,
 				displayNotification: false
 			}),

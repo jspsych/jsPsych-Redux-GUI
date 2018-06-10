@@ -17,8 +17,7 @@ import Duplicate from 'material-ui/svg-icons/content/content-copy';
 import ExperimentIcon from 'material-ui/svg-icons/action/assessment';
 import Repository from 'material-ui/svg-icons/device/storage';
 
-import ConfirmationDialog from '../../../Notification/ConfirmationDialog';
-import { renderDialogTitle } from '../../../gadgets';
+import { DialogTitle } from '../../../gadgets';
 
 import AppbarTheme from '../../theme.js';
 
@@ -73,19 +72,87 @@ const iconButtonElement = (
 	</IconButton>
 ) 
 
+const ExperimentListItem = ({
+		experiment,
+		isCurrentlyOpen,
+		isSelected,
+		onClick,
+		handleDeleteExperiment,
+		handleDuplicateExperiment,
+		isPerforming
+	}) => {
+	let { experimentName, experimentId, lastModifiedDate } = experiment;
+	
+	lastModifiedDate = new Date(lastModifiedDate);
+	let today = new Date(),
+		isSameDay = today.getYear() === lastModifiedDate.getYear() &&
+					today.getMonth() === lastModifiedDate.getMonth() &&
+					today.getDate() === lastModifiedDate.getDate();
+	let displayedTime;
+	if (isSameDay) {
+		let diffH = today.getHours() - lastModifiedDate.getHours(),
+			diffM = today.getMinutes() - lastModifiedDate.getMinutes();
+		let tail;
+		if (diffH) {
+			if (diffH > 1) tail = " hours ago";
+			else tail = " hour ago"
+			displayedTime = diffH + tail;
+		} else if (diffM) {
+			if (diffM > 1) tail = " minutes ago";
+			else tail = " minute ago"
+			displayedTime = diffM + tail;
+		} else {
+			displayedTime = "less than 1 minute ago";
+		}	
+	} else {
+		displayedTime = lastModifiedDate.toDateString();
+	}
+
+	const ExperimentListItemIconMenu = (
+		<IconMenu iconButtonElement={iconButtonElement}>
+		    <MenuItem
+		    	 leftIcon={<Duplicate {...style.duplicateIcon}/>}
+		    	 onClick={handleDuplicateExperiment}
+		    >
+		    	Duplicate
+		    </MenuItem>
+			<MenuItem
+		    	leftIcon={<Delete {...style.deleteIcon}/>}
+		    	onClick={handleDeleteExperiment}
+		    >
+		    	Delete
+		    </MenuItem>
+		</IconMenu>
+	);
+
+	return (
+		<div>
+			<ListItem
+				style={{backgroundColor: isSelected ? style.ListItem.selected : null}}
+				primaryText={experimentName}
+				secondaryText={
+					isCurrentlyOpen ? 
+					"Currently open" : 
+					"Last modified: " + displayedTime}
+				onClick={onClick}
+				rightIconButton={ isPerforming ? null : <ExperimentListItemIconMenu /> }
+				rightIcon={isPerforming ? <CircularProgress {...style.progress}/> : null}
+				leftAvatar={ <Avatar {...style.avatar} icon={<ExperimentIcon />} /> }
+			/>
+			<Divider inset={true} />
+		</div>
+	)
+}
+
 export default class ExperimentList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			open: false,
 			selected: null,
-			performing: null,
-		    confirmOpen: false,
-		    confirmMessage: "Null",
-		    proceedWithOperation: () => {},
-		    proceedWithOperationLabel: "Yes",
-		    proceed: () => {},
-		    proceedLabel: "No",
-		    showCloseButton: false
+			fetchingAll: false,
+			experiments: [],
+			performing: null
 		}
 
 		this.setSeletected = (id) => {
@@ -94,193 +161,218 @@ export default class ExperimentList extends React.Component {
 			});
 		}
 
-		this.handleClose = () => {
-			this.props.handleClose();
+		this.setPerforming = (id) => {
 			this.setState({
+				performing: id
+			});
+		}
+
+		this.handleClose = () => {
+			this.setState({
+				open: false,
 				selected: null
 			});
 		}
 
-		this.setPerforming = (p) => {
+		this.handleOpen = () => {
 			this.setState({
-				performing: p
+				selected: null,
+				open: true
+			});
+			this.fetchAllExperiment();
+		}
+
+		this.fetchAllExperiment = () => {
+			this.setState({
+				fetchingAll: true
+			});
+			myaws.DynamoDB.getExperimentsOf(this.props.userId).then((experiments) => {
+				this.setState({
+					experiments: experiments
+				});
+			}).catch((err) => {
+				console.log(err);
+				utils.notifications.notifyErrorByDialog({
+					dispatch: this.props.dispatch,
+					message: err.message
+				});
+			}).finally(() => {
+				this.setState({
+					fetchingAll: false
+				});
 			});
 		}
 
-		this.popUpConfirm = (message, proceedWithOperation, proceedWithOperationLabel, proceed, proceedLabel, showCloseButton=true) => {
-			this.setState({
-				confirmOpen: true,
-				confirmMessage: message,
-				proceedWithOperation: proceedWithOperation,
-				proceedWithOperationLabel: proceedWithOperationLabel,
-				proceed: proceed,
-				proceedLabel: proceedLabel,
-				showCloseButton: showCloseButton
+		this.handleDuplicateExperiment = (sourceExperimentState) => {
+			return utils.commonFlows.duplicateExperiment({ 
+				sourceExperimentState 
+			}).then(this.fetchAllExperiment);
+		}
+
+		this.handleDeleteExperiment = (targetExperimentState) => {
+			utils.notifications.popUpConfirmation({
+				dispatch: this.props.dispatch,
+				message: "Do you want to save the changes before creating a new experiment?",
+				continueWithOperation: () => {
+					return this.props.deleteExperiment({ targetExperimentState });
+				},
+				continueWithoutOperation: () => Promise.resolve(),
+				continueWithOperationLabel: "Yes, I want to delete it.",
+				continueWithoutOperationLabel: "No, hold on.",
+				showCancelButton: false,
+				withExtraCare: true,
+				extraCareText: id
 			});
 		}
 
-		this.handleConfirmClose = () => {
-			this.setState({
-				confirmOpen: false
-			});
-		}
-
-		this.renderIconMenu = (id) => {
-			return (
-				<IconMenu iconButtonElement={iconButtonElement}>
-				    <MenuItem
-				    	 leftIcon={<Duplicate {...style.duplicateIcon}/>}
-				    	 onClick={() => { 
-				    	 	this.props.duplicateExperiment(
-				    	 		id,
-				    	 		() => { this.setPerforming(id); },
-								() => { this.setPerforming(null); })
-				    	 }}
-				    >
-				    	Duplicate
-				    </MenuItem>
-					<MenuItem
-				    	leftIcon={<Delete {...style.deleteIcon}/>}
-				    	onClick={() => { 
-				    		this.props.deleteExperiment(
-				    			id, 
-				    			this.popUpConfirm,
-				    	 		() => { this.setPerforming(id); },
-								() => { this.setPerforming(null); }); 
-				    	}}
-				    >
-				    	Delete
-				    </MenuItem>
-				</IconMenu>
-			)
-		}
-
-		this.renderItem = (item) => {
-			let { name, id, details } = item;
-			
-			let today = new Date();
-			let lastEditDate = new Date(details.lastEditDate);
-
-			let isSameDay = today.getYear() === lastEditDate.getYear() &&
-							today.getMonth() === lastEditDate.getMonth() &&
-							today.getDate() === lastEditDate.getDate();
-			let displayedTime;
-			if (isSameDay) {
-				let diffH = today.getHours() - lastEditDate.getHours(),
-					diffM = today.getMinutes() - lastEditDate.getMinutes();
-				let tail;
-				if (diffH) {
-					if (diffH > 1) tail = " hours ago";
-					else tail = " hour ago"
-					displayedTime = diffH + tail;
-				} else if (diffM) {
-					if (diffM > 1) tail = " minutes ago";
-					else tail = " minute ago"
-					displayedTime = diffM + tail;
-				} else {
-					displayedTime = "less than 1 minute ago";
-				}
-				
-			} else {
-				displayedTime = lastEditDate.toDateString();
+		this.handlePullExperiment = () => {
+			let targetExperimentId = this.state.selected;
+			if (!targetExperimentId) { 
+				return;
 			}
 
-			return (
-				<div key={id+'-ExperimentItem-Container'}>
-					<ListItem
-						style={{backgroundColor: (id === this.state.selected) ? style.ListItem.selected : null}}
-						key={id}
-						id={id}
-						primaryText={name}
-						secondaryText={
-							(id === this.props.currentId) ? 
-							"Currently open" : 
-							"Last modified: " + displayedTime}
-						onClick={()=>{this.setSeletected(id);}}
-						rightIconButton={
-							(this.state.performing === id) ? null : this.renderIconMenu(id)
-						}
-						rightIcon={(this.state.performing === id) ? <CircularProgress {...style.progress}/> : null}
-						leftAvatar={
-							<Avatar {...style.avatar} icon={<ExperimentIcon />} />
-						}
-					/>
-					<Divider inset={true} />
-				</div>
-			)
+			// nothing has changed
+			if (!utils.commonFlows.anyExperimentChange(this.props.currentExperimentState)) {
+				this.setState({
+					fetching: true
+				});
+				this.props.pullExperiment({ targetExperimentId });
+			} else {
+				// ask if save changes
+				utils.notifications.popUpConfirmation({
+					dispatch: this.props.dispatch,
+					message: "Do you want to save the changes before creating new experiment?",
+					continueWithOperation: () => {
+						return this.props.pullExperiment({
+							targetExperimentId,
+							saveFirst: true
+						});
+					},
+					continueWithoutOperation: () => {
+						return this.props.pullExperiment({ targetExperimentId });
+					},
+					continueWithOperationLabel: "Yes (Continue with saving)",
+					continueWithoutOperationLabel: "No (Continue without saving)",
+					showCancelButton: false,
+					withExtraCare: true,
+					extraCareText: this.state.selected
+				});
+			}
+		}
+
+		this.getSortedExperiments = () => {
+			let experiments = this.state.experiments.slice();
+			// sort by last modified date (new --> old)
+			experiments.sort((a, b) => {
+				let at = a.lastModifiedDate,
+					bt = b.lastModifiedDate;
+				if (at > bt) {
+					return -1;
+				} else if (at < bt) {
+					return 1;
+				} else {
+					return 0;
+				}
+			})
+
+			// put currently open first
+			for (let i = 0; i < experiments.length; i++) {
+				let experiment = experiments[i];
+				if (experiment.experimentId === this.props.currentExperimentId) {
+					experiments.move(i, 0);
+					break;
+				}
+			}
+
+			return experiments;
 		}
 	}
 
 	render() {
-		// let { open } = this.state;
-		let { handleClose, renderItem } = this;
-		let { open, experiments } = this.props;
+		let {
+			fetchingAll,
+			open,
+			fetching,
+			performing
+		} = this.state;
+
+		let { currentExperimentId } = this.props;
+
+		let experiments = this.getSortedExperiments();
+
 		const actions = [
-		(this.state.performing !== Actions.browse) ?
+			fetching ?
+			<CircularProgress {...style.progress}/> :
 			<FlatButton
 				label="Open Experiment"
 				style={style.actionButton}
 				labelStyle={{textTransform: "none", }}
-    			keyboardFocused={true}
-				onClick={() => { 
-					this.props.pullExperiment(this.state.selected, 
-											  this.popUpConfirm,
-											  () => { this.setPerforming(Actions.browse); },
-											  () => { this.setPerforming(null); }); 
-					}
+				onClick={this.handlePullExperiment}
+			/>
+		];
+
+		const Experiment_List = (
+			<List style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
+				{
+					experiments.map((experiment) => {
+						let { experimentId } = experiment;
+
+						return (
+							<ExperimentListItem 
+								key={`Experiment_List_Item-${experimentId}`}
+								experiment={experiment}
+								isCurrentlyOpen={currentExperimentId === experimentId}
+								isSelected={selected === experimentId}
+								onClick={() => this.setSeletected(experimentId)}
+								handleDeleteExperiment={() => this.handleDeleteExperiment({
+									targetExperimentState: experiment
+								})}
+								handleDuplicateExperiment={() => this.handleDuplicateExperiment({
+									sourceExperimentState: experiment
+								})}
+								isPerforming={performing === experimentId}
+							/>
+						)
+					})
 				}
-			/> :
-			<CircularProgress {...style.progress}/>
-		]
+			</List>
+		)
 
 		return (
-		<div>
 			<Dialog
 				open={open}
 				titleStyle={{padding: 0,}}
 				title={
-					renderDialogTitle(
-						<Subheader style={{maxHeight: 48}}>
-		      				<div style={{display: 'flex'}}>
-							<div style={{paddingTop: 8, paddingRight: 10}}>
-								<Repository {...style.dialogTitleIcon}/>
-							</div>
-							<div style={{fontSize: 20,}}>
-		      					Your experiments
-		      				</div>
-		      				</div>
-	      				</Subheader>,
-						handleClose,
-						null
-					)
+					<DialogTitle
+						node={
+							<Subheader style={{maxHeight: 48}}>
+			      				<div style={utils.prefixer({display: 'flex'})}>
+									<div style={{paddingTop: 8, paddingRight: 10}}>
+										<Repository {...style.dialogTitleIcon}/>
+									</div>
+									<div style={{fontSize: 20,}}>
+				      					Your experiments
+				      				</div>
+			      				</div>
+		      				</Subheader>
+			      		}
+						closeCallback={this.handleClose}
+					/>
 				}
 				bodyStyle={style.dialogBody}
 				autoScrollBodyContent={true}
 				modal={true}
 				actions={actions}
 			>
-			<div style={{paddingTop: 10}}>
-				<Paper style={{minHeight: 400, maxHeight: 400}}>
-					<List style={{minHeight: 400, maxHeight: 400, overflowY: 'auto'}}>
-					{
-						experiments.map((item) => (renderItem(item)))
-					}
-					</List>
-				</Paper>
-			</div>
+				<div style={{paddingTop: 10}}>
+					<Paper style={{minHeight: 400, maxHeight: 400}}>
+						{fetchingAll ?
+							<CircularProgress {...style.progress}/> :
+							Experiment_List
+						}
+					</Paper>
+				</div>
 			</Dialog>
-
-			<ConfirmationDialog
-                open={this.state.confirmOpen}
-                message={this.state.confirmMessage}
-                handleClose={this.handleConfirmClose}
-                proceedWithOperation={this.state.proceedWithOperation}
-                proceedWithOperationLabel={this.state.proceedWithOperationLabel}
-                proceed={this.state.proceed}
-                proceedLabel={this.state.proceedLabel}
-                showCloseButton={this.state.showCloseButton}
-                />
-		</div>
 		)
 	}
 }

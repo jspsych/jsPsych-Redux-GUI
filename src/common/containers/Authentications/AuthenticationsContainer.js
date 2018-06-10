@@ -26,7 +26,7 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			// save the change
 
 			if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
-				return utils.commonFlows.saveExperiment({dispatch});
+				return utils.commonFlows.saveCurrentExperiment({dispatch});
 			}
 
 			return Promise.resolve();

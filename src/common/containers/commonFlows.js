@@ -1,5 +1,15 @@
+export const loadExperimentAction = ({dispatch, experimentState}) => {
+	// Save state to local storage
+	saveExperimentStateToLocal(experimentState);
+
+	// load experiment state
+	dispatch(actions.actionCreator({
+		type: actions.ActionTypes.LOAD_EXPERIMENT,
+		experimentState
+	}));
+}
+
 export const load = ({dispatch}) => {
-	// myaws.Auth.signOut();
 	return dispatch((dispatch, getState) => {
 		return myaws.Auth.setCredentials().then(myaws.Auth.getCurrentUserInfo).then(data => {
 			// Save initial experiment state to local storage
@@ -19,14 +29,10 @@ export const load = ({dispatch}) => {
 
 				// load states
 				if (experimentState) {
-					// Save state to local storage
-					saveExperimentStateToLocal(experimentState);
-
-					// load experiment state
-					dispatch(actions.actionCreator({
-						type: actions.ActionTypes.LOAD_EXPERIMENT,
+					loadExperimentAction({
+						dispatch,
 						experimentState
-					}));
+					});
 				}
 
 				// load user state
@@ -51,38 +57,116 @@ export const load = ({dispatch}) => {
 	})
 }
 
-export const saveExperiment = ({dispatch, displayNotification=true}) => {
-	return dispatch((dispatch, getState) => {
-		return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
-			// pre-process experiment state for pushing to AWS
-			dispatch(actions.actionCreator({
-				type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT,
-				userId: userInfo.userId
-			}));
+/*
+* 1. Register experimentState for pushing to AWS,
+* Fill in ownerId, experimentId, createDate if these info are missing,
+* Update lastModifiedDate.
+* 2. Push to DynamoDB
+* 
+* @param {Object} experimentState - experiment to be saved
+* @param {String} userId - experiment's owner's id
+* @return {Object} A promise resolves to the registered experiment if call to AWS is successful
+*/
+export const pushExperiment = ({experimentState, userId=null}) => {
+	// Register experimentState for pushing to AWS
+	// Fill in ownerId, experimentId, createDate if these info are missing
+	// Update lastModifiedDate
+	experimentState = core.registerExperiment({
+		experimentState,
+		userId
+	});
 
-			// Get newest experiment state and push it to AWS
-			return myaws.DynamoDB.saveExperiment(getState().experimentState);
-		}).then(() => {
-			// Update local storage 
-			saveExperimentStateToLocal(getState().experimentState);
-			// notify success
-			if (displayNotification) {
-				utils.notifications.notifySuccessBySnackbar({
-					dispatch,
-					message: "Saved !"
-				});
-			}
-		}).catch((err) => {
-			console.log(err);
-			utils.notifications.notifyErrorByDialog({
-				dispatch,
-				message: err.message
-			});
+	// Push to AWS
+	return myaws.DynamoDB.saveExperiment(experimentState).then(() => {
+		return Promise.resolve(experimentState);
+	});
+}
+
+/*
+* Wrapper of pushExperiment
+* Helper for handling the action of saving experiment and giving user response
+* 
+*/
+const $saveExperiment = ({dispatch, experimentState, userId=null, displayNotification=true}) => {
+	// push experiment first
+	return pushExperiment({
+		experimentState,
+		userId
+	}).then((experimentState) => {
+		// then sync locally
+
+		// load saved experiment
+		loadExperimentAction({
+			dispatch,
+			experimentState
 		});
-	})
+		// notify success
+		if (displayNotification) {
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch,
+				message: "Saved !"
+			});
+		}
+		return Promise.resolve();
+	}).catch((err) => {
+		console.log(err);
+		utils.notifications.notifyErrorByDialog({
+			dispatch,
+			message: err.message
+		});
+
+		// pass on error
+		return Promise.reject(err);
+	});
 }
 
 
+/*
+* Save the currently opened experiment
+* 1. Call $saveExperiment
+*/
+export const saveCurrentExperiment = ({dispatch, displayNotification=true}) => {
+	return dispatch((dispatch, getState) => {
+		return myaws.Auth.getCurrentUserInfo().then((userInfo) => {
+			return $saveExperiment({
+				experimentState: getState().experimentState,
+				userId: userInfo.userId,
+				displayNotification,
+				dispatch
+			});
+		});
+	});
+}
+
+/*
+* Duplicate and save the source experiment
+* 1. Duplicate the experiment
+* 2. Call $saveExperiment
+*/
+export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
+	return dispatch((dispatch, getState) => {
+		let sourceExperimentId = sourceExperimentState.experimentId,
+			// process experiment state
+			experimentState = core.duplicateExperiment({
+				sourceExperimentState,
+				newName
+			}),
+			targetExeprimentId = experimentState.experimentId,
+			userId = sourceExperimentState.ownerId;
+
+		// make sure assests are copied successfully before proceeding
+		return duplicateS3Content({
+			userId,
+			sourceExperimentId,
+			targetExeprimentId
+		}).then(() => {
+			return $saveExperiment({ 
+				experimentState,
+				userId
+			});
+		});
+	});
+}
 
 const Jspsych_Experiment_Local_Storage = '$Jspsych_Experiment_Local_Storage';
 export const saveExperimentStateToLocal = (state) => {
@@ -106,5 +190,24 @@ export const isUserSignedIn = () => {
 		return !!userInfo;
 	}).catch((err) => {
 		return Promise.resolve(false)
+	});
+}
+
+const duplicateS3Content = ({userId, sourceExperimentId, targetExeprimentId}) => {
+	return myaws.S3.listBucketContents({
+		Prefix: `${userId}/${sourceExperimentId}/`
+	}).then((data) => {
+		let params = [];
+		if (data) {
+			params = data.Contents.map((f) => {
+				return myaws.S3.generateCopyParam({
+					source: f.Key,
+					target: f.Key.replace(sourceExperimentId, targetExeprimentId)
+				});
+			});
+			return myaws.S3.copyFiles({ params });
+		} else {
+			return Promise.resolve();
+		}
 	});
 }

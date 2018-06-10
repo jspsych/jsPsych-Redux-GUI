@@ -75,6 +75,36 @@ export const getInitExperimentState = () => createExperiment({experimentId: null
 
 export const generateExperimentId = () => `experiment_${utils.getUUID()}`;
 
+export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
+	let targetExperimentState = utils.deepCopy(sourceExperimentState);
+
+	if (newName) {
+		targetExperimentState.experimentName = newName;
+	}
+	targetExperimentState.experimentId = generateExperimentId();
+	targetExperimentState.createDate = null;
+	targetExperimentState.lastModifiedDate = null;
+
+	return targetExperimentState;
+}
+
+export const registerExperiment = ({experimentState, userId=null}) => {
+	if (experimentState.ownerId === null) {
+		experimentState.ownerId = userId;
+	}
+	if (experimentState.experimentId === null) {
+		experimentState.experimentId = generateExperimentId();
+	}
+
+	let now = Date.now();
+	if (experimentState.createDate === null) {
+		experimentState.createDate = now;
+	}
+	experimentState.lastModifiedDate = now;
+
+	return experimentState;
+}
+
 export const createExperiment = ({
 	experimentName = "Untitled Experiment",
 	ownerId = null,

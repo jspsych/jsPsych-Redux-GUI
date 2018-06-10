@@ -99,38 +99,6 @@ const loadExperiment = (state, action) => {
 	return action.experimentState;
 }
 
-const prepareSaveExperiment = (state, action) => {
-	let new_state = utils.deepCopy(state);
-	
-	// register experiment to the user if it is new experiment
-	if (new_state.ownerId === null) {
-		new_state.ownerId = action.userId;
-	}
-	if (new_state.experimentId === null) {
-		new_state.experimentId = core.generateExperimentId();
-	}
-
-	let now = Date.now();
-	if (new_state.createDate === null) {
-		new_state.createDate = now;
-	}
-	new_state.lastModifiedDate = now;
-	return new_state;
-}
-
-const prepareSaveExperimentAs = (state, action) => {
-	let new_state = utils.deepCopy(state);
-
-	new_state.experimentId = core.generateExperimentId();
-	new_state.experimentName = action.newName;
-
-	let now = Date.now();
-	new_state.createDate = now;
-	new_state.lastModifiedDate = now;
-
-	return new_state;
-}
-
 
 /**@function(state, action)
  * @name experimentReducer
@@ -178,10 +146,6 @@ export default function experimentReducer(state=initState, action) {
 			return setExperimentName(state, action);
 		case actions.ActionTypes.LOAD_EXPERIMENT:
 			return loadExperiment(state, action);
-		case actions.ActionTypes.PREPARE_SAVE_EXPERIMENT:
-			return prepareSaveExperiment(state, action);
-		case actions.ActionTypes.PREPARE_SAVE_EXPERIMENT_AS:
-			return prepareSaveExperimentAs(state, action);
 
 		// Deploy
 		case actions.ActionTypes.SET_CLOUD_DEPLOY_INFO:

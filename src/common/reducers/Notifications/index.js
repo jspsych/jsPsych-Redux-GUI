@@ -5,8 +5,8 @@ const initState = {
 	message: "",
 
 	// confirm
-	continueWithOperation: () => {},
-	continueWithoutOperation: () => {},
+	continueWithOperation: () => Promise.resolve(),
+	continueWithoutOperation: () => Promise.resolve(),
 	continueWithOperationLabel: "Yes",
 	continueWithoutOperationLabel: "No",
 	showCancelButton: true,

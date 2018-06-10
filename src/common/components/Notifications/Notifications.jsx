@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import Success from 'material-ui/svg-icons/action/check-circle';
 import Warning from 'material-ui/svg-icons/alert/warning';
@@ -20,6 +21,12 @@ const colors = {
 	errorColor: '#F44336'
 }
 
+const style = {
+	progress: {
+		color: colors.primary
+	},
+}
+
 export default class Notifications extends React.Component {
 	constructor(props) {
 		super(props);
@@ -27,6 +34,8 @@ export default class Notifications extends React.Component {
 		this.state = {
 			extraCareInput: '',
 			extraCareError: '',
+			processingWithOp: false,
+			processingWithoutOp: false
 		}
 
 		this.renderSnackbarIcon = () => {
@@ -57,14 +66,30 @@ export default class Notifications extends React.Component {
 		}
 
 		this.continueWithoutOperation = () => {
-			this.props.continueWithoutOperation();
-			this.props.handleDialogClose();
+			this.setState({
+				processingWithOp: true
+			});
+			this.props.continueWithoutOperation().then(this.props.handleDialogClose).catch((err) => {
+				console.log(err);
+			}).finally(() => {
+				this.setState({
+					processingWithOp: false
+				});
+			});
 		}
 
 		this.continueWithOperation = () => {
 			let proceed = () => {
-				this.props.continueWithOperation();
-				this.props.handleDialogClose();
+				this.setState({
+					processingWithoutOp: true
+				});
+				this.props.continueWithOperation().then(this.props.handleDialogClose).catch((err) => {
+					console.log(err);
+				}).finally(() => {
+					this.setState({
+						processingWithoutOp: false
+					});
+				});
 			}
 			if (this.props.withExtraCare) {
 				if (this.props.extraCareText === this.state.extraCareInput.trim()) {
@@ -87,8 +112,8 @@ export default class Notifications extends React.Component {
 		message: "",
 
 		// confirm
-		continueWithOperation: () => {},
-		continueWithoutOperation: () => {},
+		continueWithOperation: () => Promise.resolve(),
+		continueWithoutOperation: () => Promise.resolve(),
 		continueWithOperationLabel: "",
 		continueWithoutOperationLabel: "",
 		showCancelButton: true,
@@ -109,12 +134,16 @@ export default class Notifications extends React.Component {
 		let dialogActions = [];
 		if (notifyType === enums.Notify_Type.confirm) {
 			dialogActions = [
+				this.state.processingWithOp ?
+				<CircularProgress {...style.progress}/> :
       			<FlatButton
       				label={this.props.continueWithOperationLabel}
       				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
       				onClick={this.continueWithOperation}
       				keyboardFocused={true}
       			/>,
+      			this.state.processingWithoutOp ?
+      			<CircularProgress {...style.progress}/> :
 				<FlatButton
       				label={this.props.continueWithoutOperationLabel}
       				labelStyle={{textTransform: "none", color: colors.secondaryDeep}}

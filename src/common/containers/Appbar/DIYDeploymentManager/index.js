@@ -16,7 +16,7 @@ const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
 		}));
 
 		return Promise.all([
-			utils.commonFlows.saveExperiment({
+			utils.commonFlows.saveCurrentExperiment({
 				dispatch,
 				displayNotification: false
 			}),

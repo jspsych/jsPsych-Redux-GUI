@@ -2,22 +2,7 @@ import { connect } from 'react-redux';
 import Appbar from '../../components/Appbar';
 
 import * as experimentSettingActions from '../../actions/experimentSettingActions';
-import * as backendActions from '../../actions/backendActions';
 
-import { pushState } from '../../backend/dynamoDB';
-
-
-export const pureSaveFlow = (dispatch, getState) => {
-	dispatch(backendActions.clickSavePushAction());
-	return pushState(getState());
-}
-
-export const $save = (dispatch, getState) => {
-	return pureSaveFlow(dispatch, getState).then(
-		() => {
-		}, (err) => {
-		});
-}
 
 const changeExperimentName = (dispatch, text) => {
 	text = utils.toNull(text);
@@ -34,20 +19,18 @@ const clickSave = ({dispatch}) => {
 				});
 			} else {
 				if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
-					return utils.commonFlows.saveExperiment({
-						dispatch
-					});
+					return utils.commonFlows.saveCurrentExperiment({ dispatch });
 				} else {
 					utils.notifications.notifyWarningBySnackbar({
 						dispatch,
 						message: 'Nothing has changed since last save !'
-					})
+					});
 				}
 			}
 
 			return Promise.resolve();
 		}).catch((err) => {
-			console.log(err)
+			console.log(err);
 			utils.notifications.notifyErrorByDialog({
 				dispatch,
 				message: err.message
@@ -71,7 +54,7 @@ const clickNewExperiment = ({dispatch}) => {
 				dispatch: dispatch,
 				message: "Do you want to save the changes before creating a new experiment?",
 				continueWithOperation: () => {
-					utils.commonFlows.saveExperiment({dispatch}).then(loadNewExperiment);
+					return utils.commonFlows.saveCurrentExperiment({dispatch}).then(loadNewExperiment);
 				},
 				continueWithoutOperation: loadNewExperiment,
 				continueWithOperationLabel: "Yes (Continue with saving)",
@@ -88,41 +71,10 @@ const clickNewExperiment = ({dispatch}) => {
 
 const clickSaveAs = ({dispatch, newName}) => {
 	return dispatch((dispatch, getState) => {
-		let sourceExperimentId = getState().experimentState.experimentId,
-			userId = getState().userState.userId;
-
-		dispatch(actions.actionCreator({
-			type: actions.ActionTypes.PREPARE_SAVE_EXPERIMENT_AS,
+		let sourceExperimentState = getState().experimentState;
+		return utils.commonFlows.duplicateExperiment({
+			sourceExperimentState,
 			newName
-		}));
-
-		let targetExeprimentId = getState().experimentState.experimentId;
-
-		return myaws.S3.listBucketContents({
-			Prefix: `${userId}/${sourceExperimentId}/`
-		}).then((data) => {
-			let params = [];
-			if (data) {
-				params = data.Contents.map((f) => {
-					return myaws.S3.generateCopyParam({
-						source: f.Key,
-						target: f.Key.replace(sourceExperimentId, targetExeprimentId)
-					});
-				});
-				return myaws.S3.copyFiles({ params });
-			} else {
-				return Promise.resolve();
-			}
-		}).then(() => {
-			return utils.commonFlows.saveExperiment({
-				dispatch
-			});
-		}).catch((err) => {
-			console.log(err);
-			utils.notifications.notifyErrorByDialog({
-				dispatch,
-				message: err.message
-			});
 		});
 	});
 }
