@@ -36,7 +36,7 @@ export function uploadFile({
     return connectS3({bucket}).putObject({
       ...param
     }).on('httpUploadProgress', function(evt) {
-      progressHook(parseInt((evt.loaded * 100) / evt.total, 10));
+      progressHook(Math.round(evt.loaded * 100 / evt.total));
     }).promise();
   }
 }
@@ -65,7 +65,7 @@ export function uploadFiles({params, progressHook=null, bucket=Bucket_Name}){
   return Promise.all(params.map((param) => {
     return uploadFile({
       param: param, 
-      progressHook: progressHook ? (p) => { progressHook(param.Body.name, p) } : progressHook, 
+      progressHook: progressHook ? (p) => { progressHook(param.Body.name, p) } : (p) => {}, 
       bucket: bucket
     })
     }));

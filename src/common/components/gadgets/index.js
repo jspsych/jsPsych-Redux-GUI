@@ -34,7 +34,7 @@ export const DialogTitle = ({
 	...props
 }) => {
 	return (
-		<div style={{display: 'flex', backgroundColor: titleColor, ...style}}>
+		<div style={utils.prefixer({display: 'flex', backgroundColor: titleColor, ...style})}>
 			{ node }
 			{ showCloseButton ? 
 				<IconButton 

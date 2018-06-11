@@ -73,7 +73,7 @@ export const getDefaultInitDiyDeployInfo = () => ({
 
 export const getInitExperimentState = () => createExperiment({experimentId: null});
 
-export const generateExperimentId = () => `experiment_${utils.getUUID()}`;
+export const generateExperimentId = () => `E_${utils.getUUID()}`;
 
 export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
 	let targetExperimentState = utils.deepCopy(sourceExperimentState);
