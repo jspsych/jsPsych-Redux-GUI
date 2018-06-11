@@ -82,9 +82,9 @@ export const popUpConfirmation = (args = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-  	...state.notifications
-  };
+	return {
+		...state.notifications
+	};
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

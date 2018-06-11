@@ -26,7 +26,7 @@ const style = {
 		...theme.TextFieldFocusStyle(error)
 	}),
 	progress: {
-		color: colors.primary
+		color: colors.primary,
 	},
 }
 
@@ -44,8 +44,18 @@ export default class Notifications extends React.Component {
 		this.setExtraCareInput = (evt, v) => {
 			this.setState({
 				extraCareInput: v,
-				extraCareErrorText: ''
-			})
+				extraCareErrorText: v === this.props.extraCareText ? '' : 'Please input the above text exactly.'
+			});
+		}
+
+		this.handleDialogClose = () => {
+			this.props.handleDialogClose();
+			this.setState({
+				extraCareInput: '',
+				extraCareErrorText: '',
+				processingWithOp: false,
+				processingWithoutOp: false
+			});
 		}
 
 		this.renderSnackbarIcon = () => {
@@ -77,13 +87,13 @@ export default class Notifications extends React.Component {
 
 		this.continueWithoutOperation = () => {
 			this.setState({
-				processingWithOp: true
+				processingWithOutOp: true
 			});
-			this.props.continueWithoutOperation().then(this.props.handleDialogClose).catch((err) => {
+			this.props.continueWithoutOperation().then(this.handleDialogClose).catch((err) => {
 				console.log(err);
 			}).finally(() => {
 				this.setState({
-					processingWithOp: false
+					processingWithOutOp: false
 				});
 			});
 		}
@@ -91,13 +101,13 @@ export default class Notifications extends React.Component {
 		this.continueWithOperation = () => {
 			let proceed = () => {
 				this.setState({
-					processingWithoutOp: true
+					processingWithOp: true
 				});
-				this.props.continueWithOperation().then(this.props.handleDialogClose).catch((err) => {
+				this.props.continueWithOperation().then(this.handleDialogClose).catch((err) => {
 					console.log(err);
 				}).finally(() => {
 					this.setState({
-						processingWithoutOp: false
+						processingWithOp: false
 					});
 				});
 			}
@@ -168,7 +178,7 @@ export default class Notifications extends React.Component {
 					<FlatButton
 	      				label="Cancel"
 	      				labelStyle={{textTransform: "none", }}
-	      				onClick={this.props.handleDialogClose}
+	      				onClick={this.handleDialogClose}
 	      			/>
 				);
 			}
@@ -177,7 +187,7 @@ export default class Notifications extends React.Component {
       			<FlatButton
       				label="Okay"
       				labelStyle={{textTransform: "none", color: colors.primaryDeep}}
-      				onClick={this.props.handleDialogClose}
+      				onClick={this.handleDialogClose}
       				keyboardFocused={true}
       			/>
       		]
@@ -204,17 +214,30 @@ export default class Notifications extends React.Component {
 					<p>{message}</p>
 					{
 						notifyType === enums.Notify_Type.confirm && withExtraCare ?
-						<div  style={{width: 300 }}>
-						  <p>{`Please input: "${extraCareText}" to confirm your operation.`}</p>
-			              <TextField 
-			                {...style.TextFieldFocusStyle(!!extraCareErrorText)}
-			                id="extra-care-input" 
-			                fullWidth 
-			                errorText={extraCareErrorText} 
-			                value={extraCareInput} 
-			                onChange={this.setExtraCareInput}
-			                />
-			            </div> :
+						<React.Fragment>
+						  <p>
+						  	Please input:
+						  	<span 
+						  		style={{
+						  			color: colors.primaryDeep,
+						  			fontWeight: 'bold'
+						  		}}
+						  	>
+						  		{` ${extraCareText} `}
+						  	</span> 
+						  	to confirm your operation.
+						  </p>
+						  <div  style={{ width: '50%' }}>
+				              <TextField 
+				                {...style.TextFieldFocusStyle(!!extraCareErrorText)}
+				                id="extra-care-input" 
+				                fullWidth 
+				                errorText={extraCareErrorText} 
+				                value={extraCareInput} 
+				                onChange={this.setExtraCareInput}
+				                />
+				           </div>
+				        </React.Fragment>:
 						null
 					}
 				</Dialog>

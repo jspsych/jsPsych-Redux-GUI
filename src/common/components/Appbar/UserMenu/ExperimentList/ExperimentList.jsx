@@ -40,7 +40,8 @@ const style = {
 		backgroundColor: colors.primaryDeep
 	},
 	progress: {
-		color: colors.primary
+		color: colors.primary,
+		size: 30
 	},
 	ListItem: {
 		selected: '#E2E2E2'
@@ -82,9 +83,9 @@ const ExperimentListItem = ({
 		isPerforming
 	}) => {
 	let { experimentName, experimentId, lastModifiedDate } = experiment;
-	
+
 	lastModifiedDate = new Date(lastModifiedDate);
-	let today = new Date(),
+	let today = new Date(Date.now()),
 		isSameDay = today.getYear() === lastModifiedDate.getYear() &&
 					today.getMonth() === lastModifiedDate.getMonth() &&
 					today.getDate() === lastModifiedDate.getDate();
@@ -136,7 +137,7 @@ const ExperimentListItem = ({
 					"Last modified: " + displayedTime}
 				onClick={onClick}
 				rightIconButton={ isPerforming ? null : ExperimentListItemIconMenu }
-				rightIcon={isPerforming ? <CircularProgress {...style.progress}/> : null}
+				rightIcon={ isPerforming ? <CircularProgress {...style.progress}/> : null }
 				leftAvatar={ <Avatar {...style.avatar} icon={<ExperimentIcon />} /> }
 			/>
 			<Divider inset={true} />
@@ -220,15 +221,16 @@ export default class ExperimentList extends React.Component {
 		this.handleDeleteExperiment = (targetExperimentState) => {
 			utils.notifications.popUpConfirmation({
 				dispatch: this.props.dispatch,
-				message: "Do you want to save the changes before creating a new experiment?",
+				message: "This operation is not recoverable. Do you want to continue?",
 				continueWithOperation: () => {
-					this.setState({
-						performing: targetExperimentState.experimentId
-					});
-					return this.props.deleteExperiment({ targetExperimentState }).finally(() => {
-						this.setState({
-							performing: null
+					return this.props.deleteExperiment({ 
+						targetExperimentState 
+					}).then(this.fetchAllExperiment).then(() => {
+						utils.notifications.notifySuccessBySnackbar({
+							dispatch: this.props.dispatch,
+							message: "Deleted !"
 						});
+						return Promise.resolve();
 					});
 				},
 				continueWithoutOperation: () => Promise.resolve(),

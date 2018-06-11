@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import ExperimentList from '../../../../components/Appbar/UserMenu/ExperimentList';
 
-import { pureCloudDelete as cloudDelete } from '../../CloudDeploymentManager';
+import { pureCloudDelete as cloudDelete } from '../../CloudDeploymentManager/CloudDeploymentManagerContainer.js';
 
 
 const pullExperiment = ({dispatch, targetExperimentId, saveFirst=false}) => {
@@ -26,22 +26,22 @@ const pullExperiment = ({dispatch, targetExperimentId, saveFirst=false}) => {
 const deleteExperiment = ({dispatch, targetExperimentState}) => {
 	let { experimentId, ownerId } = targetExperimentState;
 	return myaws.S3.listBucketContents({
-		Prefix: `${ownerId}/${sourceExperimentId}/`
+		Prefix: `${ownerId}/${experimentId}/`
 	}).then((data) => {
-		let filepaths = [];
+		let filePaths = [];
 		if (data && data.Contents) {
-			filepaths = data.Contents.map((f) => (f.Key));
+			filePaths = data.Contents.map((f) => (f.Key));
 		}
 		return Promise.all([
-			myaws.S3.deleteFiles(filepaths),
-			myaws.DynamoDB.deleteExperiment(experimentId)
+			myaws.S3.deleteFiles({filePaths}),
+			myaws.DynamoDB.deleteExperiment(experimentId),
+			cloudDelete(experimentId)
 		]).then(() => {
-			return cloudDelete(experimentId);
-		}).then(() => {
 			utils.notifications.notifySuccessBySnackbar({
 				dispatch,
 				message: "Deleted !"
 			});
+			return Promise.resolve();
 		}).catch((err) => {
 			console.log(err);
 			utils.notifications.notifyErrorByDialog({

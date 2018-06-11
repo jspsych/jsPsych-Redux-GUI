@@ -139,8 +139,9 @@ export const pureCloudDelete = (experimentId) => {
 				Key: item.Key
 			}))
 		);
-	})
+	});
 }
+
 const cloudDelete = (dispatch) => {
 	return dispatch((dispatch, getState) => {
 		let experimentState = getState().experimentState;

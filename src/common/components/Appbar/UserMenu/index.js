@@ -114,11 +114,6 @@ export default class UserMenu extends React.Component {
 
   componentDidMount() {
     this.props.openProfilePage(this.Profile.handleOpen);
-    utils.commonFlows.isUserSignedIn().then((signedIn) => {
-      this.setState({
-        isSignedIn: signedIn
-      });
-    });
   }
   
   componentWillUnmount() {
@@ -126,8 +121,7 @@ export default class UserMenu extends React.Component {
   }
 
   render() {
-    // double check
-    let login = !!this.props.username && this.state.isSignedIn;
+    let login = !!this.props.username;
     let buttonLabel = (!login) ? 'Sign Up/Log In' : this.props.username;
 
     return (

@@ -11,7 +11,7 @@ export const Delimiter = "/";
 * @param {string} bucket - The name of the S3 bucket to be connected
 * @return - An S3 object
 */
-function connectS3({bucket=Bucket_Name}) {
+function connectS3({bucket=Bucket_Name}={}) {
   return new AWS.S3({
     apiVersion: Api_Version,
     params: {
@@ -29,11 +29,11 @@ export function uploadFile({
   bucket = Bucket_Name
 }) {
   if (!progressHook) {
-    return connectS3(bucket).putObject({
+    return connectS3({bucket}).putObject({
       ...param
     }).promise();
   } else {
-    return connectS3(bucket).putObject({
+    return connectS3({bucket}).putObject({
       ...param
     }).on('httpUploadProgress', function(evt) {
       progressHook(parseInt((evt.loaded * 100) / evt.total, 10));
@@ -74,8 +74,8 @@ export function uploadFiles({params, progressHook=null, bucket=Bucket_Name}){
 /*
 Returns require param for S3 API call "deleteObjects"
 */
-function $deleteFiles(param){
-  return connectS3().deleteObjects({
+function $deleteFiles({param, bucket}){
+  return connectS3({bucket}).deleteObjects({
       ...param
     }).promise();
 }
@@ -85,10 +85,13 @@ Delete files from S3 bucket
 
 filePaths --> array of S3 file addresses
 */
-export function deleteFiles(filePaths) {
-  if (filePaths.length < 1) return Promise.resolve("0 file is requested to be deleted.");
+export function deleteFiles({filePaths, bucket=Bucket_Name}) {
+  if (filePaths.length < 1) {
+    return Promise.resolve("0 file is requested to be deleted.");
+  }
   return $deleteFiles({
-    Delete: { Objects: filePaths.map((filePath) => ({Key: filePath})) }
+    param: { Delete: { Objects: filePaths.map((filePath) => ({Key: filePath})) } },
+    bucket,
   });
 }
 
@@ -96,7 +99,7 @@ export function deleteFiles(filePaths) {
 List bucket contents, the fetched value should be experimentState.media
 */
 export function listBucketContents({Prefix, Delimiter = Delimiter, bucket = Bucket_Name}){
-  return connectS3(bucket).listObjectsV2({
+  return connectS3({bucket}).listObjectsV2({
       Delimiter: Delimiter,
       Prefix: Prefix
     }).promise();
@@ -165,7 +168,7 @@ export function generateCopyParam({
 Copy S3 file
 */
 export function copyFile({param, bucket=Bucket_Name}) {
-  return connectS3(bucket).copyObject(param).promise();
+  return connectS3({bucket}).copyObject(param).promise();
 }
 
 /*
@@ -181,7 +184,7 @@ export function getJsPsychLib(callback) {
   let libFiles = ['jspsych.css', 'jspsych.min.js'];
 
   return Promise.all(libFiles.map((name) => {
-    return connectS3(Website_Bucket).getObject({
+    return connectS3({bucket: Website_Bucket}).getObject({
       Key: prefix + name
     }).promise().then((data) => {
       callback(name, data.Body);
@@ -190,6 +193,6 @@ export function getJsPsychLib(callback) {
 }
 
 
-export function deleteObject(param) {
-  return connectS3().deleteObject({...param}).promise();
+export function deleteObject({param, bucket=Bucket_Name}) {
+  return connectS3({bucket}).deleteObject({...param}).promise();
 }

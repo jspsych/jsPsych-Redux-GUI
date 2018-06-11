@@ -53,8 +53,8 @@ export const load = ({dispatch}) => {
 				console.log(err)
 				return Promise.reject(err);
 			}
-		})
-	})
+		});
+	});
 }
 
 /*
@@ -87,24 +87,31 @@ export const pushExperiment = ({experimentState, userId=null}) => {
 * Helper for handling the action of saving experiment and giving user response
 * 
 */
-const $saveExperiment = ({dispatch, experimentState, userId=null, displayNotification=true}) => {
+const $saveExperiment = ({
+		dispatch,
+		experimentState,
+		userId = null,
+		displayNotification = true,
+		message = "Saved !",
+		shouldSaveLocally = true
+	}) => {
 	// push experiment first
 	return pushExperiment({
 		experimentState,
 		userId
 	}).then((experimentState) => {
-		// then sync locally
-
-		// load saved experiment
-		loadExperimentAction({
-			dispatch,
-			experimentState
-		});
+		// then sync locally: load saved experiment if necessary
+		if (shouldSaveLocally) {
+			loadExperimentAction({
+				dispatch,
+				experimentState
+			});
+		}
 		// notify success
 		if (displayNotification) {
 			utils.notifications.notifySuccessBySnackbar({
 				dispatch,
-				message: "Saved !"
+				message: message
 			});
 		}
 		return Promise.resolve();
@@ -163,7 +170,9 @@ export const duplicateExperiment = ({dispatch, sourceExperimentState, newName=nu
 			return $saveExperiment({ 
 				dispatch,
 				experimentState,
-				userId
+				userId,
+				message: "Duplicated !",
+				shouldSaveLocally: false
 			});
 		});
 	});

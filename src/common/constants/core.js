@@ -89,15 +89,16 @@ export const duplicateExperiment = ({sourceExperimentState, newName=null}) => {
 }
 
 export const registerExperiment = ({experimentState, userId=null}) => {
-	if (experimentState.ownerId === null) {
+	experimentState = utils.deepCopy(experimentState);
+	if (!experimentState.ownerId) {
 		experimentState.ownerId = userId;
 	}
-	if (experimentState.experimentId === null) {
+	if (!experimentState.experimentId) {
 		experimentState.experimentId = generateExperimentId();
 	}
 
 	let now = Date.now();
-	if (experimentState.createDate === null) {
+	if (!experimentState.createDate) {
 		experimentState.createDate = now;
 	}
 	experimentState.lastModifiedDate = now;
@@ -124,7 +125,7 @@ export const createExperiment = ({
 
 	previewId: null,
 
-	/////////////////////////////////////////
+	////////////////// will delete above ///////////////////////
 
 
 	

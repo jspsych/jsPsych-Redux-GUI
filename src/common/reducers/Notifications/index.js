@@ -36,8 +36,13 @@ const setNotification = (state, action) => {
 				...action
 			});
 		case actions.ActionTypes.NOTIFY_DIALOG_CLOSE: 
+			return Object.assign({}, state, {
+				dialogOpen: false,
+			});
 		case actions.ActionTypes.NOTIFY_SNACKBAR_CLOSE: 
-			return initState;
+			return Object.assign({}, state, {
+				snackbarOpen: false,
+			});
 		default:
 			return state;
 	}
