@@ -1,4 +1,4 @@
-export const loadExperimentAction = ({dispatch, experimentState}) => {
+export const loadExperimentToLocal = ({dispatch, experimentState}) => {
 	// Save state to local storage
 	saveExperimentStateToLocal(experimentState);
 
@@ -29,7 +29,7 @@ export const load = ({dispatch}) => {
 
 				// load states
 				if (experimentState) {
-					loadExperimentAction({
+					loadExperimentToLocal({
 						dispatch,
 						experimentState
 					});
@@ -92,26 +92,24 @@ const $saveExperiment = ({
 		experimentState,
 		userId = null,
 		displayNotification = true,
-		message = "Saved !",
-		shouldSaveLocally = true
 	}) => {
 	// push experiment first
 	return pushExperiment({
 		experimentState,
 		userId
 	}).then((experimentState) => {
-		// then sync locally: load saved experiment if necessary
-		if (shouldSaveLocally) {
-			loadExperimentAction({
-				dispatch,
-				experimentState
-			});
-		}
+		// then sync locally
+		// load saved experiment
+		loadExperimentToLocal({
+			dispatch,
+			experimentState
+		});
+
 		// notify success
 		if (displayNotification) {
 			utils.notifications.notifySuccessBySnackbar({
 				dispatch,
-				message: message
+				message: "Saved !"
 			});
 		}
 		return Promise.resolve();
@@ -167,13 +165,25 @@ export const duplicateExperiment = ({dispatch, sourceExperimentState, newName=nu
 			sourceExperimentId,
 			targetExeprimentId
 		}).then(() => {
-			return $saveExperiment({ 
-				dispatch,
+			return pushExperiment({
 				experimentState,
 				userId,
-				message: "Duplicated !",
-				shouldSaveLocally: false
 			});
+		}).then(() => {
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch,
+				message: "Duplicated !"
+			});
+			return Promise.resolve();
+		}).catch((err) => {
+			console.log(err);
+			utils.notifications.notifyErrorByDialog({
+				dispatch,
+				message: err.message
+			});
+
+			// pass on error
+			return Promise.reject(err);
 		});
 	});
 }

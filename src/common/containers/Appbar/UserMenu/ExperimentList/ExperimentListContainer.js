@@ -14,7 +14,7 @@ const pullExperiment = ({dispatch, targetExperimentId, saveFirst=false}) => {
 	}
 	return $save().then(() => {
 		return myaws.DynamoDB.getExperimentById(targetExperimentId).then((data) => {
-			utils.commonFlows.loadExperimentAction({
+			utils.commonFlows.loadExperimentToLocal({
 				dispatch,
 				experimentState: data.Item.fetch
 			});
