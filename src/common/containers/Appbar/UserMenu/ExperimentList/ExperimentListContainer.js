@@ -18,6 +18,10 @@ const pullExperiment = ({dispatch, targetExperimentId, saveFirst=false}) => {
 				dispatch,
 				experimentState: data.Item.fetch
 			});
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch,
+				message: "Opened !"
+			});
 			return Promise.resolve();
 		});
 	});
