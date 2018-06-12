@@ -104,34 +104,33 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 			osfAccess: osfAccess,
 			saveAfter: saveAfter
 		}));
-
-		let experimentState = getState().experimentState;
-		return Promise.all([
-			utils.commonFlows.saveCurrentExperiment({
-				dispatch,
-				displayNotification: false
-			}),
-			myaws.S3.listBucketContents({
+		
+		return utils.commonFlows.saveCurrentExperiment({
+			dispatch,
+			displayNotification: false
+		}).then(() => {
+			let experimentState = getState().experimentState;
+			return myaws.S3.listBucketContents({
 				Prefix: [experimentState.ownerId, experimentState.experimentId].join(myaws.S3.Delimiter)
-			}).then((media) => {
-				return $cloudDeploy({
-					state: getState(),
-					media
-				});
-			}).then(() => {
-				utils.notifications.notifySuccessBySnackbar({
-					dispatch,
-					message: "Experiment Deployed !"
-				});
-			})
-		]).catch((err) => {
+			});
+		}).then((media) => {
+			return $cloudDeploy({
+				state: getState(),
+				media
+			});
+		}).then(() => {
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch,
+				message: "Experiment Deployed !"
+			});
+		}).catch((err) => {
 			console.log(err);
 			utils.notifications.notifyErrorByDialog({
 				dispatch,
 				message: err.message
 			});
 		});
-	})
+	});
 }
 
 export const pureCloudDelete = (experimentId) => {
