@@ -55,7 +55,6 @@
     "react-dropzone": "^3.13.3",
     "react-redux": "^5.0.2",
     "react-speed-dial": "^0.4.7",
-    "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
     "short-uuid": "^2.3.3"
