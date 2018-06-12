@@ -108,9 +108,10 @@ export function listBucketContents({Prefix, Delimiter = Delimiter, bucket = Buck
 /*
 Returns signed url
 */
-export function getSignedUrl(filePath) {
+export function getSignedUrl(Key, Expires=9000) {
   return connectS3().getSignedUrl('getObject', {
-    Key: filePath
+    Key,
+    Expires
   });
 }
 

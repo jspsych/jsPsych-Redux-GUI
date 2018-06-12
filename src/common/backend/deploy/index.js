@@ -4,20 +4,6 @@ import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunc
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
 import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
-import {
-  getSignedUrl,
-  getFiles,
-  getJsPsychLib,
-  generateUploadParam,
-  uploadFile,
-  generateCopyParam,
-  copyFiles,
-  Cloud_Bucket,
-  Bucket_Name as User_Bucket,
-  Website_Bucket,
-  Delimiter,
-  listBucketContents
-} from '../s3';
 
 
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
@@ -308,13 +294,13 @@ export function diyDeploy({state, progressHook, media}) {
   var jsPsych = zip.folder(jsPysch_Folder);
 
   // download media
-  return getFiles(filePaths, (key, data) => {
+  return myaws.S3.getFiles(filePaths, (key, data) => {
     assets.file(deployInfo.media[key], data);
   }, (loaded) => {
     progressHook(loaded, deployInfo.downloadSize);
   }).then(() => {
     // download jspysch library
-    getJsPsychLib((key, data) => {
+    myaws.S3.getJsPsychLib((key, data) => {
       jsPsych.file(key, data);
     }).then(() => {
       // append downloaded in zip
@@ -354,38 +340,38 @@ export function cloudDeploy({
     isCloudDeployment: true,
     experimentId: experimentId
   })], "index.html");
-  var param = generateUploadParam({
-    Key: [experimentId, indexPage.name].join(Delimiter),
+  var param = myaws.S3.generateUploadParam({
+    Key: [experimentId, indexPage.name].join(myaws.S3.Delimiter),
     Body: indexPage,
     ContentType: 'text/html'
   });
 
   function uploadCode() {
-    return uploadFile({
+    return myaws.S3.uploadFile({
       param: param,
-      bucket: Cloud_Bucket
+      bucket: myaws.S3.Cloud_Bucket
     });
   }
   
   function uploadAsset() {
-    return listBucketContents({
+    return myaws.S3.listBucketContents({
       Prefix: `${experimentId}/${Deploy_Folder}/`,
-      bucket: Cloud_Bucket
+      bucket: myaws.S3.Cloud_Bucket
     }).then((data) => {
       let exists = data.Contents.map(item => {
-        let keys = item.Key.split(Delimiter);
-        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(Delimiter);
+        let keys = item.Key.split(myaws.S3.Delimiter);
+        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(myaws.S3.Delimiter);
       })
       filePaths = filePaths.filter(f => exists.indexOf(f) < 0);
       return filePaths.map((f) => {
-        return generateCopyParam({
+        return myaws.S3.generateCopyParam({
           source: f,
           target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
-          targetBucket: Cloud_Bucket
+          targetBucket: myaws.S3.Cloud_Bucket
         })
       });
     }).then((params) => {
-      return copyFiles({
+      return myaws.S3.copyFiles({
         params: params
       });
     });
@@ -393,19 +379,19 @@ export function cloudDeploy({
 
   function uploadLib() {
     // `${experimentId}/${jsPysch_Folder}/`
-    return listBucketContents({
+    return myaws.S3.listBucketContents({
       Prefix: `${jsPysch_Folder}/`,
-      bucket: Website_Bucket
+      bucket: myaws.S3.Website_Bucket
     }).then((data) => {
       let jsPsychParams = data.Contents.map((f) => (
-        generateCopyParam({
+        myaws.S3.generateCopyParam({
           source: f.Key,
           target: `${experimentId}/${f.Key}`,
-          targetBucket: Cloud_Bucket,
-          sourceBucket: Website_Bucket,
+          targetBucket: myaws.S3.Cloud_Bucket,
+          sourceBucket: myaws.S3.Website_Bucket,
         })
       ));
-      return copyFiles({params: jsPsychParams});
+      return myaws.S3.copyFiles({params: jsPsychParams});
     });
   }
 
@@ -576,7 +562,7 @@ filePath, the path of file
 function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
   let deploy = prefix === DEPLOY_PATH;
-  let processFunc = getSignedUrl;
+  let processFunc = myaws.S3.getSignedUrl;
   // in diy deploy mode, we don't get file from S3
   if (deploy) {
     processFunc = p => p;

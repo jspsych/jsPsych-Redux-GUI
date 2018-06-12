@@ -12,7 +12,6 @@ import ProfileIcon from 'material-ui/svg-icons/social/person';
 import ExperimentIcon from 'material-ui/svg-icons/action/book';
 import SignOut from 'material-ui/svg-icons/action/exit-to-app';
 
-import Login from '../../../containers/Login';
 import ExperimentList from '../../../containers/Appbar/UserMenu/ExperimentList';
 import Profile from '../../../containers/Appbar/UserMenu/Profile';
 
@@ -134,7 +133,6 @@ export default class UserMenu extends React.Component {
             leftAvatar={this.renderUserPic(login)}
           />
         </div>
-         <Login />
          <Profile onRef={ref => (this.Profile = ref)} />
          <ExperimentList onRef={ref => (this.ExperimentList = ref)}/>
           <Popover
