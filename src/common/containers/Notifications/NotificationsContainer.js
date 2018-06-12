@@ -65,8 +65,8 @@ export const notifyErrorBySnackbar = ({dispatch, message}) => {
 export const popUpConfirmation = (args = {
 	dispatch,
 	message: "",
-	continueWithOperation: () => {},
-	continueWithoutOperation: () => {},
+	continueWithOperation: () => Promise.resolve(),
+	continueWithoutOperation: () => Promise.resolve(),
 	continueWithOperationLabel: "Yes",
 	continueWithoutOperationLabel: "No",
 	showCancelButton: true,

@@ -1,18 +1,16 @@
 import React from 'react';
 
 import PreviewWindow from '../containers/PreviewWindow';
-import ZoomBar from './PreviewWindow/ZoomBar';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
-
-import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
-import Notification from '../containers/Notification';
 import Authentications from '../containers/Authentications';
 import Notifications from '../containers/Notifications';
+
+import ZoomBar from './PreviewWindow/ZoomBar';
+import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
 import { WIDTH as EditorWidth } from './TimelineNodeEditor';
 import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
-
 
 
 import GeneralTheme from './theme.js';
@@ -311,7 +309,6 @@ class App extends React.Component {
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
 	  			</div>
-	  			<Notification />
 	  			<Notifications />	
 	  			<Authentications />
   			</div>

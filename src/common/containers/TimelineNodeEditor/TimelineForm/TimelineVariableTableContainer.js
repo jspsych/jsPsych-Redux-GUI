@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import TimelineVariableTable from '../../../components/TimelineNodeEditor/TimelineForm/TimelineVariableTable';
 import * as editorActions from '../../../actions/editorActions';
-import { notifyConfirmByDialog, notifyErrorByDialog, notifyWarningBySnackbar } from '../../Notification';
 import { GuiIgonoredInfoEnum } from '../../../reducers/Experiment/editor';
 
 
@@ -67,9 +66,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	deleteRow: (index) => { deleteRow(dispatch, index); },
 	deleteColumn: (index) => { deleteColumn(dispatch, index); },
 	setTable: (table) => { setTable(dispatch, table); },
-	notifyConfirm: (message, proceedCallback) => { notifyConfirmByDialog(dispatch, message, proceedCallback); },
-	notifyError: (message) => { notifyErrorByDialog(dispatch, message); },
-	notifyWarningBySnackbar: (message) => { notifyWarningBySnackbar(dispatch, message); },
+	notifyConfirm: (message, continueWithOperation) => { utils.notifications.popUpConfirmation({dispatch, message, continueWithOperation}); },
+	notifyError: (message) => { utils.notifications.notifyErrorByDialog({dispatch, message}); },
+	notifyWarningBySnackbar: (message) => { utils.notifications.notifyWarningBySnackbar({dispatch, message}); },
 	moveTo: (sourceIndex, targetIndex) => { moveTo(dispatch, sourceIndex, targetIndex); },
 })
 

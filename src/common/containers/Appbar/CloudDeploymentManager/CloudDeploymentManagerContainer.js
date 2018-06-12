@@ -235,6 +235,7 @@ const mapStateToProps = (state, ownProps) => {
 		osfNode: osfNode,
 		osfToken: chosenOsfAccess.token,
 		saveAfter: saveAfter,
+		experimentId: experimentState.experimentId
 	};
 };
 

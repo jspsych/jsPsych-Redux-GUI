@@ -1,35 +1,4 @@
-import { connect } from 'react-redux';
+import UserMenuContainer from './UserMenuContainer.js';
 
-import UserMenu from '../../../components/Appbar/UserMenu';
-import * as userActions from '../../../actions/userActions';
-import { LoginModes } from '../../../reducers/User';
+export default UserMenuContainer;
 
-const handleSignIn = (dispatch) => {
-	dispatch(userActions.setLoginWindowAction(true, LoginModes.signIn));
-}
-
-const handleCreateAccount = (dispatch) => {
-	dispatch(userActions.setLoginWindowAction(true, LoginModes.register));
-}
-
-const handleSignOut = (dispatch) => {
-	dispatch(userActions.signOutAction());
-}
-
-const mapStateToProps = (state, ownProps) => {
-	let userState = state.userState;
-	let user = userState.user;
-	return {
-		username: userState.username
-	}
-}
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
-	handleSignIn: () => { handleSignIn(dispatch) },
-	handleCreateAccount: () => { handleCreateAccount(dispatch) },
-	handleSignOut: () => { handleSignOut(dispatch); },
-	popSignUp: () => utils.loginWindows.popRegister({dispatch}),
-	popSignIn: () => utils.loginWindows.popSignIn({dispatch})
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

@@ -2,15 +2,7 @@ import { connect } from 'react-redux';
 import MediaManager from '../../components/MediaManager';
 import * as userActions from '../../actions/userActions' ;
 import * as editorActions from '../../actions/editorActions';
-import { LoginModes } from '../../reducers/User';
-import * as notify from '../Notification';
-import {
-	uploadFiles as $uploadFiles,
-	deleteFiles as $deleteFiles,
-	listBucketContents as $listBucketContents,
-	Delimiter,
-	generateUploadParam
-} from '../../backend/s3';
+
 import { pushExperimentData } from '../../backend/dynamoDB';
 
 const Upload_Limit_MB = 100; 

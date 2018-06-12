@@ -2,11 +2,7 @@ import { connect } from 'react-redux';
 import deepEqual from 'deep-equal';
 import * as experimentActions from '../../../actions/experimentSettingActions';
 import DIYDeploymentManager from '../../../components/Appbar/DIYDeploymentManager';
-import {
-	notifyErrorByDialog,
-	notifySuccessBySnackbar,
-	notifyWarningBySnackbar
-} from '../../Notification';
+
 import { diyDeploy as $diyDeploy } from '../../../backend/deploy';
 
 const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {

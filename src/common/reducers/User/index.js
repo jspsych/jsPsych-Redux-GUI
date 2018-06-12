@@ -1,15 +1,4 @@
-import { logout, getLoginSessionFromCognito, getUserInfoFromCognito } from '../../backend/cognito';
 import { initState as experimentInitState } from '../Experiment';
-import * as actionTypes from '../../constants/ActionTypes';
-
-export const GUI_IGNORE = ['loginSession', 'windowOpen', 'loginMode', 'lastModifiedExperimentState'];
-
-export const LoginModes = {
-	signIn: 0,
-	register: 1,
-	verification: 2,
-	forgotPassword: 3,
-}
 
 export const OsfAccessDefault = {
 	token: null,
@@ -44,12 +33,6 @@ export const initState = {
 	*/ 
 	experiments: [],
 
-	/********** GUI (Should be Ignored) Information **********/
-	loginSession: null,
-	windowOpen: false,
-	loginMode: LoginModes.signIn,
-	lastModifiedExperimentState: experimentInitState,
-	/********** GUI (Should be Ignored) Information **********/
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -78,38 +61,9 @@ function loadUserState(state, action) {
 	});
 }
 
-function setLoginWindow(state, action) {
-	let { open, mode } = action;
-	return Object.assign({}, state, {
-		windowOpen: open,
-		loginMode: (mode === null) ? LoginModes.signIn : mode
-	})
-}
-
-export function signInOut(state, action) {
-	let { signIn } = action;
-
-	let new_state = Object.assign({}, state);
-	if (signIn) {
-		new_state.windowOpen = false;
-	} else {
-		logout();
-		window.location.reload(false); // will intiate all
-	}
-	new_state.user = getUserInfoFromCognito();
-	new_state.loginSession = getLoginSessionFromCognito();
-	
-	return new_state;
-}
-
 
 export default function userReducer(state = initState, action) {
 	switch (action.type) {
-		case actionTypes.SET_LOGIN_WINDOW:
-			return setLoginWindow(state, action);
-		case actionTypes.SIGN_IN_OUT:
-			return signInOut(state, action);
-
 		case actions.ActionTypes.LOAD_USER:
 			return loadUserState(state, action);
 

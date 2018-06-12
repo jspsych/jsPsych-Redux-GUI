@@ -7,9 +7,6 @@ import rootReducer from '../common/reducers';
 import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { signIn } from '../common/containers/Login';
-import { getUserInfoFromCognito, fetchCredential } from '../common/backend/cognito';
-
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('load', () => {

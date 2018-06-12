@@ -6,7 +6,6 @@ the functions defined in reducers/backend
 Possibly related files:
 
 reducers/backend.js
-containers/Login/*
 containers/Appbar/index.js
 
 

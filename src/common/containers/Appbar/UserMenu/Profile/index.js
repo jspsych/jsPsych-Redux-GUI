@@ -1,24 +1,21 @@
 import { connect } from 'react-redux';
 import Profile from '../../../../components/Appbar/UserMenu/Profile';
 import * as userActions from '../../../../actions/userActions';
-import { pushUserData } from '../../../../backend/dynamoDB';
-import {
-	notifyErrorByDialog,
-	notifySuccessBySnackbar,
-	notifyWarningBySnackbar
-} from '../../../Notification';
 
 
 const setOsfAccess = (dispatch, osfAccess, setReactState) => {
 	return dispatch((dispatch, getState) => {
 		dispatch(userActions.setOsfAccessAction(osfAccess));
-		// setReactState({
-		// 	updating: true
-		// });
-		return pushUserData(getState().userState).then(() => {
-			notifySuccessBySnackbar(dispatch, "Profile Updated !");
+		return myaws.DynamoDB.pushUserData(getState().userState).then(() => {
+			utils.notifications.notifySuccessBySnackbar({
+				dispatch, 
+				message: "Profile Updated !"
+			});
 		}).catch((err) => {
-			notifyErrorByDialog(dispatch, err.message);
+			utils.notifications.notifyErrorByDialog({
+				dispatch, 
+				message: err.message
+			});
 		});
 	});
 }
@@ -27,7 +24,7 @@ const mapStateToProps = (state, ownProps) => {
 	let userState = state.userState;
 
 	return {
-		username: userState.user.username,
+		username: userState.username,
 		osfAccess: userState.osfAccess || [],
 	};
 };

@@ -24,10 +24,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
 import ShowDetailIcon from 'material-ui/svg-icons/navigation/expand-more';
 import HideDetailIcon from 'material-ui/svg-icons/navigation/expand-less';
 
-import deepEqual from 'deep-equal';
-
-import ConfirmationDialog from '../../Notification/ConfirmationDialog';
-import { renderDialogTitle, Text } from '../../gadgets';
+import { DialogTitle, Text } from '../../gadgets';
 
 import AppbarTheme from '../theme.js';
 
@@ -82,7 +79,6 @@ export default class CloudDeploymentManager extends React.Component {
 		super(props);
 		this.state = {
 			open: false,
-			confirmOpen: false,
 
 			deploying: false,
 			deleting: false,
@@ -192,18 +188,6 @@ export default class CloudDeploymentManager extends React.Component {
 			)
 		}
 
-		this.handleConfirmClose = () => {
-			this.setState({
-				confirmOpen: false
-			})
-		}
-
-		this.handleConfirmOpen = () => {
-			this.setState({
-				confirmOpen: true
-			})
-		}
-
 		this.cloudDeploy = () => {
 			this.setState({
 				deploying: true
@@ -224,12 +208,12 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				deleting: true
 			});
-			this.props.cloudDelete().finally(() => {
+			return this.props.cloudDelete().finally(() => {
 				this.setState({
 					deleting: false
 				});
 				this.syncExperimentStatus();
-			})
+			});
 		}
 
 		this.createProject = () => {
@@ -261,6 +245,19 @@ export default class CloudDeploymentManager extends React.Component {
 			this.setState({
 				showOsfAccessDetails: !this.state.showOsfAccessDetails
 			})
+		}
+
+		this.pullOffExperiment = () => {
+			utils.notifications.popConfirm({
+				dispatch: this.props.dispatch,
+				message: "Are you sure that you want this experiment offline?",
+				continueWithOperation: () => this.cloudDelete,
+				continueWithOperationLabel: "Yes",
+				continueWithoutOperationLabel: "No, hold on...",
+				showCancelButton: true,
+				withExtraCare: true,
+				extraCareText: this.props.experimentId,		
+			});
 		}
 	}
 
@@ -335,7 +332,7 @@ export default class CloudDeploymentManager extends React.Component {
 								<IconButton
 									tooltip="Pull Experiment Offline"
 									disabled={!isOnline}
-									onClick={this.handleConfirmOpen}
+									onClick={this.pullOffExperiment}
 								>
 									<DeleteIcon color={colors.deleteColor}/>
 								</IconButton> :
@@ -411,7 +408,7 @@ export default class CloudDeploymentManager extends React.Component {
 				    	>
 					    	{
 					    		osfAccess.map((item, i) => {
-					    			if (deepEqual(item, tempChosenOsfAccess)) {
+					    			if (utils.deepEqual(item, tempChosenOsfAccess)) {
 					    				item = tempChosenOsfAccess;
 					    			}
 					    			return (
@@ -572,48 +569,36 @@ export default class CloudDeploymentManager extends React.Component {
 					open={this.state.open}
 					titleStyle={{...cssStyle.Dialog.Title}}
 					bodyStyle={{...cssStyle.Dialog.Body}}
-					title={renderDialogTitle(
-						<Subheader>
-							<div style={{display: 'flex', maxHeight: 48}}>
-								<div style={{paddingTop: 8, paddingRight: 10, maxHeight: 48}}>
-									<CloudTitleIcon color={colors.titleIconColor}/>
-								</div>
-								<div style={{fontSize: 20, maxHeight: 48}}>
-			      					{"Cloud Deployment"}
-			      				</div>
-		      				</div>
-						</Subheader>, 
-						this.handleClose, 
-						null,
-						null,
-						false
-					)}
+					title={
+						<DialogTitle
+							node={
+								<Subheader>
+									<div style={utils.prefixer({display: 'flex', maxHeight: 48})}>
+										<div style={utils.prefixer({paddingTop: 8, paddingRight: 10, maxHeight: 48})}>
+											<CloudTitleIcon color={colors.titleIconColor}/>
+										</div>
+										<div style={utils.prefixer({fontSize: 20, maxHeight: 48})}>
+					      					Cloud Deployment
+					      				</div>
+				      				</div>
+								</Subheader>
+							}
+							closeCallback={this.handleClose}
+							showCloseButton={false}
+						/>
+					}
 					actions={actions}
-					actionsContainerStyle={{
+					actionsContainerStyle={utils.prefixer({
 						display: 'flex',
 						alignItems: 'center',
 						flexDirection: 'row-reverse'
-					}}
+					})}
 				>
-					<Paper style={{minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'}}>
+					<Paper style={utils.prefixer({minHeight: 388, maxHeight: 388, overflowY: 'auto', overflowX: 'hidden'})}>
 						{Experiment_Detail_Card}				
 						{Setting_Card}
 					</Paper>
 				</Dialog>
-
-				<ConfirmationDialog
-	                open={this.state.confirmOpen}
-	                message={"Are you sure that you want this experiment offline?"}
-	                handleClose={this.handleConfirmClose}
-	                proceedWithOperation={() => { 
-	                	this.cloudDelete(); 
-	                	this.handleConfirmClose(); 
-	                }}
-	                proceedWithOperationLabel={"Yes, I want it offline."}
-	                proceed={this.handleConfirmClose}
-	                proceedLabel={"No, hold on..."}
-	                showCloseButton={false}
-	            />
 			</div>
 		);
 	}
