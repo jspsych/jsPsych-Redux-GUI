@@ -105,16 +105,22 @@ const cloudDeploy = ({dispatch, osfNode, osfAccess, saveAfter}) => {
 			saveAfter: saveAfter
 		}));
 
+		let experimentState = getState().experimentState;
 		return Promise.all([
 			utils.commonFlows.saveCurrentExperiment({
 				dispatch,
 				displayNotification: false
 			}),
-			$cloudDeploy({
-				state: getState(),
+			myaws.S3.listBucketContents({
+				Prefix: [experimentState.ownerId, experimentState.experimentId].join(myaws.S3.Delimiter)
+			}).then((media) => {
+				return $cloudDeploy({
+					state: getState(),
+					media
+				});
 			}).then(() => {
 				utils.notifications.notifySuccessBySnackbar({
-					dispatch, 
+					dispatch,
 					message: "Experiment Deployed !"
 				});
 			})

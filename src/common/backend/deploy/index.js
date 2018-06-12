@@ -264,7 +264,7 @@ Param
 state, whole redux state
 progressHook, callback from presentational component that will show user downloading progress
 */
-export function diyDeploy({state, progressHook}) {
+export function diyDeploy({state, progressHook, media}) {
   let experimentState = utils.deepCopy(state.experimentState),
       diyDeployInfo = experimentState.diyDeployInfo,
       saveAfter = diyDeployInfo.saveAfter,
@@ -280,7 +280,7 @@ export function diyDeploy({state, progressHook}) {
 
   /* ************ Step 1 ************ */
   // Extract deploy information
-  let deployInfo = extractDeployInfomation(experimentState);
+  let deployInfo = extractDeployInfomation({experimentState, media});
 
   /* ************ Step 2 ************ */
   let filePaths = Object.keys(deployInfo.media);
@@ -332,7 +332,8 @@ export function diyDeploy({state, progressHook}) {
 }
 
 export function cloudDeploy({
-  state
+  state,
+  media
 }) {
   var experimentState = utils.deepCopy(state.experimentState),
       cloudDeployInfo = experimentState.cloudDeployInfo,
@@ -345,7 +346,7 @@ export function cloudDeploy({
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
 
-  var deployInfo = extractDeployInfomation(experimentState),
+  var deployInfo = extractDeployInfomation({experimentState, media}),
       filePaths = Object.keys(deployInfo.media);
 
   var indexPage = new File([generatePage({
@@ -411,7 +412,7 @@ export function cloudDeploy({
   return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
 }
 
-function extractDeployInfomation(experimentState) {
+function extractDeployInfomation({experimentState, media}) {
   let deployInfo = {
     experimentName: experimentState.experimentName,
     // search for used media
@@ -425,8 +426,8 @@ function extractDeployInfomation(experimentState) {
     errorLog: '',
     downloadSize: 0
   }
-  extractDeployInfomationHelper(experimentState, deployInfo, experimentState.media.Prefix);
-  let resources = Array.isArray(experimentState.media.Contents) ? experimentState.media.Contents.map(f => [f.Key, f.Size]) : [];
+  extractDeployInfomationHelper(experimentState, deployInfo, media.Prefix);
+  let resources = Array.isArray(media.Contents) ? media.Contents.map(f => [f.Key, f.Size]) : [];
   for (let f of Object.keys(deployInfo.media)) {
     let found = false, size = 0;
     for (let r of resources) {
