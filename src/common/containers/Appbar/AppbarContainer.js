@@ -41,10 +41,16 @@ const clickSave = ({dispatch}) => {
 
 const clickNewExperiment = ({dispatch}) => {
 	let loadNewExperiment = () => {
-		dispatch(actions.actionCreator({
-			type: actions.ActionTypes.LOAD_EXPERIMENT,
-			experimentState: core.getInitExperimentState()
-		}));
+		dispatch((dispatch, getState) => {
+			let newExperiment = core.getInitExperimentState();
+			dispatch(actions.actionCreator({
+				type: actions.ActionTypes.LOAD_EXPERIMENT,
+				experimentState: core.registerExperiment({
+					experimentState: newExperiment,
+					userId: getState().userState.userId
+				}),
+			}));
+		});
 	}
 
 	return dispatch((dispatch, getState) => {

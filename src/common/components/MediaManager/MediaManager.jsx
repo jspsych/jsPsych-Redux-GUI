@@ -4,7 +4,9 @@ import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Dropzone from 'react-dropzone';
+import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
+
 const mime = require('mime-types');
 import { List, ListItem } from 'material-ui/List';
 
@@ -32,8 +34,6 @@ import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 import PreviewIcon from 'material-ui/svg-icons/image/remove-red-eye'
 
 import { DialogTitle } from '../gadgets';
-import Notification from '../../containers/Notification';
-import { getSignedUrl } from '../../backend/s3';
 import { MediaPathTag } from '../../backend/deploy';
 
 import { AppbarIcon as AppbarIconStyle } from '../Appbar/theme.js';
@@ -76,14 +76,21 @@ const cssStyle = {
 			color: grey400,
 			alignSelf: 'center'
 		})
-	}
+	},
+}
+
+const style = {
+	Progress: {
+      color: colors.secondary,
+      size: 40
+    }
 }
 
 var __DEBUG__ = false;
 
 export function fileIconFromTitle(title, color=null) {
 	const type = mime.lookup(title);
-	if(type === false){
+	if(!type){
 		return <FileIcon color={color} />
 	} else if(type.indexOf('image') > -1){
 		return <ImageIcon color={color} />
@@ -94,7 +101,7 @@ export function fileIconFromTitle(title, color=null) {
 	} else if(type.indexOf('audio') > -1){
 		return <AudioIcon color={color} />
 	}
-	return <FileIcon />
+	return <FileIcon color={color} />
 }
 
 export const MediaManagerMode = {
@@ -104,6 +111,8 @@ export const MediaManagerMode = {
 }
 
 const map2Bool = (files, selected) => files && files.map(f => selected.indexOf(f) > -1);
+
+const extractFilename = ({Prefix, Key}) => Key.replace(new RegExp(`${Prefix}/?`), '');
 
 export default class MediaManager extends React.Component {
 	constructor(props) {
@@ -116,7 +125,8 @@ export default class MediaManager extends React.Component {
 			selected: [],
 			uploadingList: {},
 			previewFileUrl: '',
-			s3Files: {}
+			s3Files: {},
+			deleting: false
 		};
 
 		this.handleEnter = () => {
@@ -138,6 +148,10 @@ export default class MediaManager extends React.Component {
 			} else {
 				uploadingList[filename] = percent;
 			}
+
+			if (percent >= 100) {
+				delete uploadingList[filename];
+			}
 			this.setState({
 				uploadingList: uploadingList
 			});
@@ -151,7 +165,7 @@ export default class MediaManager extends React.Component {
 			})
 		}
 
-		this.initLocalSelected = () => {
+		this.getInitLocalSelected = () => {
 			let selected;
 			if (Array.isArray(this.props.selected)) {
 				selected = this.props.selected;
@@ -159,22 +173,27 @@ export default class MediaManager extends React.Component {
 				selected = [this.props.selected];
 			}
 
+			let filenames = this.getS3FileNames();
 			return this.props.mode === MediaManagerMode.upload ?
-					this.props.filenames.map(f => false) :
-					map2Bool(this.props.filenames, selected)
+					filenames.map(f => false) :
+					map2Bool(filenames, selected);
+		}
+
+		this.resetSelect = () => {
+			this.setState({
+				selected: this.getInitLocalSelected()
+			});
 		}
 
 		this.handleOpen = () => {
-			this.props.checkBeforeOpen((canOpen) => {
+			this.props.checkBeforeOpen().then((canOpen) => {
 				if (canOpen) {
 					this.setState({
 						open: true,
 						dropzoneActive: false,
-						selected: this.initLocalSelected()
 					});
 					return this.fetchS3Files();
 				}
-				return Promise.resolve();
 			});
 		};
 
@@ -208,13 +227,13 @@ export default class MediaManager extends React.Component {
 					s3Files: data
 				});
 				return data;
-			});
+			}).then(this.resetSelect);
 		}
 
 		this.getS3FileNames = () => {
 			let filenames = [], s3Files = this.state.s3Files;
 			if (s3Files.Contents) {
-				filenames = s3Files.Contents.map((f) => (f.Key.replace(s3Files.Prefix, '')));
+				filenames = s3Files.Contents.map((f) => extractFilename({Key: f.Key, Prefix: s3Files.Prefix}));
 			}
 			return filenames;
 		}
@@ -228,21 +247,30 @@ export default class MediaManager extends React.Component {
 				progressHook,
 				userId,
 				experimentId
-			}).then(this.fetchS3Files)
+			}).then(this.fetchS3Files);
 		}
 
 		this.handleDelete = () => {
-			this.props.deleteFiles(
-				this.props.s3files.Contents.filter((item, i) => (this.state.selected[i])).map((item) => (item.Key)),
-			);
-			this.resetSelect();
+			let { s3Files, selected } = this.state;
+			let filePaths = s3Files.Contents.filter((item, i) => selected[i]).map(item => item.Key);
+			if (filePaths.length > 0) {
+				this.setState({
+					deleting: true
+				});
+				this.props.deleteFiles({filePaths}).then(this.fetchS3Files).finally(() => {
+					this.setState({
+						deleting: false
+					});
+				});
+			}
+			
 		}
 
 		this.insertFile = () => {
-			let value = [];
+			let value = [], filenames = this.getS3FileNames();
 			for (let i = 0; i < this.state.selected.length; i++) {
 				if (this.state.selected[i]) {
-					value.push(MediaPathTag(this.props.filenames[i]));
+					value.push(MediaPathTag(filenames[i]));
 				}
 			}
 			if (value.length > 1 && this.props.mode !== MediaManagerMode.multiSelect) {
@@ -259,33 +287,28 @@ export default class MediaManager extends React.Component {
 			this.handleClose();
 		}
 
-		this.resetSelect = () => {
-			this.setState({
-				selected: this.initLocalSelected()
-			})
-		}
-
 		this.openPreviewWindow = (s3filePath) => {
 			let url = null;
 			try {
-				url = getSignedUrl(s3filePath);
+				url = myaws.S3.getSignedUrl(s3filePath);
 			} catch(e) {
 				console.log(e);
 			}
+
 			this.setState({
 				previewFileUrl: url,
-				previewFileTitle: s3filePath.replace(this.props.s3files.Prefix, ''),
+				previewFileTitle: extractFilename({Key: s3filePath, Prefix: this.state.s3Files.Prefix}),
 			})
 		}
 
 		this.closePreviewWindow = () => {
 			this.setState({
-				previewFileUrl: null,
-				previewFileTitle: null,
+				previewFileUrl: '',
+				previewFileTitle: '',
 			})
 		}
 
-		this.renderTrigger = () => {
+		this.Trigger = () => {
 			switch(this.props.mode) {
 				case MediaManagerMode.select:
 				case MediaManagerMode.multiSelect:
@@ -300,8 +323,10 @@ export default class MediaManager extends React.Component {
 			}
 		}
 
-		this.renderActions = () => {
+		this.renderActionButton = () => {
 			const deleteButton = (
+				this.state.deleting ?
+				<CircularProgress {...style.Progress} /> :
 				<FlatButton
 					label="Delete"
 					labelStyle={{textTransform: "none", color: theme.colors.secondaryDeep}}
@@ -327,7 +352,7 @@ export default class MediaManager extends React.Component {
 				}
 		}
 
-		this.renderPreviewTag = () => {
+		this.PreviewTag = () => {
 			let { previewFileTitle, previewFileUrl } = this.state;
 			if (!previewFileTitle) {
 				return null;
@@ -335,30 +360,71 @@ export default class MediaManager extends React.Component {
 
 			let type = mime.lookup(previewFileTitle);
 
-			if(type.indexOf('image') > -1){
-				return (
-					<embed type={type} src={previewFileUrl} />
-				);
-			} else if(type.indexOf('video') > -1){
-				return (
-					<video controls width="100%" height={350} style={utils.prefixer({paddingTop: 20})}>
-						<source src={previewFileUrl} type={type} />
-					</video>
-				);
-			} else if(type.indexOf('audio') > -1){
-				return (
-					<audio controls>
-						<source src={previewFileUrl} type={type} />
-					</audio>
-				);
-			} else {
-				return (
-					<div style={utils.prefixer({fontSize: 18, paddingTop: "20%"})}>
-						<p>{`Sorry, but file "${previewFileTitle}" is not supported for preview.`}</p>
-						<p>You may download it for further operations.</p>
+			if (type) {
+				if(type.indexOf('image') > -1){
+					return (
+						<embed type={type} src={previewFileUrl} />
+					);
+				} else if(type.indexOf('video') > -1){
+					return (
+						<video controls width="100%" height={350} style={utils.prefixer({paddingTop: 20})}>
+							<source src={previewFileUrl} type={type} />
+						</video>
+					);
+				} else if (type.indexOf('audio') > -1){
+					return (
+						<audio controls>
+							<source src={previewFileUrl} type={type} />
+						</audio>
+					);
+				}
+			} 
+			return (
+				<div style={utils.prefixer({fontSize: 18, paddingTop: "20%"})}>
+					<p>{`Sorry, but file "${previewFileTitle}" is not supported for preview.`}</p>
+					<p>You may download it for further operations.</p>
+				</div>
+			);
+		}
+
+		this.MediaItem = ({fileKey, index}) => {
+			let filename = extractFilename({Key: fileKey, Prefix: this.state.s3Files.Prefix}),
+				isSelected =  this.state.selected[index],
+				isUploadMode = this.props.mode === MediaManagerMode.upload;
+
+			return (
+				<div 
+					style={utils.prefixer({
+						display: 'flex', 
+						width: '100%',
+					})}
+				>
+					<div style={utils.prefixer({flexGrow: 1})} >
+						<ListItem
+							primaryText={filename}
+							style={{
+								backgroundColor: isUploadMode && isSelected ? SelectedListItemColor : null
+							}}
+							leftIcon={fileIconFromTitle(fileKey, isUploadMode && isSelected ? colors.primary : null)}
+							onClick={() => {this.handleSelect(index)}}
+							rightIcon={
+								isUploadMode ?
+								(isSelected ? 
+									<CheckYesIcon color={colors.primary}/> : 
+									<CheckNoIcon color={colors.primary}/>) :
+								null
+							}
+						/>
 					</div>
-				);
-			}
+					<IconButton
+						style={utils.prefixer({flexBasis: '48px'})}
+						onClick={() => { this.openPreviewWindow(fileKey); }}
+						tooltip="Preview Media"
+						>
+						<PreviewIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep} />
+					</IconButton>
+				</div>
+			)
 		}
 	}
 
@@ -387,64 +453,36 @@ export default class MediaManager extends React.Component {
 
 	render() {
 		let Media_List = null;
-		if (this.props.s3files && this.props.s3files.Contents) {
-			Media_List = this.props.s3files.Contents.map((f, i) => {
-				let fname = f.Key.replace(this.props.s3files.Prefix, '');
+		if (this.state.s3Files.Contents) {
+			Media_List = this.state.s3Files.Contents.map((file, index) => {
 				return (
-					<div style={{
-							display: 'flex', 
-							width: '100%',
-						}} key={`${f.ETag}-container`}>
-						<div style={{flexGrow: 1}} key={`${f.ETag}-item`}>
-							<ListItem
-								key={f.ETag}
-								primaryText={fname}
-								style={{
-									backgroundColor: (this.props.mode === MediaManagerMode.upload && this.state.selected[i]) ? SelectedListItemColor : null
-								}}
-								leftIcon={fileIconFromTitle(f.Key, this.state.selected[i] ? colors.primary : null)}
-								onClick={() => {this.handleSelect(i)}}
-								rightIcon={
-									this.props.mode !== MediaManagerMode.upload ?
-									(this.state.selected[i] ? 
-										<CheckYesIcon color={theme.colors.primary}/> : 
-										<CheckNoIcon color={theme.colors.primary}/>) :
-									null
-								}
-							/>
-						</div>
-						<IconButton
-							key={`${f.ETag}-checker`}
-							style={{flexBasis: '48px'}}
-							onClick={() => { this.openPreviewWindow(f.Key); }}
-							tooltip="Preview Media"
-							>
-							<PreviewIcon color={colors.primaryDeep} hoverColor={colors.secondaryDeep} />
-						</IconButton>
-					</div>
-				)}
-			)
+					<this.MediaItem
+						fileKey={file.Key}
+						index={index}
+						key={`media-item-${index}`}
+					/>	
+				);
+			});
 		}
 
-		let uploadList = null, uploadingList = Object.keys(this.state.uploadingList);
-		if (uploadingList.length > 0) {
-			uploadList = uploadingList.map((key) =>
+		let uploadingList = Object.keys(this.state.uploadingList),
+			Upload_List = uploadingList.map((key) =>
 				<div style={{display: 'flex'}} key={"uploading-container-"+key}>
 					<ListItem
 						key={"uploading-"+key}
 						primaryText={key}
 						disabled={true}
 						leftIcon={fileIconFromTitle(key)}
-						/>
+					/>
 					<div key={"uploading-progress-container"+key} 
 						 style={{width: "100%", marign: 'auto', paddingTop: 22}}
 					>
-					<LinearProgress 
-						mode="determinate" 
-						key={"uploading-progress-"+key} 
-						value={this.state.uploadingList[key]} 
-						color={colors.primary}
-					/>
+						<LinearProgress 
+							mode="determinate" 
+							key={"uploading-progress-"+key} 
+							value={this.state.uploadingList[key]} 
+							color={colors.primary}
+						/>
 					</div>
 					<ListItem
 						key={"uploading-number-"+key}
@@ -452,17 +490,17 @@ export default class MediaManager extends React.Component {
 						disabled={true}
 						/>
 				</div>
-			)
-		}
+			);
+		
 
 	    return (
 	        <div>
-	          {this.renderTrigger()}
+	          <this.Trigger />
 	          <Dialog
 	            open={this.state.open}
 	            modal
 	            autoScrollBodyContent
-	            bodyStyle={utils.prefixer({minHeight: 400, maxHeight: 400})}
+	            bodyStyle={utils.prefixer({minHeight: 360, maxHeight: 360})}
 	            titleStyle={utils.prefixer({padding: 5})}
 	            title={
 	            	<DialogTitle
@@ -486,18 +524,18 @@ export default class MediaManager extends React.Component {
 	            		closeCallback={this.handleClose}
 	            	/>
 	            }
-	            actions={this.renderActions()}
+	            actions={this.renderActionButton()}
 	          >
 				<Dropzone
-					disableClick={true}
-					onDrop={this.onDrop.bind(this)}
+					disableClick
+					onDrop={this.onDrop}
 					onDragEnter={this.handleEnter}
 					onDragLeave={this.handleExit}
 					style={{...cssStyle.DropZone.root}}
 					>
 					<List>
 						{Media_List}
-						{uploadList}
+						{Upload_List}
 					</List>
 					{!this.state.dropzoneActive && this.props.mode === MediaManagerMode.upload &&
 						<div style={{...cssStyle.DropZone.background}}>
@@ -515,9 +553,9 @@ export default class MediaManager extends React.Component {
 					</div>
 					}
 				</Dropzone>
-	          </Dialog>
+	       	</Dialog>
 
-	          <Dialog
+           	<Dialog
 	          	open={!!this.state.previewFileUrl}
 	          	autoScrollBodyContent
 	          	titleStyle={utils.prefixer({padding: 0})}
@@ -551,10 +589,10 @@ export default class MediaManager extends React.Component {
 	          	]}
 	          	>
 		          	<div style={utils.prefixer({textAlign: 'center'})}> 
-		          		{this.renderPreviewTag()}
+		          		{<this.PreviewTag />}
 		          	</div>
-	          	</Dialog>
-	     </div>
+	          </Dialog>
+	     	</div>
 	    );
 	  }
 }

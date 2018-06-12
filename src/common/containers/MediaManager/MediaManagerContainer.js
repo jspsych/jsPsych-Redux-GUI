@@ -41,10 +41,13 @@ const uploadFiles = ({dispatch, files, progressHook, userId, experimentId}) => {
 	});
 }
 
-const deleteFiles = (dispatch, filePaths) => {
+const deleteFiles = ({dispatch, filePaths}) => {
 	return $deleteFiles(filePaths).then((data) => {
-		updateFileList(dispatch, "Deleted !");
-	}, (err) => {
+		utils.notifications.notifySuccessBySnackbar({
+			dispatch,
+			message: "Deleted !"
+		});
+	}).catch((err) => {
 		utils.notifications.notifyErrorByDialog({
 			dispatch,
 			message: err.message
@@ -52,7 +55,7 @@ const deleteFiles = (dispatch, filePaths) => {
 	});
 }
 
-const checkBeforeOpen = (dispatch, handleOpen) => {
+const checkBeforeOpen = ({dispatch}) => {
 	return dispatch((dispatch, getState) => {
 		// not logged in
 		if (!getState().userState.userId) {
@@ -81,22 +84,16 @@ Note that FOR NOW AWS S3 Media Type Object MUST be in the first level
 of trial.paramters
 */
 const mapStateToProps = (state, ownProps) => {
-	let filenames = [];
-	let media = state.experimentState.media;
-	if (media.Contents) {
-		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
-	} 
-	
  	return {
- 		s3files: media,
- 		filenames: filenames,
+ 		userId: state.experimentState.ownerId,
+ 		experimentId: state.experimentState.experimentId
  	};
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
 	uploadFiles: ({...args}) => uploadFiles({dispatch, ...args}),
-	deleteFiles: (filePaths) => deleteFiles(dispatch, filePaths),
-	checkBeforeOpen: (handleOpen) => checkBeforeOpen(dispatch, handleOpen),
+	deleteFiles: ({...args}) => deleteFiles({dispatch, ...args}),
+	checkBeforeOpen: () => checkBeforeOpen({dispatch}),
 	notifySuccessBySnackbar: (message) => { utils.notifications.notifySuccessBySnackbar({dispatch, message}); },
 	notifyWarningByDialog: (message) => { utils.notifications.notifyWarningByDialog({dispatch, message}); },
 	notifyWarningBySnackbar: (message) => { utils.notifications.notifyWarningBySnackbar({dispatch, message}); }
