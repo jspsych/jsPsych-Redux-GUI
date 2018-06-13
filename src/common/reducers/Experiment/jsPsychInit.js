@@ -1,6 +1,5 @@
 /**
  *@file This file describes the reducers for initial and launch settings for jsPsych
- *@author Junyan Qi <juqi@vassar.edu>
 */
 import { CodeLanguage } from '../../components/CodeEditor';
 
@@ -90,7 +89,7 @@ export const initState = {
 	preload_audio: [],
 	preload_images: [],
 	max_load_time: 60000,
-}
+};
 
 /**
  * @typeof {string} SettingTypeEnum

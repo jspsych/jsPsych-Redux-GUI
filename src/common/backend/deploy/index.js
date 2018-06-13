@@ -4,25 +4,11 @@ import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunc
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
 import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
-import {
-  getSignedUrl,
-  getFiles,
-  getJsPsychLib,
-  generateUploadParam,
-  uploadFile,
-  generateCopyParam,
-  copyFiles,
-  Cloud_Bucket,
-  Bucket_Name as User_Bucket,
-  Website_Bucket,
-  Delimiter,
-  listBucketContents
-} from '../s3';
-import { injectJsPsychUniversalPluginParameters, isValueEmpty } from '../../utils';
+
 
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
-const OsfPostHelper = (experimentId) => {
+const renderOsfPostFunction = (experimentId) => {
   return `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
@@ -62,17 +48,19 @@ try {
 }
 
 ?>`;
+
+export const SQLite_Database = {
+  filename: 'jsPsychData.sqlite3',
+  table: 'jsPsych'
+};
 const SaveData_PHP_SQLite_Code = `
 <?php
-
-// this path should point to your configuration file.
-include('database_config.php');
 
 $post_data = json_decode(file_get_contents('php://input'), true);
 $data_array = $post_data["data_array"];
 
-$database = "data.sqlite3";
-$table = "jspsych";
+$database = "${SQLite_Database.filename}";
+$table = "${SQLite_Database.table}";
 
 try {
   $conn = new PDO("sqlite:$database");
@@ -117,23 +105,19 @@ $conn = null;
 ?>
 `;
 const SaveData_PHP_MySQL_Code = ``;
-export const DIY_Deploy_Mode = {
-  disk: 'save_to_disk_as_csv',
-  sqlite: 'save_to_sqlite',
-  mysql: 'save_to_mysql'
-}
+
 const generateSaveData_PHP_API_Code = (mode) => {
   switch(mode) {
-    case DIY_Deploy_Mode.mysql:
+    case enums.DIY_Deploy_Mode.mysql:
       return SaveData_PHP_MySQL_Code;
-    case DIY_Deploy_Mode.sqlite:
+    case enums.DIY_Deploy_Mode.sqlite:
       return SaveData_PHP_SQLite_Code;
-    case DIY_Deploy_Mode.disk:
+    case enums.DIY_Deploy_Mode.disk:
     default:
       return SaveData_PHP_Disk_API_Code;
   }
 }
-const diyPostHelper = (mode) => {
+const renderDIYPostFunction = (mode) => {
   return `function ${SaveData_PHP_Function_Name}(data) {
     let request = new XMLHttpRequest();
     request.open("POST", "${SaveData_PHP_API}", true);
@@ -143,7 +127,7 @@ const diyPostHelper = (mode) => {
         console.log(response);
       }
     }
-    request.send(${mode === DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
+    request.send(${mode === enums.DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
   }`
 }
 
@@ -192,11 +176,11 @@ const cloudSaveDataFunctionCode = () => {
 const diySaveDataFunctionCode = (mode) => {
   let data = '';
   switch(mode) {
-    case DIY_Deploy_Mode.mysql:
-    case DIY_Deploy_Mode.sqlite:
+    case enums.DIY_Deploy_Mode.mysql:
+    case enums.DIY_Deploy_Mode.sqlite:
       data = 'jsPsych.data.get().json()';
       break;
-    case DIY_Deploy_Mode.disk:
+    case enums.DIY_Deploy_Mode.disk:
     default:
       data = 'jsPsych.data.get().csv()';
   }
@@ -266,7 +250,7 @@ Param
 state, whole redux state
 progressHook, callback from presentational component that will show user downloading progress
 */
-export function diyDeploy({state, progressHook}) {
+export function diyDeploy({state, progressHook, media}) {
   let experimentState = utils.deepCopy(state.experimentState),
       diyDeployInfo = experimentState.diyDeployInfo,
       saveAfter = diyDeployInfo.saveAfter,
@@ -282,7 +266,7 @@ export function diyDeploy({state, progressHook}) {
 
   /* ************ Step 1 ************ */
   // Extract deploy information
-  let deployInfo = extractDeployInfomation(experimentState);
+  let deployInfo = extractDeployInfomation({experimentState, media});
 
   /* ************ Step 2 ************ */
   let filePaths = Object.keys(deployInfo.media);
@@ -310,13 +294,13 @@ export function diyDeploy({state, progressHook}) {
   var jsPsych = zip.folder(jsPysch_Folder);
 
   // download media
-  return getFiles(filePaths, (key, data) => {
+  return myaws.S3.getFiles(filePaths, (key, data) => {
     assets.file(deployInfo.media[key], data);
   }, (loaded) => {
     progressHook(loaded, deployInfo.downloadSize);
   }).then(() => {
     // download jspysch library
-    getJsPsychLib((key, data) => {
+    myaws.S3.getJsPsychLib((key, data) => {
       jsPsych.file(key, data);
     }).then(() => {
       // append downloaded in zip
@@ -334,20 +318,19 @@ export function diyDeploy({state, progressHook}) {
 }
 
 export function cloudDeploy({
-  state
+  state,
+  media
 }) {
   var experimentState = utils.deepCopy(state.experimentState),
       cloudDeployInfo = experimentState.cloudDeployInfo,
       experimentId = experimentState.experimentId,
-      userState = state.userState,
-      user = userState.user,
       saveAfter = cloudDeployInfo.saveAfter;
 
   let saveTrial = generateDataSaveTrial({code: cloudSaveDataFunctionCode()});
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
 
-  var deployInfo = extractDeployInfomation(experimentState),
+  var deployInfo = extractDeployInfomation({experimentState, media}),
       filePaths = Object.keys(deployInfo.media);
 
   var indexPage = new File([generatePage({
@@ -355,65 +338,63 @@ export function cloudDeploy({
     isCloudDeployment: true,
     experimentId: experimentId
   })], "index.html");
-  var param = generateUploadParam({
-    Key: [experimentId, indexPage.name].join(Delimiter),
+  var param = myaws.S3.generateUploadParam({
+    Key: [experimentId, indexPage.name].join(myaws.S3.Delimiter),
     Body: indexPage,
     ContentType: 'text/html'
   });
 
   function uploadCode() {
-    return uploadFile({
-      param: param,
-      bucket: Cloud_Bucket
+    return myaws.S3.uploadFile({
+      param,
+      bucket: myaws.S3.Cloud_Bucket
     });
   }
   
   function uploadAsset() {
-    return listBucketContents({
-      Prefix: `${experimentId}/${Deploy_Folder}/`,
-      bucket: Cloud_Bucket
+    return myaws.S3.listBucketContents({
+      Prefix: [experimentId, Deploy_Folder].join(myaws.S3.Delimiter),
+      bucket: myaws.S3.Cloud_Bucket
     }).then((data) => {
       let exists = data.Contents.map(item => {
-        let keys = item.Key.split(Delimiter);
-        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(Delimiter);
+        let keys = item.Key.split(myaws.S3.Delimiter);
+        return [state.userState.userId, experimentId, keys[keys.length - 1]].join(myaws.S3.Delimiter);
       })
       filePaths = filePaths.filter(f => exists.indexOf(f) < 0);
-      return filePaths.map((f) => {
-        return generateCopyParam({
+      let params = filePaths.map((f) => {
+        return myaws.S3.generateCopyParam({
           source: f,
           target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
-          targetBucket: Cloud_Bucket
+          targetBucket: myaws.S3.Cloud_Bucket
         })
       });
-    }).then((params) => {
-      return copyFiles({
-        params: params
-      });
+
+      return myaws.S3.copyFiles({ params });
     });
   }
 
   function uploadLib() {
     // `${experimentId}/${jsPysch_Folder}/`
-    return listBucketContents({
+    return myaws.S3.listBucketContents({
       Prefix: `${jsPysch_Folder}/`,
-      bucket: Website_Bucket
+      bucket: myaws.S3.Website_Bucket
     }).then((data) => {
       let jsPsychParams = data.Contents.map((f) => (
-        generateCopyParam({
+        myaws.S3.generateCopyParam({
           source: f.Key,
           target: `${experimentId}/${f.Key}`,
-          targetBucket: Cloud_Bucket,
-          sourceBucket: Website_Bucket,
+          targetBucket: myaws.S3.Cloud_Bucket,
+          sourceBucket: myaws.S3.Website_Bucket,
         })
       ));
-      return copyFiles({params: jsPsychParams});
+      return myaws.S3.copyFiles({params: jsPsychParams});
     });
   }
 
   return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
 }
 
-function extractDeployInfomation(experimentState) {
+function extractDeployInfomation({experimentState, media}) {
   let deployInfo = {
     experimentName: experimentState.experimentName,
     // search for used media
@@ -427,8 +408,8 @@ function extractDeployInfomation(experimentState) {
     errorLog: '',
     downloadSize: 0
   }
-  extractDeployInfomationHelper(experimentState, deployInfo, experimentState.media.Prefix);
-  let resources = Array.isArray(experimentState.media.Contents) ? experimentState.media.Contents.map(f => [f.Key, f.Size]) : [];
+  extractDeployInfomationHelper(experimentState, deployInfo, media.Prefix);
+  let resources = Array.isArray(media.Contents) ? media.Contents.map(f => [f.Key, f.Size]) : [];
   for (let f of Object.keys(deployInfo.media)) {
     let found = false, size = 0;
     for (let r of resources) {
@@ -577,7 +558,7 @@ filePath, the path of file
 function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
   let deploy = prefix === DEPLOY_PATH;
-  let processFunc = getSignedUrl;
+  let processFunc = myaws.S3.getSignedUrl;
   // in diy deploy mode, we don't get file from S3
   if (deploy) {
     processFunc = p => p;
@@ -612,7 +593,7 @@ export const createComplexDataObject = (value=null, func=createFuncObj(), mode=n
 function generateTrialBlock({state, trial, all=false, deploy=false, parameterType, error}) {
   let res = {};
   let parameters = trial.parameters;
-  let parameterInfo = parameterType && injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
+  let parameterInfo = parameterType && utils.injectJsPsychUniversalPluginParameters(jsPsych.plugins[parameterType].info.parameters);
 
   for (let key of Object.keys(parameters)) {
     // NOTE: this function currently does not fully operate on nested options
@@ -635,7 +616,7 @@ function generateTrialBlock({state, trial, all=false, deploy=false, parameterTyp
           break;
       }
 
-      if (isValueEmpty(value)) {
+      if (utils.isValueEmpty(value)) {
         error.push(parameterInfo[key].pretty_name);
       }
     }
@@ -681,7 +662,7 @@ function generateTimelineBlock(state, node, all=false, deploy=false) {
             parameterType: desc.parameters.type,
             error: error
           });
-          if (!isValueEmpty(trialBlock)) {
+          if (!utils.isValueEmpty(trialBlock)) {
             timeline.push(trialBlock);
           }
         }
@@ -721,8 +702,8 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${isDiyDeployment ? diyPostHelper(diyDeployMode) : ''}
-      ${isCloudDeployment ? OsfPostHelper(experimentId) : ''}
+      ${isDiyDeployment ? renderDIYPostFunction(diyDeployMode) : ''}
+      ${isCloudDeployment ? renderOsfPostFunction(experimentId) : ''}
       ${deployInfo.code}
     </script>
   </html>
@@ -816,4 +797,73 @@ function stringifyFunc(obj, filePath) {
   let func = obj.ifEval ? obj.code : JSON.stringify(obj.code);
   
   return resolveMediaPath(func, filePath);
+}
+
+
+
+function preprocessData() {
+  let rows = jsPsych.data.get().values(),
+    columns = jsPsych.data.get().uniqueNames(),
+    dataType = {},
+    convertedData = rows.map(() => ({}));
+
+  let isFloat = n => n === +n && n !== (n | 0);
+  let db_type = {
+    text: 'TEXT',
+    integer: 'INTEGER',
+    real: 'REAL',
+    varchar: 'VARCHAR(255)'
+  };
+  for (let col of columns) {
+    let type = null;
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = rows[i],
+        v = row[col],
+        t = typeof v,
+        convertedRow = convertedData[i];
+      switch (t) {
+        case 'object':
+          // Consider it as json string in SQLite
+          type = v ? db_type.text : v;
+          convertedRow[col] = v ? JSON.stringify(v) : v;
+          break;
+        case 'boolean':
+          type = db_type.integer;
+          convertedRow[col] = v ? 1 : 0;
+          break;
+        case 'number':
+          convertedRow[col] = v;
+          if (type !== db_type.real) {
+            type = isFloat(v) ? db_type.real : db_type.integer;
+          }
+          break;
+        case 'string':
+          convertedRow[col] = v;
+          if (type === db_type.text || v.length > 255) {
+            type = db_type.text;
+          } else {
+            type = db_type.varchar;
+          }
+          break;
+        case 'undefined':
+        default:
+          convertedRow[col] = null;
+          break;
+      }
+    }
+
+    if (type !== null) {
+      dataType[col] = type;
+    } else {
+      for (let row of convertedData) {
+        delete row[col];
+      }
+    }
+  }
+
+  return {
+    data: convertedData,
+    dataType: dataType
+  }
 }

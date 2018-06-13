@@ -1,6 +1,5 @@
 /**
  *@file This file describes the reducers for editting the parameters of the timeline nodes from jsPsych (timeline, trial)
- *@author Junyan Qi <juqi@vassar.edu>
 */
 import { createFuncObj } from './jsPsychInit';
 
@@ -138,7 +137,7 @@ export const GuiIgonoredInfoEnum = {
 export const DEFAULT_TIMELINE_PARAM = (function() { 
 	let obj = {
 		timeline_variables: [{
-			"V0": createComplexDataObject(null)
+			"V0": createComplexDataObject(null),
 		}],
 		randomize_order: true,
 		repetitions: null,

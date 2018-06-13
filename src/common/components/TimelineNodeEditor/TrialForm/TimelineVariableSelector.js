@@ -12,7 +12,7 @@ import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
 import CheckNoIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
-import GeneralTheme, { prefixer } from '../../theme.js';
+import GeneralTheme from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
@@ -30,19 +30,19 @@ const style = {
 		}
 	},
 	Content: {
-		root: prefixer({
+		root: utils.prefixer({
 			minHeight: 400, 
 			maxHeight: 400,
 			heigth: '100%'
 		}),
-		List: prefixer({
+		List: utils.prefixer({
 			minHeight: 400,
 			maxHeight: 400,
 			overflowY: 'auto',
 			width: '98%',
 			margin: 'auto'
 		}),
-		Empty: prefixer({
+		Empty: utils.prefixer({
 			textAlign: 'center',
 			minHeight: 400, 
 			maxHeight: 400,

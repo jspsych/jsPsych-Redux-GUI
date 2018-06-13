@@ -14,19 +14,47 @@ import {
 	grey50 as CloseDrawerHoverColor
 } from 'material-ui/styles/colors';
 
-import GeneralTheme from '../theme.js';
-
 const colors = {
-	...GeneralTheme.colors,
-	dividerColor: 'rgb(224, 224, 224)'
+	...theme.colors,
+	dividerColor: 'rgb(224, 224, 224)',
+	dialogTitleColor: '#FAFAFA',
+	closeBackHighlightColor: '#E0E0E0',
+	closeDrawerHoverColor: '#FAFAFA',
 };
 
 const style = {
 }
 
+export const DialogTitle = ({
+	node = null,
+	closeCallback = () => {},
+	titleColor = colors.dialogTitleColor,
+	style = {},
+	showCloseButton = true,
+	...props
+}) => {
+	return (
+		<div style={utils.prefixer({display: 'flex', backgroundColor: titleColor, ...style})}>
+			{ node }
+			{ showCloseButton ? 
+				<IconButton 
+					hoveredStyle={{
+						backgroundColor: colors.closeBackHighlightColor,
+					}}
+					onClick={closeCallback}
+					disableTouchRipple={true}
+				>
+					<Close hoverColor={colors.closeDrawerHoverColor} />
+				</IconButton> :
+				null
+			}
+		</div>
+	)
+}
+
 export const renderDialogTitle = (messageNode = null, 
 	handleClose = () => {}, 
-	titleColor = dialogTitleColor, 
+	titleColor = colors.dialogTitleColor, 
 	style = {},
 	showCloseButton = true
 ) => (
@@ -35,12 +63,12 @@ export const renderDialogTitle = (messageNode = null,
 		{ showCloseButton ? 
 			<IconButton 
 				hoveredStyle={{
-					backgroundColor: CloseBackHighlightColor,
+					backgroundColor: colors.closeBackHighlightColor,
 				}}
 				onClick={handleClose}
 				disableTouchRipple={true}
 			>
-				<Close hoverColor={CloseDrawerHoverColor} />
+				<Close hoverColor={colors.closeDrawerHoverColor} />
 			</IconButton> :
 			null
 		}

@@ -156,5 +156,5 @@ export function getUserInfoFromCognito() {
 
 export function logout() {
 	userPool.getCurrentUser().signOut();
-	clearAWSCredentialCache();
+	// clearAWSCredentialCache();
 }
