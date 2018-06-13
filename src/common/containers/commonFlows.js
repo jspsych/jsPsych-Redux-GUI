@@ -188,6 +188,13 @@ export const duplicateExperiment = ({dispatch, sourceExperimentState, newName=nu
 	});
 }
 
+export const signOut = () => {
+	return myaws.Auth.signOut().then(() => {
+		clearLocalExperimentState();
+		window.location.reload(false);
+	})
+}
+
 const Jspsych_Experiment_Local_Storage = '$Jspsych_Experiment_Local_Storage';
 export const saveExperimentStateToLocal = (state) => {
 	window.localStorage.setItem(Jspsych_Experiment_Local_Storage, JSON.stringify(state));
@@ -203,7 +210,16 @@ export const getExperimentStateFromLocal = () => {
 	}
 }
 
-export const anyExperimentChange = (currentExperimentState) => !utils.deepEqual(getExperimentStateFromLocal(), currentExperimentState);
+export const clearLocalExperimentState = () => {
+	window.localStorage.removeItem(Jspsych_Experiment_Local_Storage);
+}
+
+export const hasExperimentChanged = (currentExperimentState) => {
+	let previewId = null,
+		e1 = Object.assign({}, JSON.parse(JSON.stringify(currentExperimentState)), { previewId }),
+		e2 = Object.assign({}, getExperimentStateFromLocal(), { previewId });
+	return !utils.deepEqual(e1, e2);
+}
 
 export const isUserSignedIn = () => {
 	return myaws.Auth.getCurrentUserInfo().then((userInfo) => {

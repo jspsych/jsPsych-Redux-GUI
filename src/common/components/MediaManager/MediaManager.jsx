@@ -42,11 +42,13 @@ const colors = {
 	...theme.colors
 }
 
+const DIALOG_BODY_HEIGHT = 360;
+
 const cssStyle = {
 	DropZone: {
 		root: utils.prefixer({
 			width: "100%",
-			minHeight: 400,
+			minHeight: DIALOG_BODY_HEIGHT - 40,
 			display: 'flex',
 			height: "100%",
 			flexDirection: 'column'
@@ -500,7 +502,7 @@ export default class MediaManager extends React.Component {
 	            open={this.state.open}
 	            modal
 	            autoScrollBodyContent
-	            bodyStyle={utils.prefixer({minHeight: 360, maxHeight: 360})}
+	            bodyStyle={utils.prefixer({minHeight: DIALOG_BODY_HEIGHT, maxHeight: DIALOG_BODY_HEIGHT})}
 	            titleStyle={utils.prefixer({padding: 5})}
 	            title={
 	            	<DialogTitle

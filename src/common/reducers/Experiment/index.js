@@ -1,6 +1,5 @@
 /**
  *@file This file describes the state template and root reducer for Experiment State.
- *@author Junyan Qi <juqi@vassar.edu>
 */
 import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
@@ -44,25 +43,7 @@ export const getDefaultInitDiyDeployInfo = () => ({
  * @description State template for Experiment state. 
  * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
 */
-export const initState = {
-	owner: null,
- 	private: true,
-	experimentDetails: {
-		createdDate: null,
-		lastEditDate: null,
-		description: null,
-	},
-
-	/********** S3 Mappings **********/
-	media: {},
-
-	previewId: null,
-
-
-	/****************************************/ 
-
-	...core.getInitExperimentState(),
-}
+export const initState = core.getInitExperimentState();
 
 /**@function(state, action)
  * @name setExperimentName

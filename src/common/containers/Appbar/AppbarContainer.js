@@ -18,7 +18,7 @@ const clickSave = ({dispatch}) => {
 					message: 'You need to sign in before saving your work !'
 				});
 			} else {
-				if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
+				if (utils.commonFlows.hasExperimentChanged(getState().experimentState)) {
 					return utils.commonFlows.saveCurrentExperiment({ dispatch });
 				} else {
 					utils.notifications.notifyWarningBySnackbar({
@@ -55,7 +55,7 @@ const clickNewExperiment = ({dispatch}) => {
 
 	return dispatch((dispatch, getState) => {
 		let { experimentState } = getState();
-		if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
+		if (utils.commonFlows.hasExperimentChanged(getState().experimentState)) {
 			utils.notifications.popUpConfirmation({
 				dispatch: dispatch,
 				message: "Do you want to save the changes before creating a new experiment?",

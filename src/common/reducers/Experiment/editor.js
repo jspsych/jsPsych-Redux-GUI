@@ -1,6 +1,5 @@
 /**
  *@file This file describes the reducers for editting the parameters of the timeline nodes from jsPsych (timeline, trial)
- *@author Junyan Qi <juqi@vassar.edu>
 */
 import { createFuncObj } from './jsPsychInit';
 

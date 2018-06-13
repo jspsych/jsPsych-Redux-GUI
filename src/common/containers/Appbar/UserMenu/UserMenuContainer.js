@@ -4,9 +4,7 @@ import UserMenu from '../../../components/Appbar/UserMenu';
 
 
 const handleSignOut = ({dispatch}) => {
-	return myaws.Auth.signOut().then(() => {
-		window.location.reload(false);
-	});
+	return utils.commonFlows.signOut();
 }
 
 const mapStateToProps = (state, ownProps) => {

@@ -1,6 +1,5 @@
 /**
  * @file This file defines the wrapped methods of AWS-DynamoDB and helpers for storing data to dynamoDB.
- * @author Junyan Qi <juqi@vassar.edu>
 */
 
 import { AWS } from './index.js';

@@ -1,6 +1,5 @@
 /**
  * @file This file defines the wrapped methods of AWS-Amplify AuthClass.
- * @author Junyan Qi <juqi@vassar.edu>
 */
 
 import { Cognito_Config } from './aws-cognito-config.js';

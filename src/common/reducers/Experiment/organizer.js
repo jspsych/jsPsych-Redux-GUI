@@ -1,6 +1,5 @@
 /**
  *@file This file describes the reducers for timelineNode class from jsPsych (timeline, trial)
- *@author Junyan Qi <juqi@vassar.edu>
 */
 import * as experimentUtils from './utils';
 import { DEFAULT_TIMELINE_PARAM, DEFAULT_TRIAL_PARAM } from './editor'

@@ -18,7 +18,6 @@ import OsfAccessIcon from 'material-ui/svg-icons/communication/vpn-key'
 import DeleteIcon from 'material-ui/svg-icons/action/delete-forever';
 
 import { renderDialogTitle, Text } from '../../../gadgets';
-import { OsfAccessDefault } from '../../../../reducers/User';
 import AppbarTheme from '../../theme.js';
 
 const colors = {
@@ -281,7 +280,7 @@ export default class Profile extends React.Component {
 
 		this.addOsfAccess = () => {
 			let clone = this.state.osfAccess.slice(),
-				newToken = utils.deepCopy(OsfAccessDefault),
+				newToken = core.createUserOsfAccessItem(),
 				i = 0,
 				getName = () => `Untitled Token ${i++}`,
 			    name = getName(), 

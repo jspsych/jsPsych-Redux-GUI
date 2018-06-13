@@ -25,7 +25,7 @@ const signIn = ({dispatch, username, password, firstSignIn=false}) => {
 			// if user has changed anything
 			// save the change
 
-			if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
+			if (utils.commonFlows.hasExperimentChanged(getState().experimentState)) {
 				return utils.commonFlows.saveCurrentExperiment({dispatch});
 			}
 

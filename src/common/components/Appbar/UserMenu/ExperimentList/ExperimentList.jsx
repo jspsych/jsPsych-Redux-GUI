@@ -249,7 +249,7 @@ export default class ExperimentList extends React.Component {
 			}
 
 			// nothing has changed
-			if (!utils.commonFlows.anyExperimentChange(this.props.currentExperimentState)) {
+			if (!utils.commonFlows.hasExperimentChanged(this.props.currentExperimentState)) {
 				this.setState({
 					fetching: true
 				});

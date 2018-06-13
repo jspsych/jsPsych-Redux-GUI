@@ -1,43 +1,4 @@
-import { initState as experimentInitState } from '../Experiment';
-
-export const OsfAccessDefault = {
-	token: null,
-	alias: null,
-}
-
-export const initState = {
-	user: {
-		username: null,
-		identityId: null,
-	},
-
-	// osf cloud deploy info
-
-	// last
-	lastModifiedExperimentId: null,
-
-	// repository
-	/*
-	{
-	name: experiment name,
-	id: experiment id,
-	/*
-	{
-	createdDate: date,
-	lasEditDate: date,
-	description: string
-	}
-	/
-	details: experiment details
-	}
-	*/ 
-	experiments: [],
-
-
-	/////////////////////////////////////////////////////////////////////
-
-	...core.createUser(),
-};
+const initState = core.createUser();
 
 /**
 * Reducer that sets OSF access infomation
@@ -67,7 +28,7 @@ export default function userReducer(state = initState, action) {
 		case actions.ActionTypes.LOAD_USER:
 			return loadUserState(state, action);
 
-		// cloud
+		// cloud access information
 		case actions.ActionTypes.SET_OSF_ACCESS:
 			return setOsfAccess(state, action);
 

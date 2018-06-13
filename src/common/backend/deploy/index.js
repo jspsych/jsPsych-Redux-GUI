@@ -8,7 +8,7 @@ import { isTimeline } from '../../reducers/Experiment/utils';
 
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
-const OsfPostHelper = (experimentId) => {
+const renderOsfPostFunction = (experimentId) => {
   return `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
@@ -117,7 +117,7 @@ const generateSaveData_PHP_API_Code = (mode) => {
       return SaveData_PHP_Disk_API_Code;
   }
 }
-const diyPostHelper = (mode) => {
+const renderDIYPostFunction = (mode) => {
   return `function ${SaveData_PHP_Function_Name}(data) {
     let request = new XMLHttpRequest();
     request.open("POST", "${SaveData_PHP_API}", true);
@@ -324,8 +324,6 @@ export function cloudDeploy({
   var experimentState = utils.deepCopy(state.experimentState),
       cloudDeployInfo = experimentState.cloudDeployInfo,
       experimentId = experimentState.experimentId,
-      userState = state.userState,
-      user = userState.user,
       saveAfter = cloudDeployInfo.saveAfter;
 
   let saveTrial = generateDataSaveTrial({code: cloudSaveDataFunctionCode()});
@@ -348,32 +346,30 @@ export function cloudDeploy({
 
   function uploadCode() {
     return myaws.S3.uploadFile({
-      param: param,
+      param,
       bucket: myaws.S3.Cloud_Bucket
     });
   }
   
   function uploadAsset() {
     return myaws.S3.listBucketContents({
-      Prefix: `${experimentId}/${Deploy_Folder}/`,
+      Prefix: [experimentId, Deploy_Folder].join(myaws.S3.Delimiter),
       bucket: myaws.S3.Cloud_Bucket
     }).then((data) => {
       let exists = data.Contents.map(item => {
         let keys = item.Key.split(myaws.S3.Delimiter);
-        return [state.userState.user.identityId, experimentId, keys[keys.length - 1]].join(myaws.S3.Delimiter);
+        return [state.userState.userId, experimentId, keys[keys.length - 1]].join(myaws.S3.Delimiter);
       })
       filePaths = filePaths.filter(f => exists.indexOf(f) < 0);
-      return filePaths.map((f) => {
+      let params = filePaths.map((f) => {
         return myaws.S3.generateCopyParam({
           source: f,
           target: `${experimentId}/${Deploy_Folder}/${deployInfo.media[f]}`,
           targetBucket: myaws.S3.Cloud_Bucket
         })
       });
-    }).then((params) => {
-      return myaws.S3.copyFiles({
-        params: params
-      });
+
+      return myaws.S3.copyFiles({ params });
     });
   }
 
@@ -706,8 +702,8 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${isDiyDeployment ? diyPostHelper(diyDeployMode) : ''}
-      ${isCloudDeployment ? OsfPostHelper(experimentId) : ''}
+      ${isDiyDeployment ? renderDIYPostFunction(diyDeployMode) : ''}
+      ${isCloudDeployment ? renderOsfPostFunction(experimentId) : ''}
       ${deployInfo.code}
     </script>
   </html>

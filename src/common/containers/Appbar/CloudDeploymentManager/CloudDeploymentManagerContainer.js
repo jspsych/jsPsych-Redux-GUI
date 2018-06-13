@@ -175,7 +175,7 @@ const cloudDelete = (dispatch) => {
 const syncExperimentStatus = ({dispatch,}) => {
 	return dispatch((dispatch, getState) => {
 		let experimentId = getState().experimentState.experimentId,
-			userId = getState().userState.user.identityId;
+			userId = getState().userState.userId;
 		return myaws.S3.listBucketContents({
 			bucket: myaws.S3.Cloud_Bucket,
 			Prefix: experimentId
@@ -195,7 +195,7 @@ const checkBeforeOpen = (dispatch) => {
 	return dispatch((dispatch, getState) => {
 		return utils.commonFlows.isUserSignedIn().then((signedIn) => {
 			if (signedIn) {
-				if (utils.commonFlows.anyExperimentChange(getState().experimentState)) {
+				if (utils.commonFlows.hasExperimentChanged(getState().experimentState)) {
 					utils.notifications.notifyWarningBySnackbar({
 						dispatch,
 						message: 'Please save your changes first !'
