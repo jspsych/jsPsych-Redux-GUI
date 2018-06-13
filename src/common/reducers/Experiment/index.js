@@ -72,12 +72,16 @@ const setDIYDeployInfo = (state, action) => {
 }
 
 /**@function(state, action)
-*
+* Always init view to preview the first timeline node
 * @param {Object} action.experimentState
 *
 */
 const loadExperiment = (state, action) => {
-	return action.experimentState;
+	let { experimentState } = action;
+	let mainTimeline = experimentState.mainTimeline;
+	return Object.assign({}, experimentState, {
+		previewId: mainTimeline.length > 0 ? mainTimeline[0] : null
+	});
 }
 
 

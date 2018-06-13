@@ -216,6 +216,10 @@ export const clearLocalExperimentState = () => {
 
 export const hasExperimentChanged = (currentExperimentState) => {
 	let previewId = null,
+		// ignore previewId change
+		// standardize to and back from JSON string 
+		// since localStorage takse only string
+		// and JSON.stringify loses ES 6 class information
 		e1 = Object.assign({}, JSON.parse(JSON.stringify(currentExperimentState)), { previewId }),
 		e2 = Object.assign({}, getExperimentStateFromLocal(), { previewId });
 	return !utils.deepEqual(e1, e2);
@@ -231,7 +235,7 @@ export const isUserSignedIn = () => {
 
 const duplicateS3Content = ({userId, sourceExperimentId, targetExeprimentId}) => {
 	return myaws.S3.listBucketContents({
-		Prefix: `${userId}/${sourceExperimentId}/`
+		Prefix: [userId, sourceExperimentId].join(myaws.S3.Delimiter)
 	}).then((data) => {
 		let params = [];
 		if (data) {

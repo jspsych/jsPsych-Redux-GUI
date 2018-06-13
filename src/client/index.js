@@ -14,9 +14,8 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('beforeunload', (e) => {
-	let { userState, experimentState } = store.getState();
-	// new 
-	if (utils.deepEqual(userState.lastModifiedExperimentState, experimentState)) {
+	let { experimentState } = store.getState(); 
+	if (utils.commonFlows.hasExperimentChanged(experimentState)) {
 		e.returnValue = true;
 		return true;
 	}
