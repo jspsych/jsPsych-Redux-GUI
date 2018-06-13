@@ -9,8 +9,8 @@ import Notifications from '../containers/Notifications';
 
 import ZoomBar from './PreviewWindow/ZoomBar';
 import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
-import { WIDTH as EditorWidth } from './TimelineNodeEditor';
-import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
+import { WIDTH as EditorWidth } from './TimelineNodeEditor/TimelineNodeEditor.jsx';
+import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer/TimelineNodeOrganizer.jsx';
 
 
 import GeneralTheme from './theme.js';
@@ -102,9 +102,8 @@ class App extends React.Component {
 		}
 
 		this.updateMaxSize = () => {
-			this.setState({
-				...this.getMaxSize()
-			})
+			this.setState(this.getMaxSize());
+			console.log(this.getMaxSize())
 		}
 
 		this.openTimelineOgranizerDrawer = () => {
