@@ -21,7 +21,6 @@ import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
 import { isJspsychValueObjectEmpty } from '../../../reducers/Experiment/editor';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
-import { MediaManagerMode } from '../../MediaManager';
 import CodeEditor from '../../CodeEditor';
 import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
@@ -695,7 +694,7 @@ export default class TrialFormItem extends React.Component {
 					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
 					parameterName={param} 
 					selected={selected}
-					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+					mode={(!multiSelect) ? enums.MediaManagerMode.select : enums.MediaManagerMode.multiSelect}
 					onCommit={(value) => {
 						this.props.insertFile(
 							param,

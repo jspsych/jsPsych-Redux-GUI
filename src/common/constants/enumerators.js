@@ -4,13 +4,6 @@ export const DIY_Deploy_Mode = {
   mysql: 'save_to_mysql'
 }
 
-export const Login_Modes = {
-	signIn: 0,
-	register: 1,
-	verification: 2,
-	forgotPassword: 3,
-}
-
 export const Notify_Type = {
 	success: "success",
 	warning: "warning",
@@ -23,6 +16,12 @@ export const AUTH_MODES = {
 	register: 'register',
 	verification: 'verification',
 	forgotPassword: 'forgotPassword'
+}
+
+export const MediaManagerMode = {
+	upload: 'Upload',
+	select: 'Select',
+	multiSelect: 'multi-Select'
 }
 
 /**

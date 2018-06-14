@@ -89,7 +89,7 @@ export default class Notifications extends React.Component {
 			this.setState({
 				processingWithOutOp: true
 			});
-			this.props.continueWithoutOperation().then(this.handleDialogClose).catch((err) => {
+			Promise.resolve().then(this.props.continueWithoutOperation).then(this.handleDialogClose).catch((err) => {
 				console.log(err);
 			}).finally(() => {
 				this.setState({
@@ -103,7 +103,7 @@ export default class Notifications extends React.Component {
 				this.setState({
 					processingWithOp: true
 				});
-				this.props.continueWithOperation().then(this.handleDialogClose).catch((err) => {
+				Promise.resolve().then(this.props.continueWithOperation).then(this.handleDialogClose).catch((err) => {
 					console.log(err);
 				}).finally(() => {
 					this.setState({

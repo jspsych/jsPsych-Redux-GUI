@@ -1,9 +1,7 @@
 import { connect } from 'react-redux';
 import MediaManager from '../../components/MediaManager';
-import * as userActions from '../../actions/userActions' ;
 import * as editorActions from '../../actions/editorActions';
 
-import { pushExperimentData } from '../../backend/dynamoDB';
 
 const Upload_Limit_MB = 100; 
 const Upload_Limit = Upload_Limit_MB  * 1024 * 1024;
