@@ -106,12 +106,6 @@ export function fileIconFromTitle(title, color=null) {
 	return <FileIcon color={color} />
 }
 
-export const MediaManagerMode = {
-	upload: 'Upload',
-	select: 'Select',
-	multiSelect: 'multi-Select'
-}
-
 const map2Bool = (files, selected) => files && files.map(f => selected.indexOf(f) > -1);
 
 const extractFilename = ({Prefix, Key}) => Key.replace(new RegExp(`${Prefix}/?`), '');
@@ -176,7 +170,7 @@ export default class MediaManager extends React.Component {
 			}
 
 			let filenames = this.getS3FileNames();
-			return this.props.mode === MediaManagerMode.upload ?
+			return this.props.mode === enums.MediaManagerMode.upload ?
 					filenames.map(f => false) :
 					map2Bool(filenames, selected);
 		}
@@ -275,7 +269,7 @@ export default class MediaManager extends React.Component {
 					value.push(MediaPathTag(filenames[i]));
 				}
 			}
-			if (value.length > 1 && this.props.mode !== MediaManagerMode.multiSelect) {
+			if (value.length > 1 && this.props.mode !== enums.MediaManagerMode.multiSelect) {
 				this.props.notifyWarningByDialog("You can insert only one file here !");
 				return;
 			}
@@ -312,12 +306,12 @@ export default class MediaManager extends React.Component {
 
 		this.Trigger = () => {
 			switch(this.props.mode) {
-				case MediaManagerMode.select:
-				case MediaManagerMode.multiSelect:
+				case enums.MediaManagerMode.select:
+				case enums.MediaManagerMode.multiSelect:
 					return (
 						<this.props.Trigger_insert onClick={this.handleOpen}/>
 					);
-				case MediaManagerMode.upload:
+				case enums.MediaManagerMode.upload:
 				default:
 					return (
 						<this.props.Trigger_upload onClick={this.handleOpen}/>
@@ -336,8 +330,8 @@ export default class MediaManager extends React.Component {
 				/>
 			);
 			switch(this.props.mode) {
-				case MediaManagerMode.select:
-				case MediaManagerMode.multiSelect:
+				case enums.MediaManagerMode.select:
+				case enums.MediaManagerMode.multiSelect:
 					return [
 						<FlatButton
 							label="Insert"
@@ -346,7 +340,7 @@ export default class MediaManager extends React.Component {
 						/>,
 						// deleteButton
 					];
-				case MediaManagerMode.upload:
+				case enums.MediaManagerMode.upload:
 				default:
 					return [
 						deleteButton,
@@ -392,7 +386,7 @@ export default class MediaManager extends React.Component {
 		this.MediaItem = ({fileKey, index}) => {
 			let filename = extractFilename({Key: fileKey, Prefix: this.state.s3Files.Prefix}),
 				isSelected =  this.state.selected[index],
-				isUploadMode = this.props.mode === MediaManagerMode.upload;
+				isUploadMode = this.props.mode === enums.MediaManagerMode.upload;
 
 			return (
 				<div 
@@ -431,7 +425,7 @@ export default class MediaManager extends React.Component {
 	}
 
 	static defaultProps = {
-		mode: MediaManagerMode.upload,
+		mode: enums.MediaManagerMode.upload,
 		parameterName: null,
 		selected: [],
 		onCommit: (value) => {},
@@ -510,13 +504,13 @@ export default class MediaManager extends React.Component {
 	            			<Subheader style={utils.prefixer({maxHeight: 48})}>
 			      				<div style={utils.prefixer({display: 'flex'})}>
 									<div style={utils.prefixer({paddingTop: 8, paddingRight: 10})}>
-										{(this.props.mode === MediaManagerMode.upload) ?
+										{(this.props.mode === enums.MediaManagerMode.upload) ?
 											<MediaManagerIcon color={theme.colors.primaryDeep} />:
 											<Media color={theme.colors.primaryDeep}/>
 										}
 									</div>
 									<div style={utils.prefixer({fontSize: 20,})}>
-				      					{(this.props.mode === MediaManagerMode.upload) ?
+				      					{(this.props.mode === enums.MediaManagerMode.upload) ?
 				      					"Media Manager" :
 				      					"Pick your resources"}
 				      				</div>
@@ -539,7 +533,7 @@ export default class MediaManager extends React.Component {
 						{Media_List}
 						{Upload_List}
 					</List>
-					{!this.state.dropzoneActive && this.props.mode === MediaManagerMode.upload &&
+					{!this.state.dropzoneActive && this.props.mode === enums.MediaManagerMode.upload &&
 						<div style={{...cssStyle.DropZone.background}}>
 							<p style={{...cssStyle.DropZone.tip}}>
 								Drag and drop files here to upload!
@@ -547,7 +541,7 @@ export default class MediaManager extends React.Component {
 						</div>
 					}
 					{
-					this.state.dropzoneActive && this.props.mode === MediaManagerMode.upload && 
+					this.state.dropzoneActive && this.props.mode === enums.MediaManagerMode.upload && 
 					<div style={{...cssStyle.DropZone.overlay}}>
 						<p style={{...cssStyle.DropZone.tip}}>
 								Drop files...

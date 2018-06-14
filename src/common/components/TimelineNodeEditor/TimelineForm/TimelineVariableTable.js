@@ -29,11 +29,8 @@ import CodeEditor, { CodeLanguage } from '../../CodeEditor';
 import ArrayEditor from '../../../containers/ArrayEditor';
 import ObjectEditor from '../../../containers/ObjectEditor';
 import MediaManager from '../../../containers/MediaManager';
-import { MediaManagerMode } from '../../MediaManager';
-import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem.js';
+import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem';
 
-import GeneralTheme from '../../theme.js';
-import deepEqual from 'deep-equal';
 import flow from 'lodash/flow';
 import { DropTarget, DragSource } from 'react-dnd';
 
@@ -48,10 +45,10 @@ const constants = {
 }
 
 const colors = {
-	...GeneralTheme.colors,
+	...theme.colors,
 	labelColor: '#B1B1B1',
 	functionColor: '#708',
-	arrayColor: GeneralTheme.colors.secondaryDeep,
+	arrayColor: theme.colors.secondaryDeep,
 	objectColor: '#00BCD4',
 	mediaColor: '#2196F3'
 };
@@ -141,7 +138,7 @@ const style = {
 		// hoverColor: colors.secondary
 	},
 	TextFieldFocusStyle: {
-		...GeneralTheme.TextFieldFocusStyle()
+		...theme.TextFieldFocusStyle()
 	},
 	triggerIconStyle: {
 		hoverColor: colors.secondary
@@ -151,7 +148,7 @@ const style = {
 		hoverColor: colors.secondary
 	},
 	addIconStyle: {
-		...GeneralTheme.Icon
+		...theme.Icon
 	},
 	iconSize: {
 		width: 36,
@@ -404,7 +401,7 @@ class HeaderCell extends React.Component {
 		        	<TextField
 		        		autoFocus
 		        		id="TV-Table-Variable-Name_Field"
-		        		{...GeneralTheme.TextFieldFocusStyle(this.state.error)}
+		        		{...theme.TextFieldFocusStyle(this.state.error)}
 		        		errorText={this.state.errorText}
 		        		floatingLabelText="Variable Name"
 		        		floatingLabelFixed
@@ -482,7 +479,7 @@ class ContentCell extends React.Component {
 		}
 
 		this.onCommit = () => {
-			if (!deepEqual(this.state.valueObject, this.props.valueObject)) {
+			if (!utils.deepEqual(this.state.valueObject, this.props.valueObject)) {
 				this.props.updateCell(this.props.columnName, this.props.rowNum, this.state.valueObject);
 				this.props.recordHistory();
 			}
@@ -634,7 +631,7 @@ class ContentCell extends React.Component {
 							onCommit={(v) => {
 								this.setValue(v, this.onCommit);
 							}}
-							mode={MediaManagerMode.select}
+							mode={enums.MediaManagerMode.select}
 							Trigger_insert={
 								({onClick}) => (
 									<ContentCellLabelItem

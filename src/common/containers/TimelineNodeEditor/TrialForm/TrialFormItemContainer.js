@@ -79,17 +79,9 @@ const mapStateToProps = (state, ownProps) => {
 	let experimentState = state.experimentState;
 	let node = experimentState[experimentState.previewId];
 
-	let filenames = [];
-	let media = state.experimentState.media;
-	if (media.Contents) {
-		filenames = media.Contents.map((f) => (f.Key.replace(media.Prefix, '')));
-	}
-
 	return {
 		id: node.id,
 		parameters: node.parameters,
-		s3files: media,
- 		filenames: filenames,
 	};
 }
 
