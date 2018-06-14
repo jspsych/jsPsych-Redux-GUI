@@ -103,7 +103,6 @@ class App extends React.Component {
 
 		this.updateMaxSize = () => {
 			this.setState(this.getMaxSize());
-			console.log(this.getMaxSize())
 		}
 
 		this.openTimelineOgranizerDrawer = () => {

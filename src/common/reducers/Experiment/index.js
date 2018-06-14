@@ -5,44 +5,7 @@ import * as organizer from './organizer';
 import * as jsPsychInit from './jsPsychInit';
 import * as editor from './editor';
 
-export const getDefaultInitCloudDeployInfo = () => ({
-	osfNode: null,
-	osfAccess: null, // check userState.osfAccess[i]
-	saveAfter: 0
-})
 
-export const getDefaultInitDiyDeployInfo = () => ({
-	mode: enums.DIY_Deploy_Mode.disk,
-	saveAfter: 0,
-})
-
-/**
- * @typeof {(string|number|object)} guiValue - A native javascript value. 
- * It is important that if the input value is empty string, it should be converted to null for AWS.DynamoDB storage purpose. 
-*/
-
-/**
- * Experiment State Template
- * @namespace ExperimentState
- * @property {guiValue} experimentName=null - Experiment Name
- * @property {guiValue} experimentId=null - Experiment's identifier in DynamoDB, should be generated as a UUID by uuid()
- * @property {Object} owner - Experiment Owner's information { username: string, identityId: id}
- * @property {guiValue} owner.username=null - Experiment Owner's username
- * @property {guiValue} owner.identityId=null - Experiment Owner's identityId (see docs for AWS.Cognito)
- * @property {boolean} private - True if the experiment is private
- * @property {Object} experimentDetails - Experiment Detail Information
- * @property {object} experimentDetails.createdDate - The date the experiment is created
- * @property {object} experimentDetails.lastEditDate - The date that the last edit happens to the experiment
- * @property {guiValue} experimentDetails.description=null - User defined experiment Description
- * @property {guiValue} previewId=null - The id of the node that is getting previewed
- * @property {Array.<string>} mainTimeline=[] - The main jsPsych timeline, should hold the id of nodes
- * @property {Object} jsPsychInit - The object that sets jsPsych (initialization/launch) options
- * @property {Object} media={} - An AWS.S3 object, get by API call: listObjects()
- * @property {Object} [timelineNode-{id}] - {@link TimelineNode}
- * @property {Object} [trialNode-{id}] - {@link TrialNode}
- * @description State template for Experiment state. 
- * ***NOTE THAT***: All empty string '' will be converted to null for storage (AWS.DynamoDB) purpose
-*/
 export const initState = core.getInitExperimentState();
 
 /**@function(state, action)
