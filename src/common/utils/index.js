@@ -1,9 +1,22 @@
 import Prefixer from 'inline-style-prefixer';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-var short = require('short-uuid');
-const _prefixer = new Prefixer()
+import { cloneDeep, isEqual } from 'lodash';
+import short_uuid from 'short-uuid';
 
+import * as notifications from '../containers/Notifications/NotificationsContainer.js';
+import * as loginWindows from '../containers/Authentications/AuthenticationsContainer.js';
+import * as commonFlows from '../containers/commonFlows.js';
+
+if (!Array.prototype.move) {
+  Array.prototype.move = function(from,to){
+    this.splice(to,0,this.splice(from,1)[0]);
+    return this;
+  };
+}
+
+// CSS prefixer
+const _prefixer = new Prefixer();
 export const prefixer = (style={}, multiple=false) => {
 	if (!multiple) return _prefixer.prefix(style);
 	let res = {};
@@ -13,53 +26,22 @@ export const prefixer = (style={}, multiple=false) => {
 	return res;
 }
 
-if (!Array.prototype.move) {
-  Array.prototype.move = function(from,to){
-    this.splice(to,0,this.splice(from,1)[0]);
-    return this;
-  };
-}
+// Backend flows or related
+export { notifications, loginWindows, commonFlows };
 
-/*
-Simple utils.deepCopy,
-Target can be
-object
-boolean
-number
-array
-undefined
+// React-DnD
+export const withDnDContext = DragDropContext(HTML5Backend);
 
-*/
-export function deepCopy(target) {
-	if (!target) return target;
+// utility functions
+export const deepCopy = cloneDeep;
 
-	let clone = target;
+export const deepEqual = isEqual;
 
-	let type = typeof(target);
-	switch(type) {
-		case "boolean":
-		case "number":
-		case "string":
-			return clone;
-		case "object":
-			if (Array.isArray(clone)) {
-				clone = [];
-				for (let item of target) {
-					clone.push(deepCopy(item));
-				}
-			} else {
-				clone = {};
-				let keys = Object.keys(target);
-				for (let key of keys) {
-					clone[key] = deepCopy(target[key]);
-				}
-			}
-			return clone;
-		case 'function':
-			return clone;
-		default:
-			throw new TypeError(type + " not supported.");
-	}
+export function getUUID() {
+	var translator = short_uuid();
+	//var decimalTranslator = short("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	let res = translator.new();
+	return res;
 }
 
 export const toNull = (s) => ((s === '') ? null : s);
@@ -67,13 +49,6 @@ export const toNull = (s) => ((s === '') ? null : s);
 export const toEmptyString = (s) => ((s === null || s === undefined) ? '' : s);
 
 export const toEmptyArray = (s) => (!s ? [] : s);
-
-export function getUUID() {
-	var translator = short();
-	//var decimalTranslator = short("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-	let res = translator.new();
-	return res;
-}
 
 export function isValueEmpty(val) {
 	return val === '' || val === null || val === undefined || (Array.isArray(val) && val.length === 0) ||
@@ -84,4 +59,5 @@ export function injectJsPsychUniversalPluginParameters(obj={}) {
 	return Object.assign(obj, window.jsPsych.plugins.universalPluginParameters);
 }
 
-export const withDnDContext = DragDropContext(HTML5Backend);
+
+

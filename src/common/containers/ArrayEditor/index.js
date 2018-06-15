@@ -1,7 +1,5 @@
 import { connect } from 'react-redux';
 import ArrayEditor from '../../components/ArrayEditor';
-import { notifySuccessBySnackbar, notifyErrorBySnackbar } from '../Notification';
-
 
 const mapStateToProps = (state, ownProps) => {
 	return {
@@ -9,8 +7,8 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-	notifySuccess: (m) => { notifySuccessBySnackbar(dispatch, m); },
-	notifyError: (m) => { notifyErrorBySnackbar(dispatch, m); }
+	notifySuccess: (message) => { utils.notifications.notifySuccessBySnackbar({dispatch, message}); },
+	notifyError: (message) => { utils.notifications.notifyErrorBySnackbar({dispatch, message}); }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArrayEditor);

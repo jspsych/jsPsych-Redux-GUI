@@ -1,41 +1,43 @@
 import React from 'react';
 
 import PreviewWindow from '../containers/PreviewWindow';
-import ZoomBar from './PreviewWindow/ZoomBar';
 import Appbar from '../containers/Appbar';
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import TimelineNodeEditor from '../containers/TimelineNodeEditor';
+import Authentications from '../containers/Authentications';
+import Notifications from '../containers/Notifications';
 
+import ZoomBar from './PreviewWindow/ZoomBar';
 import { getFullScreenState, PreviewWindowContainerWidth } from './PreviewWindow';
-import Notification from '../containers/Notification';
-import { WIDTH as EditorWidth } from './TimelineNodeEditor';
-import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer';
+import { WIDTH as EditorWidth } from './TimelineNodeEditor/TimelineNodeEditor.jsx';
+import { WIDTH as OrganizerWidth } from './TimelineNodeOrganizer/TimelineNodeOrganizer.jsx';
 
-import GeneralTheme, { prefixer } from './theme.js';
+
+import GeneralTheme from './theme.js';
 
 const colors = GeneralTheme.colors;
 
 const style = {
-	App: prefixer({
+	App: utils.prefixer({
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'column',
 	}),
-	AppbarContainer: prefixer({
+	AppbarContainer: utils.prefixer({
 		flexBasis: '56px',
 		maxHeight: '56px',
 		zIndex: 5,
 		boxShadow: '0 2px 5px rgba(0,0,0, .26)',
 	}),
-	AppMainContainer: prefixer({
+	AppMainContainer: utils.prefixer({
 		flexGrow: '1',
 		width: '100%',
 		height: '100%',
 		display: 'flex',
 		flexDirection: 'row',
 	}),
-	AppMainPreview: prefixer({
+	AppMainPreview: utils.prefixer({
 		flexGrow: 1,
 		backgroundColor: colors.background,
 		height: "100%",
@@ -100,9 +102,7 @@ class App extends React.Component {
 		}
 
 		this.updateMaxSize = () => {
-			this.setState({
-				...this.getMaxSize()
-			})
+			this.setState(this.getMaxSize());
 		}
 
 		this.openTimelineOgranizerDrawer = () => {
@@ -205,6 +205,10 @@ class App extends React.Component {
 				}
 			);
 		}
+
+		this.getAuthenticationsClass = () => {
+			return this.Authentications;
+		}
 	}
 
 	componentWillMount() {
@@ -303,7 +307,8 @@ class App extends React.Component {
 	  					closeTimelineEditorCallback={closeTimelineEditorDrawer}
 	  				/>
 	  			</div>
-	  			<Notification />
+	  			<Notifications />	
+	  			<Authentications />
   			</div>
   		);
 	}

@@ -1,15 +1,3 @@
-import Prefixer from 'inline-style-prefixer';
-
-const _prefixer = new Prefixer()
-
-export const prefixer = (style={}, multiple=false) => {
-	if (!multiple) return _prefixer.prefix(style);
-	let res = {};
-	for (let key of Object.keys(style)) {
-		res[key] = _prefixer.prefix(style[key]);
-	}
-	return res;
-}
 
 const colors = {
 	primary: '#24B24C', // green

@@ -21,7 +21,6 @@ import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
 import { isJspsychValueObjectEmpty } from '../../../reducers/Experiment/editor';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
-import { MediaManagerMode } from '../../MediaManager';
 import CodeEditor from '../../CodeEditor';
 import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
@@ -32,7 +31,7 @@ import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/Trial
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
 
-import GeneralTheme, { prefixer } from '../../theme.js';
+import GeneralTheme from '../../theme.js';
 
 const colors = {
 	...GeneralTheme.colors,
@@ -84,11 +83,11 @@ export const style = {
 			hoverColor: colors.secondary
 		}),
 	},
-	ToggleGroup: prefixer({
+	ToggleGroup: utils.prefixer({
 		...ToggleGroupCommonAttrib,
 	}),
 	CustomFloatingLabelField: {
-		root: prefixer({
+		root: utils.prefixer({
 			backgroundColor: 'transparent',
 			fontFamily: 'Roboto, sans-serif',
 			cursor: 'auto',
@@ -98,7 +97,7 @@ export const style = {
 			marginTop: '10px',
 			marginBottom: '5px',
 		}),
-		FloatingLabel: prefixer({
+		FloatingLabel: utils.prefixer({
 			zIndex: '1',
 			transform: 'scale(0.95) translate(-1px, -3px)',
 			transformOrigin: 'left top 0px',
@@ -111,17 +110,17 @@ export const style = {
 			fontSize: '13px',
 			margin: 0,
 		}),
-		FieldGroup: prefixer({
+		FieldGroup: utils.prefixer({
 			display: 'flex',
 			alignItems: 'center'
 		}),
-		ContentGroup: error => (prefixer({
+		ContentGroup: error => (utils.prefixer({
 			flexGrow: 1,
 			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `none`,
 			// borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
 			paddingBottom: error ? '5px' : '0px',
 		})),
-		ErrorText: prefixer({
+		ErrorText: utils.prefixer({
 			color: colors.errorRed,
 			// fontWeight: 'bold',
 			fontSize: '12px',
@@ -129,7 +128,7 @@ export const style = {
 			transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
 			lineHeight: '12px'
 		}),
-		ToggleGroup: prefixer({
+		ToggleGroup: utils.prefixer({
 			...ToggleGroupCommonAttrib,
 			flexBasis: 'auto',
 			alignSelf: 'flex-end',
@@ -139,7 +138,7 @@ export const style = {
 	TriggerStyle: {
 		backgroundColor: 'rgba(153, 153, 153, 0.15)',
 		hoverColor: 'rgba(153, 153, 153, 0.25)',
-		labelStyle: prefixer({
+		labelStyle: utils.prefixer({
 			color: colors.labelColor,
 			textOverflow: 'ellipsis',
 			whiteSpace: 'nowrap',
@@ -165,10 +164,10 @@ export const style = {
 		expandIcon: {
 			hoverColor: colors.secondary
 		},
-		addChildrenButtonContainer: prefixer({
+		addChildrenButtonContainer: utils.prefixer({
 			float: 'right'
 		}),
-		addChildrenButton: prefixer({
+		addChildrenButton: utils.prefixer({
 			label: "add"
 		}),
 		children: {
@@ -695,7 +694,7 @@ export default class TrialFormItem extends React.Component {
 					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
 					parameterName={param} 
 					selected={selected}
-					mode={(!multiSelect) ? MediaManagerMode.select : MediaManagerMode.multiSelect}
+					mode={(!multiSelect) ? enums.MediaManagerMode.select : enums.MediaManagerMode.multiSelect}
 					onCommit={(value) => {
 						this.props.insertFile(
 							param,
