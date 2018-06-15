@@ -1,6 +1,5 @@
 import React from 'react';
 import Paper from 'material-ui/Paper';
-import deepEqual from 'deep-equal';
 
 import IconButton from 'material-ui/IconButton';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
@@ -137,7 +136,7 @@ export default class PreviewWindow extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!deepEqual(this.props.state, prevProps.state)) {
+    if (!utils.deepEqual(this.props.state, prevProps.state)) {
       this.props.hotUpdate(load);
     }
   }

@@ -37,7 +37,7 @@ module.exports = {
       exclude: /node_modules/,
       include: path.resolve(__dirname, '../'),
       query: {
-        presets: ['env', 'react', 'stage-0']
+        presets: ['env', 'react', 'stage-2']
       }
     }, {
       test: /\.json$/,

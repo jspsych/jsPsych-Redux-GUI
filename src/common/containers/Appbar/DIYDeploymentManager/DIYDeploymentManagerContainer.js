@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import deepEqual from 'deep-equal';
 import * as experimentActions from '../../../actions/experimentSettingActions';
 import DIYDeploymentManager from '../../../components/Appbar/DIYDeploymentManager';
 

@@ -8,14 +8,22 @@ let code = "";
 
 const playAll = (dispatch, load) => {
 	dispatch((dispatch, getState) => {
-		code = generateCode(getState().experimentState, true, false);
+		code = generateCode({
+			state: getState().experimentState, 
+			all: true, 
+			deploy: false
+		});
 		load(code);
 	})
 }
 
 const hotUpdate = (dispatch, load) => {
 	dispatch((dispatch, getState) => {
-		code = generateCode(getState().experimentState, false, false);
+		code = generateCode({
+			state: getState().experimentState, 
+			all: false, 
+			deploy: false
+		});
 		load(code);
 	})
 }

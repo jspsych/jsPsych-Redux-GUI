@@ -248,11 +248,11 @@ export default class CloudDeploymentManager extends React.Component {
 		}
 
 		this.pullOffExperiment = () => {
-			utils.notifications.popConfirm({
+			utils.notifications.popUpConfirmation({
 				dispatch: this.props.dispatch,
 				message: "Are you sure that you want this experiment offline?",
-				continueWithOperation: () => this.cloudDelete,
-				continueWithOperationLabel: "Yes",
+				continueWithOperation: () => this.cloudDelete(),
+				continueWithOperationLabel: "Yes, delete it.",
 				continueWithoutOperationLabel: "No, hold on...",
 				showCancelButton: true,
 				withExtraCare: true,

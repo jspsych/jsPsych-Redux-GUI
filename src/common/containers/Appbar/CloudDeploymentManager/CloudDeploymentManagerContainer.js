@@ -70,7 +70,7 @@ function listNodesAtOSF({token, userId, dispatch}) {
 		});
 
 		req.end();
-	})
+	});
 }
 
 const createProject = (dispatch, token) => {
@@ -140,10 +140,12 @@ export const pureCloudDelete = (experimentId) => {
 	}).then((data) => {
 		return Promise.all(data.Contents.map(
 			item => myaws.S3.deleteObject({
-				Bucket: myaws.S3.Cloud_Bucket,
-				Key: item.Key
-			}))
-		);
+				bucket: myaws.S3.Cloud_Bucket,
+				param: {
+					Key: item.Key
+				}
+			})
+		));
 	});
 }
 
@@ -252,7 +254,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 	cloudDelete: () => cloudDelete(dispatch),
 	createProject: (token) => createProject(dispatch, token),
 	syncExperimentStatus: () => syncExperimentStatus({dispatch: dispatch,}),
-	listNodesAtOSF: ({...args}) => listNodesAtOSF({dispatch, ...args}).
+	listNodesAtOSF: ({...args}) => listNodesAtOSF({dispatch, ...args}),
 	dispatch
 })
 
