@@ -461,7 +461,8 @@ function extractDeployInfomationHelper(obj, deployInfo, prefix) {
         for (let m of matches) {
           m = m.replace(/<\/?path>/g, '');
           // state.media.Prefix + m is the s3 address
-          deployInfo.media[prefix + m] = m;
+          let addr = [prefix, m].join(myaws.S3.Delimiter);
+          deployInfo.media[addr] = m;
         }
       }
       break;

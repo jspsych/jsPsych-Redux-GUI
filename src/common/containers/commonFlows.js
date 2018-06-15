@@ -21,6 +21,10 @@ export const load = ({dispatch}) => {
 
 			let { userId } = data;
 
+			if (!userId) {
+				return Promise.resolve();
+			}
+
 			return Promise.all([
 				myaws.DynamoDB.getLastModifiedExperimentOf(userId),
 				myaws.DynamoDB.getUserDate(userId)
