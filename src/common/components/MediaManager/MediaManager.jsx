@@ -399,7 +399,7 @@ export default class MediaManager extends React.Component {
 						<ListItem
 							primaryText={filename}
 							style={{
-								backgroundColor: isUploadMode && isSelected ? SelectedListItemColor : null
+								backgroundColor: isSelected ? SelectedListItemColor : null
 							}}
 							leftIcon={fileIconFromTitle(fileKey, isUploadMode && isSelected ? colors.primary : null)}
 							onClick={() => {this.handleSelect(index)}}

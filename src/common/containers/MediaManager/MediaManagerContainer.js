@@ -32,7 +32,7 @@ const uploadFiles = ({dispatch, files, progressHook, userId, experimentId}) => {
 }
 
 const deleteFiles = ({dispatch, filePaths}) => {
-	return $deleteFiles(filePaths).then((data) => {
+	return myaws.S3.deleteFiles({filePaths}).then((data) => {
 		utils.notifications.notifySuccessBySnackbar({
 			dispatch,
 			message: "Deleted !"

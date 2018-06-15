@@ -135,8 +135,6 @@ const jsPsych = window.jsPsych;
 
 const Deploy_Folder = 'assets';
 const jsPysch_Folder = 'jsPsych';
-const DEPLOY_PATH = 'assets/';
-const jsPsych_PATH = 'jsPsych/';
 
 const welcomeObj = {
   ...jsPsychInitState,
@@ -404,7 +402,7 @@ function extractDeployInfomation({experimentState, media}) {
     }
     */
     media: {},
-    code: generateCode(experimentState, true, true),
+    code: generateCode({state: experimentState, all: true, deploy: true}),
     errorLog: '',
     downloadSize: 0
   }
@@ -477,7 +475,7 @@ state - experimentState
 all - indicates if play all experiments
 deploy - indicates if in deploy mode (include all nodes)
 */ 
-export function generateCode(state, all=false, deploy=false) {
+export function generateCode({state, all=false, deploy=false}) {
   // if all experiments are requested, then source is obviously mainTimeline
   // otherwise, only generate code for the currently previewed node
   let timelineNodes = (all) ? state.mainTimeline : [state.previewId];
@@ -542,10 +540,13 @@ export function generateCode(state, all=false, deploy=false) {
   }
 
   // fetch s3 path, if there is one (if user hasn't logged in or saved anything, state.media is empty)
-  let s3Path = (state && state.media) ? state.media.Prefix : "";
+  let s3Path = "";
+  if (state.ownerId) {
+    s3Path = [state.ownerId, state.experimentId].join(myaws.S3.Delimiter);
+  }
 
   // call jsPsych
-  return "jsPsych.init(" + stringify(obj, (deploy) ? DEPLOY_PATH : s3Path) + ");";
+  return "jsPsych.init(" + stringify(obj, (deploy) ? Deploy_Folder : s3Path) + ");";
 }
 
 
@@ -558,7 +559,7 @@ filePath, the path of file
 */
 function resolveMediaPath(str, prefix) {
   let matches = (str) ? str.match(/<path>(.*?)<\/path>/g) : null;
-  let deploy = prefix === DEPLOY_PATH;
+  let deploy = prefix === Deploy_Folder;
   let processFunc = myaws.S3.getSignedUrl;
   // in diy deploy mode, we don't get file from S3
   if (deploy) {
@@ -567,7 +568,7 @@ function resolveMediaPath(str, prefix) {
   if (matches) {
     for (let m of matches) {
       str = str.replace(m, 
-        processFunc(prefix + m.replace(/<\/?path>/g, ''))
+        processFunc([prefix, m.replace(/<\/?path>/g, '')].join(myaws.S3.Delimiter))
       );
     }
   }

@@ -96,16 +96,22 @@ export default class DIYDeploymentManager extends React.Component {
 			loaded[loadedInfo.index] = loadedInfo.value;
 
 			let percent = loaded.reduce((sum, val) => (sum + val), 0) / total * 100;
+			if (percent >= 100) {
+				this.setState({
+					deploying: false
+				});
+			}
 			this.setState({
 				loaded: loaded,
 				total: total,
-				percent: (percent > 100) ? 100 : parseInt(percent, 10)
+				percent: Math.round(percent)
 			});
 		}
 
 		this.handleOpen = () => {
 			this.setState({
-				open: true
+				open: true,
+				percent: 0
 			});
 			this.update();
 		}
@@ -125,11 +131,7 @@ export default class DIYDeploymentManager extends React.Component {
 				progressHook: this.progressHook,
 				saveAfter: this.state.tempSaveAfter,
 				mode: this.state.tempMode
-			}).finally(() => {
-				this.setState({
-					deploying: false
-				})
-			})
+			});
 		}
 
 		this.setSaveAfter = (event, index, value) => {
@@ -166,9 +168,7 @@ export default class DIYDeploymentManager extends React.Component {
 				onClick={this.diyDeploy}
 			/>:
 			<div style={{display:'flex', paddingLeft: 10, alignItems: 'center'}}>
-              <div>
-                <CircularProgress {...style.Actions.Wait} value={percent} mode="determinate"/>
-              </div>
+              <CircularProgress {...style.Actions.Wait} value={percent} mode="determinate"/>
               <ListItem primaryText={`${percent}%`} disabled={true}/>
             </div>,
 			<FlatButton
