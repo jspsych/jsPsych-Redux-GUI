@@ -6,9 +6,10 @@ import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
 
 
+/****************** Save to OSF ******************/
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
 const SaveDataToOSF_Function_Name = "saveDataToOSF";
-const renderOsfPostFunction = (experimentId) => {
+const generateCodeToPostDataToOSF = (experimentId) => {
   return `
     function ${SaveDataToOSF_Function_Name}(data) {
         let postData = {
@@ -26,6 +27,8 @@ const renderOsfPostFunction = (experimentId) => {
     }
   `
 }
+
+/****************** Save to Disk ******************/
 
 const SaveData_PHP_API = 'save_data.php';
 const SaveData_PHP_Function_Name = 'saveDataPHP';
@@ -49,6 +52,78 @@ try {
 
 ?>`;
 
+/****************** Save to SQLite ******************/
+
+const GetPreprocessData_Function_Name = "getPreprocessedData";
+const GetPreprocessData_Function_Code = `
+function ${GetPreprocessData_Function_Name}() {
+  let rows = jsPsych.data.get().values(),
+    columns = jsPsych.data.get().uniqueNames(),
+    dataType = {},
+    convertedData = rows.map(() => {});
+
+  let isFloat = n => n === +n && n !== (n | 0);
+  let db_type = {
+    text: 'TEXT',
+    integer: 'INTEGER',
+    real: 'REAL',
+    varchar: 'VARCHAR(255)'
+  };
+  for (let col of columns) {
+    let type = null;
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = rows[i],
+        v = row[col],
+        t = typeof v,
+        convertedRow = convertedData[i];
+      switch (t) {
+        case 'object':
+          // Consider it as json string in SQLite
+          type = v ? db_type.text : v;
+          convertedRow[col] = v ? JSON.stringify(v) : v;
+          break;
+        case 'boolean':
+          type = db_type.integer;
+          convertedRow[col] = v ? 1 : 0;
+          break;
+        case 'number':
+          convertedRow[col] = v;
+          if (type !== db_type.real) {
+            type = isFloat(v) ? db_type.real : db_type.integer;
+          }
+          break;
+        case 'string':
+          convertedRow[col] = v;
+          if (type === db_type.text || v.length > 255) {
+            type = db_type.text;
+          } else {
+            type = db_type.varchar;
+          }
+          break;
+        case 'undefined':
+        default:
+          convertedRow[col] = null;
+          break;
+      }
+    }
+
+    if (type !== null) {
+      dataType[col] = type;
+    } else {
+      for (let row of convertedData) {
+        delete row[col];
+      }
+    }
+  }
+
+  return JSON.stringify({
+    data: convertedData,
+    dataType: dataType
+  });
+}
+`;
+
 export const SQLite_Database = {
   filename: 'jsPsychData.sqlite3',
   table: 'jsPsych'
@@ -57,7 +132,8 @@ const SaveData_PHP_SQLite_Code = `
 <?php
 
 $post_data = json_decode(file_get_contents('php://input'), true);
-$data_array = $post_data["data_array"];
+$data = $post_data["data"];
+$data_type = $post_data["dataType"];
 
 $database = "${SQLite_Database.filename}";
 $table = "${SQLite_Database.table}";
@@ -65,37 +141,50 @@ $table = "${SQLite_Database.table}";
 try {
   $conn = new PDO("sqlite:$database");
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  // First stage is to get all column names from the table and store
-  // them in $col_names array.
-  $stmt = $conn->prepare("SHOW COLUMNS FROM \`$table\`");
-  $stmt->execute();
-  $col_names = array();
-  while($row = $stmt->fetchColumn()) {
-    $col_names[] = $row;
-  }
-  // Second stage is to create prepared SQL statement using the column
-  // names as a guide to what values might be in the JSON.
-  // If a value is missing from a particular trial, then NULL is inserted
-  $sql = "INSERT INTO $table VALUES(";
-  for($i = 0; $i < count($col_names); $i++){
-    $name = $col_names[$i];
-    $sql .= ":$name";
-    if($i != count($col_names)-1){
-      $sql .= ", ";
+  
+  // First stage is to get all column names from dataType
+  // and create table
+  $queryCreateTable = "CREATE TABLE IF NOT EXISTS $table(";
+  $columnNames = array_keys($data_type);
+  for ($i = 0; $i < count($columnNames); $i++) {
+    $keyname = $columnNames[$i];
+    $type = $data_type[$keyname];
+    $queryCreateTable .= "$keyname";
+    $queryCreateTable .= " $type";
+    if ($keyname == "something") {
+      $queryCreateTable .= " PRIMARY";
+    }
+    if($i != count($columnNames)-1){
+      $queryCreateTable .= ", ";
     }
   }
-  $sql .= ");";
-  $insertstmt = $conn->prepare($sql);
-  for($i=0; $i < count($data_array); $i++){
-    for($j = 0; $j < count($col_names); $j++){
-      $colname = $col_names[$j];
-      if(!isset($data_array[$i][$colname])){
-        $insertstmt->bindValue(":$colname", null, PDO::PARAM_NULL);
+  $queryCreateTable .= ");";
+  $createTableStmt = $conn->prepare($queryCreateTable);
+  $createTableStmt->execute();
+  
+  // Second stage is to create prepared SQL statement
+  $queryInsert = "INSERT INTO $table VALUES(";
+  for ($i = 0; $i < count($columnNames); $i++) {
+    $name = $columnNames[$i];
+    $queryInsert .= ":$name";
+    if($i != count($columnNames)-1){
+      $queryInsert .= ", ";
+    }
+  }
+  $queryInsert .= ");";
+  $insertStmt = $conn->prepare($queryInsert);
+
+  for ($i = 0; $i < count($data); $i++) {
+    $row = $data[$i];
+    for ($j = 0; $j < count($columnNames); $j++) {
+      $colName = $columnNames[$i];
+      if (!isset($row[$colName])) {
+        $insertStmt->bindValue(":$colName", null, PDO::PARAM_NULL);
       } else {
-        $insertstmt->bindValue(":$colname", $data_array[$i][$colname]);
+        $insertStmt->bindValue(":$colName", $row[$colName]);
       }
     }
-    $insertstmt->execute();
+    $insertStmt->execute();
   }
   echo 'Success';
 } catch(PDOException $e) {
@@ -106,7 +195,13 @@ $conn = null;
 `;
 const SaveData_PHP_MySQL_Code = ``;
 
-const generateSaveData_PHP_API_Code = (mode) => {
+
+/****************** Helper functions ******************/
+
+/*
+* Generate the code that defines PHP API, which will be called by subject side to save data
+*/
+const generate_PHP_API_Code = (mode) => {
   switch(mode) {
     case enums.DIY_Deploy_Mode.mysql:
       return SaveData_PHP_MySQL_Code;
@@ -117,8 +212,13 @@ const generateSaveData_PHP_API_Code = (mode) => {
       return SaveData_PHP_Disk_API_Code;
   }
 }
-const renderDIYPostFunction = (mode) => {
-  return `function ${SaveData_PHP_Function_Name}(data) {
+
+/*
+* Generate the code that post data to custom PHP API
+*/
+const generateCodeToPostDataToPHP = (mode) => {
+  return `
+  function ${SaveData_PHP_Function_Name}(data) {
     let request = new XMLHttpRequest();
     request.open("POST", "${SaveData_PHP_API}", true);
     request.onload = () => {
@@ -127,9 +227,66 @@ const renderDIYPostFunction = (mode) => {
         console.log(response);
       }
     }
-    request.send(${mode === enums.DIY_Deploy_Mode.disk ? `JSON.stringify({ filedata: data })` : 'data'});
+    request.send(
+      ${mode === enums.DIY_Deploy_Mode.disk ? 
+        `JSON.stringify({ filedata: data })` : 
+        'data'
+      }
+      );
   }`
 }
+
+/*
+* Generate the code that invoke function that handles calling OSF API to save the data
+*/
+const generateCodeToCallFunctionToSaveDataToCloud = () => {
+  return `
+    function() {
+      ${SaveDataToOSF_Function_Name}(jsPsych.data.get().csv());
+    }
+  `
+}
+
+/*
+* Generate the code that invoke function that handles calling PHP API to save the data
+*/
+const generateCodeToCallFunctionToSaveDataToServer = (mode) => {
+  let data = '';
+  switch(mode) {
+    case enums.DIY_Deploy_Mode.mysql:
+    case enums.DIY_Deploy_Mode.sqlite:
+      data = `${GetPreprocessData_Function_Name}()`;
+      break;
+    case enums.DIY_Deploy_Mode.disk:
+    default:
+      data = 'jsPsych.data.get().csv()';
+  }
+  return `function() {
+    ${SaveData_PHP_Function_Name}(${data});
+  }`
+}
+
+/*
+* Generate a trial block that calls functions to save data
+*/
+const generateDataSaverBlock = ({code}) => {
+  let param = {
+    type: 'call-function',
+    func: createComplexDataObject(null)
+  };
+  param.func.func.code = code;
+  param.func.mode = ParameterMode.USE_FUNC;
+
+  let res = createTrial('SaveDataTrial',
+      null,
+      "Save Data",
+      true,
+      param
+    );
+  return res;
+}
+
+/****************** Deploy Constants and Helpers ******************/
 
 const jsPsych = window.jsPsych;
 
@@ -164,47 +321,6 @@ const undefinedObj = {
   ]
 }
 
-const cloudSaveDataFunctionCode = () => {
-  return `
-    function() {
-      ${SaveDataToOSF_Function_Name}(jsPsych.data.get().csv());
-    }
-  `
-}
-const diySaveDataFunctionCode = (mode) => {
-  let data = '';
-  switch(mode) {
-    case enums.DIY_Deploy_Mode.mysql:
-    case enums.DIY_Deploy_Mode.sqlite:
-      data = 'jsPsych.data.get().json()';
-      break;
-    case enums.DIY_Deploy_Mode.disk:
-    default:
-      data = 'jsPsych.data.get().csv()';
-  }
-  return `function() {
-    ${SaveData_PHP_Function_Name}(${data});
-  }`
-}
-
-const generateDataSaveTrial = ({code}) => {
-  let param = {
-    type: 'call-function',
-    func: createComplexDataObject(null)
-  };
-  param.func.func.code = code;
-  param.func.mode = ParameterMode.USE_FUNC;
-
-  let res = createTrial('SaveDataTrial',
-      null,
-      "Save Data",
-      true,
-      param
-    );
-  return res;
-}
-
-
 const errorMessageObj = (error) => {
   let message = '';
   for (let e of error) {
@@ -237,6 +353,8 @@ export const Undefined = 'jsPsych.init(' + stringify(undefinedObj) + ');';
 
 const ErrorMessage = (error) => ('jsPsych.init(' + stringify(errorMessageObj(error)) + ');');
 
+/****************** Deploy ******************/
+
 /*
 DIY deploy built experiment for user
 It will:
@@ -255,7 +373,7 @@ export function diyDeploy({state, progressHook, media}) {
       mode = diyDeployInfo.mode;
 
   /* ************ Step 0: Inject save data trial ************ */
-  let saveTrial = generateDataSaveTrial({code: diySaveDataFunctionCode(mode)});
+  let saveTrial = generateDataSaverBlock({code: generateCodeToCallFunctionToSaveDataToServer(mode)});
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
   /* ************ Step 0: Inject save data trial ************ */
@@ -285,7 +403,7 @@ export function diyDeploy({state, progressHook, media}) {
   }));
 
   // generate save_data.php according to user's choice of storage
-  zip.file(SaveData_PHP_API, generateSaveData_PHP_API_Code(mode));
+  zip.file(SaveData_PHP_API, generate_PHP_API_Code(mode));
 
   // create assets folder
   var assets = zip.folder(Deploy_Folder);
@@ -324,7 +442,7 @@ export function cloudDeploy({
       experimentId = experimentState.experimentId,
       saveAfter = cloudDeployInfo.saveAfter;
 
-  let saveTrial = generateDataSaveTrial({code: cloudSaveDataFunctionCode()});
+  let saveTrial = generateDataSaverBlock({code: generateCodeToCallFunctionToSaveDataToCloud()});
   experimentState[saveTrial.id] = saveTrial;
   experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
 
@@ -704,8 +822,9 @@ export function generatePage({
     </body>
     <script>
       ${customCode}
-      ${isDiyDeployment ? renderDIYPostFunction(diyDeployMode) : ''}
-      ${isCloudDeployment ? renderOsfPostFunction(experimentId) : ''}
+      ${isDiyDeployment && diyDeployMode !== enums.DIY_Deploy_Mode.disk ? GetPreprocessData_Function_Code : ''}
+      ${isDiyDeployment ? generateCodeToPostDataToPHP(diyDeployMode) : ''}
+      ${isCloudDeployment ? generateCodeToPostDataToOSF(experimentId) : ''}
       ${deployInfo.code}
     </script>
   </html>
@@ -799,73 +918,4 @@ function stringifyFunc(obj, filePath) {
   let func = obj.ifEval ? obj.code : JSON.stringify(obj.code);
   
   return resolveMediaPath(func, filePath);
-}
-
-
-
-function preprocessData() {
-  let rows = jsPsych.data.get().values(),
-    columns = jsPsych.data.get().uniqueNames(),
-    dataType = {},
-    convertedData = rows.map(() => ({}));
-
-  let isFloat = n => n === +n && n !== (n | 0);
-  let db_type = {
-    text: 'TEXT',
-    integer: 'INTEGER',
-    real: 'REAL',
-    varchar: 'VARCHAR(255)'
-  };
-  for (let col of columns) {
-    let type = null;
-
-    for (let i = 0; i < rows.length; i++) {
-      let row = rows[i],
-        v = row[col],
-        t = typeof v,
-        convertedRow = convertedData[i];
-      switch (t) {
-        case 'object':
-          // Consider it as json string in SQLite
-          type = v ? db_type.text : v;
-          convertedRow[col] = v ? JSON.stringify(v) : v;
-          break;
-        case 'boolean':
-          type = db_type.integer;
-          convertedRow[col] = v ? 1 : 0;
-          break;
-        case 'number':
-          convertedRow[col] = v;
-          if (type !== db_type.real) {
-            type = isFloat(v) ? db_type.real : db_type.integer;
-          }
-          break;
-        case 'string':
-          convertedRow[col] = v;
-          if (type === db_type.text || v.length > 255) {
-            type = db_type.text;
-          } else {
-            type = db_type.varchar;
-          }
-          break;
-        case 'undefined':
-        default:
-          convertedRow[col] = null;
-          break;
-      }
-    }
-
-    if (type !== null) {
-      dataType[col] = type;
-    } else {
-      for (let row of convertedData) {
-        delete row[col];
-      }
-    }
-  }
-
-  return {
-    data: convertedData,
-    dataType: dataType
-  }
 }
