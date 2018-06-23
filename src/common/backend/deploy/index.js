@@ -60,7 +60,7 @@ function ${GetPreprocessData_Function_Name}() {
   let rows = jsPsych.data.get().values(),
     columns = jsPsych.data.get().uniqueNames(),
     dataType = {},
-    convertedData = rows.map(() => {});
+    convertedData = rows.map(() => ({}));
 
   let isFloat = n => n === +n && n !== (n | 0);
   let db_type = {
@@ -177,7 +177,7 @@ try {
   for ($i = 0; $i < count($data); $i++) {
     $row = $data[$i];
     for ($j = 0; $j < count($columnNames); $j++) {
-      $colName = $columnNames[$i];
+      $colName = $columnNames[$j];
       if (!isset($row[$colName])) {
         $insertStmt->bindValue(":$colName", null, PDO::PARAM_NULL);
       } else {
@@ -186,9 +186,9 @@ try {
     }
     $insertStmt->execute();
   }
-  echo 'Success';
+  echo json_encode('Success');
 } catch(PDOException $e) {
-  echo $e->getMessage();
+  echo json_encode($e->getMessage());
 }
 $conn = null;
 ?>
