@@ -6,7 +6,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from '../../config/webpack.config.development';
 
-import template from '../../public/template';
+// import template from '../../public/template';
 
 const app = new Express();
 const port = 3000;
@@ -17,9 +17,9 @@ app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig
 app.use(webpackHotMiddleware(compiler));
 app.use(Express.static(path.join(__dirname + '/../../public')));
 
-app.use(function(req, res) {
-  res.send(template({}));
-});
+// app.use(function(req, res) {
+//   res.send(template({}));
+// });
 
 var server = app.listen(port, function() {
   var port = server.address().port;

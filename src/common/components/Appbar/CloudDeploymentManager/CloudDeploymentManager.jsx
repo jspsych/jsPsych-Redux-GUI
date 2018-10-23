@@ -91,7 +91,7 @@ export default class CloudDeploymentManager extends React.Component {
 
 			tempAvaliableProjects: [],
 			listing: false,
-			canReadFromOSF: false
+			canReadFromOSF: false,
 		}
 
 		this.update = () => {
@@ -282,11 +282,10 @@ export default class CloudDeploymentManager extends React.Component {
 			osfAccess,
 			indexedNodeNames
 		} = this.props;
-
 		let osfTokenError = !tempChosenOsfAccess || !tempChosenOsfAccess.token,
 			osfNodeError = !tempOsfNode,
-			saveAfterError = tempSaveAfter >= indexedNodeNames.length,
-			notReady = osfTokenError || osfNodeError || saveAfterError;
+			saveAfterError = indexedNodeNames.length > 0 && tempSaveAfter >= indexedNodeNames.length,
+			notReady = saveAfterError;
 		let actions = [
 			!deploying ? 
 			<FlatButton
