@@ -827,6 +827,11 @@ export default class TrialFormItem extends React.Component {
 
 	renderItem = (param) => {
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
+		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		// current plugin is outdated
+		if (!parameterValue) {
+			return null;
+		}
 		switch(parameterInfo.type) {
 				case EnumPluginType.AUDIO:
 				case EnumPluginType.IMAGE:

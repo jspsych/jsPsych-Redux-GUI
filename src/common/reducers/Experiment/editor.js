@@ -3,7 +3,7 @@
 */
 import { createFuncObj } from './jsPsychInit';
 
-var jsPsych = window.jsPsych || require('./tests/jsPsych.js').jsPsych;
+var jsPsych = window.jsPsych || require('../../../../library/jsPsych/jsPsych.js').jsPsych;
 var EnumPluginType = jsPsych.plugins.parameterType;
 
 /*
