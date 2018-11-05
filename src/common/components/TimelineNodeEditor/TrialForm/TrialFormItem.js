@@ -13,42 +13,27 @@ import CollapseIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import EditCodeIcon from 'material-ui/svg-icons/action/code';
 import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
-import AddMediaIcon from 'material-ui/svg-icons/av/library-add';
-import ObjectEditorIcon from 'material-ui/svg-icons/editor/mode-edit';
-import ArrayIcon from 'material-ui/svg-icons/action/view-array';
-import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
 
-import { isJspsychValueObjectEmpty } from '../../../reducers/Experiment/editor';
 import KeyboardSelector from '../../KeyboardSelector';
 import MediaManager from '../../../containers/MediaManager';
 import CodeEditor from '../../CodeEditor';
-import { ParameterMode, locateNestedParameterValue } from '../../../reducers/Experiment/editor';
 import TimelineVariableSelector from '../../../containers/TimelineNodeEditor/TrialForm/TimelineVariableSelectorContainer';
 import ObjectEditor from '../../../containers/ObjectEditor';
 import ArrayEditor from '../../../containers/ArrayEditor';
 import TrialFormItemContainer from '../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
+import { CommonComponents } from '../CommonComponents';
 
 const jsPsych = window.jsPsych;
 const EnumPluginType = jsPsych.plugins.parameterType;
 
-import GeneralTheme from '../../theme.js';
-
 const colors = {
-	...GeneralTheme.colors,
+	...theme.colors,
 	labelColor: '#757575',
 	normalToggleColor: '#414141',
 	dividerColor: 'rgb(224, 224, 224)',
 	disabledColor: '#B1B1B1',
 	evenSubItemBackgroundColor: '#F5F5F5',
 	oddSubItemBackgroundColor: '#E0E0E0'
-};
-
-const ToggleGroupCommonAttrib = {
-	display: 'flex',
-	justifyContent: 'space-evenly',
-	backgroundColor: 'inherit',
-	// boxShadow: '0 2px 5px rgba(0,0,0, .26)',
-	marginLeft: '10px'
 };
 
 export const style = {
@@ -84,82 +69,11 @@ export const style = {
 		}),
 	},
 	ToggleGroup: utils.prefixer({
-		...ToggleGroupCommonAttrib,
+		display: 'flex',
+		justifyContent: 'space-evenly',
+		backgroundColor: 'inherit',
+		marginLeft: '10px'
 	}),
-	CustomFloatingLabelField: {
-		root: utils.prefixer({
-			backgroundColor: 'transparent',
-			fontFamily: 'Roboto, sans-serif',
-			cursor: 'auto',
-			width: '100%',
-			display: 'flex',
-			flexDirection: 'column',
-			marginTop: '10px',
-			marginBottom: '5px',
-		}),
-		FloatingLabel: utils.prefixer({
-			zIndex: '1',
-			transform: 'scale(0.95) translate(-1px, -3px)',
-			transformOrigin: 'left top 0px',
-			pointerEvents: 'none',
-			userSelect: 'none',
-			color: 'rgba(0, 0, 0, 0.3)',
-			display: 'inline-block',
-			maxWidth: '100%',
-			fontWeight: '700',
-			fontSize: '13px',
-			margin: 0,
-		}),
-		FieldGroup: utils.prefixer({
-			display: 'flex',
-			alignItems: 'center'
-		}),
-		ContentGroup: error => (utils.prefixer({
-			flexGrow: 1,
-			borderBottom: error ? `2.5px solid ${colors.errorRed}` : `none`,
-			// borderBottom: error ? `2.5px solid ${colors.errorRed}` : `1px solid ${colors.dividerColor}`,
-			paddingBottom: error ? '5px' : '0px',
-		})),
-		ErrorText: utils.prefixer({
-			color: colors.errorRed,
-			// fontWeight: 'bold',
-			fontSize: '12px',
-			paddingTop: '5px',
-			transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
-			lineHeight: '12px'
-		}),
-		ToggleGroup: utils.prefixer({
-			...ToggleGroupCommonAttrib,
-			flexBasis: 'auto',
-			alignSelf: 'flex-end',
-			marginBottom: '10px',
-		})
-	},
-	TriggerStyle: {
-		backgroundColor: 'rgba(153, 153, 153, 0.15)',
-		hoverColor: 'rgba(153, 153, 153, 0.25)',
-		labelStyle: utils.prefixer({
-			color: colors.labelColor,
-			textOverflow: 'ellipsis',
-			whiteSpace: 'nowrap',
-		}),
-		style: {
-			maxWidth: '220px'
-		},
-		labelPosition: 'before',
-	},
-	TriggerIconStyle: {
-		color: colors.labelColor,
-		hoverColor: colors.secondaryDeep,
-		style: {
-			width: 16,
-			height: 16,
-		}
-	},
-	UndefinedStyle: {
-		backgroundColor: 'rgba(153, 153, 153, 0.15)',
-		hoverColor: 'rgba(153, 153, 153, 0.25)',
-	},
 	ComplexField: {
 		expandIcon: {
 			hoverColor: colors.secondary
@@ -201,99 +115,6 @@ export const style = {
 }
 
 
-export const components = {
-	/*
-	Keep them seperate in case of future changes
-	*/
-	Triggers: {
-		ObjectEditor: ({label="Edit Object", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				label={label}
-				onClick={onClick}
-				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
-			/>
-		),
-		ArrayEditor: ({label="Edit Array", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				label={label}
-				onClick={onClick}
-				icon={<ArrayIcon {...style.TriggerIconStyle}/>}
-			/>
-		),
-		CodeEditor: ({label="Edit Code", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				label={label}
-				onClick={onClick}
-				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
-			/>
-		),
-		TimelineVariableSelector: ({label="Timeline Variables", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				label={label}
-				onClick={onClick}
-				icon={<ObjectEditorIcon {...style.TriggerIconStyle}/>}
-			/>
-		),
-		MediaSelector: ({label="Media Manager", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				labelStyle={{
-					...style.TriggerStyle.labelStyle,
-					textTransform: 'none',
-				}}
-				icon={<AddMediaIcon {...style.TriggerIconStyle}/>}
-				label={label}
-				onClick={onClick}
-			/>
-		),
-		KeyboardSelector: ({label="Key Choices", onClick=()=>{}}) => (
-			<FlatButton
-				{...style.TriggerStyle}
-				labelStyle={{
-					...style.TriggerStyle.labelStyle,
-					textTransform: 'none',
-				}}
-				icon={<KeyboardIcon {...style.TriggerIconStyle}/>}
-				label={label}
-				onClick={onClick}
-			/>
-		)
-	},
-	Undefined: ({props={}}) => (
-				<FlatButton
-					disabled
-					label={'[Undefined]'}
-					{...props}
-					{...style.UndefinedStyle}
-				/>
-	),
-	CustomFloatingLabelField: ({label, node=null, ToggleFunc=null, ToggleTV=null, error=false, errorText=''}) => (
-		<div style={{...style.CustomFloatingLabelField.root}}>
-			<label style={{...style.CustomFloatingLabelField.FloatingLabel}}>
-				{label}
-			</label>
-			<div style={{...style.CustomFloatingLabelField.FieldGroup}}>
-				<div style={{...style.CustomFloatingLabelField.ContentGroup(error)}}>
-					{node}
-				</div>
-				<div style={{...style.CustomFloatingLabelField.ToggleGroup}}>
-					{ToggleFunc}
-					{ToggleTV}
-				</div>
-			</div> 
-			{error ? 
-				<span style={{...style.CustomFloatingLabelField.ErrorText}}>
-					{errorText}
-				</span> :
-				null
-			}
-		</div>
-	)
-}
 
 // const processMediaPathTag = (s) => {
 // 	if (!s) return "";
@@ -363,13 +184,13 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 	let isRequired = isParameterRequired(parameterInfo);
 	let val = utils.toEmptyString(parameterValue.value);
 	let disabled = true;
-	let error = isRequired && isJspsychValueObjectEmpty(parameterValue);  
+	let error = isRequired && utils.isJspsychValueObjectEmpty(parameterValue);  
 
 	switch (parameterValue.mode) {
-		case ParameterMode.USE_FUNC:
+		case enums.ParameterMode.USE_FUNC:
 			val = '[Custom Code]';
 			break;
-		case ParameterMode.USE_TV:
+		case enums.ParameterMode.USE_TV:
 			val = '[Timeline Variable]';
 			break;
 		default:
@@ -384,7 +205,7 @@ const generateFieldProps = (parameterValue, parameterInfo, autoConvertToArrayCom
 		floatingLabelFixed: true,
 		title: parameterInfo.description,
 		style: { marginBottom: error ? '15px' : '0px' },
-		...GeneralTheme.TextFieldFocusStyle(error),
+		...theme.TextFieldFocusStyle(error),
 	}
 }
 
@@ -418,16 +239,16 @@ export default class TrialFormItem extends React.Component {
 			onClick={() => { this.props.setParamMode(param); }}
 			{...style.ToggleStyle.IconButton}
 		>
-			<EditCodeIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_FUNC)}/>
+			<EditCodeIcon {...style.ToggleStyle.Icon(parameterValue.mode === enums.ParameterMode.USE_FUNC)}/>
 		</IconButton>
 	)
 
 	renderToggleTV = ({param, parameterValue, parameterInfo}) => (
 		<IconButton
 			{...style.ToggleStyle.IconButton}
-			onClick={() => { this.props.setParamMode(param, ParameterMode.USE_TV); }}
+			onClick={() => { this.props.setParamMode(param, enums.ParameterMode.USE_TV); }}
 		>
-			<AddTimelineVarIcon {...style.ToggleStyle.Icon(parameterValue.mode === ParameterMode.USE_TV)}/>
+			<AddTimelineVarIcon {...style.ToggleStyle.Icon(parameterValue.mode === enums.ParameterMode.USE_TV)}/>
 		</IconButton>
 	)
 
@@ -440,16 +261,16 @@ export default class TrialFormItem extends React.Component {
 		forceCustomFloatingLabel = false,
 		onlyFunction = false,
 	}) => {
-		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
-			useTV = parameterValue.mode === ParameterMode.USE_TV,
+		let useFunc = parameterValue.mode === enums.ParameterMode.USE_FUNC,
+			useTV = parameterValue.mode === enums.ParameterMode.USE_TV,
 			customFloatingLabel = true,
 			isRequired = isParameterRequired(parameterInfo),
-			error = isRequired && isJspsychValueObjectEmpty(parameterValue);  
+			error = isRequired && utils.isJspsychValueObjectEmpty(parameterValue);  
 
 		if (useFunc) {
 			node = (
 				<CodeEditor 
-					Trigger={components.Triggers.CodeEditor}
+					Trigger={CommonComponents.Triggers.CodeEditor}
 					value={utils.toEmptyString(parameterValue.func.code)} 
 					ifEval={!!parameterValue.func.ifEval}
 					language={parameterValue.func.language}
@@ -463,7 +284,7 @@ export default class TrialFormItem extends React.Component {
 		} else if (useTV) {
 			node = (
 				<TimelineVariableSelector 
-					Trigger={components.Triggers.TimelineVariableSelector}
+					Trigger={CommonComponents.Triggers.TimelineVariableSelector}
 					title={`${parameterInfo.pretty_name}: `}
 					value={parameterValue.timelineVariable}
 					onCommit={(newTV) => {
@@ -480,7 +301,7 @@ export default class TrialFormItem extends React.Component {
 			}
 			node = (
 				<ArrayEditor
-					Trigger={({onClick}) => (components.Triggers.ArrayEditor({label: label, onClick: onClick}))}
+					Trigger={({onClick}) => (CommonComponents.Triggers.ArrayEditor({label: label, onClick: onClick}))}
 					value={val}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
@@ -501,7 +322,7 @@ export default class TrialFormItem extends React.Component {
 
 		return (customFloatingLabel || forceCustomFloatingLabel ?
 			<div className="Trial-Form-Item-Container">
-				<components.CustomFloatingLabelField
+				<CommonComponents.CustomFloatingLabelField
 					label={parameterInfo.pretty_name}
 					node={node}
 					ToggleFunc={ToggleFunc}
@@ -521,7 +342,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderTextField = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 		let args = {
 			param: param,
@@ -541,7 +362,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderNumberField = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
 			props = generateFieldProps(parameterValue, parameterInfo);
 		props.type = props.disabled ? 'text' : 'number';
@@ -565,7 +386,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderToggle = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
 			props = generateFieldProps(parameterValue, parameterInfo, false),
 			items = [
@@ -590,13 +411,13 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderFunctionEditor = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 		let args = {
 			param: param,
 			parameterInfo: parameterInfo,
 			parameterValue: parameterValue,
-			node: <components.Undefined />,
+			node: <CommonComponents.Undefined />,
 			forceCustomFloatingLabel: true,
 			autoConvertToArrayComponent: false,
 			onlyFunction: true,
@@ -606,7 +427,7 @@ export default class TrialFormItem extends React.Component {
 
 	renderKeyboardInput = (param) => {
 
-		let parameterValue = utils.deepCopy(locateNestedParameterValue(this.props.parameters, param)),
+		let parameterValue = utils.deepCopy(utils.locateNestedParameterValue(this.props.parameters, param)),
 		    parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 
 		let node = (
@@ -615,7 +436,7 @@ export default class TrialFormItem extends React.Component {
 				onCommit={(value) => { this.props.setKey(param, value); }}
 				parameterName={parameterInfo.pretty_name}
 				Trigger={({label='Key Choices', onClick}) => (
-					components.Triggers.KeyboardSelector({label: label, onClick: onClick})
+					CommonComponents.Triggers.KeyboardSelector({label: label, onClick: onClick})
 				)}
 				multiSelect={parameterInfo.array}
 			/>
@@ -634,7 +455,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderSelect = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
 			props = generateFieldProps(parameterValue, parameterInfo, false);
 		let args = {
@@ -664,7 +485,7 @@ export default class TrialFormItem extends React.Component {
 
 	renderMediaSelector = (param) => {
 
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param),
 			multiSelect = !!parameterInfo.array,
 			val = parameterValue && parameterValue.value;
@@ -691,7 +512,7 @@ export default class TrialFormItem extends React.Component {
 			parameterInfo: parameterInfo,
 			node: (
 				<MediaManager 
-					Trigger_insert={({onClick}) => (components.Triggers.MediaSelector({label: label, onClick: onClick}))}
+					Trigger_insert={({onClick}) => (CommonComponents.Triggers.MediaSelector({label: label, onClick: onClick}))}
 					parameterName={param} 
 					selected={selected}
 					mode={(!multiSelect) ? enums.MediaManagerMode.select : enums.MediaManagerMode.multiSelect}
@@ -710,7 +531,7 @@ export default class TrialFormItem extends React.Component {
 	}
 
 	renderObjectEditor = (param) => {
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param),
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param),
 			parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 		let args = {
 			param: param,
@@ -718,7 +539,7 @@ export default class TrialFormItem extends React.Component {
 			parameterValue: parameterValue,
 			node: (
 				<ObjectEditor
-					Trigger={components.Triggers.ObjectEditor}
+					Trigger={CommonComponents.Triggers.ObjectEditor}
 					value={parameterValue.value}
 					title={`${parameterInfo.pretty_name}: `}
 					keyName={param}
@@ -738,7 +559,7 @@ export default class TrialFormItem extends React.Component {
 			value: [], // must be array
 		}
 		*/
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param);
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
 		let expandToggle = (
 			<IconButton
@@ -815,8 +636,8 @@ export default class TrialFormItem extends React.Component {
 			node: expandToggle
 		}
 
-		let useFunc = parameterValue.mode === ParameterMode.USE_FUNC,
-			useTV = parameterValue.mode === ParameterMode.USE_TV;
+		let useFunc = parameterValue.mode === enums.ParameterMode.USE_FUNC,
+			useTV = parameterValue.mode === enums.ParameterMode.USE_TV;
 		return (
 			<div> 
 				{this.renderField(args)} 
@@ -827,7 +648,7 @@ export default class TrialFormItem extends React.Component {
 
 	renderItem = (param) => {
 		let parameterInfo = locateNestedParameterInfo(this.props.paramInfo, param);
-		let parameterValue = locateNestedParameterValue(this.props.parameters, param);
+		let parameterValue = utils.locateNestedParameterValue(this.props.parameters, param);
 		// current plugin is outdated
 		if (!parameterValue) {
 			return null;

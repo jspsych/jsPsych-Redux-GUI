@@ -59,5 +59,49 @@ export function injectJsPsychUniversalPluginParameters(obj={}) {
 	return Object.assign(obj, window.jsPsych.plugins.universalPluginParameters);
 }
 
+/**
+ * typeof {(object|string)} ParamPathNode
+ * @property {ParamPathNode} next
+ * @property {number} position - index
+ * @property {string} key
+*/
+export function locateNestedParameterValue(parameters, path) {
+    let parameterValue = parameters;
+    if (typeof path === 'object') {
+        // find the complex type jsPsych plugin parameter
+        parameterValue = parameterValue[path.key];
+        path = path.next;
+        while (path) {
+            let tmp = parameterValue.value[path.position];
+            parameterValue = parameterValue.value[path.position][path.key];
+            path = path.next;
+        }
+    } else {
+        parameterValue = parameterValue[path];
+    }
 
+    return parameterValue;
+}
 
+/**
+ * @function isJspsychValueObjectEmpty
+ * @param {JspsychValueObject} obj
+ * @desc Should originally be a method of the JspsychValueObject class that determines if the object is truly empty. But since
+ * AWS.DynamoDB does not store functions, this method is taken out separatly.
+ * @returns {boolean}
+*/
+export const isJspsychValueObjectEmpty = (obj) => {
+    switch (obj.mode) {
+        case enums.ParameterMode.USE_FUNC:
+            return !obj.func.code;
+        case enums.ParameterMode.USE_TV:
+            return !obj.timelineVariable;
+        case enums.ParameterMode.USE_VAL:
+        default:
+            return !obj.value;
+    }
+}
+
+export const isString = (type) => (type === enums.TimelineVariableInputType.TEXT || type === enums.TimelineVariableInputType.LONG_TEXT);
+
+export const isFunction = (type) => (type === enums.TimelineVariableInputType.FUNCTION);

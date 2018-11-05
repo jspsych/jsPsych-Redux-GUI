@@ -7,7 +7,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import TextField from 'material-ui/TextField';
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 import { Toolbar, ToolbarGroup, ToolbarSeparator } from 'material-ui/Toolbar';
 import SvgIcon from 'material-ui/SvgIcon';
 
@@ -23,13 +23,12 @@ import ObjectIcon from 'material-ui/svg-icons/editor/mode-edit';
 import FunctionIcon from 'material-ui/svg-icons/action/code';
 import MediaIcon from 'material-ui/svg-icons/image/photo-library';
 
-import { ParameterMode, TimelineVariableInputType, isString, isFunction } from '../../../reducers/Experiment/editor';
 import { renderDialogTitle } from '../../gadgets';
 import CodeEditor, { CodeLanguage } from '../../CodeEditor';
 import ArrayEditor from '../../../containers/ArrayEditor';
 import ObjectEditor from '../../../containers/ObjectEditor';
 import MediaManager from '../../../containers/MediaManager';
-import { components, style as TrialFormItemStyle } from '../TrialForm/TrialFormItem';
+import { CommonComponents, CommonComponentsStyle } from '../CommonComponents';
 
 import flow from 'lodash/flow';
 import { DropTarget, DragSource } from 'react-dnd';
@@ -162,11 +161,11 @@ const style = {
 		hoverColor: colors.secondary
 	},
 	TriggerStyle: {
-		...TrialFormItemStyle.TriggerStyle,
+		...CommonComponentsStyle.TriggerStyle,
 		fullWidth: true
 	},
 	TriggerIconStyle: {
-		...TrialFormItemStyle.TriggerIconStyle
+		...CommonComponentsStyle.TriggerIconStyle
 	},
 	ContentCellTextFieldFocus: {
 		underlineFocusStyle: {
@@ -209,19 +208,19 @@ const mySvgIcons = {
 
 const matchInputTypeIcon = (type) => {
 	switch (type) {
-		case TimelineVariableInputType.NUMBER:
+		case enums.TimelineVariableInputType.NUMBER:
 			return <NumberIcon {...style.Icon} />;
-		case TimelineVariableInputType.MEDIA:
+		case enums.TimelineVariableInputType.MEDIA:
 			return <MediaIcon {...style.Icon} />;
-		case TimelineVariableInputType.ARRAY:
+		case enums.TimelineVariableInputType.ARRAY:
 			return <ArrayIcon {...style.Icon} />;
-		case TimelineVariableInputType.OBJECT:
+		case enums.TimelineVariableInputType.OBJECT:
 			return <ObjectIcon {...style.Icon} />;
-		case TimelineVariableInputType.TEXT:
+		case enums.TimelineVariableInputType.TEXT:
 			return <StringIcon {...style.Icon} />;
-		case TimelineVariableInputType.LONG_TEXT:
+		case enums.TimelineVariableInputType.LONG_TEXT:
 			return <LongStringIcon {...style.Icon} />;
-		case TimelineVariableInputType.FUNCTION:
+		case enums.TimelineVariableInputType.FUNCTION:
 			return <FunctionIcon {...style.Icon} />;
 		default:
 			return null;
@@ -309,16 +308,16 @@ class HeaderCell extends React.Component {
 			}
 
 			if (this.state.type !== this.props.type) {
-				let isBothString = isString(this.state.type) && isString(this.props.type);
-				let isTargetFunction = isFunction(this.state.type);
+				let isBothString = utils.isString(this.state.type) && utils.isString(this.props.type);
+				let isTargetFunction = utils.isFunction(this.state.type);
 				if (isBothString || isTargetFunction) {
-					this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type, false);
+					this.props.updateenums.TimelineVariableInputType(this.state.variableName, this.state.type, false);
 					this.props.recordHistory();
 				} else {
 					this.props.notifyConfirm(
 						'Value will be cleared for type coercion. Do you want to continue?',
 						() => { 
-							this.props.updateTimelineVariableInputType(this.state.variableName, this.state.type, true); 
+							this.props.updateenums.TimelineVariableInputType(this.state.variableName, this.state.type, true); 
 							this.props.recordHistory();
 						}
 					);
@@ -336,7 +335,7 @@ class HeaderCell extends React.Component {
 	}
 
 	static defaultProps = {
-		type: TimelineVariableInputType.TEXT,
+		type: enums.TimelineVariableInputType.TEXT,
 		variableName: ""
 	}
 
@@ -411,7 +410,7 @@ class HeaderCell extends React.Component {
 		        	<Divider />
 					<List>
 						{
-							Object.values(TimelineVariableInputType).map((v, i) => (
+							Object.values(enums.TimelineVariableInputType).map((v, i) => (
 								<ListItem
 									key={`Input-Type-Choice-${v}-${i}`}
 									primaryText={v}
@@ -510,7 +509,7 @@ class ContentCell extends React.Component {
 					onClick={this.onCommit}
 				/>,
 			]
-			let isNumber = this.props.type === TimelineVariableInputType.NUMBER,
+			let isNumber = this.props.type === enums.TimelineVariableInputType.NUMBER,
 				value = isNumber ? 
 						this.props.valueObject.value : 
 						utils.toEmptyString(this.props.valueObject.value),
@@ -542,14 +541,14 @@ class ContentCell extends React.Component {
 		this.renderEditor = () => {
 			let value, label;
 			switch(this.props.type) {
-				case TimelineVariableInputType.TEXT:
-				case TimelineVariableInputType.NUMBER:
+				case enums.TimelineVariableInputType.TEXT:
+				case enums.TimelineVariableInputType.NUMBER:
 					return this.renderTextFieldDialog();
-				case TimelineVariableInputType.LONG_TEXT:
-				case TimelineVariableInputType.FUNCTION:
-					let isString = this.props.type === TimelineVariableInputType.LONG_TEXT;
-				    value = utils.toEmptyString(isString ? this.props.valueObject.value : this.props.valueObject.func.code),
-					label = isString ? `"${value}"` : (value || 'void');
+				case enums.TimelineVariableInputType.LONG_TEXT:
+				case enums.TimelineVariableInputType.FUNCTION:
+					let isValueString = utils.isString(this.props.type);
+				    value = utils.toEmptyString(isValueString ? this.props.valueObject.value : this.props.valueObject.func.code),
+					label = isValueString ? `"${value}"` : (value || 'void');
 					return (
 						<CodeEditor
 							value={value}
@@ -562,18 +561,18 @@ class ContentCell extends React.Component {
 										onClick={onClick}
 										value={value} 
 										label={label}
-										labelStyle={isString ? {} : { color: colors.functionColor, textDecoration: 'underline' }}
+										labelStyle={isValueString ? {} : { color: colors.functionColor, textDecoration: 'underline' }}
 									/>
 								)
 							}
-							language={isString ? CodeLanguage.html[0] : CodeLanguage.javascript[0]}
-							onlyString={isString}
-							onlyFunction={!isString}
-							evalAsFunction={!isString}
+							language={isValueString ? CodeLanguage.html[0] : CodeLanguage.javascript[0]}
+							onlyString={isValueString}
+							onlyFunction={!isValueString}
+							evalAsFunction={!isValueString}
 							tooltip="Edit value"
 						/>
 					)
-				case TimelineVariableInputType.ARRAY:
+				case enums.TimelineVariableInputType.ARRAY:
 					// must be array
 					value = this.props.valueObject.value;
 					let len = value.length;
@@ -597,7 +596,7 @@ class ContentCell extends React.Component {
 							}
 						/>
 					);
-				case TimelineVariableInputType.OBJECT:
+				case enums.TimelineVariableInputType.OBJECT:
 					value = this.props.valueObject.value;
 					label = "[Data Object]";
 					return (
@@ -618,7 +617,7 @@ class ContentCell extends React.Component {
 							}
 						/>
 					);
-				case TimelineVariableInputType.MEDIA:
+				case enums.TimelineVariableInputType.MEDIA:
 					value = this.props.valueObject.value;
 					if (value.length > 0) {
 						label = value[0].replace('<path>', '').replace('</path>', '');
@@ -653,7 +652,7 @@ class ContentCell extends React.Component {
 	static defaultProps = {
 		// JspsychValueObject
 		valueObject: {},
-		// input type, TimelineVariableInputType ENUM 
+		// input type, enums.TimelineVariableInputType ENUM 
 		type: '',
 		// column name
 		columnName: '',
@@ -1154,7 +1153,7 @@ export default class TimelineVariableTable extends React.Component {
 	render() {
 		return (
 		  <div className="Trial-Form-Item-Container">
-		  	<components.CustomFloatingLabelField
+		  	<CommonComponents.CustomFloatingLabelField
 		  		label="Timeline Variables"
 		  		node={
 		  			<TimelineVariableTableOpener
