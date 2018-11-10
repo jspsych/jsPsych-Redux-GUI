@@ -8,19 +8,18 @@ import Paper from 'material-ui/Paper';
 import { List, ListItem } from 'material-ui/List';
 
 import AddTimelineVarIcon from 'material-ui/svg-icons/action/swap-horiz';
-// import DialogIcon from 'material-ui/svg-icons/action/shopping-basket';
 import CheckNoIcon from 'material-ui/svg-icons/toggle/check-box-outline-blank';
 import CheckYesIcon from 'material-ui/svg-icons/toggle/check-box';
 
-import GeneralTheme from '../../theme.js';
+import { DialogTitle } from '../../gadgets';
 
 const colors = {
-	...GeneralTheme.colors,
-	checkColor: GeneralTheme.colors.primary,
+	...theme.colors,
+	checkColor: theme.colors.primary,
 }
 
 const style = {
-	TriggerIcon: GeneralTheme.Icon,
+	TriggerIcon: theme.Icon,
 	Window: {
 		contentStyle: {
 			minHeight: 500
@@ -57,9 +56,8 @@ const style = {
 	}
 }
 
-import { renderDialogTitle } from '../../gadgets';
 
-export default class TimelineVariableSelector extends React.Component {
+class TimelineVariableSelector extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -112,18 +110,20 @@ export default class TimelineVariableSelector extends React.Component {
 		)
 
 		return (
-			<div>
+			<React.Fragment>
 				<this.props.Trigger onClick={this.handleOpen}/>
 				<Dialog
 					open={this.state.open}
 					modal={true}
 					title={
-						renderDialogTitle(
-							<Subheader style={{fontSize: 20, maxHeight: 48}}>
-								{this.props.title}
-							</Subheader>, 
-							this.handleClose, 
-							null)
+						<DialogTitle 
+							node={
+								<Subheader style={{fontSize: 20, maxHeight: 48}}>
+									{this.props.title}
+								</Subheader>
+							}
+							closeCallback={this.handleClose}
+						/>
 					}
 					actions={[]}
 					{...style.Window}
@@ -137,16 +137,9 @@ export default class TimelineVariableSelector extends React.Component {
 						}
 					</Paper>
 				</Dialog>
-			</div>
+			</React.Fragment>
 		)
 	}
 }
 
-// <div style={{display: 'flex'}}>
-// 								<div style={{paddingTop: 4, paddingRight: 10}}>
-// 									<DialogIcon color={titleIconColor}/>
-// 								</div>
-// 								<div style={{fontSize: 20,}}>
-// 			      					{this.props.title}
-// 			      				</div>
-// 		      				</div>
+export default TimelineVariableSelector;
