@@ -18,6 +18,7 @@ import TimelineVariableSelector from '../../../../containers/TimelineNodeEditor/
 import ObjectEditor from '../../../../containers/ObjectEditor';
 import ArrayEditor from '../../../../containers/ArrayEditor';
 import TrialFormItemContainer from '../../../../containers/TimelineNodeEditor/TrialForm/TrialFormItemContainer';
+import { EditorTextField } from '../../../gadgets';
 import { CommonComponents } from '../../CommonComponents';
 import { PathNode, locateNestedParameterInfo, isParameterRequired } from './utils.js';
 
@@ -303,12 +304,13 @@ export default class TrialFormItem extends React.Component {
             parameterValue: parameterValue,
             parameterInfo: parameterInfo,
             node: (
-                <TextField
-                  id={"text-field-"+param}
-                  min={-1}
-                  fullWidth={true}
-                  onChange={(e, v) => { this.props.setText(param, v); }}
-                  {...generateFieldProps(parameterValue, parameterInfo)}
+                <EditorTextField
+                    onCommit = {(v) => { this.props.setText(param, v); }}
+                    id={"text-field-"+param}
+                    min={-1}
+                    fullWidth={true}
+                    onChange={(e, v) => { this.props.setText(param, v); }}
+                    {...generateFieldProps(parameterValue, parameterInfo)}
                 />
             )
         }
@@ -325,11 +327,11 @@ export default class TrialFormItem extends React.Component {
             parameterValue: parameterValue,
             parameterInfo: parameterInfo,
             node: (
-                <TextField
+                <EditorTextField
                   type="number"
                   id={"number-field-"+param}
                   fullWidth={true}
-                  onChange={(e, v) => {
+                  onCommit={(v) => {
                         this.props.setNumber(param, v, EnumPluginType.FLOAT===this.props.paramInfo.type);
                     }}
                   {...props}

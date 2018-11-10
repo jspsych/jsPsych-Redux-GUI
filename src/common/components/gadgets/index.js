@@ -7,6 +7,7 @@ Repeatedly used components
 import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
+import TextField from 'material-ui/TextField';
 import Close from 'material-ui/svg-icons/navigation/close';
 import {
 	grey50 as dialogTitleColor,
@@ -95,3 +96,54 @@ export const Text = ({text, style={}, ...props}) => (
 	 {text}
 	</div>
 )
+
+export class EditorTextField extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			value: this.props.value
+		};
+
+		this.onChange = (e, v) => {
+			this.setState({
+				value: v
+			});
+		};
+
+		this.onCommit = () => {
+			this.props.onCommit(this.state.value);
+		};
+	}
+
+	static defaultProps = {
+		value: "",
+		onCommit: v => {},
+		styles: {}
+	};
+
+	static getDerivedStateFromProps(nextProps, prevState) {
+		return {
+			...nextProps
+		};
+	}
+
+	render() {
+		const { value } = this.state;
+		const { onCommit, value : propValue, ...textFieldProps } = this.props;
+
+		return (
+			<TextField
+				{...textFieldProps}
+				value={value}
+				onChange={this.onChange}
+				onBlur={this.onCommit}
+				onKeyPress={e => {
+					if (e.which === 13) {
+						document.activeElement.blur();
+					}
+				}}
+				id={`textfield-${utils.getUUID()}`}
+			/>
+		);
+	}
+}

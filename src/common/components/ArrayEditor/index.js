@@ -194,6 +194,7 @@ export default class ArrayEditor extends React.Component {
 		}
 
 		this.unzip = (value) => {
+			if (!Array.isArray(value)) value = [];
 			this.setState({
 				arrayItems: value || [],
 			})

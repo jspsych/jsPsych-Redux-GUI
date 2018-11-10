@@ -22,7 +22,7 @@ import MediaManager from '../../containers/MediaManager';
 import CloudDeploymentManager from '../../containers/Appbar/CloudDeploymentManager';
 import DIYDeploymentManager from '../../containers/Appbar/DIYDeploymentManager';
 
-import { DialogTitle } from '../gadgets';
+import { DialogTitle, EditorTextField } from '../gadgets';
 
 import AppbarTheme from './theme.js';
 
@@ -96,51 +96,6 @@ const Actions = {
   saveAs: "SAVEAS"
 }
 
-class ExperimentNameField extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      experimentName: utils.toEmptyString(this.props.experimentName)
-    }
-
-    this.onChange = (e, v) => {
-      this.setState({
-        experimentName: v
-      })
-    }
-
-    this.onCommit = () => {
-      this.props.commit(this.state.experimentName.trim());
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    return {
-      ...nextProps
-    }
-  }
-
-
-  render() {
-    let { experimentName } = this.state;
-
-    return (
-      <TextField
-        {...style.NameField}
-        id="Experiment-Name-Textfield"
-        value={experimentName}
-        errorText={(/\S/.test(experimentName)) ? '' : "Experiment name can't be empty."}
-        onChange={this.onChange}
-        onBlur={this.onCommit}
-        onKeyPress={(e) => {
-          if (e.which === 13) {
-            document.activeElement.blur();
-          } 
-        }}
-      />
-    )
-  }
-}
 
 export default class Appbar extends React.Component {
   constructor(props) {
@@ -231,9 +186,11 @@ export default class Appbar extends React.Component {
     );
 
     const Experiment_Title = (
-      <ExperimentNameField
-        experimentName={this.props.experimentName}
-        commit={this.props.changeExperimentName}
+      <EditorTextField
+        value={this.props.experimentName}
+        onCommit={this.props.changeExperimentName}
+        {...style.NameField}
+        errorText={(/\S/.test(this.props.experimentName)) ? '' : "Experiment name can't be empty."}
       />
     );
 
