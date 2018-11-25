@@ -7,6 +7,8 @@ import rootReducer from '../common/reducers';
 import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import { listAllProjects, createProjectFor } from '../common/backend/deploy/pavlovia.test.js';
+
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('load', () => {
@@ -30,3 +32,16 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('container')
 );
+
+
+// listAllProjects().then(d => {
+//     let data = new TextDecoder("utf-8").decode(d);
+//     console.log(JSON.parse(data))
+//     // console.log(data)
+// })
+
+createProjectFor().then(d => {
+    let data = new TextDecoder("utf-8").decode(d);
+    // console.log(JSON.parse(data))
+    console.log(data)
+})
