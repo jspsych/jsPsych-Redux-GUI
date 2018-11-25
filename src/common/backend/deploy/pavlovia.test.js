@@ -20,7 +20,7 @@ export const listAllProjects = ({hostname=base_test_url, accessToken=test_access
             res.on('data', (d) => {
                 resolve(d);
             });
-            console.log(res.headers)
+            console.log(res.headers['x-total-pages'])
         })
 
         req.on('error', (e) => {

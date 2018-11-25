@@ -8,6 +8,7 @@ import App from '../common/containers/AppContainer';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { listAllProjects, createProjectFor } from '../common/backend/deploy/pavlovia.test.js';
+import PavloviaConnector from '../common/backend/deploy/pavlovia.js';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -40,8 +41,17 @@ ReactDOM.render(
 //     // console.log(data)
 // })
 
-createProjectFor().then(d => {
-    let data = new TextDecoder("utf-8").decode(d);
-    // console.log(JSON.parse(data))
-    console.log(data)
-})
+// createProjectFor().then(d => {
+//     let data = new TextDecoder("utf-8").decode(d);
+//     // console.log(JSON.parse(data))
+//     console.log(data)
+// })
+
+// PavloviaConnector.deploy({
+//   project_id: 2403,
+//   access_token: 'wmJNxtQaGzHC4CSip4RV',
+//   content_map: {
+//     "foo/bar": 'update',
+//     'foo/bar.txt': 'new'
+//   }
+// }).then(f => console.log(f));
