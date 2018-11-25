@@ -4,7 +4,7 @@ import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunc
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
 import { createTrial } from '../../reducers/Experiment/organizer';
 import { isTimeline } from '../../reducers/Experiment/utils';
-
+import PavloviaConnector from './pavlovia.js';
 
 /****************** Save to OSF ******************/
 const SaveData_OSF_API = "https://0xkjisg8e8.execute-api.us-east-2.amazonaws.com/DataStorage/jsPsychMiddleman/";
@@ -508,6 +508,67 @@ export function cloudDeploy({
   }
 
   return Promise.all([uploadCode(), uploadAsset(), uploadLib()]);
+}
+
+export function pavloviaDeploy({state, progressHook, media}) {
+  let experimentState = utils.deepCopy(state.experimentState),
+      diyDeployInfo = experimentState.diyDeployInfo,
+      saveAfter = diyDeployInfo.saveAfter,
+      mode = diyDeployInfo.mode;
+
+  /* ************ Step 0: Inject save data trial ************ */
+  let saveTrial = generateDataSaverBlock({code: generateCodeToCallFunctionToSaveDataToServer(mode)});
+  experimentState[saveTrial.id] = saveTrial;
+  experimentState.mainTimeline.splice(saveAfter+1, 0, saveTrial.id);
+  /* ************ Step 0: Inject save data trial ************ */
+
+  const content_map = {};
+
+  /* ************ Step 1 ************ */
+  // Extract deploy information
+  let deployInfo = extractDeployInfomation({experimentState, media});
+
+  /* ************ Step 2 ************ */
+  let filePaths = Object.keys(deployInfo.media);
+  // initialize progress
+  progressHook(filePaths.map((d) => (0)), deployInfo.downloadSize);
+
+  /* ************ Step 2 && 3 ************ */
+  // generate error log
+  if (deployInfo.errorLog !== '') {
+    content_map["jspsych_error_log.txt"] = deployInfo.errorLog;
+  }
+
+  // generate index.html, append it in zip file
+  content_map["html/index.html"] = generatePage({
+    deployInfo: deployInfo,
+    isDiyDeployment: true,
+    diyDeployMode: mode
+  });
+
+  const __Decoder = new TextDecoder("utf-8");
+  const decode = (d) => __Decoder.decode(d);
+
+  // download media
+  return myaws.S3.getFiles(filePaths, (key, data) => {
+    content_map[`html/assets/${deployInfo.media[key]}`] = decode(data);
+  }, (loaded) => {
+    progressHook(loaded, deployInfo.downloadSize);
+  }).then(() => {
+    // download jspysch library
+    myaws.S3.getJsPsychLib((key, data) => {
+      content_map[`html/jsPsych/${key}`] = decode(data);
+    }).then(() => {
+      return PavloviaConnector.deploy({
+        project_id: 2403,
+        access_token: 'wmJNxtQaGzHC4CSip4RV',
+        content_map
+      }).then(f => console.log(f));
+    }); 
+  }).finally(() => {
+    // clear progress
+    progressHook(null, null, true);
+  })
 }
 
 function extractDeployInfomation({experimentState, media}) {
