@@ -2,8 +2,8 @@ import { connect } from 'react-redux';
 import * as experimentActions from '../../../actions/experimentSettingActions';
 import DIYDeploymentManager from '../../../components/Appbar/DIYDeploymentManager';
 
-import { diyDeploy as $diyDeploy } from '../../../backend/deploy';
-// import { pavloviaDeploy as $diyDeploy } from '../../../backend/deploy';
+// import { diyDeploy as $diyDeploy } from '../../../backend/deploy';
+import { pavloviaDeploy as $diyDeploy } from '../../../backend/deploy';
 
 const diyDeploy = ({dispatch, progressHook, ...diyDeployInfo}) => {
 	return dispatch((dispatch, getState) => {

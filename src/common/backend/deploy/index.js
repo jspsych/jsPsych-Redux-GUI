@@ -1,5 +1,10 @@
-var JSZip = require('jszip');
-var FileSaver = require('filesaver.js-npm');
+const JSZip = require('jszip');
+const FileSaver = require('filesaver.js-npm');
+const toBase64 = require('arraybuffer-base64');
+const ab2str = require('arraybuffer-to-string');
+const mime = require('mime-types')
+const path = require('path')
+
 import { initState as jsPsychInitState, jsPsych_Display_Element, StringifiedFunction } from '../../reducers/Experiment/jsPsychInit';
 import { createComplexDataObject, ParameterMode, JspsychValueObject, GuiIgonoredInfoEnum } from '../../reducers/Experiment/editor';
 import { createTrial } from '../../reducers/Experiment/organizer';
@@ -546,22 +551,26 @@ export function pavloviaDeploy({state, progressHook, media}) {
     diyDeployMode: mode
   });
 
-  const __Decoder = new TextDecoder("utf-8");
-  const decode = (d) => __Decoder.decode(d);
-  const toBase64 = function (u8) {
-    return btoa(String.fromCharCode.apply(null, u8));
+  const decode = (filepath, content) => {
+    const ct = mime.contentType(path.extname(filepath));
+    let charset;
+    if (!ct) {
+      charset = 'utf8';
+    } else {
+      charset = mime.charset(ct) || 'base64';
+    }
+    return charset === 'base64' ? toBase64(content) : ab2str(content, charset);
   }
-  
+
   // download media
   return myaws.S3.getFiles(filePaths, (key, data) => {
-    content_map[`html/assets/${deployInfo.media[key]}`] = toBase64(data);
-    // content_map[`html/assets/${deployInfo.media[key]}`] = btoa(unescape(encodeURIComponent(decode(data))));
+    content_map[`html/assets/${deployInfo.media[key]}`] = decode(key, data);
   }, (loaded) => {
     progressHook(loaded, deployInfo.downloadSize);
   }).then(() => {
     // download jspysch library
     myaws.S3.getJsPsychLib((key, data) => {
-      content_map[`html/jsPsych/${key}`] = decode(data);
+      content_map[`html/jsPsych/${key}`] =  decode(key, data);
     }).then(() => {
       return PavloviaConnector.deploy({
         project_id: 2403,
