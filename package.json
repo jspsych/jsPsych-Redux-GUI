@@ -20,7 +20,7 @@
     "express": "^4.16.2",
     "jest": "^22.4.2",
     "json-loader": "^0.5.4",
-    "react-scripts": "^1.1.4",
+    "react-scripts": "^2.1.1",
     "style-loader": "^0.18.2",
     "webpack": "^3.10.0",
     "webpack-bundle-analyzer": "^2.9.2",

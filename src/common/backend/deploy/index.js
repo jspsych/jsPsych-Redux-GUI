@@ -548,10 +548,14 @@ export function pavloviaDeploy({state, progressHook, media}) {
 
   const __Decoder = new TextDecoder("utf-8");
   const decode = (d) => __Decoder.decode(d);
-
+  const toBase64 = function (u8) {
+    return btoa(String.fromCharCode.apply(null, u8));
+  }
+  
   // download media
   return myaws.S3.getFiles(filePaths, (key, data) => {
-    content_map[`html/assets/${deployInfo.media[key]}`] = decode(data);
+    content_map[`html/assets/${deployInfo.media[key]}`] = toBase64(data);
+    // content_map[`html/assets/${deployInfo.media[key]}`] = btoa(unescape(encodeURIComponent(decode(data))));
   }, (loaded) => {
     progressHook(loaded, deployInfo.downloadSize);
   }).then(() => {

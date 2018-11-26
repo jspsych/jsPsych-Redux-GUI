@@ -47,6 +47,14 @@ const open_post_request = ({options, body}) => {
 const __Decoder = new TextDecoder("utf-8");
 const decode = (d) => __Decoder.decode(d);
 
+function isBase64(str) {
+    try {
+        return btoa(atob(str)) == str;
+    } catch (err) {
+        return false;
+    }
+}
+
 export default class PavloviaConnector {
     // returns gitlab api response
     // user_id is data.id
@@ -107,6 +115,7 @@ export default class PavloviaConnector {
                 action,
                 file_path,
                 content: content_map[file_path],
+                encoding: isBase64(content_map[file_path]) ? 'base64' : 'text'
             });
         }
 
