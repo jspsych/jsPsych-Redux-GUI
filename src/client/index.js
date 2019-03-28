@@ -4,8 +4,9 @@ import { Provider } from 'react-redux';
 import { createStore , applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from '../common/reducers';
-import App from '../common/containers/AppContainer';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+// import App from '../common/containers/AppContainer';
+import App from '../common/components/App.jsx';
+
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -24,9 +25,7 @@ window.addEventListener('beforeunload', (e) => {
 
 ReactDOM.render(
   <Provider store={store}>
-	<MuiThemeProvider>
-  		<App />
-  	</MuiThemeProvider>
+  	<App />
   </Provider>,
   document.getElementById('container')
 );

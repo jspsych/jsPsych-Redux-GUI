@@ -1,176 +1,94 @@
 import React from 'react';
-import Subheader from 'material-ui/Subheader';
-import IconButton from 'material-ui/IconButton';
-import Divider from 'material-ui/Divider';
-import { List } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
-import { SpeedDial, BubbleList, BubbleListItem } from 'react-speed-dial';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import NewTimelineIcon from 'material-ui/svg-icons/av/playlist-add';
-import NewTrialIcon from 'material-ui/svg-icons/action/note-add';
-import Delete from 'material-ui/svg-icons/action/delete';
-import Duplicate from 'material-ui/svg-icons/content/content-copy';
+import { capitalize } from '@material-ui/core/utils/helpers';
 
-import CloseDrawerHandle from 'material-ui/svg-icons/navigation/chevron-left';
-import OpenDrawer from 'material-ui/svg-icons/navigation/chevron-right';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 
-import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
-import GeneralTheme from '../theme.js';
-
-export const TREE_MENU_INDENT = 20;
-
-export const WIDTH = 285;
-
-const colors = GeneralTheme.colors;
-
-const duration = 400;
-
-const style = {
-	TimelineNodeOrganizer: (open) => (utils.prefixer({
-		width: (open) ? `${WIDTH}px` : "0px",
-		flexBasis: 'auto',
-		flexShrink: 0,
-		'WebkitTransition': `all ${duration}ms ease`,
-		'MozTransition': `all ${duration}ms ease`,
-		transition: `all ${duration}ms ease`,
-		height: '100%',
-		display: 'flex',
-		overflow: 'hidden',
-		flexDirection: 'row',
-		backgroundColor: colors.background
-	})),
-	TimelineNodeOrganizerContainer: utils.prefixer({
-		height: '100%',
-		width: '100%',
-		position: 'relative',
-		flexGrow: '1',
-	}),
-	TimelineNodeOrganizerContent: utils.prefixer({
-		height: '100%',
-		width: '100%',
-		display: 'flex',
-		flexDirection: 'column-reverse'
-	}),
-	TimelineNodeSheet: utils.prefixer({
-		overflow: 'auto',
-		flexGrow: 1,
-		maxWidth: '100%',
-		paddingLeft: '0px',
-		width: '100%',
-		position: 'relative'
-	}),
-	SpeedDial: {
-		FloatingActionButton: {
-			backgroundColor: colors.primary,
-		},
-		AvatarStyle: {
-			backgroundColor: colors.primaryDeep
-		}
-	},
-}
-
+const styles = theme => ({
+  timelineNodeOrganizer: {
+    width: '300px',
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderRight: 'solid 1.2px rgba(0, 0, 0, 0.12)'
+  },
+  speedDial: {
+    position: 'absolute',
+    top: '31px',
+    left: '30px',
+    zIndex: 1200,
+  },
+  speedDialButton: {
+    backgroundColor: '#009688',
+    width: '40px',
+    height: '40px',
+    '&:hover': {
+      backgroundColor: '#009688',
+    },
+    '&:focus': {
+      backgroundColor: '#009688',
+    }
+  }
+})
 
 class TimelineNodeOrganizer extends React.Component {
-	constructor(props) {
-		super(props);
+    state = {
+      open: false,
+    };
 
-		this.state = {
-			isSpeedDialOpen: false
-		}
+    handleClick = () => {
+      this.setState(state => ({
+        open: !state.open,
+      }));
+    };
 
-		this.handleToogleSpeedDialOpen = () => {
-			this.setState({
-				isSpeedDialOpen: !this.state.isSpeedDialOpen,
-			});
-		}
+    handleOpen = () => {
+      this.setState({
+        open: true,
+      });
+    };
 
-		this.handleChangeSpeedDial = ({ isOpen }) => {
-			this.setState({
-				isSpeedDialOpen: isOpen,
-			});
-		}
-	}
+    handleClose = () => {
+      this.setState({
+        open: false,
+      });
+    };
 
-	render() {
-		return (
-		<div className="TimelineNode-Organizer" style={style.TimelineNodeOrganizer(this.props.open)}>
-				<div className="TimelineNode-Organizer-Container" style={style.TimelineNodeOrganizerContainer}>
-					{(this.props.open) ?
-					<div className="TimelineNode-Organizer-Content" style={style.TimelineNodeOrganizerContent}>
-					<div className="TimelineNode-Sheet" style={style.TimelineNodeSheet}>
-						<SortableTreeMenu
-							openTimelineEditorCallback={this.props.openTimelineEditorCallback}
-							closeTimelineEditorCallback={this.props.closeTimelineEditorCallback}
-						/>
-					</div>
-					<SpeedDial
-						  isOpen={this.state.isSpeedDialOpen} 
-						  onChange={this.handleChangeSpeedDial}
-						  hasBackdrop={false}
-						  style={{
-						  	zIndex: 15,
-						  	position: 'absolute',
-						  }}
-						  floatingActionButtonProps={{
-						  	...style.SpeedDial.FloatingActionButton
-						  }}
-					    >
-						   <BubbleList>
-							     <BubbleListItem
-							        primaryText="New Timeline"
-							        rightAvatar={
-							        	<Avatar
-								          icon={<NewTimelineIcon />}
-								          {...style.SpeedDial.AvatarStyle}
-								          size={30}
-								        />
-							        }
-							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.insertTimeline(); }}
-							      />
-							      <BubbleListItem
-							        primaryText="New Trial"
-							        rightAvatar={
-							        	<Avatar
-								          icon={<NewTrialIcon />}
-								          {...style.SpeedDial.AvatarStyle}
-								          size={30}
-								        />
-							        }
-							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.insertTrial(); }}
-							      />
-							      <BubbleListItem
-							        primaryText="Delete"
-							        rightAvatar={
-							        	<Avatar
-								          icon={<Delete />}
-								          {...style.SpeedDial.AvatarStyle}
-								          size={30}
-								        />
-							        }
-							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.deleteSelected(); }}
-							      />
-							      <BubbleListItem
-							        primaryText="Duplicate"
-							        rightAvatar={
-							        	<Avatar
-								          icon={<Duplicate />}
-								          {...style.SpeedDial.AvatarStyle}
-								          size={30}
-								        />
-							        }
-							        onClick={() => { this.handleToogleSpeedDialOpen(); this.props.duplicateNode(); }}
-							      />
-						      </BubbleList>
-					</SpeedDial>
-				</div>: null}
-			</div>
-  		</div>
-  			)
-	}
+    render() {
+      const { classes } = this.props;
+      const { open } = this.state;
+
+      const speedDialClassName = classNames(
+        classes.speedDial,
+      );
+
+      return (
+        <div className={classes.timelineNodeOrganizer}>
+          <SpeedDial
+            classes={{
+              fab: classes.speedDialButton
+            }}
+            ariaLabel="SpeedDial example"
+            className={speedDialClassName}
+            icon={<SpeedDialIcon />}
+            onClick={this.handleClick}
+            onClose={this.handleClose}
+            open={open}
+          >
+            
+          </SpeedDial>
+        </div>
+      )
+
+    }
 }
 
+TimelineNodeOrganizer.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
-export default TimelineNodeOrganizer;
+export default withStyles(styles)(TimelineNodeOrganizer);

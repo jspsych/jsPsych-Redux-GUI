@@ -1,7 +1,13 @@
 /**
  *@file This file describes the reducers for initial and launch settings for jsPsych
 */
-import { CodeLanguage } from '../../components/CodeEditor';
+// import { CodeLanguage } from '../../components/CodeEditor';
+
+const CodeLanguage = {
+  // text: [null, 'Plain Text'],
+  javascript: ['javascript', 'Javascript'],
+  html: ['htmlmixed', 'HTML/Plain Text']
+}
 
 /**
  * @typeof {Object} StringifiedFunction
