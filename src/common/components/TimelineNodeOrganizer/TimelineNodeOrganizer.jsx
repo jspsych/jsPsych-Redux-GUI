@@ -1,86 +1,100 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 
-import { capitalize } from '@material-ui/core/utils/helpers';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
-import SpeedDial from '@material-ui/lab/SpeedDial';
-import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import TrialIcon from '@material-ui/icons/DescriptionOutlined';
+import TimelineIcon from '@material-ui/icons/FolderOutlined';
 
+import SortableTreeMenu from '../../containers/TimelineNodeOrganizer/SortableTreeMenu';
 
 const styles = theme => ({
   timelineNodeOrganizer: {
-    width: '300px',
+    width: '25%',
     height: '100%',
     backgroundColor: '#ffffff',
     borderRight: 'solid 1.2px rgba(0, 0, 0, 0.12)'
   },
-  speedDial: {
-    position: 'absolute',
-    top: '31px',
+  fab: {
+    position: 'relative',
+    top: '-20px',
     left: '30px',
     zIndex: 1200,
-  },
-  speedDialButton: {
     backgroundColor: '#009688',
-    width: '40px',
-    height: '40px',
-    '&:hover': {
-      backgroundColor: '#009688',
-    },
-    '&:focus': {
-      backgroundColor: '#009688',
-    }
-  }
+    width: '36px',
+    height: '36px',
+    color: '#ffffff'
+  },
+  treeMenu: {
+    width: '100%',
+  },
 })
+
 
 class TimelineNodeOrganizer extends React.Component {
     state = {
-      open: false,
+      anchorEl: null,
     };
 
-    handleClick = () => {
-      this.setState(state => ({
-        open: !state.open,
-      }));
-    };
-
-    handleOpen = () => {
-      this.setState({
-        open: true,
-      });
+    handleClick = event => {
+      this.setState({ anchorEl: event.currentTarget });
     };
 
     handleClose = () => {
-      this.setState({
-        open: false,
-      });
+      this.setState({ anchorEl: null });
     };
 
-    render() {
-      const { classes } = this.props;
-      const { open } = this.state;
+    menuCloseWrapper = (f) => () => {
+      f();
+      this.handleClose()
+    }
 
-      const speedDialClassName = classNames(
-        classes.speedDial,
-      );
+    render() {
+      const { 
+        classes, 
+        theme,
+      } = this.props;
+      const { anchorEl } = this.state;
 
       return (
         <div className={classes.timelineNodeOrganizer}>
-          <SpeedDial
-            classes={{
-              fab: classes.speedDialButton
-            }}
-            ariaLabel="SpeedDial example"
-            className={speedDialClassName}
-            icon={<SpeedDialIcon />}
+          <Fab 
+            aria-label="Add" 
+            className={classes.fab}
+            aria-owns={anchorEl ? 'add-node-menu' : undefined}
             onClick={this.handleClick}
-            onClose={this.handleClose}
-            open={open}
           >
-            
-          </SpeedDial>
+            <AddIcon />
+          </Fab>
+          <Menu
+            id="add-node-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={this.handleClose}
+          >
+            <MenuItem key="placeholder" style={{display: "none"}} />
+            <MenuItem onClick={this.menuCloseWrapper(this.props.insertTrial)}>
+              <ListItemIcon>
+                <TrialIcon />
+              </ListItemIcon>
+              <ListItemText inset primary="Trial" />
+            </MenuItem>
+            <MenuItem onClick={this.menuCloseWrapper(this.props.insertTimeline)}>
+              <ListItemIcon>
+                <TimelineIcon />
+              </ListItemIcon>
+              <ListItemText inset primary="Timeline" />
+            </MenuItem>
+          </Menu>
+
+          <SortableTreeMenu />
         </div>
       )
 
@@ -91,4 +105,4 @@ TimelineNodeOrganizer.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(TimelineNodeOrganizer);
+export default withStyles(styles)(withTheme()(TimelineNodeOrganizer));

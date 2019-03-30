@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import withRoot from './withRoot';
 import { connect } from 'react-redux';
 
-import TimelineNodeOrganizer from './TimelineNodeOrganizer/TimelineNodeOrganizer.jsx';
+import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import PreviewWindow from './PreviewWindow/PreviewWindow.jsx';
 
 const styles = theme => ({
