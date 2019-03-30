@@ -58,9 +58,7 @@ const mapStateToProps = (state, ownProps) => {
 
     let node = experimentState[ownProps.id];
     let isTimelineNode = isTimeline(node);
-    if (isTimelineNode) {
-        console.log(node)
-    }
+
     return {
         isSelected: ownProps.id === experimentState.previewId,
         isEnabled: node.enabled,

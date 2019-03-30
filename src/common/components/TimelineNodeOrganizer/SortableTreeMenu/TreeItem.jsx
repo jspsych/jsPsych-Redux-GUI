@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { withTheme } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -22,6 +22,14 @@ import flow from 'lodash/flow';
 
 import { moveToAction, moveIntoAction } from '../../../actions/organizerActions';
 import TreeItemContainer from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TreeItemContainer';
+
+const styles = theme => ({
+    selectedListItemText: {
+        fontWeight: 600,
+    },
+    listItemText: {
+    },
+});
 
 const INDENT = 32;
 
@@ -140,6 +148,7 @@ class TreeItem extends React.Component {
             connectDragSource,
             isOverCurrent,
 
+            classes,
             theme,
 
             depth,
@@ -167,6 +176,7 @@ class TreeItem extends React.Component {
                         button 
                         selected={isSelected}
                         className={treeNodeDnD.ITEM_TYPE}
+                        onClick={this.props.onClick}
                         ref={id}
                         style={{
                           paddingLeft: theme.spacing.unit * 4 * depth,
@@ -175,7 +185,13 @@ class TreeItem extends React.Component {
                       <ListItemIcon>
                         { connectDragSource(<div>{ itemIcon }</div>) }
                       </ListItemIcon>
-                      <ListItemText inset primary={name} />
+                      <ListItemText 
+                        inset 
+                        primary={name} 
+                        classes={{
+                            primary: isSelected ? classes.selectedListItemText : classes.listItemText
+                        }}
+                      />
                       <ListItemSecondaryAction>
                         {
                             isTimeline &&
@@ -242,7 +258,7 @@ export default flow(
         treeNodeDnD.itemTarget,
         treeNodeDnD.targetCollector)
     )(
-    withTheme()(TreeItem)
+    withStyles(styles)(withTheme()(TreeItem))
     );
 
 
