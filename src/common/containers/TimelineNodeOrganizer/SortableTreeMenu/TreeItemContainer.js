@@ -9,7 +9,7 @@ const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
         let previewId = experimentState.previewId;
         if (previewId === null || previewId !== ownProps.id) {
             dispatch(organizerActions.onPreviewAction(ownProps.id));
-            ownProps.openTimelineEditorCallback();
+            // ownProps.openTimelineEditorCallback();
             if (setKeyboardFocusId) setKeyboardFocusId(ownProps.id);
         } else {
             dispatch(organizerActions.onPreviewAction(null));
@@ -43,9 +43,8 @@ const duplicateTimeline = (dispatch, ownProps) => {
     dispatch(organizerActions.duplicateTimelineAction(ownProps.id));
 }
 
-export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
+const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
     e.preventDefault();
-
     if (getKeyboardFocusId() === ownProps.id &&
          e.which >= 37 && 
          e.which <= 40) {
@@ -53,12 +52,34 @@ export const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
     }
 }
 
+
+// from trial container
+const deleteTrial = (dispatch, ownProps) => {
+    dispatch(organizerActions.deleteTrialAction(ownProps.id));
+}
+
+const duplicateTrial = (dispatch, ownProps) => {
+    dispatch(organizerActions.duplicateTrialAction(ownProps.id));
+}
+
+const insertTimelineAfterTrial = (dispatch, ownProps) => {
+    dispatch(organizerActions.insertNodeAfterTrialAction(ownProps.id, true));
+}
+
+const insertTrialAfterTrial = (dispatch, ownProps) => {
+    dispatch(organizerActions.insertNodeAfterTrialAction(ownProps.id, false));
+}
+
 const mapStateToProps = (state, ownProps) => {
     let experimentState = state.experimentState;
 
     let node = experimentState[ownProps.id];
     let isTimelineNode = isTimeline(node);
-
+    let lastItem = !isTimelineNode ? null : (
+       (node.childrenById.length > 0) ? 
+       node.childrenById[node.childrenById.length-1] : 
+       null 
+    );
     return {
         isSelected: ownProps.id === experimentState.previewId,
         isEnabled: node.enabled,
@@ -67,6 +88,7 @@ const mapStateToProps = (state, ownProps) => {
         childrenById: isTimelineNode ? node.childrenById : [],
         parent: node.parent,
         isTimeline: isTimelineNode,
+        lastItem,
     }
 };
 
@@ -81,6 +103,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     deleteTimeline: () => { deleteTimeline(dispatch, ownProps)},
     duplicateTimeline: () => { duplicateTimeline(dispatch, ownProps) },
     listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
+    deleteTrial: () => { deleteTrial(dispatch, ownProps)},
+    duplicateTrial: () => { duplicateTrial(dispatch, ownProps) },
+    insertTimelineAfterTrial: () => { insertTimelineAfterTrial(dispatch, ownProps)},
+    insertTrialAfterTrial: () => { insertTrialAfterTrial(dispatch, ownProps)},
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimelineItem);

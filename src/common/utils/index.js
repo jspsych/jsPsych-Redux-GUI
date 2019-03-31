@@ -6,7 +6,7 @@ import short_uuid from 'short-uuid';
 
 // import * as notifications from '../containers/Notifications/NotificationsContainer.js';
 // import * as loginWindows from '../containers/Authentications/AuthenticationsContainer.js';
-// import * as commonFlows from '../containers/commonFlows.js';
+import * as commonFlows from '../containers/commonFlows.js';
 
 if (!Array.prototype.move) {
   Array.prototype.move = function(from,to){
@@ -28,6 +28,7 @@ export const prefixer = (style={}, multiple=false) => {
 
 // Backend flows or related
 // export { notifications, loginWindows, commonFlows };
+export { commonFlows };
 
 // React-DnD
 export const withDnDContext = DragDropContext(HTML5Backend);

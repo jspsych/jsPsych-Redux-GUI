@@ -135,10 +135,9 @@ class TreeItem extends React.Component {
         this.setState({ anchorEl: null });
     };
 
-    componentDidMount() {
-        if (getKeyboardFocusId() === this.props.id) {
-            this.refs[this.props.id].applyFocusState('keyboard-focused');
-        }
+    closeMenuWrapper = (f) => () => {
+        f();
+        this.handleCloseMenu();
     }
 
     render() {
@@ -170,14 +169,33 @@ class TreeItem extends React.Component {
         const collapseIcon = !collapsed ? <ExpandMore /> : <ExpandLess />
         const menuOpened = Boolean(anchorEl);
 
+        const deleteNode = this.closeMenuWrapper(
+            isTimeline ? 
+            this.props.deleteTimeline : 
+            this.props.deleteTrial
+        );
+        const duplicateNode = this.closeMenuWrapper(
+            isTimeline ? 
+            this.props.duplicateTimeline : 
+            this.props.duplicateTrial
+        );
+        const insertTimeline = isTimeline ? this.props.insertTimeline : this.props.insertTimelineAfterTrial;
+        const insertTrial = isTimeline ? this.props.insertTrial : this.props.insertTrialAfterTrial;
+
         return connectDragPreview(connectDropTarget(
                 <div>
                     <ListItem 
                         button 
                         selected={isSelected}
                         className={treeNodeDnD.ITEM_TYPE}
-                        onClick={this.props.onClick}
-                        ref={id}
+                        onClick={(e) => {
+                            if (e.nativeEvent.which === 1) {
+                                this.props.onClick(setKeyboardFocusId);
+                            }
+                        }}
+                        onKeyDown={(e) => {
+                            this.props.listenKey(e, getKeyboardFocusId);
+                        }}
                         style={{
                           paddingLeft: theme.spacing.unit * 4 * depth,
                         }}
@@ -196,6 +214,7 @@ class TreeItem extends React.Component {
                         {
                             isTimeline &&
                             <IconButton 
+                                disabled={!childrenById.length}
                                 aria-label="Expand Tree"
                                 onClick={this.props.toggleCollapsed}
                             >
@@ -217,10 +236,10 @@ class TreeItem extends React.Component {
                           onClose={this.handleCloseMenu}
                         >
                             <MenuItem key="placeholder" style={{display: "none"}} />
-                            <MenuItem>
+                            <MenuItem onClick={duplicateNode}>
                               Duplicate
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem onClick={deleteNode}>
                               Delete
                             </MenuItem>
                         </Menu>
