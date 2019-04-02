@@ -7,7 +7,7 @@ const listenKey = (e, dispatch, ownProps) => {
     e.preventDefault();
     if (e.which >= 37 && 
          e.which <= 40) {
-        dispatch(organizerActions.moveByKeyboardAction(null, e.which));
+        dispatch(organizerActions.moveByKeyboardAction(e.which));
     }
 }
 

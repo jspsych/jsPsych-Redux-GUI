@@ -44,10 +44,9 @@ export function moveIntoAction(id) {
 	};
 }
 
-export function moveByKeyboardAction(id, key) {
+export function moveByKeyboardAction(key) {
 	return {
 		type: actionTypes.MOVE_BY_KEYBOARD,
-		id: id,
 		key: key,
 	};
 }
