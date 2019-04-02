@@ -20,7 +20,10 @@ const styles = theme => ({
     width: '25%',
     height: '100%',
     backgroundColor: '#ffffff',
-    borderRight: 'solid 1.2px rgba(0, 0, 0, 0.12)'
+    borderRight: 'solid 1.2px rgba(0, 0, 0, 0.12)',
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'column',
   },
   fab: {
     position: 'relative',
@@ -31,9 +34,6 @@ const styles = theme => ({
     width: '36px',
     height: '36px',
     color: '#ffffff'
-  },
-  treeMenu: {
-    width: '100%',
   },
 })
 
@@ -94,7 +94,7 @@ class TimelineNodeOrganizer extends React.Component {
             </MenuItem>
           </Menu>
 
-          <SortableTreeMenu />
+          <SortableTreeMenu key="sortable-tree" />
         </div>
       )
 

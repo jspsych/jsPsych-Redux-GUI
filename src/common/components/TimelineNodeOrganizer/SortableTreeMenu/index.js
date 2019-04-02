@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -8,22 +9,51 @@ import List from '@material-ui/core/List';
 import TreeItem from '../../../containers/TimelineNodeOrganizer/SortableTreeMenu/TreeItemContainer';
 
 const styles = theme => ({
-  treeMenu: {
+  treeMenuContainer: {
     width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    alignItems: 'center',
+  },
+  treeMenu: {
+    width: '95%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    overflowY: 'auto',
+  },
+  treeTitle: {
+    marginLeft: '7px',
+  },
+  focusWorkAround: {
+    opacity: 0, 
+    border: 0, 
+    height: 0,
+    display: 'block',
+    width: 0,
+    margin: 0,
+    padding: 0,
   },
 })
 
 class SortableTreeMenu extends React.Component {
 	handleNavigation = (e) => {
+        event.preventDefault();
         this.props.listenKey(e);
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", this.handleNavigation);
+        this.organizer.addEventListener("keydown", this.handleNavigation);
+    }
+
+    componentDidUpdate() {
+        ReactDOM.findDOMNode(this.focusWorkAround).focus();
     }
 
     componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleNavigation);
+        this.organizer.removeEventListener("keydown", this.handleNavigation);
     }
 
 	render() {
@@ -34,12 +64,24 @@ class SortableTreeMenu extends React.Component {
 		// const { openTimelineEditorCallback, closeTimelineEditorCallback } = this.props;
 
 		return (
-			<div className="Tree-Menu">
+			<div 
+                className={classes.treeMenuContainer}
+                ref={elm => this.organizer = elm}
+                onClick={() => ReactDOM.findDOMNode(this.focusWorkAround).focus()}
+            >
 				<List
-		            component="nav"
-		            subheader={<ListSubheader component="div">Study Steps</ListSubheader>}
+		            component="div"
+		            subheader={
+                        <ListSubheader 
+                            component="div"
+                            className={classes.treeTitle}
+                        >
+                            Study Steps
+                        </ListSubheader>
+                    }
 		            className={classes.treeMenu}
-		        >
+                    key="tree-menu"
+		        > 
 		        	{
 		        		children &&
 		        		children.map((id, idx) => (
@@ -51,6 +93,11 @@ class SortableTreeMenu extends React.Component {
 		        		))
 		        	}
 		        </List>
+                {/*focus workaround*/}
+                <input
+                    className={classes.focusWorkAround}  
+                    ref={elm => this.focusWorkAround = elm}
+                />
 			</div>
 		)
 	}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,7 +14,7 @@ import Collapse from '@material-ui/core/Collapse';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import TrialIcon from '@material-ui/icons/DescriptionOutlined';
+import TrialIcon from '@material-ui/icons/code';
 import TimelineIcon from '@material-ui/icons/FolderOutlined';
 
 import { DropTarget, DragSource } from 'react-dnd';
@@ -33,7 +33,17 @@ const styles = theme => ({
         '&:focus': {
             backgroundColor: 'red'
         }
-    }
+    },
+    treeItemIconContainer: {
+        width: '24px',
+        height: '24px',
+        margin: 0,
+        padding: 0,
+        marginLeft: '6px',
+    },
+    collapsedPart: {
+        paddingLeft: INDENT,
+    },
 });
 
 const INDENT = 32;
@@ -63,7 +73,7 @@ const treeNodeDnD = {
 
         hover(props, monitor, component) {
             const {id: draggedId } = monitor.getItem()
-            const {id: overId, lastItem } = props
+            const {id: overId, lastItem } = props;
 
             // leave
             // if parent dragged into its children (will check more in redux)
@@ -77,8 +87,7 @@ const treeNodeDnD = {
             let offset = monitor.getDifferenceFromInitialOffset();
             if (draggedId === overId) {
                 if (offset.x >= INDENT && draggedId) {
-                    let action = moveIntoAction(draggedId);
-                    props.dispatch(action);
+                    props.dispatch(moveIntoAction(draggedId));
                 }
                 return;
             }
@@ -87,7 +96,6 @@ const treeNodeDnD = {
             if (offset.x < 0 && !isLast) {
                 return;
             }
-
             // replace
             props.dispatch(moveToAction(draggedId, overId, isLast));
         }
@@ -117,7 +125,6 @@ class TreeItem extends React.Component {
         collapsed: false,
         childrenById: [],
         id: '',
-        depth: 0,
     };
 
     state = {
@@ -145,9 +152,7 @@ class TreeItem extends React.Component {
             isOverCurrent,
 
             classes,
-            theme,
 
-            depth,
             id,
 
             isTimeline,
@@ -190,14 +195,15 @@ class TreeItem extends React.Component {
                                 this.props.onClick();
                             }
                         }}
-                        style={{
-                          paddingLeft: theme.spacing.unit * 4 * depth,
-                        }}
-                        
                     >
-                      <ListItemIcon>
-                        { connectDragSource(<div>{ itemIcon }</div>) }
-                      </ListItemIcon>
+                      { 
+                        connectDragSource(
+                            <div className={classes.treeItemIconContainer}>
+                                <ListItemIcon>
+                                    { itemIcon }
+                                </ListItemIcon>
+                            </div>
+                      )}
                       <ListItemText 
                         inset 
                         primary={name}
@@ -242,13 +248,17 @@ class TreeItem extends React.Component {
                     </ListItem>
                     {
                         isTimeline &&
-                        <Collapse in={!collapsed} timeout="auto" unmountOnExit>
+                        <Collapse 
+                            in={!collapsed} 
+                            timeout="auto" 
+                            unmountOnExit
+                            className={classes.collapsedPart}
+                        >
                             <List component="div" disablePadding>
                                 {
                                     childrenById &&
                                     childrenById.map((id, idx) => (
                                         <TreeItemContainer
-                                            depth={depth + 1}
                                             id={id}
                                             key={`tree-menu-key-${id}`}
                                         />
@@ -272,7 +282,7 @@ export default flow(
         treeNodeDnD.itemTarget,
         treeNodeDnD.targetCollector)
     )(
-    withStyles(styles)(withTheme()(TreeItem))
+    withStyles(styles)(TreeItem)
     );
 
 

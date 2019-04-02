@@ -25,6 +25,7 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     flexGrow: 1,
+    height: '100%',
   },
   appbarIcon: {
     color: 'white'
