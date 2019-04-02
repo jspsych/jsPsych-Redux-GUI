@@ -28,7 +28,7 @@
     "webpack-preset": "^0.2.0"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
+    "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
     "@material-ui/lab": "^3.0.0-alpha.30",
     "aws-amplify": "^0.4.1",

@@ -29,6 +29,11 @@ const styles = theme => ({
     },
     listItemText: {
     },
+    focusVisible: {
+        '&:focus': {
+            backgroundColor: 'red'
+        }
+    }
 });
 
 const INDENT = 32;
@@ -101,14 +106,6 @@ const treeNodeDnD = {
         }),
     })
 }
-
-var keyboardFocusId = null;
-
-const setKeyboardFocusId = (id) => {
-    keyboardFocusId = id;
-}
-
-const getKeyboardFocusId = () => keyboardFocusId;
 
 class TreeItem extends React.Component {
     static defaultProps = {
@@ -185,27 +182,25 @@ class TreeItem extends React.Component {
         return connectDragPreview(connectDropTarget(
                 <div>
                     <ListItem 
-                        button 
+                        button
                         selected={isSelected}
                         className={treeNodeDnD.ITEM_TYPE}
                         onClick={(e) => {
                             if (e.nativeEvent.which === 1) {
-                                this.props.onClick(setKeyboardFocusId);
+                                this.props.onClick();
                             }
-                        }}
-                        onKeyDown={(e) => {
-                            this.props.listenKey(e, getKeyboardFocusId);
                         }}
                         style={{
                           paddingLeft: theme.spacing.unit * 4 * depth,
                         }}
+                        
                     >
                       <ListItemIcon>
                         { connectDragSource(<div>{ itemIcon }</div>) }
                       </ListItemIcon>
                       <ListItemText 
                         inset 
-                        primary={name} 
+                        primary={name}
                         classes={{
                             primary: isSelected ? classes.selectedListItemText : classes.listItemText
                         }}

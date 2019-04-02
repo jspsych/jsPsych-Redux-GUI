@@ -14,6 +14,18 @@ const styles = theme => ({
 })
 
 class SortableTreeMenu extends React.Component {
+	handleNavigation = (e) => {
+        this.props.listenKey(e);
+    }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleNavigation);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleNavigation);
+    }
+
 	render() {
 		const { 
 			classes,

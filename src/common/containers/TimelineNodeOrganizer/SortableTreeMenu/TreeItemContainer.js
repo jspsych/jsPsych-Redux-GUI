@@ -3,18 +3,16 @@ import * as organizerActions from '../../../actions/organizerActions';
 import TimelineItem from '../../../components/TimelineNodeOrganizer/SortableTreeMenu/TreeItem.jsx';
 import { isTimeline } from '../../../reducers/Experiment/utils';
 
-const onPreview = (dispatch, ownProps, setKeyboardFocusId) => {
+const onPreview = (dispatch, ownProps) => {
     dispatch((dispatch, getState) => {
         let experimentState = getState().experimentState;
         let previewId = experimentState.previewId;
         if (previewId === null || previewId !== ownProps.id) {
             dispatch(organizerActions.onPreviewAction(ownProps.id));
             // ownProps.openTimelineEditorCallback();
-            if (setKeyboardFocusId) setKeyboardFocusId(ownProps.id);
         } else {
             dispatch(organizerActions.onPreviewAction(null));
             // ownProps.closeTimelineEditorCallback();
-            if (setKeyboardFocusId) setKeyboardFocusId(null);
         }
     })
 }
@@ -42,16 +40,6 @@ const deleteTimeline = (dispatch, ownProps) => {
 const duplicateTimeline = (dispatch, ownProps) => {
     dispatch(organizerActions.duplicateTimelineAction(ownProps.id));
 }
-
-const listenKey = (e, getKeyboardFocusId, dispatch, ownProps) => {
-    e.preventDefault();
-    if (getKeyboardFocusId() === ownProps.id &&
-         e.which >= 37 && 
-         e.which <= 40) {
-        dispatch(organizerActions.moveByKeyboardAction(ownProps.id, e.which));
-    }
-}
-
 
 // from trial container
 const deleteTrial = (dispatch, ownProps) => {
@@ -95,14 +83,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch,
-    onClick: (setKeyboardFocusId) => { onPreview(dispatch, ownProps, setKeyboardFocusId) },
+    onClick: () => { onPreview(dispatch, ownProps) },
     onToggle: () => { onToggle(dispatch, ownProps) },
     toggleCollapsed: () => { toggleCollapsed(dispatch, ownProps) },
     insertTimeline: () => { insertTimeline(dispatch, ownProps)},
     insertTrial: () => { insertTrial(dispatch, ownProps)},
     deleteTimeline: () => { deleteTimeline(dispatch, ownProps)},
     duplicateTimeline: () => { duplicateTimeline(dispatch, ownProps) },
-    listenKey: (e, getKeyboardFocusId) => { listenKey(e, getKeyboardFocusId, dispatch, ownProps) },
     deleteTrial: () => { deleteTrial(dispatch, ownProps)},
     duplicateTrial: () => { duplicateTrial(dispatch, ownProps) },
     insertTimelineAfterTrial: () => { insertTimelineAfterTrial(dispatch, ownProps)},

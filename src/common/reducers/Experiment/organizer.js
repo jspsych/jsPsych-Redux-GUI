@@ -571,14 +571,15 @@ export function moveInto(state, action) {
  * @description Move the node by keyboard input (arrows)
  * @param {object} state - The Experiment State Object 
  * @param {Object} action - Describes the action user invokes
- * @param {string} action.id - The id of the node to be moved
  * @param {number} action.key - Event key
  * @returns {Object} Returns a completely new Experiment State object
 */
 export function moveByKeyboard(state, action) {
-	const { id, key } = action;
-
+	const { key } = action;
+	let id = state.previewId;
 	let current = state[id];
+	if (!current) return state;
+	
 	let parent = current.parent;
 	if (parent === null) {
 		parent = state.mainTimeline;
