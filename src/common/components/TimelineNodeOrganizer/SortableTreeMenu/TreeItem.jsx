@@ -149,7 +149,7 @@ class TreeItem extends React.Component {
             connectDropTarget,
             connectDragPreview,
             connectDragSource,
-            isOverCurrent,
+            isDragging,
 
             classes,
 
@@ -184,7 +184,7 @@ class TreeItem extends React.Component {
         const insertTimeline = isTimeline ? this.props.insertTimeline : this.props.insertTimelineAfterTrial;
         const insertTrial = isTimeline ? this.props.insertTrial : this.props.insertTrialAfterTrial;
 
-        return connectDragPreview(connectDropTarget(
+        return connectDropTarget(
                 <div>
                     <ListItem 
                         button
@@ -206,7 +206,13 @@ class TreeItem extends React.Component {
                       )}
                       <ListItemText 
                         inset 
-                        primary={name}
+                        primary={
+                            connectDragPreview(
+                                <div>
+                                    {name}
+                                </div>
+                            )
+                        }
                         classes={{
                             primary: isSelected ? classes.selectedListItemText : classes.listItemText
                         }}
@@ -268,7 +274,7 @@ class TreeItem extends React.Component {
                         </Collapse>
                     }
                 </div>
-        ))
+        )
     }
 }
 
