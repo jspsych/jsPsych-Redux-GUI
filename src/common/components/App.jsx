@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 
 import TimelineNodeOrganizer from '../containers/TimelineNodeOrganizer';
 import PreviewWindow from './PreviewWindow/PreviewWindow.jsx';
+import PluginMenu from './PluginMenu';
 
 const styles = theme => ({
   root: {
@@ -60,7 +61,8 @@ class App extends React.Component {
             </Toolbar>
         </AppBar>
         <div className={classes.builderBody}>
-          <TimelineNodeOrganizer />
+          { /* <TimelineNodeOrganizer /> */}
+          <PluginMenu />
           <PreviewWindow />
         </div>
       </div>
