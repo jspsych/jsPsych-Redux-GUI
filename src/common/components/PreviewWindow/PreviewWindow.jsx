@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     previewWindowContainer: {
-        width: '100%',
+        width: '80%',
         height: '100%',
         display: 'flex',
         justifyContent: 'center',

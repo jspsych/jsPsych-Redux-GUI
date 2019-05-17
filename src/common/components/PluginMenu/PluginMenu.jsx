@@ -18,10 +18,10 @@ const PluginList = Object.keys(jsPsych.plugins || {}).filter((t) => (t !== 'para
 
 const styles = theme => ({
   pluginMenu: {
-    width: '25%',
+    width: '30%',
     height: '100%',
     backgroundColor: '#ffffff',
-    boxShadow: '0 0 0 1.2px rgba(0, 0, 0, 0.12)',
+    boxShadow: '0 0 0 1.5px #CECECE',
     display: 'flex',
     flexGrow: 1,
     flexDirection: 'column',
