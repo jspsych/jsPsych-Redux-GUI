@@ -6,8 +6,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import IconButton from '@material-ui/core/IconButton';
@@ -47,8 +47,10 @@ const styles = theme => ({
     padding: 0,
   },
   pluginList: {
-    overflowY: 'auto',
     width: '100%'
+  },
+  pluginListContainer: {
+    overflowY: 'auto',
   },
   searchFieldRoot: {
     display: 'flex',
@@ -139,7 +141,28 @@ class PluginMenu extends React.Component {
         keyword,
       } = this.state;
 
-      let filteredList = PluginList.filter(txt => isPrefixEitherWay(keyword, txt));
+      let keywordTrimed = keyword.trim();
+
+      let filteredList = [];
+      let showFiltered = keywordTrimed.length > 0;
+      if (showFiltered) {
+        filteredList = PluginList.filter(txt => isPrefixEitherWay(keywordTrimed, txt));
+      }
+
+      // placeholder, name: freq
+      // {"html-button-response": 1, "html-keyboard-response": 1}
+      let usedInThisExperimentMap = {};
+      let usedInThisExperimentList = Object.keys(usedInThisExperimentMap);
+
+      let allPluginList = [];
+      if (!showFiltered) {
+        for (let p of PluginList) {
+          if (!usedInThisExperimentMap[p]) {
+            allPluginList.push(p);
+          }
+        }
+      }
+
 
       return (
         <div className={classes.pluginMenu}>
@@ -165,20 +188,70 @@ class PluginMenu extends React.Component {
           </div>
         </div>
         <Divider className={classes.divider}/>
-         <List component="nav" className={classes.pluginList}>
-          {
-            filteredList.map((val, i) => {
-                return (
-                    <PluginItem 
-                        value={val} 
-                        key={`plugin-item-${i}`}
-                        isLast={i >= PluginList.length - 1}
-                        classes={classes}
-                    />
-                )
-            })
+        <div className={classes.pluginListContainer}>
+          {showFiltered &&
+            <List 
+              component="nav" 
+              className={classes.pluginList}
+              subheader={<ListSubheader disableSticky>Search Results</ListSubheader>}
+            >
+              {
+                filteredList.map((val, i) => {
+                    return (
+                        <PluginItem 
+                            value={val} 
+                            key={`used-plugin-item-${i}`}
+                            isLast={i >= PluginList.length - 1}
+                            classes={classes}
+                        />
+                    )
+                })
+              }
+            </List>
           }
-        </List>
+          {!showFiltered && usedInThisExperimentList.length > 0 &&
+            <List 
+              component="nav" 
+              className={classes.pluginList}
+              subheader={<ListSubheader disableSticky>Most Frequently Used</ListSubheader>}
+            >
+              {
+                usedInThisExperimentList.map((val, i) => {
+                    return (
+                        <PluginItem 
+                            value={val} 
+                            key={`used-plugin-item-${i}`}
+                            isLast={i >= PluginList.length - 1}
+                            classes={classes}
+                        />
+                    )
+                })
+              }
+            </List>
+          }
+          {!showFiltered && usedInThisExperimentList.length > 0 && 
+            <Divider className={classes.divider}/>}
+          {!showFiltered && allPluginList.length > 0 &&
+            <List 
+              component="nav" 
+              className={classes.pluginList}
+              subheader={<ListSubheader disableSticky>All Trial Types</ListSubheader>}
+            >
+              {
+                allPluginList.map((val, i) => {
+                    return (
+                        <PluginItem 
+                            value={val} 
+                            key={`all-plugin-item-${i}`}
+                            isLast={i >= PluginList.length - 1}
+                            classes={classes}
+                        />
+                    )
+                })
+              }
+            </List>
+          }
+        </div>
         </div>
       )
 
