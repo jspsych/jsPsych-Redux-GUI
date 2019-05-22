@@ -73,7 +73,12 @@ const styles = theme => ({
     '&:after': {
       borderBottomColor: "#388e3c",
     },
+    '&:hover:not($searchFieldUnderlineDisabled):not($searchFieldFocused):not($searchFieldUnderlineError):before': {
+      borderBottomColor: "#014D40",
+    }
   },
+  searchFieldUnderlineDisabled: {},
+  searchFieldUnderlineError: {}
 })
 
 
@@ -201,6 +206,8 @@ class PluginMenu extends React.Component {
                 classes={{
                   focused: classes.searchFieldFocused,
                   underline: classes.searchFieldUnderline,
+                  disabled: classes.searchFieldUnderlineDisabled,
+                  error: classes.searchFieldUnderlineError,
                 }}
                 id="input-with-icon-textfield"
                 fullWidth

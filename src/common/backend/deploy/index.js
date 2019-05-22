@@ -358,7 +358,7 @@ export const generatePluginPreviewCode = pluginInfoObj => {
     ],
   };
 
-  return 'jsPsych.init(' + stringify(codeObj) + ');';
+  return 'try{jsPsych.init(' + stringify(codeObj) + ');}catch(e){console.log(e);}';
 }
 
 

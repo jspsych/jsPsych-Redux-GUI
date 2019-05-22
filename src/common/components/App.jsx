@@ -37,14 +37,30 @@ const styles = theme => ({
   appbar: {
     backgroundColor: '#004D40',
   },
-  appTitleTextStyle: {
+  experimentTitleTextStyle: {
     fontSize: '20px',
     fontWeight: 500,
     color: '#ffffff',
   },
-  appTitleTextFocusedStyle: {
+  experimentTitleTextFocusedStyle: {
     color: '#ffffff',
   },
+  experimentTitleOutlinedRoot: {
+    '& $experimentTitleNotchedOutline': {
+      borderColor: '#ffffff',
+    },
+    '&:hover:not($experimentTitleCssDisabled):not($experimentTitleCssFocused):not($experimentTitleCssError) $experimentTitleNotchedOutline': {
+      borderColor: '#ffffff',
+    },
+    '&$experimentTitleCssFocused $experimentTitleNotchedOutline': {
+        borderColor: '#2196F3',
+        borderWidth: '1.5px',
+    },
+  },
+  experimentTitleCssDisabled: {},
+  experimentTitleCssError: {},
+  experimentTitleNotchedOutline: {},
+  experimentTitleCssFocused: {},
   toolbar: {
     paddingBottom: '20px',
   }
@@ -90,7 +106,7 @@ class App extends React.Component {
               <IconButton disabled disableRipple aria-label="Menu">
                 <MenuIcon className={classes.appbarIcon} />
               </IconButton>
-              {/* <Typography classes={{root: classes.appTitle}}>
+              {/* <Typography classes={{root: classes.experimentTitle}}>
                 Flanker Test
               </Typography> */}
               <EditableField 
@@ -99,8 +115,13 @@ class App extends React.Component {
                 onChange={this.changeName}
                 fullWidth={false}
                 classes={{
-                  textStyle: classes.appTitleTextStyle,
-                  textFocusedStyle: classes.appTitleTextFocusedStyle,
+                  textStyle: classes.experimentTitleTextStyle,
+                  textFocusedStyle: classes.experimentTitleTextFocusedStyle,
+                  notchedOutline: classes.experimentTitleNotchedOutline,
+                  outlinedRoot: classes.experimentTitleOutlinedRoot,
+                  cssFocused: classes.experimentTitleCssFocused,
+                  cssError: classes.experimentTitleCssError,
+                  cssDisabled: classes.experimentTitleCssDisabled,
                 }}
               /> 
             </Toolbar>

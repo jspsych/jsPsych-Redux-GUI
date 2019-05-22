@@ -21,6 +21,23 @@ const styles = theme => ({
     root: {
         // width: '100%',
     },
+    outlinedRoot: {
+        '& $notchedOutline': {
+            top: '4px',
+            bottom: '8px',
+        },
+        '&:hover:not($cssDisabled):not($cssFocused):not($cssError) $notchedOutline': {
+            borderColor: '#388e3c',
+        },
+        '&$cssFocused $notchedOutline': {
+            borderColor: '#388e3c',
+        },
+    },
+    textFocusedStyle: {},
+    notchedOutline: {},
+    cssFocused: {},
+    cssDisabled: {},
+    cssError: {},
 });
 
 
@@ -96,8 +113,12 @@ class EditableField extends React.Component {
         };
       } else {
         InputProps.classes = {
-            root: classes.textRoot,
+            root: classes.outlinedRoot,
             input: classes.textFocusedStyle,
+            notchedOutline: classes.notchedOutline,
+            focused: classes.cssFocused,
+            disabled: classes.cssDisabled,
+            error: classes.cssError,
         };
       }
 
