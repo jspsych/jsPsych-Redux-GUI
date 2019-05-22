@@ -15,6 +15,8 @@ import PreviewWindow from './PreviewWindow/PreviewWindow.jsx';
 import PluginMenu from './PluginMenu';
 import TimelineNodeEditor from './TimelineNodeEditor';
 
+import EditableField from './Gadgets/EditableField.jsx';
+
 const styles = theme => ({
   root: {
     width: '100%',
@@ -35,9 +37,12 @@ const styles = theme => ({
   appbar: {
     backgroundColor: '#004D40',
   },
-  appTitle: {
+  appTitleTextStyle: {
     fontSize: '20px',
     fontWeight: 500,
+    color: '#ffffff',
+  },
+  appTitleTextFocusedStyle: {
     color: '#ffffff',
   },
   toolbar: {
@@ -51,6 +56,7 @@ const SHOW_PLUGIN_MENU = 2;
 class App extends React.Component {
   state = {
     leftDrawer: SHOW_PLUGIN_MENU,
+    experimentName: 'Flanker Test',
   };
 
   changeLeftDrawerTo = (showWhich) => {
@@ -67,6 +73,12 @@ class App extends React.Component {
     this.changeLeftDrawerTo(SHOW_PLUGIN_MENU);
   };
 
+  changeName = (n) => {
+      this.setState({
+        experimentName: n,
+      });
+    }
+
   render() {
     const { classes } = this.props;
     const { leftDrawer } = this.state;
@@ -78,9 +90,19 @@ class App extends React.Component {
               <IconButton disabled disableRipple aria-label="Menu">
                 <MenuIcon className={classes.appbarIcon} />
               </IconButton>
-              <Typography color="inherit" className={classes.appTitle}>
+              {/* <Typography classes={{root: classes.appTitle}}>
                 Flanker Test
-              </Typography>
+              </Typography> */}
+              <EditableField 
+                id="experiment-title-field"
+                value={this.state.experimentName}
+                onChange={this.changeName}
+                fullWidth={false}
+                classes={{
+                  textStyle: classes.appTitleTextStyle,
+                  textFocusedStyle: classes.appTitleTextFocusedStyle,
+                }}
+              /> 
             </Toolbar>
         </AppBar>
         <div className={classes.builderBody}>

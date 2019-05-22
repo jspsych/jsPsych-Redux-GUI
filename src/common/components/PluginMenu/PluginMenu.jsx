@@ -209,6 +209,7 @@ class PluginMenu extends React.Component {
                     <SearchIcon />
                   </InputAdornment>
                 }
+                value={keyword}
                 onChange={this.handleKeywordChange}
             />
           </div>

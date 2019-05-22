@@ -16,6 +16,7 @@ import TrialIcon from '@material-ui/icons/code';
 import TimelineIcon from '@material-ui/icons/FolderOutlined';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
+import EditableField from '../Gadgets/EditableField.jsx';
 
 const styles = theme => ({
   editorContainer: {
@@ -55,7 +56,6 @@ const styles = theme => ({
   },
   titleText: {
     width: "80%",
-    fontSize: 20
   },
   iconContainer: {
     display: 'flex',
@@ -76,6 +76,7 @@ const TabContainer = ({ children, dir }) => {
 class TimelineNodeEditor extends React.Component {
     state = {
       value: 0,
+      trialName: 'Trial Name',
     };
 
     handleChange = (event, value) => {
@@ -85,6 +86,12 @@ class TimelineNodeEditor extends React.Component {
     handleChangeIndex = index => {
       this.setState({ value: index });
     };
+
+    changeName = (n) => {
+      this.setState({
+        trialName: n,
+      });
+    }
 
     render() {
       const { 
@@ -107,9 +114,14 @@ class TimelineNodeEditor extends React.Component {
               <div className={classes.iconContainer}>
                 <TrialIcon />
               </div>
-              <span className={classes.titleText}>
-                Trial Name
-              </span>
+              <EditableField 
+                id="trial-name-field" 
+                value={this.state.trialName}
+                onChange={this.changeName}
+                classes={{
+                  root: classes.titleText,
+                }}
+              />
             </div>
             <div className={classes.iconContainer}>
               <MoreVertIcon />
@@ -151,7 +163,9 @@ class TimelineNodeEditor extends React.Component {
             index={this.state.value}
             onChangeIndex={this.handleChangeIndex}
           >
-            <TabContainer dir={theme.direction}>Item One</TabContainer>
+            <TabContainer dir={theme.direction}>
+              <EditableField id="test1" value="Ediable Field"/>
+            </TabContainer>
             <TabContainer dir={theme.direction}>Item Two</TabContainer>
             <TabContainer dir={theme.direction}>Item Three</TabContainer>
           </SwipeableViews>
