@@ -18,9 +18,12 @@ import ImageIcon from '@material-ui/icons/ImageOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
+import { generatePluginPreviewCode } from '../../backend/deploy/index.js';
+import { load as loadPreviewCode } from '../PreviewWindow/PreviewWindow.jsx';
+
+
 const jsPsych = window.jsPsych;
 const PluginList = Object.keys(jsPsych.plugins || {}).filter((t) => (t !== 'parameterType' && t !== 'universalPluginParameters'));
-
 
 const styles = theme => ({
   pluginMenu: {
@@ -38,7 +41,7 @@ const styles = theme => ({
   },
   searchFieldBackIcon: {
     padding: 10,
-    paddingLeft: 0,
+    marginLeft: -10,
     marginRight: 15,
   },
   pluginItemWrapper: {
@@ -78,22 +81,38 @@ const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const toNormalName = str => str.split("-").map(capitalize).join(" ");
 
-const PluginItem = props => {
-    const { value, isLast, classes } = props;
+class PluginItem extends React.Component {
+  state = {
+    previewCode: '',
+  };
 
-    let displayed = toNormalName(value);
+  handleOnMouseEnter = () => {
+    loadPreviewCode(this.state.previewCode);
+  }
+
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      previewCode: generatePluginPreviewCode(jsPsych.plugins[nextProps.pluginName].info),
+    };
+  }
+
+  render() {
+    const { pluginName, isLast, classes } = this.props;
+
+    let displayedPluginName = pluginName; // toNormalName(pluginName);
 
     return (
         <div className={classes.pluginItemWrapper}>
             <ListItem 
                 button 
                 alignItems="flex-start"
+                onMouseEnter={this.handleOnMouseEnter}
             >
                 <ListItemIcon>
                   <ImageIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={displayed}
+                  primary={displayedPluginName}
                   secondary={
                     <React.Fragment>
                       {" Some descriptions of this plugin..."}
@@ -103,7 +122,8 @@ const PluginItem = props => {
             </ListItem>
             {!isLast && <Divider variant="inset" className={classes.divider}/>}
         </div>
-    )
+    );
+  }
 }
 
 const isPrefix = (keyword, str) => {
@@ -163,11 +183,17 @@ class PluginMenu extends React.Component {
         }
       }
 
+      let showUsedInThisExperimentList = !showFiltered && 
+        usedInThisExperimentList.length > 0;
 
       return (
         <div className={classes.pluginMenu}>
         <div className={classes.searchFieldRoot}>
-          <IconButton className={classes.searchFieldBackIcon} aria-label="Back">
+          <IconButton 
+            className={classes.searchFieldBackIcon} 
+            aria-label="Back"
+            onClick={this.props.changeLeftDrawerToOrganizer}
+          >
             <ArrowBackIcon />
           </IconButton>
           <div className={classes.searchFieldContainer}>
@@ -199,7 +225,7 @@ class PluginMenu extends React.Component {
                 filteredList.map((val, i) => {
                     return (
                         <PluginItem 
-                            value={val} 
+                            pluginName={val} 
                             key={`used-plugin-item-${i}`}
                             isLast={i >= PluginList.length - 1}
                             classes={classes}
@@ -209,7 +235,7 @@ class PluginMenu extends React.Component {
               }
             </List>
           }
-          {!showFiltered && usedInThisExperimentList.length > 0 &&
+          {showUsedInThisExperimentList &&
             <List 
               component="nav" 
               className={classes.pluginList}
@@ -219,7 +245,7 @@ class PluginMenu extends React.Component {
                 usedInThisExperimentList.map((val, i) => {
                     return (
                         <PluginItem 
-                            value={val} 
+                            pluginName={val} 
                             key={`used-plugin-item-${i}`}
                             isLast={i >= PluginList.length - 1}
                             classes={classes}
@@ -229,7 +255,7 @@ class PluginMenu extends React.Component {
               }
             </List>
           }
-          {!showFiltered && usedInThisExperimentList.length > 0 && 
+          {showUsedInThisExperimentList && 
             <Divider className={classes.divider}/>}
           {!showFiltered && allPluginList.length > 0 &&
             <List 
@@ -241,7 +267,7 @@ class PluginMenu extends React.Component {
                 allPluginList.map((val, i) => {
                     return (
                         <PluginItem 
-                            value={val} 
+                            pluginName={val} 
                             key={`all-plugin-item-${i}`}
                             isLast={i >= PluginList.length - 1}
                             classes={classes}

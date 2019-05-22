@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import { jsPsych_Display_Element } from '../../reducers/Experiment/jsPsychInit';
+import { Welcome } from '../../backend/deploy';
 
 const styles = theme => ({
     previewWindowContainer: {
@@ -19,13 +21,53 @@ const styles = theme => ({
     },
 })
 
+const runtime_script_ele_id = 'Runtime-Script-Tag';
+
+export const load = (code) => {
+  let ele = document.getElementById(runtime_script_ele_id);
+  if (ele) {
+    ele.remove();
+  }
+  let script = document.createElement('script');
+  script.id = runtime_script_ele_id;
+  script.type = 'text/javascript';
+  script.async = false;
+  script.innerHTML = code;
+  document.body.appendChild(script);
+}
+
+const reload = () => {
+  let ele = document.getElementById(runtime_script_ele_id);
+  let code = ele.innerHTML;
+  if (ele) {
+    ele.remove();
+  }
+  let script = document.createElement('script');
+  script.id = runtime_script_ele_id;
+  script.type = 'text/javascript';
+  script.async = false;
+  script.innerHTML = code;
+  document.body.appendChild(script);
+}
+
 class PreviewWindow extends React.Component {
+    
+    componentDidMount() {
+        load(Welcome);
+    }
+
     render() {
       const { classes } = this.props;
 
       return (
-        <div className={classes.previewWindowContainer}>
-            <div className={classes.previewWindow} />
+        <div 
+            id="jsPsych-Layer"
+            className={classes.previewWindowContainer}
+        >
+            <div 
+                id={jsPsych_Display_Element}
+                className={classes.previewWindow} 
+            />
         </div>
       )
 

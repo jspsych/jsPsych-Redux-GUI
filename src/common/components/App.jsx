@@ -45,9 +45,31 @@ const styles = theme => ({
   }
 });
 
+const SHOW_TIMELINE_NODE_ORGANIZER = 1;
+const SHOW_PLUGIN_MENU = 2;
+
 class App extends React.Component {
+  state = {
+    leftDrawer: SHOW_PLUGIN_MENU,
+  };
+
+  changeLeftDrawerTo = (showWhich) => {
+    this.setState({
+      leftDrawer: showWhich,
+    });
+  };
+
+  changeLeftDrawerToOrganizer = () => {
+    this.changeLeftDrawerTo(SHOW_TIMELINE_NODE_ORGANIZER);
+  };
+
+  changeLeftDrawerToPluginMenu = () => {
+    this.changeLeftDrawerTo(SHOW_PLUGIN_MENU);
+  };
+
   render() {
     const { classes } = this.props;
+    const { leftDrawer } = this.state;
     
     return (
       <div className={classes.root}>
@@ -62,8 +84,19 @@ class App extends React.Component {
             </Toolbar>
         </AppBar>
         <div className={classes.builderBody}>
-          { /* <TimelineNodeOrganizer /> */}
-          <PluginMenu />
+          {
+            leftDrawer === SHOW_TIMELINE_NODE_ORGANIZER &&
+            <TimelineNodeOrganizer 
+              changeLeftDrawerToOrganizer={this.changeLeftDrawerToOrganizer}
+            />
+          }
+          {
+            leftDrawer === SHOW_PLUGIN_MENU &&
+            <PluginMenu 
+              changeLeftDrawerToOrganizer={this.changeLeftDrawerToOrganizer}
+            />
+          }
+          
           <PreviewWindow />
           <TimelineNodeEditor />
         </div>

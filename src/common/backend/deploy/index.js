@@ -342,6 +342,25 @@ const errorMessageObj = (error) => {
   }
 }
 
+export const generatePluginPreviewCode = pluginInfoObj => {
+  let previewedTimelineNodeObject = {
+    type: pluginInfoObj.name,
+  };
+
+  for (let param of Object.keys(pluginInfoObj.parameters)) {
+    previewedTimelineNodeObject[param] = createComplexDataObject(pluginInfoObj.parameters[param].default);
+  }
+
+  let codeObj = {
+    ...jsPsychInitState,
+    timeline: [
+      previewedTimelineNodeObject,
+    ],
+  };
+
+  return 'jsPsych.init(' + stringify(codeObj) + ');';
+}
+
 
 export const MediaPathTag = (filename) => (`<path>${filename}</path>`);
 
