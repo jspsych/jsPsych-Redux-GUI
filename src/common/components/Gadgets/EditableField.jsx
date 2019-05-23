@@ -45,10 +45,11 @@ class EditableField extends React.Component {
     state = {
       editing: false,
       hover: false,
+      displayValue: this.props.value,
     };
 
     static defaultProps = {
-        onChange: (v) => {},
+        onCommit: (v) => {},
         value: '',
         fullWidth: true,
     };
@@ -75,17 +76,13 @@ class EditableField extends React.Component {
         this.setState({
             editing: false,
         });
+        this.props.onCommit(this.state.displayValue);
     };
 
-    toggleEditMode = () => {
+    onChangeDisplayValue = (evt) => {
         this.setState({
-            editing: !this.state.editing,
+            displayValue: evt.target.value,
         });
-    };
-
-
-    onChange = (event) => {
-        this.props.onChange(event.target.value);
     }
 
     render() {
@@ -93,12 +90,13 @@ class EditableField extends React.Component {
         classes,
         id,
         value,
-        fullWidth
+        fullWidth,
       } = this.props;
 
       const {
         hover,
         editing,
+        displayValue,
       } = this.state;
 
       let InputProps = {};
@@ -136,10 +134,10 @@ class EditableField extends React.Component {
                 variant={showEditMode ? "outlined" : "standard"}
                 fullWidth={fullWidth}
                 id={id}
-                onChange={this.onChange}
-                value={value}
+                onChange={this.onChangeDisplayValue}
+                value={displayValue}
             />
-          </div>
+        </div>
       );
     }
 }

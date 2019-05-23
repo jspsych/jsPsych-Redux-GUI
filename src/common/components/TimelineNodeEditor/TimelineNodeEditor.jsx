@@ -89,7 +89,7 @@ class TimelineNodeEditor extends React.Component {
 
     changeName = (n) => {
       this.setState({
-        trialName: n,
+        trialName: n.trim(),
       });
     }
 
@@ -117,7 +117,7 @@ class TimelineNodeEditor extends React.Component {
               <EditableField 
                 id="trial-name-field" 
                 value={this.state.trialName}
-                onChange={this.changeName}
+                onCommit={this.changeName}
                 classes={{
                   root: classes.titleText,
                 }}

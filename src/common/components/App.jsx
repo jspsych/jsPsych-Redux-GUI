@@ -91,7 +91,7 @@ class App extends React.Component {
 
   changeName = (n) => {
       this.setState({
-        experimentName: n,
+        experimentName: n.trim(),
       });
     }
 
@@ -112,7 +112,7 @@ class App extends React.Component {
               <EditableField 
                 id="experiment-title-field"
                 value={this.state.experimentName}
-                onChange={this.changeName}
+                onCommit={this.changeName}
                 fullWidth={false}
                 classes={{
                   textStyle: classes.experimentTitleTextStyle,
