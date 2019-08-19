@@ -23,7 +23,7 @@
     "react-scripts": "^2.1.8",
     "style-loader": "^0.18.2",
     "webpack": "^3.10.0",
-    "webpack-bundle-analyzer": "^2.9.2",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-merge": "^4.1.1",
     "webpack-preset": "^0.2.0"
   },
