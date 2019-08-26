@@ -21,8 +21,7 @@ app.use(Express.static(path.join(__dirname + '/../../public')));
 //   res.send(template({}));
 // });
 
-var server = app.listen(port, function() {
-  var port = server.address().port;
-
+const server = app.listen(port, function() {
+  const port = server.address().port;
   console.log("Example app listening at http://localhost:%s", port);
 })

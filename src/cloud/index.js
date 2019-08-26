@@ -3,7 +3,6 @@ import * as auth from './auth.js'
 import * as s3 from './s3.js';
 import * as dynamodb from './dynamodb.js';
 
-
 export var AWS = require('aws-sdk/global');
 require('aws-sdk/clients/s3');
 require('aws-sdk/clients/dynamodb');

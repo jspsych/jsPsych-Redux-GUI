@@ -1,9 +1,10 @@
-var merge = require('webpack-merge');
-var baseConfig = require("./webpack.config.base");
-var path = require('path');
-var webpack = require('webpack');
+const merge = require('webpack-merge');
+const baseConfig = require("./webpack.config.base");
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = merge(baseConfig, {
+  mode: 'development',
   devtool: 'eval',
   entry: [
     'webpack-hot-middleware/client',

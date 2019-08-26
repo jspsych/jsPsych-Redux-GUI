@@ -3,10 +3,10 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: [
-    "babel-polyfill"
+    "@babel/polyfill"
   ],
-  resolve: {
-    alias: {
+  plugins: [
+    new webpack.ProvidePlugin({
       utils: path.resolve(__dirname, '../src/common/utils/index.js'),
       enums: path.resolve(__dirname, '../src/common/constants/enumerators.js'),
       actions: path.resolve(__dirname, '../src/common/constants/ActionTypes.js'),
@@ -14,17 +14,6 @@ module.exports = {
       core: path.resolve(__dirname, '../src/common/constants/core.js'),
       myaws: path.resolve(__dirname, '../src/cloud/index.js'),
       errors: path.resolve(__dirname, '../src/common/constants/Errors.js'),
-    }
-  },
-  plugins: [
-    new webpack.ProvidePlugin({
-      utils: 'utils',
-      enums: 'enums',
-      actions: 'actions',
-      theme: 'theme',
-      core: 'core',
-      myaws: 'myaws',
-      errors: 'errors'
     })
   ],
   module: {
@@ -33,15 +22,15 @@ module.exports = {
       use: ['style-loader', 'css-loader']
     }, {
       test: /\.jsx?$/,
-      loader: 'babel-loader',
-      exclude: /node_modules/,
+      exclude: /(node_modules|bower_components)/,
       include: path.resolve(__dirname, '../'),
-      query: {
-        presets: ['env', 'react', 'stage-2']
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react'],
+          plugins: ['@babel/plugin-proposal-object-rest-spread']
+        }
       }
-    }, {
-      test: /\.json$/,
-      loader: "json-loader"
     }]
   },
   node: {
