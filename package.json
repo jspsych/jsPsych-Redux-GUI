@@ -28,8 +28,8 @@
     "webpack-preset": "^0.2.0"
   },
   "dependencies": {
-    "aws-amplify": "^0.4.1",
-    "aws-sdk": "^2.430.0",
+    "aws-amplify": "^5.0.25",
+    "aws-sdk": "^2.1359.0",
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.0",
     "copy-to-clipboard": "^3.0.6",
